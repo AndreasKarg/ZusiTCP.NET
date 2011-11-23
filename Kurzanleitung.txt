@@ -1,0 +1,16 @@
+﻿Zusi-Datenausgabe-Schnittstelle für Zusi 2.4 unter einer .NET-Umgebung
+
+Diese Anleitung gilt für die Verwendung von Microsoft Visual Studio. Mit anderen Entwicklungsumgebungen habe ich unter .NET noch nicht
+gearbeitet. Ich gehe aber davon aus, dass der Ablauf ähnlich bis gleich sein dürfte.
+
+1. Entpacken Sie das Archiv in einen beliebigen Ordner.
+
+2. Öffnen Sie Ihr Projekt und klicken Sie mit der rechten Maustaste im Projektmappen-Explorer auf "Verweise".
+
+3. Im dortigen Kontextmenü wählen Sie "Verweis hinzufügen..."
+
+4. Im Reiter "Durchsuchen" befindet sich ein Datei-Öffnen-Dialog, über den Sie die mitgelieferte .dll-Datei Ihrem Projekt hinzufügen.
+
+5. Die Schnittstellendatei sollte jetzt ins Projekt eingebunden sein. Die ausführliche Dokumentation kann über den Objektbrowser und über IntelliSense
+abgerufen werden.
+
