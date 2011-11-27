@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -31,10 +30,9 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
 
 [assembly: CLSCompliant(true)]
+
 namespace Zusi_Datenausgabe
 {
     /// <summary>
@@ -45,7 +43,8 @@ namespace Zusi_Datenausgabe
     [Serializable]
     public class ZusiData<TMeasure, TValue>
     {
-        internal Dictionary<TMeasure, TValue> aZusiData = new Dictionary<TMeasure, TValue>();
+        internal readonly Dictionary<TMeasure, TValue> aZusiData = new Dictionary<TMeasure, TValue>();
+
         /// <summary>
         /// Enthält die generischen Werte.
         /// </summary>
@@ -61,7 +60,10 @@ namespace Zusi_Datenausgabe
         /// Gibt den Enumerator des zugrundeliegenden Dictionary zurück.
         /// </summary>
         /// <returns>Der Enumerator des zugrundeliegenden Dictionary.</returns>
-        public Dictionary<TMeasure, TValue>.Enumerator GetEnumerator() { return aZusiData.GetEnumerator(); }
+        public Dictionary<TMeasure, TValue>.Enumerator GetEnumerator()
+        {
+            return aZusiData.GetEnumerator();
+        }
     }
 
     /// <summary>
@@ -77,17 +79,6 @@ namespace Zusi_Datenausgabe
     public struct DataSet<T>
     {
         /// <summary>
-        /// Die ID-Nummer, die Zusi für die jeweilige Messgröße verwendet.
-        /// </summary>
-        public int Id { get; private set; }
-
-
-        /// <summary>
-        /// Der neue Wert der Messgröße.
-        /// </summary>
-        public T Value { get; private set; }
-
-        /// <summary>
         /// Ein ganz normaler Konstruktor.
         /// </summary>
         /// <param name="id">Die ID-Nummer der Messgröße</param>
@@ -98,6 +89,17 @@ namespace Zusi_Datenausgabe
             Id = id;
             Value = value;
         }
+
+        /// <summary>
+        /// Die ID-Nummer, die Zusi für die jeweilige Messgröße verwendet.
+        /// </summary>
+        public int Id { get; private set; }
+
+
+        /// <summary>
+        /// Der neue Wert der Messgröße.
+        /// </summary>
+        public T Value { get; private set; }
     }
 
     /// <summary>
@@ -109,7 +111,7 @@ namespace Zusi_Datenausgabe
     /// 
     /// <item><description>Ereignismethoden innerhalb der Klasse des Windows-Fensters oder des Schnittstellenobjekts implementieren.
     /// Diese müssen dem Delegaten Zusi_Datenausgabe.Dataset.ReceiveEvent entsprechen.
-    /// Die Schnittstelle benutzt die Datentypen <see cref="Single"/>, <see cref="String"/> und <c>Byte[]</c>.</description></item>
+    /// Die Schnittstelle benutzt die Datentypen <see cref="float"/>, <see cref="string"/> und <c>Byte[]</c>.</description></item>
     /// 
     /// <item><description>Instanz der Klasse erzeugen (<see cref="ZusiTcpConn"/>). Für Fahrpulte wird 
     /// die Priorität "High" empfohlen. Als Parameter für SynchronizesObject und die Handler-Delegaten das Windows-Fenster
@@ -124,38 +126,77 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public class ZusiTcpConn : IDisposable
     {
+        private readonly ReceiveEvent<byte[]> ByteDel;
+        private readonly ReceiveEvent<float> FloatDel;
+
+        private readonly SynchronizationContext HostContext;
+        private readonly ReceiveEvent<string> StrDel;
+        private readonly ASCIIEncoding StringEncoder = new ASCIIEncoding();
+        private readonly SortedList<int, int> aCommands = new SortedList<int, int>();
+
+        private readonly List<int> aRequestedData = new List<int>();
+        private TcpClient ClientConnection = new TcpClient();
+        private Thread StreamReaderThread;
+
+        /// <summary>
+        /// Der Konstruktor für die ZusiTCPConn-Klasse. 
+        /// </summary>
+        /// <param name="clientId">Der Name des Clients. Bspw. "Am Hansi sei Broggramm"</param>
+        /// <param name="priority">Die Priorität des Clients. Beeinflusst die 
+        /// Aktualisierungsraten der Datensätze. Für Fahrpultanwendungen wird "High" empfohlen.</param>
+        /// <param name="floatHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Fließkommawerten annimmt.</param>
+        /// <param name="stringHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Strings annimmt.</param>
+        /// <param name="byteHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Byte-Arrays annimmt</param>
+        public ZusiTcpConn(string clientId, ClientPriority priority,
+                           ReceiveEvent<float> floatHandler,
+                           ReceiveEvent<string> stringHandler,
+                           ReceiveEvent<byte[]> byteHandler)
+        {
+            ClientId = clientId;
+            ClientPriority = priority;
+
+            HostContext = SynchronizationContext.Current;
+
+            MemoryStream DataIDs = null;
+
+            try
+            {
+                DataIDs = new MemoryStream(DatenIDs.commands);
+            }
+            catch (Exception)
+            {
+                DataIDs.Dispose();
+                throw;
+            }
+            var BinIn = new BinaryFormatter();
+
+            try
+            {
+                Ids = (ZusiData<string, int>) BinIn.Deserialize(DataIDs);
+
+                ReverseIds = new ZusiData<int, string>();
+
+                foreach (var item in Ids)
+                {
+                    ReverseIds[item.Value] = item.Key;
+                }
+
+                aCommands = (SortedList<int, int>) BinIn.Deserialize(DataIDs);
+            }
+            finally
+            {
+                DataIDs.Dispose();
+            }
+
+            FloatDel = floatHandler;
+            StrDel = stringHandler;
+            ByteDel = byteHandler;
+        }
 
         /// <summary>
         /// Der angegebene Name des Clients.
         /// </summary>
         public string ClientId { get; private set; }
-
-        TcpClient ClientConnection = new TcpClient();
-
-        ASCIIEncoding StringEncoder = new ASCIIEncoding();
-
-        Thread StreamReaderThread;
-
-        ReceiveEvent<float> FloatDel;
-        ReceiveEvent<string> StrDel;
-        ReceiveEvent<byte[]> ByteDel;
-
-        SynchronizationContext HostContext;
-
-        private void FloatMarshal(object o)
-        {
-            FloatDel.Invoke((DataSet<float>)o);
-        }
-
-        private void StringMarshal(object o)
-        {
-            StrDel.Invoke((DataSet<string>) o);
-        }
-
-        private void ByteMarshal(object o)
-        {
-            ByteDel.Invoke((DataSet<byte[]>) o);
-        }
 
         /// <summary>
         /// Enthält eine vollständige Liste aller Größen, die von Zusi ausgegeben werden, als Schlüssel-Wert-Paare. Schlüssel ist der deutsche Klartextname der Größe. <c>IDs["Geschwindigkeit"]</c> gibt also den Wert <c>01</c> zurück.
@@ -177,10 +218,6 @@ namespace Zusi_Datenausgabe
         /// </summary>
         public ClientPriority ClientPriority { get; private set; }
 
-        private SortedList<int, int> aCommands = new SortedList<int, int>();
-
-        private List<int> aRequestedData = new List<int>();
-
         /// <summary>
         /// Eine Liste aller von Zusi angeforderten Größen. Fügen Sie hier die ID-Nummern der Größen hinzu, 
         /// bevor Sie eine Verbindung zum TCP-Server herstellen. <seealso cref="Ids"/>
@@ -197,86 +234,82 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Der Konstruktor für die ZusiTCPConn-Klasse. 
+        /// Gibt die ID-Nummer der im Parameter in Klartext angegebenen Messgröße zurück.
         /// </summary>
-        /// <param name="clientId">Der Name des Clients. Bspw. "Am Hansi sei Broggramm"</param>
-        /// <param name="priority">Die Priorität des Clients. Beeinflusst die 
-        /// Aktualisierungsraten der Datensätze. Für Fahrpultanwendungen wird "High" empfohlen.</param>
-        /// <param name="floatHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Fließkommawerten annimmt.</param>
-        /// <param name="stringHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Strings annimmt.</param>
-        /// <param name="byteHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Byte-Arrays annimmt</param>
-        public ZusiTcpConn(string clientId, ClientPriority priority,
-            ReceiveEvent<float> floatHandler,
-            ReceiveEvent<string> stringHandler,
-            ReceiveEvent<byte[]> byteHandler)
+        /// <param name="name">Der Name der Messgröße</param>
+        /// <returns>Die zugehörige ID-Nummer</returns>
+        public int this[string name]
         {
-            ClientId = clientId;
-            this.ClientPriority = priority;
-
-            HostContext = SynchronizationContext.Current;
-
-            MemoryStream DataIDs = null;
-
-            try
-            {
-                DataIDs = new MemoryStream(DatenIDs.commands);
-            }
-            catch (Exception)
-            {
-                DataIDs.Dispose();
-                throw;
-            }
-            BinaryFormatter BinIn = new BinaryFormatter();
-
-            try
-            {
-                Ids = (ZusiData<string, int>)BinIn.Deserialize(DataIDs);
-
-                ReverseIds = new ZusiData<int, string>();
-
-                foreach (KeyValuePair<string, int> item in Ids)
-                {
-                    ReverseIds[item.Value] = item.Key;
-                }
-
-                aCommands = (SortedList<int, int>)BinIn.Deserialize(DataIDs);
-            }
-            finally
-            {
-                DataIDs.Dispose();
-            }
-
-            FloatDel = floatHandler;
-            StrDel = stringHandler;
-            ByteDel = byteHandler;
+            get { return Ids[name]; }
         }
 
-        void SendPacket(params byte[] Message)
+        /// <summary>
+        /// Gibt den Namen der im Parameter angegebenen ID-Nummer als Klartext zurück.
+        /// </summary>
+        /// <param name="id">Die ID-Nummer der Messgröße</param>
+        /// <returns>Der Name der Messgröße</returns>
+        public string this[int id]
+        {
+            get { return ReverseIds[id]; }
+        }
+
+        #region IDisposable Members
+
+        /// <summary>
+        /// Entsorgt die TCP-Verbindung
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
+        private void FloatMarshal(object o)
+        {
+            FloatDel.Invoke((DataSet<float>) o);
+        }
+
+        private void StringMarshal(object o)
+        {
+            StrDel.Invoke((DataSet<string>) o);
+        }
+
+        private void ByteMarshal(object o)
+        {
+            ByteDel.Invoke((DataSet<byte[]>) o);
+        }
+
+        private void SendPacket(params byte[] Message)
         {
             ClientConnection.Client.Send(BitConverter.GetBytes(Message.Length));
             ClientConnection.Client.Send(Message);
         }
 
-        void SendPacket(params byte[][] Message)
+        private void SendPacket(params byte[][] Message)
         {
             int iTempLength = 0;
-            foreach (byte[] item in Message)
+            foreach (var item in Message)
             {
                 iTempLength += item.Length;
             }
 
             ClientConnection.Client.Send(BitConverter.GetBytes(iTempLength));
-            foreach (byte[] item in Message)
+            foreach (var item in Message)
             {
                 ClientConnection.Client.Send(item);
             }
         }
 
-        static byte[] Pack(params byte[] Message) { return Message; }
-
-        static int GetInstruction(int ByteA, int ByteB)
+        private static byte[] Pack(params byte[] Message)
         {
-            return ByteA * 256 + ByteB;
+            return Message;
+        }
+
+        private static int GetInstruction(int ByteA, int ByteB)
+        {
+            return ByteA*256 + ByteB;
         }
 
         /// <summary>
@@ -288,8 +321,9 @@ namespace Zusi_Datenausgabe
         {
             try
             {
-                if (ConnectionState == ConnectionState.Error) throw
-                    (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
+                if (ConnectionState == ConnectionState.Error)
+                    throw
+                        (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
 
                 if (ClientConnection == null)
                     ClientConnection = new TcpClient();
@@ -301,15 +335,16 @@ namespace Zusi_Datenausgabe
                     StreamReaderThread = new Thread(ReceiveLoop);
                     StreamReaderThread.Name = "ZusiData Receiver";
 
-                    SendPacket(Pack(0, 1, 2, (byte)ClientPriority,
-                        Convert.ToByte(StringEncoder.GetByteCount(ClientId))), StringEncoder.GetBytes(ClientId));
+                    SendPacket(Pack(0, 1, 2, (byte) ClientPriority,
+                                    Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
+                               StringEncoder.GetBytes(ClientId));
 
                     ExpectResponse(ResponseType.AckHello, 0);
 
-                    var aGetData = from iData in RequestedData
-                                   group iData by (iData / 256);
+                    IEnumerable<IGrouping<int, int>> aGetData = from iData in RequestedData
+                                                                group iData by (iData/256);
 
-                    List<byte[]> ReqDataBuffer = new List<byte[]>();
+                    var ReqDataBuffer = new List<byte[]>();
 
                     foreach (var aDataGroup in aGetData)
                     {
@@ -321,7 +356,7 @@ namespace Zusi_Datenausgabe
 
                         foreach (int iID in aDataGroup)
                         {
-                            ReqDataBuffer.Add(Pack(Convert.ToByte(iID % 256)));
+                            ReqDataBuffer.Add(Pack(Convert.ToByte(iID%256)));
                         }
 
                         SendPacket(ReqDataBuffer.ToArray());
@@ -329,14 +364,14 @@ namespace Zusi_Datenausgabe
                         ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
                     }
 
-                    SendPacket(0, 3, 0, 0); ;
+                    SendPacket(0, 3, 0, 0);
+                    ;
                     ExpectResponse(ResponseType.AckNeededData, 0);
 
                     ConnectionState = ConnectionState.Connected;
 
                     StreamReaderThread.Start();
                 }
-
             }
 
             catch (Exception ex)
@@ -349,7 +384,6 @@ namespace Zusi_Datenausgabe
                 ConnectionState = ConnectionState.Error;
                 throw new ZusiTcpException("Error connecting to server.", ex);
             }
-
         }
 
         /// <summary>
@@ -365,16 +399,9 @@ namespace Zusi_Datenausgabe
             ClientConnection = null;
         }
 
-        private enum ResponseType
-        {
-            None = 0,
-            AckHello = 2,
-            AckNeededData = 4
-        }
-
         private void ExpectResponse(ResponseType ExpResponse, int DataGroup)
         {
-            byte[] ReadBuffer = new byte[7];
+            var ReadBuffer = new byte[7];
 
             ClientConnection.Client.Receive(ReadBuffer, 7, SocketFlags.None);
             MemoryStream BufStream = null;
@@ -389,14 +416,14 @@ namespace Zusi_Datenausgabe
                 BufStream = null;
                 throw;
             }
-            BinaryReader BufRead = new BinaryReader(BufStream);
+            var BufRead = new BinaryReader(BufStream);
 
             int iPacketLength = BufRead.ReadInt32();
             if (iPacketLength != 3)
                 throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
 
             int iReadInstr = GetInstruction(BufStream.ReadByte(), BufStream.ReadByte());
-            if (iReadInstr != (int)ExpResponse)
+            if (iReadInstr != (int) ExpResponse)
                 throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
 
             try
@@ -426,7 +453,6 @@ namespace Zusi_Datenausgabe
             }
 
             BufStream.Close();
-            
         }
 
         /// <summary>
@@ -441,20 +467,20 @@ namespace Zusi_Datenausgabe
             Type CfgFileType = INI.GetType("INI_Interface.CfgFile");
             MethodInfo GetCaption = CfgFileType.GetMethod("ge<tCaption");
 
-            object INIDatei = CfgFileType.GetConstructor(new Type[] { typeof(string) }).Invoke(new object[] { filename });
+            object INIDatei = CfgFileType.GetConstructor(new[] {typeof (string)}).Invoke(new object[] {filename});
 
-            ZusiData<string, int> IDs = new ZusiData<string, int>();
-            SortedList<int, int> Commands = new SortedList<int, int>();
+            var IDs = new ZusiData<string, int>();
+            var Commands = new SortedList<int, int>();
 
-            SortedList<string, string> CapContents =
-                (SortedList<string, string>)GetCaption.Invoke(INIDatei, new string[] { "FriendlyNames" });
+            var CapContents =
+                (SortedList<string, string>) GetCaption.Invoke(INIDatei, new[] {"FriendlyNames"});
 
             foreach (string ID in CapContents.Keys)
             {
                 IDs.aZusiData.Add(CapContents[ID], Convert.ToInt32(ID));
             }
 
-            CapContents = (SortedList<string, string>)GetCaption.Invoke(INIDatei, new string[] { "Commands" });
+            CapContents = (SortedList<string, string>) GetCaption.Invoke(INIDatei, new[] {"Commands"});
 
             foreach (string Command in CapContents.Keys)
             {
@@ -462,7 +488,7 @@ namespace Zusi_Datenausgabe
             }
 
             Stream Ausgabe = File.Create("commands.dat");
-            BinaryFormatter BinOut = new BinaryFormatter();
+            var BinOut = new BinaryFormatter();
             BinOut.Serialize(Ausgabe, IDs);
             BinOut.Serialize(Ausgabe, Commands);
             Ausgabe.Close();
@@ -472,10 +498,10 @@ namespace Zusi_Datenausgabe
         {
             const int BufSize = 256;
 
-            byte[] RecBuffer = new byte[BufSize];
+            var RecBuffer = new byte[BufSize];
             int iPacketLength;
-            MemoryStream MemStream = new MemoryStream(RecBuffer);
-            BinaryReader StreamReader = new BinaryReader(MemStream);
+            var MemStream = new MemoryStream(RecBuffer);
+            var StreamReader = new BinaryReader(MemStream);
             Socket TCPSocket = ClientConnection.Client;
 
             while (true)
@@ -502,7 +528,7 @@ namespace Zusi_Datenausgabe
                     {
                         //object[] CurDataset = new object[1];
 
-                        int iCurID = MemStream.ReadByte() + 256 * iCurInstr;
+                        int iCurID = MemStream.ReadByte() + 256*iCurInstr;
                         int iCurDataLength;
                         if (aCommands.TryGetValue(iCurID, out iCurDataLength))
                         {
@@ -512,12 +538,14 @@ namespace Zusi_Datenausgabe
                                     //CurDataset[0] = new DataSet<string>(iCurID, StreamReader.ReadString());
                                     //SyncObj.Invoke(StrDel, CurDataset);
                                     //StrDel.Invoke(new DataSet<string>(iCurID, StreamReader.ReadString()));
-                                    HostContext.Post(new SendOrPostCallback(StringMarshal), new DataSet<string>(iCurID, StreamReader.ReadString()));
+                                    HostContext.Post(StringMarshal,
+                                                     new DataSet<string>(iCurID, StreamReader.ReadString()));
                                     break;
                                 default:
                                     //CurDataset[0] = new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength));
                                     //ByteDel.Invoke(new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength)));
-                                    HostContext.Post(new SendOrPostCallback(ByteMarshal), new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength)));
+                                    HostContext.Post(ByteMarshal,
+                                                     new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength)));
                                     break;
                             }
                         }
@@ -525,7 +553,7 @@ namespace Zusi_Datenausgabe
                         {
                             //CurDataset[0] = new DataSet<float>(iCurID, StreamReader.ReadSingle());
                             //FloatDel.Invoke(new DataSet<float>(iCurID, StreamReader.ReadSingle()));
-                            HostContext.Post(new SendOrPostCallback(FloatMarshal), new DataSet<float>(iCurID, StreamReader.ReadSingle()));
+                            HostContext.Post(FloatMarshal, new DataSet<float>(iCurID, StreamReader.ReadSingle()));
                         }
                     }
                 }
@@ -533,38 +561,21 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Gibt die ID-Nummer der im Parameter in Klartext angegebenen Messgröße zurück.
-        /// </summary>
-        /// <param name="name">Der Name der Messgröße</param>
-        /// <returns>Die zugehörige ID-Nummer</returns>
-        public int this[string name] { get { return Ids[name]; } }
-
-        /// <summary>
-        /// Gibt den Namen der im Parameter angegebenen ID-Nummer als Klartext zurück.
-        /// </summary>
-        /// <param name="id">Die ID-Nummer der Messgröße</param>
-        /// <returns>Der Name der Messgröße</returns>
-        public string this[int id] { get { return ReverseIds[id]; } }
-
-        /// <summary>
         /// Fügt aRequestedData einen Eintrag mit dem angegebenen Messgrößennamen hinzu. Kurzform für TCP.RequestedData.Add(TCP.IDs[Name]);.
         /// </summary>
         /// <param name="name">Der Name der Messgröße</param>
-        public void RequestData(string name) { aRequestedData.Add(Ids[name]); }
+        public void RequestData(string name)
+        {
+            aRequestedData.Add(Ids[name]);
+        }
 
         /// <summary>
         /// Fügt aRequestedData einen Eintrag mit der angegebenen Messgrößen-ID hinzu. Kurzform für TCP.RequestedData.Add(ID);.
         /// </summary>
         /// <param name="id">Die ID-Nummer der Messgröße</param>
-        public void RequestData(int id) { aRequestedData.Add(id); }
-
-        /// <summary>
-        /// Entsorgt die TCP-Verbindung
-        /// </summary>
-        public void Dispose()
+        public void RequestData(int id)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            aRequestedData.Add(id);
         }
 
         private void Dispose(bool disposing)
@@ -584,6 +595,17 @@ namespace Zusi_Datenausgabe
                 }
             }
         }
+
+        #region Nested type: ResponseType
+
+        private enum ResponseType
+        {
+            None = 0,
+            AckHello = 2,
+            AckNeededData = 4
+        }
+
+        #endregion
     }
 
     /// <summary>

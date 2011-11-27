@@ -68,7 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="DatenIDs.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -87,7 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="commands.dat" />
     <None Include="commandset.ini">
     </None>
@@ -99,7 +97,6 @@
     <Content Include="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Spezifizifikation.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
