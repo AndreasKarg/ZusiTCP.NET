@@ -1,6 +1,7 @@
 ﻿/*************************************************************************
+ * Zusi-Datenausgabe.cs
+ * Contains main logic for the TCP interface.
  * 
- * Zusi TCP interface for .NET
  * (C) 2009-2011 Andreas Karg, <Clonkman@gmx.de>
  * 
  * This file is part of Zusi TCP Interface.NET.
