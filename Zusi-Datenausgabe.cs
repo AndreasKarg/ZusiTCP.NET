@@ -135,17 +135,17 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public class ZusiTcpConn : IDisposable
     {
-        private readonly ReceiveEvent<byte[]> ByteDel;
-        private readonly ReceiveEvent<float> FloatDel;
+        private readonly ReceiveEvent<byte[]> _byteDel;
+        private readonly ReceiveEvent<float> _floatDel;
 
-        private readonly SynchronizationContext HostContext;
-        private readonly ReceiveEvent<string> StrDel;
-        private readonly ASCIIEncoding StringEncoder = new ASCIIEncoding();
-        private readonly SortedList<int, int> aCommands = new SortedList<int, int>();
+        private readonly SynchronizationContext _hostContext;
+        private readonly ReceiveEvent<string> _strDel;
+        private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
+        private readonly SortedList<int, int> _commands = new SortedList<int, int>();
 
-        private readonly List<int> aRequestedData = new List<int>();
-        private TcpClient ClientConnection = new TcpClient();
-        private Thread StreamReaderThread;
+        private readonly List<int> _requestedData = new List<int>();
+        private TcpClient _clientConnection = new TcpClient();
+        private Thread _streamReaderThread;
 
         /// <summary>
         /// Der Konstruktor für die ZusiTCPConn-Klasse. 
@@ -164,24 +164,27 @@ namespace Zusi_Datenausgabe
             ClientId = clientId;
             ClientPriority = priority;
 
-            HostContext = SynchronizationContext.Current;
+            _hostContext = SynchronizationContext.Current;
 
-            MemoryStream DataIDs = null;
+            MemoryStream dataIDs = null;
 
             try
             {
-                DataIDs = new MemoryStream(DatenIDs.commands);
+                dataIDs = new MemoryStream(DatenIDs.commands);
             }
             catch (Exception)
             {
-                DataIDs.Dispose();
+                if (dataIDs != null) 
+                    dataIDs.Dispose();
                 throw;
             }
-            var BinIn = new BinaryFormatter();
+
+
+            var binIn = new BinaryFormatter();
 
             try
             {
-                Ids = (ZusiData<string, int>) BinIn.Deserialize(DataIDs);
+                Ids = (ZusiData<string, int>) binIn.Deserialize(dataIDs);
 
                 ReverseIds = new ZusiData<int, string>();
 
@@ -190,16 +193,16 @@ namespace Zusi_Datenausgabe
                     ReverseIds[item.Value] = item.Key;
                 }
 
-                aCommands = (SortedList<int, int>) BinIn.Deserialize(DataIDs);
+                _commands = (SortedList<int, int>) binIn.Deserialize(dataIDs);
             }
             finally
             {
-                DataIDs.Dispose();
+                dataIDs.Dispose();
             }
 
-            FloatDel = floatHandler;
-            StrDel = stringHandler;
-            ByteDel = byteHandler;
+            _floatDel = floatHandler;
+            _strDel = stringHandler;
+            _byteDel = byteHandler;
         }
 
         /// <summary>
@@ -233,12 +236,8 @@ namespace Zusi_Datenausgabe
         /// </summary>
         public List<int> RequestedData
         {
-            get
-            {
-                if (ConnectionState == ConnectionState.Disconnected)
-                    return aRequestedData;
-                else
-                    return null;
+            get {
+                return ConnectionState == ConnectionState.Disconnected ? _requestedData : null;
             }
         }
 
@@ -277,48 +276,45 @@ namespace Zusi_Datenausgabe
 
         private void FloatMarshal(object o)
         {
-            FloatDel.Invoke((DataSet<float>) o);
+            _floatDel.Invoke((DataSet<float>) o);
         }
 
         private void StringMarshal(object o)
         {
-            StrDel.Invoke((DataSet<string>) o);
+            _strDel.Invoke((DataSet<string>) o);
         }
 
         private void ByteMarshal(object o)
         {
-            ByteDel.Invoke((DataSet<byte[]>) o);
+            _byteDel.Invoke((DataSet<byte[]>) o);
         }
 
-        private void SendPacket(params byte[] Message)
+        private void SendPacket(params byte[] message)
         {
-            ClientConnection.Client.Send(BitConverter.GetBytes(Message.Length));
-            ClientConnection.Client.Send(Message);
+            _clientConnection.Client.Send(BitConverter.GetBytes(message.Length));
+            _clientConnection.Client.Send(message);
         }
 
-        private void SendPacket(params byte[][] Message)
+        private void SendPacket(params byte[][] message)
         {
-            int iTempLength = 0;
-            foreach (var item in Message)
-            {
-                iTempLength += item.Length;
-            }
+            int iTempLength = message.Sum(item => item.Length);
 
-            ClientConnection.Client.Send(BitConverter.GetBytes(iTempLength));
-            foreach (var item in Message)
+            _clientConnection.Client.Send(BitConverter.GetBytes(iTempLength));
+            
+            foreach (var item in message)
             {
-                ClientConnection.Client.Send(item);
+                _clientConnection.Client.Send(item);
             }
         }
 
-        private static byte[] Pack(params byte[] Message)
+        private static byte[] Pack(params byte[] message)
         {
-            return Message;
+            return message;
         }
 
-        private static int GetInstruction(int ByteA, int ByteB)
+        private static int GetInstruction(int byteA, int byteB)
         {
-            return ByteA*256 + ByteB;
+            return byteA*256 + byteB;
         }
 
         /// <summary>
@@ -334,61 +330,57 @@ namespace Zusi_Datenausgabe
                     throw
                         (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
 
-                if (ClientConnection == null)
-                    ClientConnection = new TcpClient();
+                if (_clientConnection == null)
+                    _clientConnection = new TcpClient();
 
-                ClientConnection.Connect(hostName, port);
+                _clientConnection.Connect(hostName, port);
 
-                if (ClientConnection.Connected)
+                if (_clientConnection.Connected)
                 {
-                    StreamReaderThread = new Thread(ReceiveLoop);
-                    StreamReaderThread.Name = "ZusiData Receiver";
+                    _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
 
                     SendPacket(Pack(0, 1, 2, (byte) ClientPriority,
-                                    Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
-                               StringEncoder.GetBytes(ClientId));
+                                    Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
+                               _stringEncoder.GetBytes(ClientId));
 
                     ExpectResponse(ResponseType.AckHello, 0);
 
-                    IEnumerable<IGrouping<int, int>> aGetData = from iData in RequestedData
-                                                                group iData by (iData/256);
+                    var aGetData = from iData in RequestedData
+                                   group iData by (iData / 256);
 
-                    var ReqDataBuffer = new List<byte[]>();
+                    var reqDataBuffer = new List<byte[]>();
 
                     foreach (var aDataGroup in aGetData)
                     {
-                        ReqDataBuffer.Clear();
-                        ReqDataBuffer.Add(Pack(0, 3));
+                        reqDataBuffer.Clear();
+                        reqDataBuffer.Add(Pack(0, 3));
 
-                        byte[] TempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
-                        ReqDataBuffer.Add(Pack(TempDataGroup[1], TempDataGroup[0]));
+                        byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
+                        reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
 
-                        foreach (int iID in aDataGroup)
-                        {
-                            ReqDataBuffer.Add(Pack(Convert.ToByte(iID%256)));
-                        }
+                        reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID%256))));
 
-                        SendPacket(ReqDataBuffer.ToArray());
+                        SendPacket(reqDataBuffer.ToArray());
 
                         ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
                     }
 
                     SendPacket(0, 3, 0, 0);
-                    ;
+
                     ExpectResponse(ResponseType.AckNeededData, 0);
 
                     ConnectionState = ConnectionState.Connected;
 
-                    StreamReaderThread.Start();
+                    _streamReaderThread.Start();
                 }
             }
 
             catch (Exception ex)
             {
-                if (StreamReaderThread != null)
+                if (_streamReaderThread != null)
                 {
-                    StreamReaderThread.Abort();
-                    StreamReaderThread = null;
+                    _streamReaderThread.Abort();
+                    _streamReaderThread = null;
                 }
                 ConnectionState = ConnectionState.Error;
                 throw new ZusiTcpException("Error connecting to server.", ex);
@@ -400,46 +392,45 @@ namespace Zusi_Datenausgabe
         /// </summary>
         public void Disconnnect()
         {
-            if (StreamReaderThread != null)
-                StreamReaderThread.Abort();
+            if (_streamReaderThread != null)
+                _streamReaderThread.Abort();
             ConnectionState = ConnectionState.Disconnected;
-            if (ClientConnection != null)
-                ClientConnection.Close();
-            ClientConnection = null;
+            if (_clientConnection != null)
+                _clientConnection.Close();
+            _clientConnection = null;
         }
 
-        private void ExpectResponse(ResponseType ExpResponse, int DataGroup)
+        private void ExpectResponse(ResponseType expResponse, int dataGroup)
         {
-            var ReadBuffer = new byte[7];
+            var readBuffer = new byte[7];
 
-            ClientConnection.Client.Receive(ReadBuffer, 7, SocketFlags.None);
-            MemoryStream BufStream = null;
+            _clientConnection.Client.Receive(readBuffer, 7, SocketFlags.None);
+            MemoryStream bufStream = null;
 
             try
             {
-                BufStream = new MemoryStream(ReadBuffer);
+                bufStream = new MemoryStream(readBuffer);
             }
             catch
             {
-                BufStream.Dispose();
-                BufStream = null;
+                if (bufStream != null) bufStream.Dispose();
                 throw;
             }
-            var BufRead = new BinaryReader(BufStream);
+            var bufRead = new BinaryReader(bufStream);
 
-            int iPacketLength = BufRead.ReadInt32();
+            int iPacketLength = bufRead.ReadInt32();
             if (iPacketLength != 3)
                 throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
 
-            int iReadInstr = GetInstruction(BufStream.ReadByte(), BufStream.ReadByte());
-            if (iReadInstr != (int) ExpResponse)
+            int iReadInstr = GetInstruction(bufStream.ReadByte(), bufStream.ReadByte());
+            if (iReadInstr != (int) expResponse)
                 throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
 
             try
             {
-                int iResponse = BufStream.ReadByte();
+                int iResponse = bufStream.ReadByte();
                 if (iResponse != 0)
-                    switch (ExpResponse)
+                    switch (expResponse)
                     {
                         case ResponseType.AckHello:
                             throw new ZusiTcpException("HELLO not acknowledged.");
@@ -447,7 +438,7 @@ namespace Zusi_Datenausgabe
                             switch (iResponse)
                             {
                                 case 1:
-                                    throw new ZusiTcpException("Unknown instruction set: " + DataGroup);
+                                    throw new ZusiTcpException("Unknown instruction set: " + dataGroup);
                                 case 2:
                                     throw new ZusiTcpException("Client not connected");
                                 default:
@@ -457,11 +448,11 @@ namespace Zusi_Datenausgabe
             }
             catch
             {
-                BufStream.Dispose();
+                bufStream.Dispose();
                 throw;
             }
 
-            BufStream.Close();
+            bufStream.Close();
         }
 
 #if DEBUG
@@ -471,139 +462,138 @@ namespace Zusi_Datenausgabe
         /// <param name="filename"></param>
         public static void CreateDataset(string filename)
         {
-            Assembly INI = Assembly.LoadFrom("INI-Interface.dll");
+            Assembly ini = Assembly.LoadFrom("INI-Interface.dll");
 
-            Type CfgFileType = INI.GetType("INI_Interface.CfgFile");
-            MethodInfo GetCaption = CfgFileType.GetMethod("ge<tCaption");
+            Type cfgFileType = ini.GetType("INI_Interface.CfgFile");
+            MethodInfo getCaption = cfgFileType.GetMethod("ge<tCaption");
 
-            object INIDatei = CfgFileType.GetConstructor(new[] {typeof (string)}).Invoke(new object[] {filename});
+            var constructorInfo = cfgFileType.GetConstructor(new[] {typeof (string)});
+            if (constructorInfo == null) return;
+
+            object iniDatei = constructorInfo.Invoke(new object[] {filename});
 
             var IDs = new ZusiData<string, int>();
-            var Commands = new SortedList<int, int>();
+            var commands = new SortedList<int, int>();
 
-            var CapContents =
-                (SortedList<string, string>) GetCaption.Invoke(INIDatei, new[] {"FriendlyNames"});
+            var capContents =
+                (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"FriendlyNames"});
 
-            foreach (string ID in CapContents.Keys)
+            foreach (string ID in capContents.Keys)
             {
-                IDs.Data.Add(CapContents[ID], Convert.ToInt32(ID));
+                IDs.Data.Add(capContents[ID], Convert.ToInt32(ID));
             }
 
-            CapContents = (SortedList<string, string>) GetCaption.Invoke(INIDatei, new[] {"Commands"});
+            capContents = (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"Commands"});
 
-            foreach (string Command in CapContents.Keys)
+            foreach (string command in capContents.Keys)
             {
-                Commands.Add(Convert.ToInt32(Command), Convert.ToInt32(CapContents[Command]));
+                commands.Add(Convert.ToInt32(command), Convert.ToInt32(capContents[command]));
             }
 
-            Stream Ausgabe = File.Create("commands.dat");
-            var BinOut = new BinaryFormatter();
-            BinOut.Serialize(Ausgabe, IDs);
-            BinOut.Serialize(Ausgabe, Commands);
-            Ausgabe.Close();
+            Stream outputStream = File.Create("commands.dat");
+            var binOut = new BinaryFormatter();
+            binOut.Serialize(outputStream, IDs);
+            binOut.Serialize(outputStream, commands);
+            outputStream.Close();
         }
 #endif
 
         internal void ReceiveLoop()
         {
-            const int BufSize = 256;
+            const int bufSize = 256;
 
-            var RecBuffer = new byte[BufSize];
-            int iPacketLength;
-            var MemStream = new MemoryStream(RecBuffer);
-            var StreamReader = new BinaryReader(MemStream);
-            Socket TCPSocket = ClientConnection.Client;
+            var recBuffer = new byte[bufSize];
+            var memStream = new MemoryStream(recBuffer);
+            var streamReader = new BinaryReader(memStream);
+            Socket tcpSocket = _clientConnection.Client;
 
             while (true)
             {
-                if (ConnectionState == ConnectionState.Connected)
+                if (ConnectionState != ConnectionState.Connected) continue;
+
+                tcpSocket.Receive(recBuffer, 4, SocketFlags.None);
+                memStream.Seek(0, SeekOrigin.Begin);
+
+                int iPacketLength = streamReader.ReadInt32();
+
+                if (iPacketLength > bufSize)
+                    throw new ZusiTcpException("Buffer overflow on data receive.");
+
+                tcpSocket.Receive(recBuffer, iPacketLength, SocketFlags.None);
+                memStream.Seek(0, SeekOrigin.Begin);
+
+                int iCurInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
+
+                if (iCurInstr < 10)
+                    throw new ZusiTcpException("Non-DATA instruction received.");
+
+                while (memStream.Position < iPacketLength)
                 {
-                    TCPSocket.Receive(RecBuffer, 4, SocketFlags.None);
-                    MemStream.Seek(0, SeekOrigin.Begin);
+                    //object[] CurDataset = new object[1];
 
-                    iPacketLength = StreamReader.ReadInt32();
-
-                    if (iPacketLength > BufSize)
-                        throw new ZusiTcpException("Buffer overflow on data receive.");
-
-                    TCPSocket.Receive(RecBuffer, iPacketLength, SocketFlags.None);
-                    MemStream.Seek(0, SeekOrigin.Begin);
-
-                    int iCurInstr = GetInstruction(MemStream.ReadByte(), MemStream.ReadByte());
-
-                    if (iCurInstr < 10)
-                        throw new ZusiTcpException("Non-DATA instruction received.");
-
-                    while (MemStream.Position < iPacketLength)
+                    int iCurID = memStream.ReadByte() + 256*iCurInstr;
+                    int iCurDataLength;
+                    if (_commands.TryGetValue(iCurID, out iCurDataLength))
                     {
-                        //object[] CurDataset = new object[1];
-
-                        int iCurID = MemStream.ReadByte() + 256*iCurInstr;
-                        int iCurDataLength;
-                        if (aCommands.TryGetValue(iCurID, out iCurDataLength))
+                        switch (iCurDataLength)
                         {
-                            switch (iCurDataLength)
-                            {
-                                case 0:
-                                    //CurDataset[0] = new DataSet<string>(iCurID, StreamReader.ReadString());
-                                    //SyncObj.Invoke(StrDel, CurDataset);
-                                    //StrDel.Invoke(new DataSet<string>(iCurID, StreamReader.ReadString()));
-                                    HostContext.Post(StringMarshal,
-                                                     new DataSet<string>(iCurID, StreamReader.ReadString()));
-                                    break;
-                                default:
-                                    //CurDataset[0] = new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength));
-                                    //ByteDel.Invoke(new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength)));
-                                    HostContext.Post(ByteMarshal,
-                                                     new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength)));
-                                    break;
-                            }
+                            case 0:
+                                //CurDataset[0] = new DataSet<string>(iCurID, StreamReader.ReadString());
+                                //SyncObj.Invoke(StrDel, CurDataset);
+                                //StrDel.Invoke(new DataSet<string>(iCurID, StreamReader.ReadString()));
+                                _hostContext.Post(StringMarshal,
+                                                  new DataSet<string>(iCurID, streamReader.ReadString()));
+                                break;
+                            default:
+                                //CurDataset[0] = new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength));
+                                //ByteDel.Invoke(new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength)));
+                                _hostContext.Post(ByteMarshal,
+                                                  new DataSet<byte[]>(iCurID, streamReader.ReadBytes(iCurDataLength)));
+                                break;
                         }
-                        else
-                        {
-                            //CurDataset[0] = new DataSet<float>(iCurID, StreamReader.ReadSingle());
-                            //FloatDel.Invoke(new DataSet<float>(iCurID, StreamReader.ReadSingle()));
-                            HostContext.Post(FloatMarshal, new DataSet<float>(iCurID, StreamReader.ReadSingle()));
-                        }
+                    }
+                    else
+                    {
+                        //CurDataset[0] = new DataSet<float>(iCurID, StreamReader.ReadSingle());
+                        //FloatDel.Invoke(new DataSet<float>(iCurID, StreamReader.ReadSingle()));
+                        _hostContext.Post(FloatMarshal, new DataSet<float>(iCurID, streamReader.ReadSingle()));
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Fügt aRequestedData einen Eintrag mit dem angegebenen Messgrößennamen hinzu. Kurzform für TCP.RequestedData.Add(TCP.IDs[Name]);.
+        /// Fügt _requestedData einen Eintrag mit dem angegebenen Messgrößennamen hinzu. Kurzform für TCP.RequestedData.Add(TCP.IDs[Name]);.
         /// </summary>
         /// <param name="name">Der Name der Messgröße</param>
         public void RequestData(string name)
         {
-            aRequestedData.Add(Ids[name]);
+            _requestedData.Add(Ids[name]);
         }
 
         /// <summary>
-        /// Fügt aRequestedData einen Eintrag mit der angegebenen Messgrößen-ID hinzu. Kurzform für TCP.RequestedData.Add(ID);.
+        /// Fügt _requestedData einen Eintrag mit der angegebenen Messgrößen-ID hinzu. Kurzform für TCP.RequestedData.Add(ID);.
         /// </summary>
         /// <param name="id">Die ID-Nummer der Messgröße</param>
         public void RequestData(int id)
         {
-            aRequestedData.Add(id);
+            _requestedData.Add(id);
         }
 
         private void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                if (ClientConnection != null)
-                {
-                    ClientConnection.Close();
-                    ClientConnection = null;
-                }
+            if (!disposing) return;
 
-                if (StreamReaderThread != null)
-                {
-                    StreamReaderThread.Abort();
-                    StreamReaderThread = null;
-                }
+            if (_clientConnection != null)
+            {
+                _clientConnection.Close();
+                _clientConnection = null;
             }
+
+            if (_streamReaderThread == null) return;
+
+            _streamReaderThread.Abort();
+            _streamReaderThread = null;
         }
 
         #region Nested type: ResponseType
