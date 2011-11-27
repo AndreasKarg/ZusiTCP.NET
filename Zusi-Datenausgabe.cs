@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -43,7 +44,7 @@ namespace Zusi_Datenausgabe
     [Serializable]
     public class ZusiData<TMeasure, TValue>
     {
-        internal readonly Dictionary<TMeasure, TValue> aZusiData = new Dictionary<TMeasure, TValue>();
+        private readonly Dictionary<TMeasure, TValue> _data = new Dictionary<TMeasure, TValue>();
 
         /// <summary>
         /// Enthält die generischen Werte.
@@ -52,9 +53,17 @@ namespace Zusi_Datenausgabe
         /// <returns>Einen generischen Wert.</returns>
         public TValue this[TMeasure id]
         {
-            get { return aZusiData[id]; }
-            internal set { aZusiData[id] = value; }
+            get { return _data[id]; }
+            internal set { _data[id] = value; }
         }
+
+#if DEBUG
+        public Dictionary<TMeasure, TValue> Data
+        {
+            [DebuggerStepThrough]
+            get { return _data; }
+        }
+#endif
 
         /// <summary>
         /// Gibt den Enumerator des zugrundeliegenden Dictionary zurück.
@@ -62,7 +71,7 @@ namespace Zusi_Datenausgabe
         /// <returns>Der Enumerator des zugrundeliegenden Dictionary.</returns>
         public Dictionary<TMeasure, TValue>.Enumerator GetEnumerator()
         {
-            return aZusiData.GetEnumerator();
+            return _data.GetEnumerator();
         }
     }
 
@@ -455,11 +464,11 @@ namespace Zusi_Datenausgabe
             BufStream.Close();
         }
 
+#if DEBUG
         /// <summary>
         /// Debug-Funktion, die aus der Rohdatei mit den Bezeichnungen für die einzelnen Messgrößen eine Ressource erzeugt.
         /// </summary>
         /// <param name="filename"></param>
-        //[Conditional("DEBUG")]
         public static void CreateDataset(string filename)
         {
             Assembly INI = Assembly.LoadFrom("INI-Interface.dll");
@@ -477,7 +486,7 @@ namespace Zusi_Datenausgabe
 
             foreach (string ID in CapContents.Keys)
             {
-                IDs.aZusiData.Add(CapContents[ID], Convert.ToInt32(ID));
+                IDs.Data.Add(CapContents[ID], Convert.ToInt32(ID));
             }
 
             CapContents = (SortedList<string, string>) GetCaption.Invoke(INIDatei, new[] {"Commands"});
@@ -493,6 +502,7 @@ namespace Zusi_Datenausgabe
             BinOut.Serialize(Ausgabe, Commands);
             Ausgabe.Close();
         }
+#endif
 
         internal void ReceiveLoop()
         {
