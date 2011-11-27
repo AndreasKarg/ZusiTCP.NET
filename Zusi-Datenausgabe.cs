@@ -39,7 +39,7 @@ using System.Threading;
 namespace Zusi_Datenausgabe
 {
     /// <summary>
-    /// Die Wörterbuch-Klasse, in der beispielsweise die ID-Liste umgesetzt ist.
+    /// Represents a dictionary class that translates names of Zusi measurements to their internal numbers.
     /// </summary>
     /// <typeparam name="TMeasure">Der Schlüssel-Parameter. (ID-Liste: Name der Größe)</typeparam>
     /// <typeparam name="TValue">Der Wert-Parameter. (ID-Liste: Die ID-Nummer der Größe)</typeparam>
@@ -420,7 +420,7 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Trennt die Verbindung zum TCP-Server.
+        /// Disconnect from the TCP server.
         /// </summary>
         public void Disconnnect()
         {
@@ -489,9 +489,10 @@ namespace Zusi_Datenausgabe
 
 #if DEBUG
         /// <summary>
-        /// Debug-Funktion, die aus der Rohdatei mit den Bezeichnungen für die einzelnen Messgrößen eine Ressource erzeugt.
+        /// Debug function to extract name-ID pairs for measurements from "commandset.ini", the file that comes with the TCP
+        /// server.
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filename">Name of the file with the raw data.</param>
         public static void CreateDataset(string filename)
         {
             Assembly ini = Assembly.LoadFrom("INI-Interface.dll");
@@ -595,18 +596,20 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Fügt _requestedData einen Eintrag mit dem angegebenen Messgrößennamen hinzu. Kurzform für TCP.RequestedData.Add(TCP.IDs[Name]);.
+        /// Request the measurement passed as plain text in the parameter "name" from the server. Shorthand for
+        /// <c>TCP.RequestedData.Add(TCP.IDs[name]);</c>.
         /// </summary>
-        /// <param name="name">Der Name der Messgröße</param>
+        /// <param name="name">The name of the measurement.</param>
         public void RequestData(string name)
         {
             _requestedData.Add(IDs[name]);
         }
 
         /// <summary>
-        /// Fügt _requestedData einen Eintrag mit der angegebenen Messgrößen-ID hinzu. Kurzform für TCP.RequestedData.Add(ID);.
+        /// Request the measurement passed as ID in the parameter "id" from the server. Shorthand for
+        /// <c>TCP.RequestedData.Add(id);</c>.
         /// </summary>
-        /// <param name="id">Die ID-Nummer der Messgröße</param>
+        /// <param name="id">The ID of the measurement.</param>
         public void RequestData(int id)
         {
             _requestedData.Add(id);
@@ -641,58 +644,58 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Der Zustand, in dem sich die Verbindung befindet.
+    /// Represents the state of a TCP connection.
     /// </summary>
     public enum ConnectionState
     {
         /// <summary>
-        /// Es besteht keine Verbindung zum TCP-Server.
+        /// There is no connection to a server.
         /// </summary>
         Disconnected = 0,
 
         /// <summary>
-        /// Eine Verbindung zum TCP-Server wurde hergestellt.
+        /// A connection to a server has been established.
         /// </summary>
         Connected,
 
         /// <summary>
-        /// Ein Fehler ist aufgetreten. Verbindung trennen und wieder herstellen, um das Problem zu lösen.
+        /// An error has occured. Try disconnecting and then connecting again to solve the problem.
         /// </summary>
         Error,
     }
 
     /// <summary>
-    /// Stellt die Priorität des Clients bei der Datenausgabe dar. Beeinflusst die Frequenz, mit der aktualisierte Daten verschickt werden.
+    /// Represents the priority of the client in the Zusi TCP interface. Determines measurement update freqency.
     /// </summary>
     public enum ClientPriority
     {
         /// <summary>
-        /// Undefinierte Priorität.
+        /// Undefined priority.
         /// </summary>
         Undefined = 0,
 
         /// <summary>
-        /// Reserviert für Zusi.
+        /// Reserved for Zusi.
         /// </summary>
         Master = 01,
 
         /// <summary>
-        /// Hohe Priorität für Fahrpulte und Anzeigeprogramme.
+        /// High priority for control desks and display applications.
         /// </summary>
         High = 02,
 
         /// <summary>
-        /// Mittlere Priorität
+        /// Medium priority.
         /// </summary>
         Medium = 03,
 
         /// <summary>
-        /// Niedrige Priorität
+        /// Low priority.
         /// </summary>
         Low = 04,
 
         /// <summary>
-        /// Maximalstesteste Priorität überhauptst.
+        /// Maximum priority possible.
         /// </summary>
         RealTime = 05
     }
