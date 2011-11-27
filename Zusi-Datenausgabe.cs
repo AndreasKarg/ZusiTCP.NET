@@ -127,7 +127,7 @@ namespace Zusi_Datenausgabe
     /// <list type="number">
     /// <item><description>
     /// Implement event handlers within an object that implements the  <see cref="ISynchronizeInvoke"/> interface (e.g. a Windows Forms application).
-    /// These must conform to the <see cref="ReceiveEvent{T}"/> delegate. ToDo: Find out whether the ISynchroniezeInvoke part is still valid.
+    /// These must conform to the <see cref="ReceiveEvent{T}"/> delegate.
     /// The interface uses the types <see cref="float"/>, <see cref="string"/> and <see cref="byte"/>[].
     /// </description></item>
     /// 
@@ -505,15 +505,15 @@ namespace Zusi_Datenausgabe
 
             object iniDatei = constructorInfo.Invoke(new object[] {filename});
 
-            var IDs = new ZusiData<string, int>();
+            var ids = new ZusiData<string, int>();
             var commands = new SortedList<int, int>();
 
             var capContents =
                 (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"FriendlyNames"});
 
-            foreach (string ID in capContents.Keys)
+            foreach (string id in capContents.Keys)
             {
-                IDs.Data.Add(capContents[ID], Convert.ToInt32(ID));
+                ids.Data.Add(capContents[id], Convert.ToInt32(id));
             }
 
             capContents = (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"Commands"});
@@ -525,7 +525,7 @@ namespace Zusi_Datenausgabe
 
             Stream outputStream = File.Create("commands.dat");
             var binOut = new BinaryFormatter();
-            binOut.Serialize(outputStream, IDs);
+            binOut.Serialize(outputStream, ids);
             binOut.Serialize(outputStream, commands);
             outputStream.Close();
         }
