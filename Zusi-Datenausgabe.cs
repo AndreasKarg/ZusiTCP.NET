@@ -202,9 +202,7 @@ namespace Zusi_Datenausgabe
                 ReverseIDs = new ZusiData<int, string>();
 
                 foreach (var item in IDs)
-                {
                     ReverseIDs[item.Value] = item.Key;
-                }
 
                 _commands = (SortedList<int, int>) binIn.Deserialize(dataIDs);
             }
@@ -540,10 +538,8 @@ namespace Zusi_Datenausgabe
             var streamReader = new BinaryReader(memStream);
             Socket tcpSocket = _clientConnection.Client;
 
-            while (true)
+            while (ConnectionState == ConnectionState.Connected)
             {
-                if (ConnectionState != ConnectionState.Connected) continue;
-
                 tcpSocket.Receive(recBuffer, 4, SocketFlags.None);
                 memStream.Seek(0, SeekOrigin.Begin);
 
@@ -562,33 +558,23 @@ namespace Zusi_Datenausgabe
 
                 while (memStream.Position < iPacketLength)
                 {
-                    //object[] CurDataset = new object[1];
-
                     int iCurID = memStream.ReadByte() + 256*iCurInstr;
                     int iCurDataLength;
                     if (_commands.TryGetValue(iCurID, out iCurDataLength))
                     {
-                        switch (iCurDataLength)
+                        if (iCurDataLength == 0)
                         {
-                            case 0:
-                                //CurDataset[0] = new DataSet<string>(iCurID, StreamReader.ReadString());
-                                //SyncObj.Invoke(StrDel, CurDataset);
-                                //StrDel.Invoke(new DataSet<string>(iCurID, StreamReader.ReadString()));
-                                _hostContext.Post(StringMarshal,
-                                                  new DataSet<string>(iCurID, streamReader.ReadString()));
-                                break;
-                            default:
-                                //CurDataset[0] = new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength));
-                                //ByteDel.Invoke(new DataSet<byte[]>(iCurID, StreamReader.ReadBytes(iCurDataLength)));
-                                _hostContext.Post(ByteMarshal,
-                                                  new DataSet<byte[]>(iCurID, streamReader.ReadBytes(iCurDataLength)));
-                                break;
+                            _hostContext.Post(StringMarshal,
+                                              new DataSet<string>(iCurID, streamReader.ReadString()));
+                        }
+                        else
+                        {
+                            _hostContext.Post(ByteMarshal,
+                                              new DataSet<byte[]>(iCurID, streamReader.ReadBytes(iCurDataLength)));
                         }
                     }
                     else
                     {
-                        //CurDataset[0] = new DataSet<float>(iCurID, StreamReader.ReadSingle());
-                        //FloatDel.Invoke(new DataSet<float>(iCurID, StreamReader.ReadSingle()));
                         _hostContext.Post(FloatMarshal, new DataSet<float>(iCurID, streamReader.ReadSingle()));
                     }
                 }
