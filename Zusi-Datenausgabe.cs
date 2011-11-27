@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -77,22 +78,23 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Der Delegat-Typ, der für die Ereignisbehandlung nötig ist.
+    /// Represents the delegate type required for event handling. Used to transfer incoming data sets to the client application.
     /// </summary>
-    /// <param name="data"></param>
+    /// <param name="data">Contains the new dataset.</param>
     public delegate void ReceiveEvent<T>(DataSet<T> data);
 
-    /// <summary>
-    /// Struktur, über die Datensätze an das Anwenderprogramm übergeben werden.
+    /// <summary>    
+    /// Represents a structure containing the key and value of one dataset received via the TCP interface.
     /// </summary>
-    /// <typeparam name="T">Der Datentyp für den Zusi-Datensatz. Single, String oder Byte[]</typeparam>
+    /// <typeparam name="T">Type of this data set. May be <see cref="float"/>, <see cref="string"/> or <see cref="byte"/>[]</typeparam>
     public struct DataSet<T>
     {
         /// <summary>
-        /// Ein ganz normaler Konstruktor.
+        /// Initializes a new instance of the <see cref="DataSet{T}"/> structure and fills the Id and Value fields with the values
+        /// passed to the id and value parameters respectively.
         /// </summary>
-        /// <param name="id">Die ID-Nummer der Messgröße</param>
-        /// <param name="value">Der neue Wert der Messgröße</param>
+        /// <param name="id">The id number of the measurement.</param>
+        /// <param name="value">The value of the measurement.</param>
         public DataSet(int id, T value)
             : this()
         {
@@ -101,37 +103,48 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Die ID-Nummer, die Zusi für die jeweilige Messgröße verwendet.
+        /// Gets the Zusi ID number of this dataset.
         /// </summary>
         public int Id { get; private set; }
 
 
         /// <summary>
-        /// Der neue Wert der Messgröße.
+        /// Gets the new value of this dataset.
         /// </summary>
         public T Value { get; private set; }
     }
 
     /// <summary>
-    /// Das Kernstück der Zusi-TCP-Schnittstelle.
-    /// <para>Schritte bei der Verwendung:
+    /// Represents the centerpiece of the Zusi TCP interface.
+    /// <para>Requirement:
     /// <list type="bullet">
-    /// <item><description>Man benötigt wahlweise eine Windows Forms-Anwendung oder ein anderes Objekt, das die
-    /// <see cref="System.ComponentModel.ISynchronizeInvoke" />-Schnittstelle implementiert.</description></item>
+    /// <item><description>
+    /// An object implementing the <see cref="ISynchronizeInvoke"/> interface (e.g. a Windows Forms application)
+    /// </description></item>
+    /// </list></para>
     /// 
-    /// <item><description>Ereignismethoden innerhalb der Klasse des Windows-Fensters oder des Schnittstellenobjekts implementieren.
-    /// Diese müssen dem Delegaten Zusi_Datenausgabe.Dataset.ReceiveEvent entsprechen.
-    /// Die Schnittstelle benutzt die Datentypen <see cref="float"/>, <see cref="string"/> und <c>Byte[]</c>.</description></item>
+    /// <para>Usage:
+    /// <list type="number">
+    /// <item><description>
+    /// Implement event handlers within an object that implements the  <see cref="ISynchronizeInvoke"/> interface (e.g. a Windows Forms application).
+    /// These must conform to the <see cref="ReceiveEvent{T}"/> delegate. ToDo: Find out whether the ISynchroniezeInvoke part is still valid.
+    /// The interface uses the types <see cref="float"/>, <see cref="string"/> and <see cref="byte"/>[].
+    /// </description></item>
     /// 
-    /// <item><description>Instanz der Klasse erzeugen (<see cref="ZusiTcpConn"/>). Für Fahrpulte wird 
-    /// die Priorität "High" empfohlen. Als Parameter für SynchronizesObject und die Handler-Delegaten das Windows-Fenster
-    /// bzw. die Ereignismethoden angeben.</description></item>
-    /// <item><description>Der Eigenschaft RequestedData (<see cref="ZusiTcpConn.RequestedData"/>) die benötigten Größen als IDs hinzufügen.
+    /// <item><description>
+    /// Create an instance of <see cref="ZusiTcpConn"/>, choosing a client priority. Recommended value for control desks is "High".
+    /// Pass your handler degates to the constructor.
+    /// </description></item>
+    /// <item><description>
+    /// Add the required measurements using <see cref="RequestedData"/>.  
+    /// Der Eigenschaft RequestedData (<see cref="ZusiTcpConn.RequestedData"/>) die benötigten Größen als IDs hinzufügen.
     /// Bei Bedarf können die ID-Nummern aus dem deutschen Klartextnamen wie in der Zusi-Dokumentation(z.B. "Geschwindigkeit") direkt aus der Eigenschaft
-    /// IDs (<see cref="Ids"/>) entnommen werden.</description></item>
-    /// <item><description>Per Connect-Methode (<see cref="Connect"/>) die Verbindung zum TCP-Server herstellen.</description></item>
-    /// <item><description>Sobald von Zusi Daten kommen, werden diese automatisch aufbereitet. Für jeden empfangenen Wert
-    /// wird die zum jeweiligen Typ gehörige Ereignismethode aufgerufen. Dort kann mit den Daten beliebig weiter verfahren werden.</description></item>
+    /// IDs (<see cref="IDs"/>) entnommen werden.</description></item>
+    /// <item><description>
+    /// <see cref="Connect"/> to the TCP server.</description></item>
+    /// <item><description>As soon as data is coming from the server, the respective events are called automatically, passing one new
+    /// dataset at a time.
+    /// ToDo: Maybe enable events on a per-measurement basis.</description></item>
     /// </list></para>
     /// </summary>
     public class ZusiTcpConn : IDisposable
@@ -149,14 +162,13 @@ namespace Zusi_Datenausgabe
         private Thread _streamReaderThread;
 
         /// <summary>
-        /// Der Konstruktor für die ZusiTCPConn-Klasse. 
+        /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
         /// </summary>
-        /// <param name="clientId">Der Name des Clients. Bspw. "Am Hansi sei Broggramm"</param>
-        /// <param name="priority">Die Priorität des Clients. Beeinflusst die 
-        /// Aktualisierungsraten der Datensätze. Für Fahrpultanwendungen wird "High" empfohlen.</param>
-        /// <param name="floatHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Fließkommawerten annimmt.</param>
-        /// <param name="stringHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Strings annimmt.</param>
-        /// <param name="byteHandler">Ein Ereignishandler, der Zusi_Datenausgabe.Dataset.ReceiveEvent entspricht und Daten mit Byte-Arrays annimmt</param>
+        /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+        /// <param name="priority"> Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+        /// <param name="floatHandler">Event handler conforming to <see cref="ReceiveEvent{T}"/> that is used to pass <see cref="float"/> data.</param>
+        /// <param name="stringHandler">Event handler conforming to <see cref="ReceiveEvent{T}"/> that is used to pass <see cref="string"/> data.</param>
+        /// <param name="byteHandler">Event handler conforming to <see cref="ReceiveEvent{T}"/> that is used to pass <see cref="byte"/>[] data.</param>
         public ZusiTcpConn(string clientId, ClientPriority priority,
                            ReceiveEvent<float> floatHandler,
                            ReceiveEvent<string> stringHandler,
@@ -185,13 +197,13 @@ namespace Zusi_Datenausgabe
 
             try
             {
-                Ids = (ZusiData<string, int>) binIn.Deserialize(dataIDs);
+                IDs = (ZusiData<string, int>) binIn.Deserialize(dataIDs);
 
-                ReverseIds = new ZusiData<int, string>();
+                ReverseIDs = new ZusiData<int, string>();
 
-                foreach (var item in Ids)
+                foreach (var item in IDs)
                 {
-                    ReverseIds[item.Value] = item.Key;
+                    ReverseIDs[item.Value] = item.Key;
                 }
 
                 _commands = (SortedList<int, int>) binIn.Deserialize(dataIDs);
@@ -207,33 +219,52 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Der angegebene Name des Clients.
+        /// Represents the name of the client.
         /// </summary>
         public string ClientId { get; private set; }
 
         /// <summary>
-        /// Enthält eine vollständige Liste aller Größen, die von Zusi ausgegeben werden, als Schlüssel-Wert-Paare. Schlüssel ist der deutsche Klartextname der Größe. <c>IDs["Geschwindigkeit"]</c> gibt also den Wert <c>01</c> zurück.
+        /// Represents all measurements available in Zusi as a key-value list. Can be used to convert plain text names of
+        /// measurements to their internal ID.
         /// </summary>
-        public ZusiData<string, int> Ids { get; private set; }
+        /// <example>
+        /// <code>
+        /// ZusiTcpConn myConn = [...]
+        /// 
+        /// int SpeedID = myConn.IDs["Geschwindigkeit"]
+        /// /* SpeedID now contains the value 01. */
+        /// </code>
+        /// </example>
+        public ZusiData<string, int> IDs { get; private set; }
 
         /// <summary>
-        /// Die Umkehrung der Eigenschaft IDs: Zu den einzelnen ID-Nummern kann der jeweilige Name abgerufen werden.
+        /// Represents all measurements available in Zusi as a key-value list. Can be used to convert measurement IDs to their
+        /// plain text name.
         /// </summary>
-        public ZusiData<int, string> ReverseIds { get; private set; }
+        /// <example>
+        /// <code>
+        /// ZusiTcpConn myConn = [...]
+        /// 
+        /// string SpeedName = myConn.ReverseIDs[1] /* ID 01 == current speed */
+        /// /* SpeedName now contains the value "Geschwindigkeit". */
+        /// </code>
+        /// </example>
+        public ZusiData<int, string> ReverseIDs { get; private set; }
 
         /// <summary>
-        /// Enthält den aktuellen Verbindungszustand der Schnittstelle.
+        /// Represents the current connection state of the client.
         /// </summary>
         public ConnectionState ConnectionState { get; private set; }
 
         /// <summary>
-        /// Enthält die Priorität des Clients.
+        /// Represents the priority of the client. Cannot be changed after object creation.
         /// </summary>
         public ClientPriority ClientPriority { get; private set; }
 
         /// <summary>
-        /// Eine Liste aller von Zusi angeforderten Größen. Fügen Sie hier die ID-Nummern der Größen hinzu, 
-        /// bevor Sie eine Verbindung zum TCP-Server herstellen. <seealso cref="Ids"/>
+        /// Represents a list of all measurements requested from Zusi. Add your required measurements
+        /// here before connecting to the server.
+        /// <seealso cref="IDs"/>
         /// </summary>
         public List<int> RequestedData
         {
@@ -243,23 +274,23 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Gibt die ID-Nummer der im Parameter in Klartext angegebenen Messgröße zurück.
+        /// Returns the ID of the measurement specified in plain text.
         /// </summary>
-        /// <param name="name">Der Name der Messgröße</param>
-        /// <returns>Die zugehörige ID-Nummer</returns>
+        /// <param name="name">Name of the measurement.</param>
+        /// <returns>Internal ID of the measurement.</returns>
         public int this[string name]
         {
-            get { return Ids[name]; }
+            get { return IDs[name]; }
         }
 
         /// <summary>
-        /// Gibt den Namen der im Parameter angegebenen ID-Nummer als Klartext zurück.
+        /// Returns the plain text name of the measurement specified by its ID.
         /// </summary>
-        /// <param name="id">Die ID-Nummer der Messgröße</param>
-        /// <returns>Der Name der Messgröße</returns>
+        /// <param name="id">Internal ID of the measurement.</param>
+        /// <returns>Name of the measurement.</returns>
         public string this[int id]
         {
-            get { return ReverseIds[id]; }
+            get { return ReverseIDs[id]; }
         }
 
         #region IDisposable Members
@@ -319,10 +350,10 @@ namespace Zusi_Datenausgabe
         }
 
         /// <summary>
-        /// Stellt eine Verbindung zum TCP-Server her.
+        /// Establishes a connection to the TCP server.
         /// </summary>
-        /// <param name="hostName">Enthält den Hostnamen oder die IP-Adresse, unter der der TCP-Server erreichbar ist.</param>
-        /// <param name="port">Der Port, unter dem der TCP-Server erreichbar ist.</param>
+        /// <param name="hostName">The name or IP address of the host.</param>
+        /// <param name="port">The port on the server to connect to (Default: 1435).</param>
         public void Connect(string hostName, int port)
         {
             try
@@ -569,7 +600,7 @@ namespace Zusi_Datenausgabe
         /// <param name="name">Der Name der Messgröße</param>
         public void RequestData(string name)
         {
-            _requestedData.Add(Ids[name]);
+            _requestedData.Add(IDs[name]);
         }
 
         /// <summary>
