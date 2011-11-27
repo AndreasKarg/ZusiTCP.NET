@@ -498,7 +498,7 @@ namespace Zusi_Datenausgabe
             Assembly ini = Assembly.LoadFrom("INI-Interface.dll");
 
             Type cfgFileType = ini.GetType("INI_Interface.CfgFile");
-            MethodInfo getCaption = cfgFileType.GetMethod("ge<tCaption");
+            MethodInfo getCaption = cfgFileType.GetMethod("getCaption");
 
             var constructorInfo = cfgFileType.GetConstructor(new[] {typeof (string)});
             if (constructorInfo == null) return;
