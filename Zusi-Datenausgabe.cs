@@ -149,11 +149,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public class ZusiTcpConn : IDisposable
     {
-        private readonly ReceiveEvent<byte[]> _byteDel;
-        private readonly ReceiveEvent<float> _floatDel;
-
         private readonly SynchronizationContext _hostContext;
-        private readonly ReceiveEvent<string> _strDel;
         private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
         private readonly SortedList<int, int> _commands = new SortedList<int, int>();
 
@@ -161,18 +157,16 @@ namespace Zusi_Datenausgabe
         private TcpClient _clientConnection = new TcpClient();
         private Thread _streamReaderThread;
 
+        public event ReceiveEvent<byte[]> ByteReceived;
+        public event ReceiveEvent<float> FloatReceived;
+        public event ReceiveEvent<string> StringReceived;
+
         /// <summary>
         /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
         /// </summary>
         /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
         /// <param name="priority"> Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-        /// <param name="floatHandler">Event handler conforming to <see cref="ReceiveEvent{T}"/> that is used to pass <see cref="float"/> data.</param>
-        /// <param name="stringHandler">Event handler conforming to <see cref="ReceiveEvent{T}"/> that is used to pass <see cref="string"/> data.</param>
-        /// <param name="byteHandler">Event handler conforming to <see cref="ReceiveEvent{T}"/> that is used to pass <see cref="byte"/>[] data.</param>
-        public ZusiTcpConn(string clientId, ClientPriority priority,
-                           ReceiveEvent<float> floatHandler,
-                           ReceiveEvent<string> stringHandler,
-                           ReceiveEvent<byte[]> byteHandler)
+        public ZusiTcpConn(string clientId, ClientPriority priority)
         {
             ClientId = clientId;
             ClientPriority = priority;
@@ -210,10 +204,6 @@ namespace Zusi_Datenausgabe
             {
                 dataIDs.Dispose();
             }
-
-            _floatDel = floatHandler;
-            _strDel = stringHandler;
-            _byteDel = byteHandler;
         }
 
         /// <summary>
@@ -306,17 +296,17 @@ namespace Zusi_Datenausgabe
 
         private void FloatMarshal(object o)
         {
-            _floatDel.Invoke((DataSet<float>) o);
+            FloatReceived.Invoke((DataSet<float>) o);
         }
 
         private void StringMarshal(object o)
         {
-            _strDel.Invoke((DataSet<string>) o);
+            StringReceived.Invoke((DataSet<string>) o);
         }
 
         private void ByteMarshal(object o)
         {
-            _byteDel.Invoke((DataSet<byte[]>) o);
+            ByteReceived.Invoke((DataSet<byte[]>) o);
         }
 
         private void SendPacket(params byte[] message)
