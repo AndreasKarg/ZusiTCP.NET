@@ -84,6 +84,13 @@ namespace Zusi_Datenausgabe
     /// <param name="sender">Contains the object triggering the event.</param>
     public delegate void ReceiveEvent<T>(object sender, DataSet<T> data);
 
+    /// <summary>
+    /// Represents the delegate type required for error event handling. Used to handle exceptions that occur in the reception thread.
+    /// </summary>
+    /// <param name="ex">Contains the exception that has occured.</param>
+    /// <param name="sender">Contains the object triggering the event.</param>
+    public delegate void ErrorEvent(object sender, ZusiTcpException ex);
+
     /// <summary>    
     /// Represents a structure containing the key and value of one dataset received via the TCP interface.
     /// </summary>
@@ -172,6 +179,11 @@ namespace Zusi_Datenausgabe
         /// Event used to handle incoming string data.
         /// </summary>
         public event ReceiveEvent<string> StringReceived;
+
+        /// <summary>
+        /// Event used to handle incoming string data.
+        /// </summary>
+        public event ErrorEvent ErrorReceived;
 
         /// <summary>
         /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
@@ -321,6 +333,11 @@ namespace Zusi_Datenausgabe
             ByteReceived.Invoke(this, (DataSet<byte[]>) o);
         }
 
+        private void ErrorMarshal(object o)
+        {
+            ErrorReceived.Invoke(this, (ZusiTcpException)o);
+        }
+
         private void SendPacket(params byte[] message)
         {
             _clientConnection.Client.Send(BitConverter.GetBytes(message.Length));
@@ -465,7 +482,16 @@ namespace Zusi_Datenausgabe
                     switch (expResponse)
                     {
                         case ResponseType.AckHello:
-                            throw new ZusiTcpException("HELLO not acknowledged.");
+                            switch (iResponse)
+                            {
+                                case 1:
+                                    throw new ZusiTcpException("Too many connections.");
+                                case 2:
+                                    throw new ZusiTcpException("Zusi is already connected. No more connections allowed.");
+                                default:
+                                    throw new ZusiTcpException("HELLO not acknowledged.");
+                            }
+
                         case ResponseType.AckNeededData:
                             switch (iResponse)
                             {
@@ -540,46 +566,54 @@ namespace Zusi_Datenausgabe
             var streamReader = new BinaryReader(memStream);
             Socket tcpSocket = _clientConnection.Client;
 
-            while (ConnectionState == ConnectionState.Connected)
+            try
             {
-                tcpSocket.Receive(recBuffer, 4, SocketFlags.None);
-                memStream.Seek(0, SeekOrigin.Begin);
-
-                int iPacketLength = streamReader.ReadInt32();
-
-                if (iPacketLength > bufSize)
-                    throw new ZusiTcpException("Buffer overflow on data receive.");
-
-                tcpSocket.Receive(recBuffer, iPacketLength, SocketFlags.None);
-                memStream.Seek(0, SeekOrigin.Begin);
-
-                int iCurInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
-
-                if (iCurInstr < 10)
-                    throw new ZusiTcpException("Non-DATA instruction received.");
-
-                while (memStream.Position < iPacketLength)
+                while (ConnectionState == ConnectionState.Connected)
                 {
-                    int iCurID = memStream.ReadByte() + 256*iCurInstr;
-                    int iCurDataLength;
-                    if (_commands.TryGetValue(iCurID, out iCurDataLength))
+                    tcpSocket.Receive(recBuffer, 4, SocketFlags.None);
+                    memStream.Seek(0, SeekOrigin.Begin);
+
+                    int iPacketLength = streamReader.ReadInt32();
+
+                    if (iPacketLength > bufSize)
+                        throw new ZusiTcpException("Buffer overflow on data receive.");
+
+                    tcpSocket.Receive(recBuffer, iPacketLength, SocketFlags.None);
+                    memStream.Seek(0, SeekOrigin.Begin);
+
+                    int iCurInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
+
+                    if (iCurInstr < 10)
+                        throw new ZusiTcpException("Non-DATA instruction received.");
+
+                    while (memStream.Position < iPacketLength)
                     {
-                        if (iCurDataLength == 0)
+                        int iCurID = memStream.ReadByte() + 256*iCurInstr;
+                        int iCurDataLength;
+                        if (_commands.TryGetValue(iCurID, out iCurDataLength))
                         {
-                            _hostContext.Post(StringMarshal,
-                                              new DataSet<string>(iCurID, streamReader.ReadString()));
+                            if (iCurDataLength == 0)
+                            {
+                                _hostContext.Post(StringMarshal,
+                                                  new DataSet<string>(iCurID, streamReader.ReadString()));
+                            }
+                            else
+                            {
+                                _hostContext.Post(ByteMarshal,
+                                                  new DataSet<byte[]>(iCurID, streamReader.ReadBytes(iCurDataLength)));
+                            }
                         }
                         else
                         {
-                            _hostContext.Post(ByteMarshal,
-                                              new DataSet<byte[]>(iCurID, streamReader.ReadBytes(iCurDataLength)));
+                            _hostContext.Post(FloatMarshal, new DataSet<float>(iCurID, streamReader.ReadSingle()));
                         }
                     }
-                    else
-                    {
-                        _hostContext.Post(FloatMarshal, new DataSet<float>(iCurID, streamReader.ReadSingle()));
-                    }
                 }
+            }
+            catch (ZusiTcpException e)
+            {
+                ConnectionState = ConnectionState.Error;
+                _hostContext.Post(ErrorMarshal, e);
             }
         }
 
