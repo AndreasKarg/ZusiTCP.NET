@@ -81,7 +81,8 @@ namespace Zusi_Datenausgabe
     /// Represents the delegate type required for event handling. Used to transfer incoming data sets to the client application.
     /// </summary>
     /// <param name="data">Contains the new dataset.</param>
-    public delegate void ReceiveEvent<T>(DataSet<T> data);
+    /// <param name="sender">Contains the object triggering the event.</param>
+    public delegate void ReceiveEvent<T>(object sender, DataSet<T> data);
 
     /// <summary>    
     /// Represents a structure containing the key and value of one dataset received via the TCP interface.
@@ -157,8 +158,19 @@ namespace Zusi_Datenausgabe
         private TcpClient _clientConnection = new TcpClient();
         private Thread _streamReaderThread;
 
+        /// <summary>
+        /// Event used to handle incoming byte array data.
+        /// </summary>
         public event ReceiveEvent<byte[]> ByteReceived;
+
+        /// <summary>
+        /// Event used to handle incoming float data.
+        /// </summary>
         public event ReceiveEvent<float> FloatReceived;
+
+        /// <summary>
+        /// Event used to handle incoming string data.
+        /// </summary>
         public event ReceiveEvent<string> StringReceived;
 
         /// <summary>
@@ -296,17 +308,17 @@ namespace Zusi_Datenausgabe
 
         private void FloatMarshal(object o)
         {
-            FloatReceived.Invoke((DataSet<float>) o);
+            FloatReceived.Invoke(this, (DataSet<float>) o);
         }
 
         private void StringMarshal(object o)
         {
-            StringReceived.Invoke((DataSet<string>) o);
+            StringReceived.Invoke(this, (DataSet<string>) o);
         }
 
         private void ByteMarshal(object o)
         {
-            ByteReceived.Invoke((DataSet<byte[]>) o);
+            ByteReceived.Invoke(this, (DataSet<byte[]>) o);
         }
 
         private void SendPacket(params byte[] message)
