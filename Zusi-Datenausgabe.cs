@@ -573,39 +573,39 @@ namespace Zusi_Datenausgabe
                     tcpSocket.Receive(recBuffer, 4, SocketFlags.None);
                     memStream.Seek(0, SeekOrigin.Begin);
 
-                    int iPacketLength = streamReader.ReadInt32();
+                    int packetLength = streamReader.ReadInt32();
 
-                    if (iPacketLength > bufSize)
+                    if (packetLength > bufSize)
                         throw new ZusiTcpException("Buffer overflow on data receive.");
 
-                    tcpSocket.Receive(recBuffer, iPacketLength, SocketFlags.None);
+                    tcpSocket.Receive(recBuffer, packetLength, SocketFlags.None);
                     memStream.Seek(0, SeekOrigin.Begin);
 
-                    int iCurInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
+                    int curInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
 
-                    if (iCurInstr < 10)
-                        throw new ZusiTcpException("Non-DATA instruction received.");
+                    if (curInstr < 10)
+                        throw new ZusiTcpException("Unexpected Non-DATA instruction received.");
 
-                    while (memStream.Position < iPacketLength)
+                    while (memStream.Position < packetLength)
                     {
-                        int iCurID = memStream.ReadByte() + 256*iCurInstr;
-                        int iCurDataLength;
-                        if (_commands.TryGetValue(iCurID, out iCurDataLength))
+                        int curID = memStream.ReadByte() + 256*curInstr;
+                        int curDataLength;
+                        if (_commands.TryGetValue(curID, out curDataLength))
                         {
-                            if (iCurDataLength == 0)
+                            if (curDataLength == 0)
                             {
                                 _hostContext.Post(StringMarshal,
-                                                  new DataSet<string>(iCurID, streamReader.ReadString()));
+                                                  new DataSet<string>(curID, streamReader.ReadString()));
                             }
                             else
                             {
                                 _hostContext.Post(ByteMarshal,
-                                                  new DataSet<byte[]>(iCurID, streamReader.ReadBytes(iCurDataLength)));
+                                                  new DataSet<byte[]>(curID, streamReader.ReadBytes(curDataLength)));
                             }
                         }
                         else
                         {
-                            _hostContext.Post(FloatMarshal, new DataSet<float>(iCurID, streamReader.ReadSingle()));
+                            _hostContext.Post(FloatMarshal, new DataSet<float>(curID, streamReader.ReadSingle()));
                         }
                     }
                 }
