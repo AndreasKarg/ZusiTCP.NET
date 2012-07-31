@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="commandset_schema.designer.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="DatenIDs.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -88,6 +89,9 @@
     <None Include="bin\Debug\Commandset.dat" />
     <None Include="commands.dat" />
     <None Include="commandset.ini">
+    </None>
+    <None Include="commandset_schema.xsd">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
