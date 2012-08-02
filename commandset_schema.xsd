@@ -6,26 +6,17 @@
     xmlns:tns="http://andik.g3th.net/commandset_schema.xsd"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
-  <xs:element name="TCPCommands" type="tns:TCPCommands"/>
-  
-  <xs:complexType name="TCPCommands">
-    <xs:sequence minOccurs="1">
-      <xs:element name="Items" type="tns:CommandEntry" minOccurs="1" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
+  <xs:element name="TCPCommands">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="Items" type="tns:CommandEntry" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
   <xs:complexType name="CommandEntry">
     <xs:attribute name="ID" type="xs:unsignedInt" use="required"/>
     <xs:attribute name="Name" type="xs:string" use="required"/>
-    <xs:attribute name="Type" type="tns:CommandType" use="optional" default="float"/>
-    <xs:attribute name="Size" type="xs:unsignedInt" use="optional" default="0"/>
+    <xs:attribute name="Type" type="xs:string" use="required"/>
   </xs:complexType>
-
-  <xs:simpleType name="CommandType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="float"/>
-      <xs:enumeration value="string"/>
-      <xs:enumeration value="generic"/>
-    </xs:restriction>    
-  </xs:simpleType>
 </xs:schema>
