@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
+using TCPCommandset;
 
 [assembly: CLSCompliant(true)]
 
@@ -635,6 +636,39 @@ namespace Zusi_Datenausgabe
         public void RequestData(int id)
         {
             _requestedData.Add(id);
+        }
+
+        public void ExportToXML(string file)
+        {
+            TCPCommands OutputCommands = new TCPCommands();
+
+            foreach (var id in IDs)
+            {
+                CommandEntry tmpCommand = new CommandEntry();
+                tmpCommand.ID = (uint)id.Value;
+                tmpCommand.Name = id.Key;
+                int curDataLength;
+
+                if (_commands.TryGetValue(id.Value, out curDataLength))
+                {
+                    if (curDataLength == 0)
+                    {
+                        tmpCommand.Type = "String";
+                    }
+                    else
+                    {
+                        tmpCommand.Type = "Byte[]";
+                    }
+                }
+                else
+                {
+                    tmpCommand.Type = "Single";
+                }
+
+                OutputCommands.Items.Add(tmpCommand);
+            }
+
+            OutputCommands.SaveToFile(file);
         }
 
         private void Dispose(bool disposing)
