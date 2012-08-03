@@ -76,6 +76,11 @@ namespace Zusi_Datenausgabe
         {
             return _data.GetEnumerator();
         }
+
+        public ZusiData(Dictionary<TMeasure, TValue> source)
+        {
+            _data = source;
+        }
     }
 
     /// <summary>
@@ -160,11 +165,11 @@ namespace Zusi_Datenausgabe
     {
         private readonly SynchronizationContext _hostContext;
         private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
-        private readonly SortedList<int, int> _commands = new SortedList<int, int>();
 
         private readonly List<int> _requestedData = new List<int>();
         private TcpClient _clientConnection = new TcpClient();
         private Thread _streamReaderThread;
+        private readonly TCPCommands _commands;
 
         /// <summary>
         /// Event used to handle incoming byte array data.
@@ -191,44 +196,15 @@ namespace Zusi_Datenausgabe
         /// </summary>
         /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
         /// <param name="priority"> Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-        public ZusiTcpConn(string clientId, ClientPriority priority)
+        /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
+        public ZusiTcpConn(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml")
         {
             ClientId = clientId;
             ClientPriority = priority;
 
             _hostContext = SynchronizationContext.Current;
 
-            MemoryStream dataIDs = null;
-
-            try
-            {
-                dataIDs = new MemoryStream(DatenIDs.commands);
-            }
-            catch (Exception)
-            {
-                if (dataIDs != null) 
-                    dataIDs.Dispose();
-                throw;
-            }
-
-
-            var binIn = new BinaryFormatter();
-
-            try
-            {
-                IDs = (ZusiData<string, int>) binIn.Deserialize(dataIDs);
-
-                ReverseIDs = new ZusiData<int, string>();
-
-                foreach (var item in IDs)
-                    ReverseIDs[item.Value] = item.Key;
-
-                _commands = (SortedList<int, int>) binIn.Deserialize(dataIDs);
-            }
-            finally
-            {
-                dataIDs.Dispose();
-            }
+            _commands = TCPCommands.LoadFromFile(commandsetPath);
         }
 
         /// <summary>
@@ -248,7 +224,7 @@ namespace Zusi_Datenausgabe
         /// /* SpeedID now contains the value 01. */
         /// </code>
         /// </example>
-        public ZusiData<string, int> IDs { get; private set; }
+        public ZusiData<string, int> IDs { get { return _commands.IDByName; } }
 
         /// <summary>
         /// Represents all measurements available in Zusi as a key-value list. Can be used to convert measurement IDs to their
@@ -262,7 +238,7 @@ namespace Zusi_Datenausgabe
         /// /* SpeedName now contains the value "Geschwindigkeit". */
         /// </code>
         /// </example>
-        public ZusiData<int, string> ReverseIDs { get; private set; }
+        public ZusiData<int, string> ReverseIDs { get { return _commands.NameByID; } }
 
         /// <summary>
         /// Represents the current connection state of the client.
@@ -590,23 +566,25 @@ namespace Zusi_Datenausgabe
                     while (memStream.Position < packetLength)
                     {
                         int curID = memStream.ReadByte() + 256*curInstr;
-                        int curDataLength;
-                        if (_commands.TryGetValue(curID, out curDataLength))
+
+                        CommandEntry curCommand = _commands[curID];
+
+                        switch (curCommand.Type.ToLower())
                         {
-                            if (curDataLength == 0)
-                            {
+                            case "string":
                                 _hostContext.Post(StringMarshal,
                                                   new DataSet<string>(curID, streamReader.ReadString()));
-                            }
-                            else
-                            {
-                                _hostContext.Post(ByteMarshal,
-                                                  new DataSet<byte[]>(curID, streamReader.ReadBytes(curDataLength)));
-                            }
-                        }
-                        else
-                        {
-                            _hostContext.Post(FloatMarshal, new DataSet<float>(curID, streamReader.ReadSingle()));
+                                break;
+
+                            case "single":
+                                _hostContext.Post(FloatMarshal, new DataSet<float>(curID, streamReader.ReadSingle()));
+                                break;
+
+                            default:
+                                throw new NotImplementedException();
+                                /*_hostContext.Post(ByteMarshal,
+                                                  new DataSet<byte[]>(curID, streamReader.ReadBytes(curCommand.)));*/
+                                break;
                         }
                     }
                 }
@@ -638,6 +616,7 @@ namespace Zusi_Datenausgabe
             _requestedData.Add(id);
         }
 
+        /*
         public void ExportToXML(string file)
         {
             TCPCommands OutputCommands = new TCPCommands();
@@ -645,7 +624,7 @@ namespace Zusi_Datenausgabe
             foreach (var id in IDs)
             {
                 CommandEntry tmpCommand = new CommandEntry();
-                tmpCommand.ID = (uint)id.Value;
+                tmpCommand.ID = id.Value;
                 tmpCommand.Name = id.Key;
                 int curDataLength;
 
@@ -665,11 +644,12 @@ namespace Zusi_Datenausgabe
                     tmpCommand.Type = "Single";
                 }
 
-                OutputCommands.Items.Add(tmpCommand);
+                OutputCommands.Command.Add(tmpCommand);
             }
 
             OutputCommands.SaveToFile(file);
         }
+        */
 
         private void Dispose(bool disposing)
         {
