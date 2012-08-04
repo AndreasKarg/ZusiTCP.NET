@@ -589,6 +589,11 @@ namespace Zusi_Datenausgabe
         /// </summary>
         public event ReceiveEvent<DateTime> DateTimeReceived;
 
+        /// <summary>
+        /// Event used to handle incoming boolean data.
+        /// </summary>
+        public event ReceiveEvent<Boolean> BoolReceived;
+
         private struct MarshalArgs<T>
         {
             public ReceiveEvent<T> Event { get; private set; }
@@ -629,6 +634,16 @@ namespace Zusi_Datenausgabe
             DateTime time = DateTime.FromOADate(temp);
 
             PostToHost(DateTimeReceived, id, time);
+        }
+
+        void HandleDATA_BoolAsSingle(BinaryReader input, int id)
+        {
+            /* Data is delivered as Single values that are only either 0.0 or 1.0.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Single temp = input.ReadSingle();
+            bool value = (temp >= 0.5f);
+            PostToHost(BoolReceived, id, value);
         }
         #endregion
     }
