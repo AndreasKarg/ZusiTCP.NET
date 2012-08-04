@@ -61,14 +61,6 @@ namespace Zusi_Datenausgabe
             internal set { _data[id] = value; }
         }
 
-#if DEBUG
-        public Dictionary<TMeasure, TValue> Data
-        {
-            [DebuggerStepThrough]
-            get { return _data; }
-        }
-#endif
-
         /// <summary>
         /// Gibt den Enumerator des zugrundeliegenden Dictionary zurück.
         /// </summary>
@@ -548,41 +540,6 @@ namespace Zusi_Datenausgabe
             _requestedData.Add(id);
         }
 
-        /*
-        public void ExportToXML(string file)
-        {
-            TCPCommands OutputCommands = new TCPCommands();
-
-            foreach (var id in IDs)
-            {
-                CommandEntry tmpCommand = new CommandEntry();
-                tmpCommand.ID = id.Value;
-                tmpCommand.Name = id.Key;
-                int curDataLength;
-
-                if (_commands.TryGetValue(id.Value, out curDataLength))
-                {
-                    if (curDataLength == 0)
-                    {
-                        tmpCommand.Type = "String";
-                    }
-                    else
-                    {
-                        tmpCommand.Type = "Byte[]";
-                    }
-                }
-                else
-                {
-                    tmpCommand.Type = "Single";
-                }
-
-                OutputCommands.Command.Add(tmpCommand);
-            }
-
-            OutputCommands.SaveToFile(file);
-        }
-        */
-
         private void Dispose(bool disposing)
         {
             if (!disposing) return;
@@ -645,12 +602,6 @@ namespace Zusi_Datenausgabe
         private void DateTimeMarshal(object o)
         {
             DateTimeReceived.Invoke(this, (DataSet<DateTime>)o);
-        }
-
-        [Obsolete("This function is obsolete.", true)]
-        private void ByteMarshal(object o)
-        {
-            ByteReceived.Invoke(this, (DataSet<byte[]>)o);
         }
 
         void HandleDATA_Single(BinaryReader input, int id)
