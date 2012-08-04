@@ -97,7 +97,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="commandset.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Kurzanleitung.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

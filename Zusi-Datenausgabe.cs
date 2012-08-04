@@ -585,14 +585,34 @@ namespace Zusi_Datenausgabe
         public event ReceiveEvent<string> StringReceived;
 
         /// <summary>
-        /// Event used to handle incoming string data.
+        /// Event used to handle incoming integer data.
+        /// </summary>
+        public event ReceiveEvent<int> IntReceived;
+
+        /// <summary>
+        /// Event used to handle incoming boolean data.
+        /// </summary>
+        public event ReceiveEvent<Boolean> BoolReceived;
+
+        /// <summary>
+        /// Event used to handle incoming DateTime data.
         /// </summary>
         public event ReceiveEvent<DateTime> DateTimeReceived;
 
         /// <summary>
         /// Event used to handle incoming boolean data.
         /// </summary>
-        public event ReceiveEvent<Boolean> BoolReceived;
+        public event ReceiveEvent<DoorState> DoorsReceived;
+
+        /// <summary>
+        /// Event used to handle incoming PZB system type data.
+        /// </summary>
+        public event ReceiveEvent<PZBSystem> PZBReceived;
+
+        /// <summary>
+        /// Event used to handle incoming brake configuration data.
+        /// </summary>
+        public event ReceiveEvent<BrakeConfiguration> BrakeConfigReceived;
 
         private struct MarshalArgs<T>
         {
@@ -622,6 +642,11 @@ namespace Zusi_Datenausgabe
             PostToHost(FloatReceived, id, input.ReadSingle());
         }
 
+        void HandleDATA_Int(BinaryReader input, int id)
+        {
+            PostToHost(IntReceived, id, input.ReadInt32());
+        }
+
         void HandleDATA_String(BinaryReader input, int id)
         {
             PostToHost(StringReceived, id, input.ReadString());
@@ -645,7 +670,121 @@ namespace Zusi_Datenausgabe
             bool value = (temp >= 0.5f);
             PostToHost(BoolReceived, id, value);
         }
+
+        void HandleDATA_IntAsSingle(BinaryReader input, int id)
+        {
+            /* Data is delivered as Single values that are only either 0.0 or 1.0.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Single temp = input.ReadSingle();
+            int value = (int)Math.Round(temp);
+            PostToHost(IntReceived, id, value);
+        }
+
+        void HandleDATA_BoolAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+            bool value = (temp == 1);
+            PostToHost(BoolReceived, id, value);
+        }
+
+        void HandleDATA_DoorsAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+            PostToHost(DoorsReceived, id, (DoorState)temp);
+        }
+
+        void HandleDATA_PZBAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+            PostToHost(PZBReceived, id, (PZBSystem)temp);
+        }
+
+        void HandleDATA_BrakesAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+
+            BrakeConfiguration result;
+
+            switch(temp)
+            {
+                case 0:
+                    result = new BrakeConfiguration() {HasMgBrake = false, Setting = BrakeSetting.G};
+                    break;
+
+                case 1:
+                    result = new BrakeConfiguration() {HasMgBrake = false, Setting = BrakeSetting.P};
+                    break;
+
+                case 2:
+                    result = new BrakeConfiguration() {HasMgBrake = false, Setting = BrakeSetting.R};
+                    break;
+
+                case 3:
+                    result = new BrakeConfiguration() {HasMgBrake = true, Setting = BrakeSetting.P};
+                    break;
+
+                case 4:
+                    result = new BrakeConfiguration() {HasMgBrake = true, Setting = BrakeSetting.R};
+                    break;
+
+                default:
+                    throw new ZusiTcpException("Invalid value received for brake configuration.");
+            }
+
+            PostToHost(BrakeConfigReceived, id, result);
+        }
         #endregion
+    }
+
+    public enum DoorState
+    {
+        Released = 0,
+        Open = 1,
+        Announcement = 2,
+        ReadyToClose = 3,
+        Closing = 4,
+        Closed = 5,
+        Depart = 6,
+        Locked = 7,
+    }
+
+    public enum PZBSystem
+    {
+        None = 0,
+        IndusiH54 = 1,
+        IndusiI54 = 2,
+        IndusiI60 = 3,
+        IndusiI60R = 4,
+        PZB90V15 = 5,
+        PZB90V16 = 6,
+        PZ80 = 7,
+        PZ80R = 8,
+        LZB80I80 = 9,
+        SBBSignum = 10,
+    }
+
+    public enum BrakeSetting
+    {
+        G, P, R,
+    }
+
+    public struct BrakeConfiguration
+    {
+        public bool HasMgBrake { get; set; }
+        public BrakeSetting Setting { get; set; }
     }
 
     /// <summary>
