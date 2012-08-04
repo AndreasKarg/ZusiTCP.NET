@@ -589,37 +589,46 @@ namespace Zusi_Datenausgabe
         /// </summary>
         public event ReceiveEvent<DateTime> DateTimeReceived;
 
-        private void FloatMarshal(object o)
+        private struct MarshalArgs<T>
         {
-            FloatReceived.Invoke(this, (DataSet<float>)o);
+            public ReceiveEvent<T> Event { get; private set; }
+            public DataSet<T> Data { get; private set; }
+
+            public MarshalArgs(ReceiveEvent<T> recveiveEvent, int id, T data) : this()
+            {
+                Event = recveiveEvent;
+                Data = new DataSet<T>(id, data);
+            }
         }
 
-        private void StringMarshal(object o)
+        private void EventMarshal<T>(object o)
         {
-            StringReceived.Invoke(this, (DataSet<string>)o);
+            var margs = (MarshalArgs<T>) o;
+            margs.Event.Invoke(this, margs.Data);
         }
 
-        private void DateTimeMarshal(object o)
+        private void PostToHost<T>(ReceiveEvent<T> Event, int id, T value)
         {
-            DateTimeReceived.Invoke(this, (DataSet<DateTime>)o);
+            _hostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
         }
 
         void HandleDATA_Single(BinaryReader input, int id)
         {
-            _hostContext.Post(FloatMarshal, new DataSet<float>(id, input.ReadSingle()));
+            PostToHost(FloatReceived, id, input.ReadSingle());
         }
 
         void HandleDATA_String(BinaryReader input, int id)
         {
-            _hostContext.Post(StringMarshal, new DataSet<string>(id, input.ReadString()));
+            PostToHost(StringReceived, id, input.ReadString());
         }
 
         void HandleDATA_DateTime(BinaryReader input, int id)
         {
             // Delphi uses the double-based OLE Automation date for its date format.
             double temp = input.ReadDouble();
+            DateTime time = DateTime.FromOADate(temp);
 
-            _hostContext.Post(DateTimeMarshal, new DataSet<DateTime>(id, DateTime.FromOADate(temp)));
+            PostToHost(DateTimeReceived, id, time);
         }
         #endregion
     }
