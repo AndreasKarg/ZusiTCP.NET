@@ -50,7 +50,7 @@
   <Command ID="2607" Name="LM Türen" Type="Single" />
   <Command ID="2608" Name="LM Tfz-Nummer" Type="Single" />
   <Command ID="2609" Name="LM max. Tfz-Geschwindidigkeit" Type="Single" />
-  <Command ID="2610" Name="LM Uhrzeit (digital)" Type="Byte[]" />
+  <Command ID="2610" Name="LM Uhrzeit (digital)" Type="DateTime"/>
   <Command ID="2611" Name="Schalter Fahrstufen" Type="Single" />
   <Command ID="2612" Name="Schalter Führerbremsventil" Type="Single" />
   <Command ID="2613" Name="Schalter dyn. Bremse" Type="Single" />

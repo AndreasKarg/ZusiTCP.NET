@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
@@ -163,6 +164,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public class ZusiTcpConn : IDisposable
     {
+        #region Fields
         private readonly SynchronizationContext _hostContext;
         private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
 
@@ -170,21 +172,7 @@ namespace Zusi_Datenausgabe
         private TcpClient _clientConnection = new TcpClient();
         private Thread _streamReaderThread;
         private readonly TCPCommands _commands;
-
-        /// <summary>
-        /// Event used to handle incoming byte array data.
-        /// </summary>
-        public event ReceiveEvent<byte[]> ByteReceived;
-
-        /// <summary>
-        /// Event used to handle incoming float data.
-        /// </summary>
-        public event ReceiveEvent<float> FloatReceived;
-
-        /// <summary>
-        /// Event used to handle incoming string data.
-        /// </summary>
-        public event ReceiveEvent<string> StringReceived;
+        #endregion
 
         /// <summary>
         /// Event used to handle incoming string data.
@@ -294,21 +282,6 @@ namespace Zusi_Datenausgabe
         }
 
         #endregion
-
-        private void FloatMarshal(object o)
-        {
-            FloatReceived.Invoke(this, (DataSet<float>) o);
-        }
-
-        private void StringMarshal(object o)
-        {
-            StringReceived.Invoke(this, (DataSet<string>) o);
-        }
-
-        private void ByteMarshal(object o)
-        {
-            ByteReceived.Invoke(this, (DataSet<byte[]>) o);
-        }
 
         private void ErrorMarshal(object o)
         {
@@ -490,50 +463,6 @@ namespace Zusi_Datenausgabe
             bufStream.Close();
         }
 
-#if DEBUG
-        /// <summary>
-        /// Debug function to extract name-ID pairs for measurements from "commandset.ini", the file that comes with the TCP
-        /// server.
-        /// </summary>
-        /// <param name="filename">Name of the file with the raw data.</param>
-        public static void CreateDataset(string filename)
-        {
-            Assembly ini = Assembly.LoadFrom("INI-Interface.dll");
-
-            Type cfgFileType = ini.GetType("INI_Interface.CfgFile");
-            MethodInfo getCaption = cfgFileType.GetMethod("getCaption");
-
-            var constructorInfo = cfgFileType.GetConstructor(new[] {typeof (string)});
-            if (constructorInfo == null) return;
-
-            object iniDatei = constructorInfo.Invoke(new object[] {filename});
-
-            var ids = new ZusiData<string, int>();
-            var commands = new SortedList<int, int>();
-
-            var capContents =
-                (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"FriendlyNames"});
-
-            foreach (string id in capContents.Keys)
-            {
-                ids.Data.Add(capContents[id], Convert.ToInt32(id));
-            }
-
-            capContents = (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"Commands"});
-
-            foreach (string command in capContents.Keys)
-            {
-                commands.Add(Convert.ToInt32(command), Convert.ToInt32(capContents[command]));
-            }
-
-            Stream outputStream = File.Create("commands.dat");
-            var binOut = new BinaryFormatter();
-            binOut.Serialize(outputStream, ids);
-            binOut.Serialize(outputStream, commands);
-            outputStream.Close();
-        }
-#endif
-
         internal void ReceiveLoop()
         {
             const int bufSize = 256;
@@ -542,6 +471,7 @@ namespace Zusi_Datenausgabe
             var memStream = new MemoryStream(recBuffer);
             var streamReader = new BinaryReader(memStream);
             Socket tcpSocket = _clientConnection.Client;
+            var dataHandlers = new Dictionary<string, MethodInfo>();
 
             try
             {
@@ -569,23 +499,25 @@ namespace Zusi_Datenausgabe
 
                         CommandEntry curCommand = _commands[curID];
 
-                        switch (curCommand.Type.ToLower())
+                        MethodInfo handlerMethod;
+
+                        if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
                         {
-                            case "string":
-                                _hostContext.Post(StringMarshal,
-                                                  new DataSet<string>(curID, streamReader.ReadString()));
-                                break;
+                            handlerMethod = typeof (ZusiTcpConn).GetMethod(String.Format("HandleDATA_{0}", curCommand.Type),
+                                                                           BindingFlags.Instance |
+                                                                           BindingFlags.NonPublic,
+                                                                           null, new[] {typeof (BinaryReader), typeof(int)}, null);
 
-                            case "single":
-                                _hostContext.Post(FloatMarshal, new DataSet<float>(curID, streamReader.ReadSingle()));
-                                break;
+                            if (handlerMethod == null)
+                            {
+                                throw new ZusiTcpException(String.Format("Unknown type {0} for DATA ID {1} (\"{2}\") occured.",
+                                    curCommand.Type, curID, curCommand.Name));
+                            }
 
-                            default:
-                                throw new NotImplementedException();
-                                /*_hostContext.Post(ByteMarshal,
-                                                  new DataSet<byte[]>(curID, streamReader.ReadBytes(curCommand.)));*/
-                                break;
+                            dataHandlers.Add(curCommand.Type, handlerMethod);
                         }
+
+                        handlerMethod.Invoke(this, new object[] {streamReader, curID});
                     }
                 }
             }
@@ -676,6 +608,68 @@ namespace Zusi_Datenausgabe
             AckNeededData = 4
         }
 
+        #endregion
+
+        #region Data reception handlers
+        /// <summary>
+        /// Event used to handle incoming byte array data.
+        /// </summary>
+        [Obsolete("This event is obsolete. For DateTime types, use DateTimeReceived instead.", true)]
+        public event ReceiveEvent<byte[]> ByteReceived;
+
+        /// <summary>
+        /// Event used to handle incoming float data.
+        /// </summary>
+        public event ReceiveEvent<float> FloatReceived;
+
+        /// <summary>
+        /// Event used to handle incoming string data.
+        /// </summary>
+        public event ReceiveEvent<string> StringReceived;
+
+        /// <summary>
+        /// Event used to handle incoming string data.
+        /// </summary>
+        public event ReceiveEvent<DateTime> DateTimeReceived;
+
+        private void FloatMarshal(object o)
+        {
+            FloatReceived.Invoke(this, (DataSet<float>)o);
+        }
+
+        private void StringMarshal(object o)
+        {
+            StringReceived.Invoke(this, (DataSet<string>)o);
+        }
+
+        private void DateTimeMarshal(object o)
+        {
+            DateTimeReceived.Invoke(this, (DataSet<DateTime>)o);
+        }
+
+        [Obsolete("This function is obsolete.", true)]
+        private void ByteMarshal(object o)
+        {
+            ByteReceived.Invoke(this, (DataSet<byte[]>)o);
+        }
+
+        void HandleDATA_Single(BinaryReader input, int id)
+        {
+            _hostContext.Post(FloatMarshal, new DataSet<float>(id, input.ReadSingle()));
+        }
+
+        void HandleDATA_String(BinaryReader input, int id)
+        {
+            _hostContext.Post(StringMarshal, new DataSet<string>(id, input.ReadString()));
+        }
+
+        void HandleDATA_DateTime(BinaryReader input, int id)
+        {
+            // Delphi uses the double-based OLE Automation date for its date format.
+            double temp = input.ReadDouble();
+
+            _hostContext.Post(DateTimeMarshal, new DataSet<DateTime>(id, DateTime.FromOADate(temp)));
+        }
         #endregion
     }
 
