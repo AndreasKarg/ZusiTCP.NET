@@ -569,12 +569,6 @@ namespace Zusi_Datenausgabe
 
         #region Data reception handlers
         /// <summary>
-        /// Event used to handle incoming byte array data.
-        /// </summary>
-        [Obsolete("This event is obsolete. For DateTime types, use DateTimeReceived instead.", true)]
-        public event ReceiveEvent<byte[]> ByteReceived;
-
-        /// <summary>
         /// Event used to handle incoming float data.
         /// </summary>
         public event ReceiveEvent<float> FloatReceived;
