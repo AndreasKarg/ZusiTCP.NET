@@ -71,26 +71,11 @@
     <Compile Include="commandset_schema.designer.cs" />
     <Compile Include="TCPCommands.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
-    <Compile Include="DatenIDs.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DatenIDs.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZusiTCPException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DatenIDs.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>DatenIDs.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />
-    <None Include="commands.dat" />
-    <None Include="commandset.ini">
-    </None>
     <None Include="commandset_schema.xsd">
       <SubType>Designer</SubType>
     </None>
