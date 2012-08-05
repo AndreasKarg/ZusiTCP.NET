@@ -495,10 +495,11 @@ namespace Zusi_Datenausgabe
 
                         if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
                         {
-                            handlerMethod = typeof (ZusiTcpConn).GetMethod(String.Format("HandleDATA_{0}", curCommand.Type),
-                                                                           BindingFlags.Instance |
-                                                                           BindingFlags.NonPublic,
-                                                                           null, new[] {typeof (BinaryReader), typeof(int)}, null);
+                            handlerMethod = GetType().GetMethod(String.Format("HandleDATA_{0}", curCommand.Type),
+                                                                              BindingFlags.Instance |
+                                                                              BindingFlags.NonPublic,
+                                                                              null, new[] {typeof (BinaryReader),
+                                                                              typeof(int)}, null);
 
                             if (handlerMethod == null)
                             {
@@ -626,27 +627,27 @@ namespace Zusi_Datenausgabe
             margs.Event.Invoke(this, margs.Data);
         }
 
-        private void PostToHost<T>(ReceiveEvent<T> Event, int id, T value)
+        protected void PostToHost<T>(ReceiveEvent<T> Event, int id, T value)
         {
             _hostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
         }
 
-        void HandleDATA_Single(BinaryReader input, int id)
+        protected void HandleDATA_Single(BinaryReader input, int id)
         {
             PostToHost(FloatReceived, id, input.ReadSingle());
         }
 
-        void HandleDATA_Int(BinaryReader input, int id)
+        protected void HandleDATA_Int(BinaryReader input, int id)
         {
             PostToHost(IntReceived, id, input.ReadInt32());
         }
 
-        void HandleDATA_String(BinaryReader input, int id)
+        protected void HandleDATA_String(BinaryReader input, int id)
         {
             PostToHost(StringReceived, id, input.ReadString());
         }
 
-        void HandleDATA_DateTime(BinaryReader input, int id)
+        protected void HandleDATA_DateTime(BinaryReader input, int id)
         {
             // Delphi uses the double-based OLE Automation date for its date format.
             double temp = input.ReadDouble();
@@ -655,7 +656,7 @@ namespace Zusi_Datenausgabe
             PostToHost(DateTimeReceived, id, time);
         }
 
-        void HandleDATA_BoolAsSingle(BinaryReader input, int id)
+        protected void HandleDATA_BoolAsSingle(BinaryReader input, int id)
         {
             /* Data is delivered as Single values that are only either 0.0 or 1.0.
              * For the sake of logic, convert these to actual booleans here.
@@ -665,7 +666,7 @@ namespace Zusi_Datenausgabe
             PostToHost(BoolReceived, id, value);
         }
 
-        void HandleDATA_IntAsSingle(BinaryReader input, int id)
+        protected void HandleDATA_IntAsSingle(BinaryReader input, int id)
         {
             /* Data is delivered as Single values that are only either 0.0 or 1.0.
              * For the sake of logic, convert these to actual booleans here.
@@ -675,7 +676,7 @@ namespace Zusi_Datenausgabe
             PostToHost(IntReceived, id, value);
         }
 
-        void HandleDATA_BoolAsInt(BinaryReader input, int id)
+        protected void HandleDATA_BoolAsInt(BinaryReader input, int id)
         {
             /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -685,7 +686,7 @@ namespace Zusi_Datenausgabe
             PostToHost(BoolReceived, id, value);
         }
 
-        void HandleDATA_DoorsAsInt(BinaryReader input, int id)
+        protected void HandleDATA_DoorsAsInt(BinaryReader input, int id)
         {
             /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -694,7 +695,7 @@ namespace Zusi_Datenausgabe
             PostToHost(DoorsReceived, id, (DoorState)temp);
         }
 
-        void HandleDATA_PZBAsInt(BinaryReader input, int id)
+        protected void HandleDATA_PZBAsInt(BinaryReader input, int id)
         {
             /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -703,7 +704,7 @@ namespace Zusi_Datenausgabe
             PostToHost(PZBReceived, id, (PZBSystem)temp);
         }
 
-        void HandleDATA_BrakesAsInt(BinaryReader input, int id)
+        protected void HandleDATA_BrakesAsInt(BinaryReader input, int id)
         {
             /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
