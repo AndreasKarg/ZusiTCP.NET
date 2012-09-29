@@ -469,7 +469,7 @@ namespace Zusi_Datenausgabe
             {
                 while (ConnectionState == ConnectionState.Connected)
                 {
-                    tcpSocket.Receive(recBuffer, 4, SocketFlags.None);
+                    TCPReceive(4, recBuffer);
                     memStream.Seek(0, SeekOrigin.Begin);
 
                     int packetLength = streamReader.ReadInt32();
@@ -477,7 +477,7 @@ namespace Zusi_Datenausgabe
                     if (packetLength > bufSize)
                         throw new ZusiTcpException("Buffer overflow on data receive.");
 
-                    tcpSocket.Receive(recBuffer, packetLength, SocketFlags.None);
+                    TCPReceive(packetLength, recBuffer);
                     memStream.Seek(0, SeekOrigin.Begin);
 
                     int curInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
@@ -516,8 +516,22 @@ namespace Zusi_Datenausgabe
             }
             catch (ZusiTcpException e)
             {
+                Disconnnect();
                 ConnectionState = ConnectionState.Error;
                 _hostContext.Post(ErrorMarshal, e);
+            }
+        }
+
+        private void TCPReceive(int singleLength, byte[] recBuffer)
+        {
+            try
+            {
+                _clientConnection.Client.Receive(recBuffer, singleLength, SocketFlags.None);
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                /* This happens when the server is shut down and the TCP connection is "forcefully" closed. */
+                throw new ZusiTcpException("Error in connection to TCP server.", e);
             }
         }
 
