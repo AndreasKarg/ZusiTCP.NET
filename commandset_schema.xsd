@@ -9,13 +9,13 @@
   <xs:element name="TCPCommands">
     <xs:complexType>
       <xs:sequence minOccurs="1" maxOccurs="1">
-        <xs:element name="Items" type="tns:CommandEntry" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="Command" type="tns:CommandEntry" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
   <xs:complexType name="CommandEntry">
-    <xs:attribute name="ID" type="xs:unsignedInt" use="required"/>
+    <xs:attribute name="ID" type="xs:int" use="required"/>
     <xs:attribute name="Name" type="xs:string" use="required"/>
     <xs:attribute name="Type" type="xs:string" use="required"/>
   </xs:complexType>

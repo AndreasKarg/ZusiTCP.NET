@@ -30,9 +30,11 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
+using TCPCommandset;
 
 [assembly: CLSCompliant(true)]
 
@@ -59,14 +61,6 @@ namespace Zusi_Datenausgabe
             internal set { _data[id] = value; }
         }
 
-#if DEBUG
-        public Dictionary<TMeasure, TValue> Data
-        {
-            [DebuggerStepThrough]
-            get { return _data; }
-        }
-#endif
-
         /// <summary>
         /// Gibt den Enumerator des zugrundeliegenden Dictionary zurück.
         /// </summary>
@@ -74,6 +68,11 @@ namespace Zusi_Datenausgabe
         public Dictionary<TMeasure, TValue>.Enumerator GetEnumerator()
         {
             return _data.GetEnumerator();
+        }
+
+        public ZusiData(Dictionary<TMeasure, TValue> source)
+        {
+            _data = source;
         }
     }
 
@@ -157,28 +156,15 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public class ZusiTcpConn : IDisposable
     {
+        #region Fields
         private readonly SynchronizationContext _hostContext;
         private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
-        private readonly SortedList<int, int> _commands = new SortedList<int, int>();
 
         private readonly List<int> _requestedData = new List<int>();
         private TcpClient _clientConnection = new TcpClient();
         private Thread _streamReaderThread;
-
-        /// <summary>
-        /// Event used to handle incoming byte array data.
-        /// </summary>
-        public event ReceiveEvent<byte[]> ByteReceived;
-
-        /// <summary>
-        /// Event used to handle incoming float data.
-        /// </summary>
-        public event ReceiveEvent<float> FloatReceived;
-
-        /// <summary>
-        /// Event used to handle incoming string data.
-        /// </summary>
-        public event ReceiveEvent<string> StringReceived;
+        private readonly TCPCommands _commands;
+        #endregion
 
         /// <summary>
         /// Event used to handle incoming string data.
@@ -190,44 +176,15 @@ namespace Zusi_Datenausgabe
         /// </summary>
         /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
         /// <param name="priority"> Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-        public ZusiTcpConn(string clientId, ClientPriority priority)
+        /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
+        public ZusiTcpConn(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml")
         {
             ClientId = clientId;
             ClientPriority = priority;
 
             _hostContext = SynchronizationContext.Current;
 
-            MemoryStream dataIDs = null;
-
-            try
-            {
-                dataIDs = new MemoryStream(DatenIDs.commands);
-            }
-            catch (Exception)
-            {
-                if (dataIDs != null) 
-                    dataIDs.Dispose();
-                throw;
-            }
-
-
-            var binIn = new BinaryFormatter();
-
-            try
-            {
-                IDs = (ZusiData<string, int>) binIn.Deserialize(dataIDs);
-
-                ReverseIDs = new ZusiData<int, string>();
-
-                foreach (var item in IDs)
-                    ReverseIDs[item.Value] = item.Key;
-
-                _commands = (SortedList<int, int>) binIn.Deserialize(dataIDs);
-            }
-            finally
-            {
-                dataIDs.Dispose();
-            }
+            _commands = TCPCommands.LoadFromFile(commandsetPath);
         }
 
         /// <summary>
@@ -247,7 +204,7 @@ namespace Zusi_Datenausgabe
         /// /* SpeedID now contains the value 01. */
         /// </code>
         /// </example>
-        public ZusiData<string, int> IDs { get; private set; }
+        public ZusiData<string, int> IDs { get { return _commands.IDByName; } }
 
         /// <summary>
         /// Represents all measurements available in Zusi as a key-value list. Can be used to convert measurement IDs to their
@@ -261,7 +218,7 @@ namespace Zusi_Datenausgabe
         /// /* SpeedName now contains the value "Geschwindigkeit". */
         /// </code>
         /// </example>
-        public ZusiData<int, string> ReverseIDs { get; private set; }
+        public ZusiData<int, string> ReverseIDs { get { return _commands.NameByID; } }
 
         /// <summary>
         /// Represents the current connection state of the client.
@@ -317,21 +274,6 @@ namespace Zusi_Datenausgabe
         }
 
         #endregion
-
-        private void FloatMarshal(object o)
-        {
-            FloatReceived.Invoke(this, (DataSet<float>) o);
-        }
-
-        private void StringMarshal(object o)
-        {
-            StringReceived.Invoke(this, (DataSet<string>) o);
-        }
-
-        private void ByteMarshal(object o)
-        {
-            ByteReceived.Invoke(this, (DataSet<byte[]>) o);
-        }
 
         private void ErrorMarshal(object o)
         {
@@ -513,50 +455,6 @@ namespace Zusi_Datenausgabe
             bufStream.Close();
         }
 
-#if DEBUG
-        /// <summary>
-        /// Debug function to extract name-ID pairs for measurements from "commandset.ini", the file that comes with the TCP
-        /// server.
-        /// </summary>
-        /// <param name="filename">Name of the file with the raw data.</param>
-        public static void CreateDataset(string filename)
-        {
-            Assembly ini = Assembly.LoadFrom("INI-Interface.dll");
-
-            Type cfgFileType = ini.GetType("INI_Interface.CfgFile");
-            MethodInfo getCaption = cfgFileType.GetMethod("getCaption");
-
-            var constructorInfo = cfgFileType.GetConstructor(new[] {typeof (string)});
-            if (constructorInfo == null) return;
-
-            object iniDatei = constructorInfo.Invoke(new object[] {filename});
-
-            var ids = new ZusiData<string, int>();
-            var commands = new SortedList<int, int>();
-
-            var capContents =
-                (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"FriendlyNames"});
-
-            foreach (string id in capContents.Keys)
-            {
-                ids.Data.Add(capContents[id], Convert.ToInt32(id));
-            }
-
-            capContents = (SortedList<string, string>) getCaption.Invoke(iniDatei, new[] {"Commands"});
-
-            foreach (string command in capContents.Keys)
-            {
-                commands.Add(Convert.ToInt32(command), Convert.ToInt32(capContents[command]));
-            }
-
-            Stream outputStream = File.Create("commands.dat");
-            var binOut = new BinaryFormatter();
-            binOut.Serialize(outputStream, ids);
-            binOut.Serialize(outputStream, commands);
-            outputStream.Close();
-        }
-#endif
-
         internal void ReceiveLoop()
         {
             const int bufSize = 256;
@@ -565,12 +463,13 @@ namespace Zusi_Datenausgabe
             var memStream = new MemoryStream(recBuffer);
             var streamReader = new BinaryReader(memStream);
             Socket tcpSocket = _clientConnection.Client;
+            var dataHandlers = new Dictionary<string, MethodInfo>();
 
             try
             {
                 while (ConnectionState == ConnectionState.Connected)
                 {
-                    tcpSocket.Receive(recBuffer, 4, SocketFlags.None);
+                    TCPReceive(4, recBuffer);
                     memStream.Seek(0, SeekOrigin.Begin);
 
                     int packetLength = streamReader.ReadInt32();
@@ -578,7 +477,7 @@ namespace Zusi_Datenausgabe
                     if (packetLength > bufSize)
                         throw new ZusiTcpException("Buffer overflow on data receive.");
 
-                    tcpSocket.Receive(recBuffer, packetLength, SocketFlags.None);
+                    TCPReceive(packetLength, recBuffer);
                     memStream.Seek(0, SeekOrigin.Begin);
 
                     int curInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
@@ -589,31 +488,50 @@ namespace Zusi_Datenausgabe
                     while (memStream.Position < packetLength)
                     {
                         int curID = memStream.ReadByte() + 256*curInstr;
-                        int curDataLength;
-                        if (_commands.TryGetValue(curID, out curDataLength))
+
+                        CommandEntry curCommand = _commands[curID];
+
+                        MethodInfo handlerMethod;
+
+                        if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
                         {
-                            if (curDataLength == 0)
+                            handlerMethod = GetType().GetMethod(String.Format("HandleDATA_{0}", curCommand.Type),
+                                                                              BindingFlags.Instance |
+                                                                              BindingFlags.NonPublic,
+                                                                              null, new[] {typeof (BinaryReader),
+                                                                              typeof(int)}, null);
+
+                            if (handlerMethod == null)
                             {
-                                _hostContext.Post(StringMarshal,
-                                                  new DataSet<string>(curID, streamReader.ReadString()));
+                                throw new ZusiTcpException(String.Format("Unknown type {0} for DATA ID {1} (\"{2}\") occured.",
+                                    curCommand.Type, curID, curCommand.Name));
                             }
-                            else
-                            {
-                                _hostContext.Post(ByteMarshal,
-                                                  new DataSet<byte[]>(curID, streamReader.ReadBytes(curDataLength)));
-                            }
+
+                            dataHandlers.Add(curCommand.Type, handlerMethod);
                         }
-                        else
-                        {
-                            _hostContext.Post(FloatMarshal, new DataSet<float>(curID, streamReader.ReadSingle()));
-                        }
+
+                        handlerMethod.Invoke(this, new object[] {streamReader, curID});
                     }
                 }
             }
             catch (ZusiTcpException e)
             {
+                Disconnnect();
                 ConnectionState = ConnectionState.Error;
                 _hostContext.Post(ErrorMarshal, e);
+            }
+        }
+
+        private void TCPReceive(int singleLength, byte[] recBuffer)
+        {
+            try
+            {
+                _clientConnection.Client.Receive(recBuffer, singleLength, SocketFlags.None);
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                /* This happens when the server is shut down and the TCP connection is "forcefully" closed. */
+                throw new ZusiTcpException("Error in connection to TCP server.", e);
             }
         }
 
@@ -663,6 +581,219 @@ namespace Zusi_Datenausgabe
         }
 
         #endregion
+
+        #region Data reception handlers
+        /// <summary>
+        /// Event used to handle incoming float data.
+        /// </summary>
+        public event ReceiveEvent<float> FloatReceived;
+
+        /// <summary>
+        /// Event used to handle incoming string data.
+        /// </summary>
+        public event ReceiveEvent<string> StringReceived;
+
+        /// <summary>
+        /// Event used to handle incoming integer data.
+        /// </summary>
+        public event ReceiveEvent<int> IntReceived;
+
+        /// <summary>
+        /// Event used to handle incoming boolean data.
+        /// </summary>
+        public event ReceiveEvent<Boolean> BoolReceived;
+
+        /// <summary>
+        /// Event used to handle incoming DateTime data.
+        /// </summary>
+        public event ReceiveEvent<DateTime> DateTimeReceived;
+
+        /// <summary>
+        /// Event used to handle incoming boolean data.
+        /// </summary>
+        public event ReceiveEvent<DoorState> DoorsReceived;
+
+        /// <summary>
+        /// Event used to handle incoming PZB system type data.
+        /// </summary>
+        public event ReceiveEvent<PZBSystem> PZBReceived;
+
+        /// <summary>
+        /// Event used to handle incoming brake configuration data.
+        /// </summary>
+        public event ReceiveEvent<BrakeConfiguration> BrakeConfigReceived;
+
+        private struct MarshalArgs<T>
+        {
+            public ReceiveEvent<T> Event { get; private set; }
+            public DataSet<T> Data { get; private set; }
+
+            public MarshalArgs(ReceiveEvent<T> recveiveEvent, int id, T data) : this()
+            {
+                Event = recveiveEvent;
+                Data = new DataSet<T>(id, data);
+            }
+        }
+
+        private void EventMarshal<T>(object o)
+        {
+            var margs = (MarshalArgs<T>) o;
+            margs.Event.Invoke(this, margs.Data);
+        }
+
+        protected void PostToHost<T>(ReceiveEvent<T> Event, int id, T value)
+        {
+            _hostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
+        }
+
+        protected void HandleDATA_Single(BinaryReader input, int id)
+        {
+            PostToHost(FloatReceived, id, input.ReadSingle());
+        }
+
+        protected void HandleDATA_Int(BinaryReader input, int id)
+        {
+            PostToHost(IntReceived, id, input.ReadInt32());
+        }
+
+        protected void HandleDATA_String(BinaryReader input, int id)
+        {
+            PostToHost(StringReceived, id, input.ReadString());
+        }
+
+        protected void HandleDATA_DateTime(BinaryReader input, int id)
+        {
+            // Delphi uses the double-based OLE Automation date for its date format.
+            double temp = input.ReadDouble();
+            DateTime time = DateTime.FromOADate(temp);
+
+            PostToHost(DateTimeReceived, id, time);
+        }
+
+        protected void HandleDATA_BoolAsSingle(BinaryReader input, int id)
+        {
+            /* Data is delivered as Single values that are only either 0.0 or 1.0.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Single temp = input.ReadSingle();
+            bool value = (temp >= 0.5f);
+            PostToHost(BoolReceived, id, value);
+        }
+
+        protected void HandleDATA_IntAsSingle(BinaryReader input, int id)
+        {
+            /* Data is delivered as Single values that are only either 0.0 or 1.0.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Single temp = input.ReadSingle();
+            int value = (int)Math.Round(temp);
+            PostToHost(IntReceived, id, value);
+        }
+
+        protected void HandleDATA_BoolAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+            bool value = (temp == 1);
+            PostToHost(BoolReceived, id, value);
+        }
+
+        protected void HandleDATA_DoorsAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+            PostToHost(DoorsReceived, id, (DoorState)temp);
+        }
+
+        protected void HandleDATA_PZBAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+            PostToHost(PZBReceived, id, (PZBSystem)temp);
+        }
+
+        protected void HandleDATA_BrakesAsInt(BinaryReader input, int id)
+        {
+            /* Data is delivered as Int values that are only either 0 or 1.
+             * For the sake of logic, convert these to actual booleans here.
+             */
+            Int32 temp = input.ReadInt32();
+
+            BrakeConfiguration result;
+
+            switch(temp)
+            {
+                case 0:
+                    result = new BrakeConfiguration() {HasMgBrake = false, Setting = BrakeSetting.G};
+                    break;
+
+                case 1:
+                    result = new BrakeConfiguration() {HasMgBrake = false, Setting = BrakeSetting.P};
+                    break;
+
+                case 2:
+                    result = new BrakeConfiguration() {HasMgBrake = false, Setting = BrakeSetting.R};
+                    break;
+
+                case 3:
+                    result = new BrakeConfiguration() {HasMgBrake = true, Setting = BrakeSetting.P};
+                    break;
+
+                case 4:
+                    result = new BrakeConfiguration() {HasMgBrake = true, Setting = BrakeSetting.R};
+                    break;
+
+                default:
+                    throw new ZusiTcpException("Invalid value received for brake configuration.");
+            }
+
+            PostToHost(BrakeConfigReceived, id, result);
+        }
+        #endregion
+    }
+
+    public enum DoorState
+    {
+        Released = 0,
+        Open = 1,
+        Announcement = 2,
+        ReadyToClose = 3,
+        Closing = 4,
+        Closed = 5,
+        Depart = 6,
+        Locked = 7,
+    }
+
+    public enum PZBSystem
+    {
+        None = 0,
+        IndusiH54 = 1,
+        IndusiI54 = 2,
+        IndusiI60 = 3,
+        IndusiI60R = 4,
+        PZB90V15 = 5,
+        PZB90V16 = 6,
+        PZ80 = 7,
+        PZ80R = 8,
+        LZB80I80 = 9,
+        SBBSignum = 10,
+    }
+
+    public enum BrakeSetting
+    {
+        G, P, R,
+    }
+
+    public struct BrakeConfiguration
+    {
+        public bool HasMgBrake { get; set; }
+        public BrakeSetting Setting { get; set; }
     }
 
     /// <summary>
