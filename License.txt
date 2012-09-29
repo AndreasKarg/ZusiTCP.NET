@@ -1,5 +1,6 @@
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
+              With linking exception (see last paragraphs)
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
  Everyone is permitted to copy and distribute verbatim copies
@@ -619,3 +620,23 @@ Program, unless a warranty or assumption of liability accompanies a
 copy of the Program in return for a fee.
 
                      END OF TERMS AND CONDITIONS
+
+			LINKING EXCEPTION
+
+Linking this library statically or dynamically with other libraries or
+executables is making a combined work based on this library. Thus, the
+terms and conditions of the GNU General Public License cover the whole
+combination.
+
+As a special exception, the copyright holders of this library give you
+permission to link this library with independent libraries or executables
+to produce an executable, regardless of the license terms of these
+independent libraries and executables, and to copy and distribute the
+resulting executable under terms of your choice, provided that you also
+meet, for each linked independent library or executable, the terms and
+conditions of the license of that library and that the resulting executable
+is copied and distributed free of charge. An independent library is a
+library which is not derived from or based on this library. If you modify
+this library, you may extend this exception to your version of the library,
+but you are not obliged to do so. If you do not wish to do so, delete
+this exception statement from your version.
