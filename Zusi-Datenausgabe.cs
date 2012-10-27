@@ -329,6 +329,7 @@ namespace Zusi_Datenausgabe
                 if (_clientConnection.Connected)
                 {
                     _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
+                    _streamReaderThread.IsBackground = true;
 
                     SendPacket(Pack(0, 1, 2, (byte) ClientPriority,
                                     Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
