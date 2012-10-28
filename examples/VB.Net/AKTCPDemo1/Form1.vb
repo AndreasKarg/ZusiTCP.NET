@@ -24,7 +24,7 @@ Public Class Form1
     Private Sub BtnConnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnConnect.Click
 
         ' If we're currently disconnected...
-        If (MyTCPConnection.ConnectionState = Zusi_Datenausgabe.ConnectionState.Disconnected) Then
+        If (MyTCPConnection.ConnectionState = ConnectionState.Disconnected) Then
             ' ... try to ... 
             Try
                 ' ... establish a connection using the hostname and port number from the main window.
@@ -55,7 +55,8 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub TCPConnection_ErrorReceived(ByVal sender As Object, ByVal ex As Zusi_Datenausgabe.ZusiTcpException) Handles MyTCPConnection.ErrorReceived
+    Private Sub TCPConnection_ErrorReceived(ByVal sender As Object, ByVal ex As ZusiTcpException) _
+        Handles MyTCPConnection.ErrorReceived
         ' If something goes wrong...
         ' ... show the user what the connection object has to say.
         System.Windows.Forms.MessageBox.Show(String.Format("An error occured when receiving data: {0}", ex.Message))
@@ -67,7 +68,8 @@ Public Class Form1
         BtnConnect.Text = "Connect"
     End Sub
 
-    Private Sub TCPConnection_BoolReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Boolean)) Handles MyTCPConnection.BoolReceived
+    Private Sub TCPConnection_BoolReceived(ByVal sender As Object, ByVal data As DataSet(Of Boolean)) _
+        Handles MyTCPConnection.BoolReceived
         Select Case data.Id
             Case 2594 ' "LM LZB Ü-System" => BoolReceived
                 lblPZB.Enabled = Not data.Value 'PZB off when LZB is on
@@ -77,14 +79,17 @@ Public Class Form1
         End Select
     End Sub
 
-    Private Sub TCPConnection_BrakeConfigReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Zusi_Datenausgabe.BrakeConfiguration)) Handles MyTCPConnection.BrakeConfigReceived
+    Private Sub TCPConnection_BrakeConfigReceived(ByVal sender As Object,
+                                                  ByVal data As DataSet(Of BrakeConfiguration)) _
+        Handles MyTCPConnection.BrakeConfigReceived
         Select Case data.Id
             Case Else
                 'We didn't request a BrakeConfig-data
         End Select
     End Sub
 
-    Private Sub TCPConnection_DateTimeReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Date)) Handles MyTCPConnection.DateTimeReceived
+    Private Sub TCPConnection_DateTimeReceived(ByVal sender As Object, ByVal data As DataSet(Of Date)) _
+        Handles MyTCPConnection.DateTimeReceived
         Select Case data.Id
             Case 2610 ' "Uhrzeit" => DateTimeReceived
                 lblUhrzeit.Text = "Uhrzeit: " & data.Value.ToLongTimeString
@@ -93,14 +98,17 @@ Public Class Form1
         End Select
     End Sub
 
-    Private Sub TCPConnection_DoorsReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Zusi_Datenausgabe.DoorState)) Handles MyTCPConnection.DoorsReceived
+    Private Sub TCPConnection_DoorsReceived(ByVal sender As Object,
+                                            ByVal data As DataSet(Of DoorState)) _
+        Handles MyTCPConnection.DoorsReceived
         Select Case data.Id
             Case Else
                 'We didn't request a Doors-data
         End Select
     End Sub
 
-    Private Sub TCPConnection_FloatReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Single)) Handles MyTCPConnection.FloatReceived
+    Private Sub TCPConnection_FloatReceived(ByVal sender As Object, ByVal data As DataSet(Of Single)) _
+        Handles MyTCPConnection.FloatReceived
         Select Case data.Id
             Case 2561 ' "Geschwindigkeit" => FloatReceived
                 lblGeschw.Text = String.Format("Geschwindigkeit: {0} km/h ", data.Value.ToString("0.00")) 'two decimals
@@ -111,14 +119,17 @@ Public Class Form1
         End Select
     End Sub
 
-    Private Sub TCPConnection_IntReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Integer)) Handles MyTCPConnection.IntReceived
+    Private Sub TCPConnection_IntReceived(ByVal sender As Object, ByVal data As DataSet(Of Integer)) _
+        Handles MyTCPConnection.IntReceived
         Select Case data.Id
             Case Else
                 'We didn't request a Integer-data
         End Select
     End Sub
 
-    Private Sub TCPConnection_PZBReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Zusi_Datenausgabe.PZBSystem)) Handles MyTCPConnection.PZBReceived
+    Private Sub TCPConnection_PZBReceived(ByVal sender As Object,
+                                          ByVal data As DataSet(Of PZBSystem)) _
+        Handles MyTCPConnection.PZBReceived
         Select Case data.Id
             Case 2649 ' "PZB-System" => PZBReceived
                 Select Case data.Value
@@ -149,7 +160,8 @@ Public Class Form1
         End Select
     End Sub
 
-    Private Sub TCPConnection_StringReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of String)) Handles MyTCPConnection.StringReceived
+    Private Sub TCPConnection_StringReceived(ByVal sender As Object, ByVal data As DataSet(Of String)) _
+        Handles MyTCPConnection.StringReceived
         Select Case data.Id
             Case 2637 ' "LM Block, bis zu dem die Strecke frei ist" => StringReceived
                 lblFreiBis.Text = "Frei bis: " & data.Value
