@@ -1,9 +1,9 @@
 ﻿/*************************************************************************
  * ZusiTCPException.cs
  * Contains the ZusiTcpException class.
- * 
+ *
  * (C) 2009-2012 Andreas Karg, <Clonkman@gmx.de>
- * 
+ *
  * This file is part of Zusi TCP Interface.NET.
  *
  * Zusi TCP Interface.NET is free software: you can redistribute it and/or
@@ -17,9 +17,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Zusi TCP Interface.NET. 
+ * along with Zusi TCP Interface.NET.
  * If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  *************************************************************************/
 
 using System;
@@ -27,44 +27,46 @@ using System.Runtime.Serialization;
 
 namespace Zusi_Datenausgabe
 {
+  /// <summary>
+  /// Wird geschmissen, wenn bei der Verbindung zum TCP-Server ein Fehler auftritt.
+  /// </summary>
+  [Serializable]
+  public class ZusiTcpException : Exception
+  {
     /// <summary>
-    /// Wird geschmissen, wenn bei der Verbindung zum TCP-Server ein Fehler auftritt.
+    /// Standardkonstruktor
     /// </summary>
-    [Serializable]
-    public class ZusiTcpException : Exception
+    /// <param name="msg">Nachricht</param>
+    public ZusiTcpException(string msg)
+      : base(msg)
     {
-        /// <summary>
-        /// Standardkonstruktor
-        /// </summary>
-        /// <param name="msg">Nachricht</param>
-        public ZusiTcpException(string msg) : base(msg)
-        {
-        }
-
-        /// <summary>
-        /// Noch ein Standardkonstruktor
-        /// </summary>
-        public ZusiTcpException()
-        {
-        }
-
-        /// <summary>
-        /// Konstruktor, der eine Nachricht und eine Ausnahme annimmt.
-        /// </summary>
-        /// <param name="msg">Nachricht</param>
-        /// <param name="e">Ausnahme</param>
-        public ZusiTcpException(string msg, Exception e) : base(msg, e)
-        {
-        }
-
-        /// <summary>
-        /// Serialisierungskonstruktor
-        /// </summary>
-        /// <param name="serializationInfo">Serialisierungsinfo</param>
-        /// <param name="streamingContext">Streaming context</param>
-        protected ZusiTcpException(SerializationInfo serializationInfo, StreamingContext streamingContext)
-            : base(serializationInfo, streamingContext)
-        {
-        }
     }
+
+    /// <summary>
+    /// Noch ein Standardkonstruktor
+    /// </summary>
+    public ZusiTcpException()
+    {
+    }
+
+    /// <summary>
+    /// Konstruktor, der eine Nachricht und eine Ausnahme annimmt.
+    /// </summary>
+    /// <param name="msg">Nachricht</param>
+    /// <param name="e">Ausnahme</param>
+    public ZusiTcpException(string msg, Exception e)
+      : base(msg, e)
+    {
+    }
+
+    /// <summary>
+    /// Serialisierungskonstruktor
+    /// </summary>
+    /// <param name="serializationInfo">Serialisierungsinfo</param>
+    /// <param name="streamingContext">Streaming context</param>
+    protected ZusiTcpException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+      : base(serializationInfo, streamingContext)
+    {
+    }
+  }
 }
