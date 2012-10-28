@@ -146,35 +146,30 @@ namespace Zusi_Datenausgabe
 
   /// <summary>
   /// Represents the centerpiece of the Zusi TCP interface.
-  /// <para>Requirement:
-  /// <list type="bullet">
-  /// <item><description>
-  /// An object implementing the <see cref="ISynchronizeInvoke"/> interface (e.g. a Windows Forms application)
-  /// </description></item>
-  /// </list></para>
   ///
   /// <para>Usage:
   /// <list type="number">
   /// <item><description>
-  /// Implement event handlers within an object that implements the  <see cref="ISynchronizeInvoke"/> interface (e.g. a Windows Forms application).
+  /// Implement event handlers.
   /// These must conform to the <see cref="ReceiveEvent{T}"/> delegate.
-  /// The interface uses the types <see cref="float"/>, <see cref="string"/> and <see cref="byte"/>[].
+  /// All data sent by Zusi are converted to their appropriate types.
   /// </description></item>
   ///
   /// <item><description>
   /// Create an instance of <see cref="ZusiTcpConn"/>, choosing a client priority. Recommended value for control desks is "High".
-  /// Pass your handler degates to the constructor.
+  /// Add your event handlers to the appropriate events.
   /// </description></item>
   /// <item><description>
   /// Add the required measurements using <see cref="RequestedData"/>.
-  /// Der Eigenschaft RequestedData (<see cref="ZusiTcpConn.RequestedData"/>) die benötigten Größen als IDs hinzufügen.
-  /// Bei Bedarf können die ID-Nummern aus dem deutschen Klartextnamen wie in der Zusi-Dokumentation(z.B. "Geschwindigkeit") direkt aus der Eigenschaft
-  /// IDs (<see cref="IDs"/>) entnommen werden.</description></item>
+  /// You can use either the correct ID numbers or the measurements' german names as specified in the TCP server's commandset.xml.
+  /// </description></item>
   /// <item><description>
   /// <see cref="Connect"/> to the TCP server.</description></item>
   /// <item><description>As soon as data is coming from the server, the respective events are called automatically, passing one new
   /// dataset at a time.</description></item>
   /// </list></para>
+  ///
+  /// Notice that ZusiTcpConn implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
   public class ZusiTcpConn : IDisposable
   {
