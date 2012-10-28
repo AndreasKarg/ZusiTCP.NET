@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
@@ -359,7 +360,27 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="hostName">The name or IP address of the host.</param>
     /// <param name="port">The port on the server to connect to (Default: 1435).</param>
+    /// <exception cref="ArgumentException">This exception is thrown when the host address could
+    /// not be resolved.</exception>
     public void Connect(string hostName, int port)
+    {
+      var hostAddresses = Dns.GetHostAddresses(hostName);
+
+      if(hostAddresses.Length == 0)
+      {
+        throw new ArgumentException("Host name could not be resolved.",hostName);
+      }
+
+      Connect(new IPEndPoint(hostAddresses[0],port));
+    }
+
+    /// <summary>
+    /// Establish a connection to the TCP server.
+    /// </summary>
+    /// <param name="endPoint">Specifies an IP end point to which the interface tries to connect.</param>
+    /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
+    /// established.</exception>
+    public void Connect(IPEndPoint endPoint)
     {
       try
       {
@@ -373,7 +394,7 @@ namespace Zusi_Datenausgabe
           _clientConnection = new TcpClient();
         }
 
-        _clientConnection.Connect(hostName, port);
+        _clientConnection.Connect(endPoint);
 
         if (_clientConnection.Connected)
         {
