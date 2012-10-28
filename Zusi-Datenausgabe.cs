@@ -158,8 +158,7 @@ namespace Zusi_Datenausgabe
   /// <item><description>
   /// <see cref="Connect"/> to the TCP server.</description></item>
   /// <item><description>As soon as data is coming from the server, the respective events are called automatically, passing one new
-  /// dataset at a time.
-  /// ToDo: Maybe enable events on a per-measurement basis.</description></item>
+  /// dataset at a time.</description></item>
   /// </list></para>
   /// </summary>
   public class ZusiTcpConn : IDisposable
@@ -789,8 +788,8 @@ namespace Zusi_Datenausgabe
     protected void HandleDATA_IntAsSingle(BinaryReader input, int id)
     {
       /* Data is delivered as Single values that are only either 0.0 or 1.0.
-             * For the sake of logic, convert these to actual booleans here.
-             */
+       * For the sake of logic, convert these to actual booleans here.
+       */
       Single temp = input.ReadSingle();
       int value = (int)Math.Round(temp);
       PostToHost(IntReceived, id, value);
