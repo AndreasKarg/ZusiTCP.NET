@@ -194,7 +194,7 @@ namespace Zusi_Datenausgabe
     #endregion
 
     /// <summary>
-    /// Event used to handle incoming string data.
+    /// Event called when an error has occured within the TCP interface.
     /// </summary>
     public event ErrorEvent ErrorReceived;
 
@@ -686,7 +686,7 @@ namespace Zusi_Datenausgabe
     public event ReceiveEvent<DateTime> DateTimeReceived;
 
     /// <summary>
-    /// Event used to handle incoming boolean data.
+    /// Event used to handle incoming door status data.
     /// </summary>
     public event ReceiveEvent<DoorState> DoorsReceived;
 
