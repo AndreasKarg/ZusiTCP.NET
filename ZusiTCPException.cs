@@ -1,6 +1,7 @@
 ﻿/*************************************************************************
+ * ZusiTCPException.cs
+ * Contains the ZusiTcpException class.
  * 
- * Zusi TCP interface for .NET
  * (C) 2009-2011 Andreas Karg, <Clonkman@gmx.de>
  * 
  * This file is part of Zusi TCP Interface.NET.
@@ -22,9 +23,6 @@
  *************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 
 namespace Zusi_Datenausgabe
@@ -39,25 +37,34 @@ namespace Zusi_Datenausgabe
         /// Standardkonstruktor
         /// </summary>
         /// <param name="msg">Nachricht</param>
-        public ZusiTcpException(string msg) : base(msg) { }
+        public ZusiTcpException(string msg) : base(msg)
+        {
+        }
 
         /// <summary>
         /// Noch ein Standardkonstruktor
         /// </summary>
-        public ZusiTcpException() : base() { }
+        public ZusiTcpException()
+        {
+        }
 
         /// <summary>
         /// Konstruktor, der eine Nachricht und eine Ausnahme annimmt.
         /// </summary>
         /// <param name="msg">Nachricht</param>
         /// <param name="e">Ausnahme</param>
-        public ZusiTcpException(string msg, Exception e) : base(msg, e) { }
+        public ZusiTcpException(string msg, Exception e) : base(msg, e)
+        {
+        }
 
         /// <summary>
         /// Serialisierungskonstruktor
         /// </summary>
         /// <param name="serializationInfo">Serialisierungsinfo</param>
         /// <param name="streamingContext">Streaming context</param>
-        protected ZusiTcpException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
+        protected ZusiTcpException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+            : base(serializationInfo, streamingContext)
+        {
+        }
     }
 }

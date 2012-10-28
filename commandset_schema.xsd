@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="commandset_schema"
+    targetNamespace="http://andik.g3th.net/commandset_schema.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://tempuri.org/commandset_schema.xsd"
+    xmlns:tns="http://andik.g3th.net/commandset_schema.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:element name="TCPCommands">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="Command" type="tns:CommandEntry" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="CommandEntry">
+    <xs:attribute name="ID" type="xs:int" use="required"/>
+    <xs:attribute name="Name" type="xs:string" use="required"/>
+    <xs:attribute name="Type" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:schema>

@@ -68,38 +68,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="commandset_schema.designer.cs" />
+    <Compile Include="TCPCommands.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
-    <Compile Include="DatenIDs.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DatenIDs.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZusiTCPException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DatenIDs.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>DatenIDs.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="commands.dat" />
-    <None Include="commandset.ini">
+    <None Include="commandset_schema.xsd">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="commandset.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Kurzanleitung.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Spezifizifikation.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
