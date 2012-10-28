@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace Zusi_Datenausgabe
@@ -32,6 +33,7 @@ namespace Zusi_Datenausgabe
   /// <summary>
   /// This class provides the XML file structure used to interpret Zusi data types.
   /// </summary>
+  [EditorBrowsableAttribute(EditorBrowsableState.Never)]
   public partial class TCPCommands
   {
     /// <summary>
