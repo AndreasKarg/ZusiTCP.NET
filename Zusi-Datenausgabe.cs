@@ -164,7 +164,7 @@ namespace Zusi_Datenausgabe
   /// You can use either the correct ID numbers or the measurements' german names as specified in the TCP server's commandset.xml.
   /// </description></item>
   /// <item><description>
-  /// <see cref="Connect"/> to the TCP server.</description></item>
+  /// <see cref="Connect(string, int)"/> or <seealso cref="Connect(System.Net.IPEndPoint)"/> to the TCP server.</description></item>
   /// <item><description>As soon as data is coming from the server, the respective events are called automatically, passing one new
   /// dataset at a time.</description></item>
   /// </list></para>
