@@ -23,6 +23,7 @@
  *************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -44,7 +45,7 @@ namespace Zusi_Datenausgabe
   /// <typeparam name="TMeasure">Der Schlüssel-Parameter. (ID-Liste: Name der Größe)</typeparam>
   /// <typeparam name="TValue">Der Wert-Parameter. (ID-Liste: Die ID-Nummer der Größe)</typeparam>
   [Serializable]
-  public class ZusiData<TMeasure, TValue>
+  public class ZusiData<TMeasure, TValue> : IEnumerable<KeyValuePair<TMeasure, TValue>>
   {
     private readonly Dictionary<TMeasure, TValue> _data = new Dictionary<TMeasure, TValue>();
 
@@ -66,15 +67,6 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Gibt den Enumerator des zugrundeliegenden Dictionary zurück.
-    /// </summary>
-    /// <returns>Der Enumerator des zugrundeliegenden Dictionary.</returns>
-    public Dictionary<TMeasure, TValue>.Enumerator GetEnumerator()
-    {
-      return _data.GetEnumerator();
-    }
-
-    /// <summary>
     /// Create a new ZusiData instance using source as the back-end storage object.
     /// NOTE: The source object is used directly instead of duplicating its contents.
     /// </summary>
@@ -82,6 +74,30 @@ namespace Zusi_Datenausgabe
     public ZusiData(Dictionary<TMeasure, TValue> source)
     {
       _data = source;
+    }
+
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+    /// </returns>
+    /// <filterpriority>1</filterpriority>
+    public IEnumerator<KeyValuePair<TMeasure, TValue>> GetEnumerator()
+    {
+      return _data.GetEnumerator();
+    }
+
+    /// <summary>
+    /// Returns an enumerator that iterates through a collection.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+    /// </returns>
+    /// <filterpriority>2</filterpriority>
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return GetEnumerator();
     }
   }
 
