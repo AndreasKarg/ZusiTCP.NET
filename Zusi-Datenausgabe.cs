@@ -859,23 +859,23 @@ namespace Zusi_Datenausgabe
       switch (temp)
       {
         case 0:
-          result = new BrakeConfiguration() { HasMgBrake = false, Setting = BrakeSetting.G };
+          result = new BrakeConfiguration() { HasMgBrake = false, Pitch = BrakePitch.G };
           break;
 
         case 1:
-          result = new BrakeConfiguration() { HasMgBrake = false, Setting = BrakeSetting.P };
+          result = new BrakeConfiguration() { HasMgBrake = false, Pitch = BrakePitch.P };
           break;
 
         case 2:
-          result = new BrakeConfiguration() { HasMgBrake = false, Setting = BrakeSetting.R };
+          result = new BrakeConfiguration() { HasMgBrake = false, Pitch = BrakePitch.R };
           break;
 
         case 3:
-          result = new BrakeConfiguration() { HasMgBrake = true, Setting = BrakeSetting.P };
+          result = new BrakeConfiguration() { HasMgBrake = true, Pitch = BrakePitch.P };
           break;
 
         case 4:
-          result = new BrakeConfiguration() { HasMgBrake = true, Setting = BrakeSetting.R };
+          result = new BrakeConfiguration() { HasMgBrake = true, Pitch = BrakePitch.R };
           break;
 
         default:
@@ -999,7 +999,7 @@ namespace Zusi_Datenausgabe
   /// <summary>
   /// Mirrors the brake pitches modeled by Zusi. For magnetic brake equipment <see cref="BrakeConfiguration"/>.
   /// </summary>
-  public enum BrakeSetting
+  public enum BrakePitch
   {
     /// <summary>
     /// The train is set to brake pitch (Bremsstellung) G
@@ -1030,7 +1030,7 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Contains the brake pitch used on the train.
     /// </summary>
-    public BrakeSetting Setting { get; set; }
+    public BrakePitch Pitch { get; set; }
   }
 
   /// <summary>
