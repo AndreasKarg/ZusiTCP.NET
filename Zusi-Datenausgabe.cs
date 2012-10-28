@@ -33,8 +33,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 
-using TCPCommandset;
-
 [assembly: CLSCompliant(true)]
 
 namespace Zusi_Datenausgabe
