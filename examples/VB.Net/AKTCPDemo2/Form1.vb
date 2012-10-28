@@ -16,7 +16,7 @@ Public Class Form1
     Private Sub BtnConnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnConnect.Click
 
         ' If we're currently disconnected...
-        If (MyTCPConnection.ConnectionState = Zusi_Datenausgabe.ConnectionState.Disconnected) Then
+        If (MyTCPConnection.ConnectionState = ConnectionState.Disconnected) Then
             ' ... try to ... 
             Try
                 ' ... establish a connection using the hostname and port number from the main window.
@@ -47,7 +47,9 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub MyTCPConnection_ExampletypeReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Exampletype)) Handles MyTCPConnection.ExampletypeReceived
+    Private Sub MyTCPConnection_ExampletypeReceived(ByVal sender As Object,
+                                                    ByVal data As DataSet(Of Exampletype)) _
+        Handles MyTCPConnection.ExampletypeReceived
         ' So here we can handle our new data.
 
         Dim currentText As New System.Collections.Generic.List(Of String)(lblOut.Text.Split(New String() _
