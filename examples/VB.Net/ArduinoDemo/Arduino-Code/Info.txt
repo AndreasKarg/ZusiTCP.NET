@@ -1,0 +1,7 @@
+-Erstellt wurde der Code in Arduino 1.0.1. Es wird dringend empfohlen keine ältere Version zu verwenden.
+
+-Bearbeiten lässt sich der Code hervorragend mit notepad++, wenn man unter Sprachen 'C' auswählt.
+
+-Angepasst ist der Code derzeit für die kleinen Bords, wie Duemilanove, Uno, Nano oder Leonardo.
+
+-Ausgedacht hat sich deses Protokoll: Jens Eggert

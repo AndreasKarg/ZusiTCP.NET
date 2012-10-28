@@ -68,7 +68,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="commandset_schema.designer.cs" />
+    <Compile Include="commandset_schema.designer.cs">
+	  <AutoGen>True</AutoGen>
+	</Compile>
+	
     <Compile Include="TCPCommands.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

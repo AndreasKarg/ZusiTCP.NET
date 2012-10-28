@@ -134,7 +134,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Zusi-Datenausgabe.csproj">
+    <ProjectReference Include="..\..\..\Zusi-Datenausgabe.csproj">
       <Project>{F99B982E-EB0C-44A8-A9E1-C8103795AF41}</Project>
       <Name>Zusi-Datenausgabe</Name>
     </ProjectReference>
