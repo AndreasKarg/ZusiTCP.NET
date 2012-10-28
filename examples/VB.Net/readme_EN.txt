@@ -1,4 +1,4 @@
-Zusi TCP.Net examples in VB.Net by F. Schn.
+Zusi TCP.Net examples in VB.Net by F. Schn. and Jens "nonesense" Eggert.
 
 This folder contains examples of how to use the Zusi TCP interface for .Net written in VB.Net.
 
