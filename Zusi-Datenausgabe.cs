@@ -42,18 +42,18 @@ namespace Zusi_Datenausgabe
   /// <summary>
   /// Represents a dictionary class that translates names of Zusi measurements to their internal numbers.
   /// </summary>
-  /// <typeparam name="TMeasure">Der Schlüssel-Parameter. (ID-Liste: Name der Größe)</typeparam>
-  /// <typeparam name="TValue">Der Wert-Parameter. (ID-Liste: Die ID-Nummer der Größe)</typeparam>
+  /// <typeparam name="TMeasure">Key parameter. (ID list: The measurement's name)</typeparam>
+  /// <typeparam name="TValue">Value parameter. (ID list: The measurement's ID)</typeparam>
   [Serializable]
   public class ZusiData<TMeasure, TValue> : IEnumerable<KeyValuePair<TMeasure, TValue>>
   {
     private readonly Dictionary<TMeasure, TValue> _data = new Dictionary<TMeasure, TValue>();
 
     /// <summary>
-    /// Enthält die generischen Werte.
+    /// Equivalent to this[] on a regular <see cref="Dictionary{TKey,TValue}"/>
     /// </summary>
-    /// <param name="id">Die ID des Werts.</param>
-    /// <returns>Einen generischen Wert.</returns>
+    /// <param name="id">ID of the measure.</param>
+    /// <returns>The value of the measure.</returns>
     public TValue this[TMeasure id]
     {
       get
@@ -313,7 +313,7 @@ namespace Zusi_Datenausgabe
     #region IDisposable Members
 
     /// <summary>
-    /// Entsorgt die TCP-Verbindung
+    /// Dispose of the TCP connection.
     /// </summary>
     public void Dispose()
     {
@@ -357,7 +357,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Establishes a connection to the TCP server.
+    /// Establish a connection to the TCP server.
     /// </summary>
     /// <param name="hostName">The name or IP address of the host.</param>
     /// <param name="port">The port on the server to connect to (Default: 1435).</param>

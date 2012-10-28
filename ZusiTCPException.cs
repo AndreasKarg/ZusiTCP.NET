@@ -28,41 +28,41 @@ using System.Runtime.Serialization;
 namespace Zusi_Datenausgabe
 {
   /// <summary>
-  /// Wird geschmissen, wenn bei der Verbindung zum TCP-Server ein Fehler auftritt.
+  /// Is thrown when an error occurs in the connection to the TCP server.
   /// </summary>
   [Serializable]
   public class ZusiTcpException : Exception
   {
     /// <summary>
-    /// Standardkonstruktor
+    /// Create a new ZusiTcpException using msg as message.
     /// </summary>
-    /// <param name="msg">Nachricht</param>
+    /// <param name="msg">The exception message.</param>
     public ZusiTcpException(string msg)
       : base(msg)
     {
     }
 
     /// <summary>
-    /// Noch ein Standardkonstruktor
+    /// Create a new ZusiTcpException.
     /// </summary>
     public ZusiTcpException()
     {
     }
 
     /// <summary>
-    /// Konstruktor, der eine Nachricht und eine Ausnahme annimmt.
+    /// Create a new ZusiTcpException using msg as the message and e as the inner exception
     /// </summary>
-    /// <param name="msg">Nachricht</param>
-    /// <param name="e">Ausnahme</param>
+    /// <param name="msg">The exception message.</param>
+    /// <param name="e">The inner exception.</param>
     public ZusiTcpException(string msg, Exception e)
       : base(msg, e)
     {
     }
 
     /// <summary>
-    /// Serialisierungskonstruktor
+    /// Create a new ZusiTcpException with serialized data.
     /// </summary>
-    /// <param name="serializationInfo">Serialisierungsinfo</param>
+    /// <param name="serializationInfo">Serialization info</param>
     /// <param name="streamingContext">Streaming context</param>
     protected ZusiTcpException(SerializationInfo serializationInfo, StreamingContext streamingContext)
       : base(serializationInfo, streamingContext)
