@@ -360,13 +360,19 @@ namespace Zusi_Datenausgabe
     public void Connect(string hostName, int port)
     {
       var hostAddresses = Dns.GetHostAddresses(hostName);
+      IPAddress myAddress;
 
-      if(hostAddresses.Length == 0)
+      /* The TCP server supports only IPv4, so we have to filter out v6. */
+      try
       {
-        throw new ArgumentException("Host name could not be resolved.",hostName);
+        myAddress = hostAddresses.First(x => x.AddressFamily == AddressFamily.InterNetwork);
+      }
+      catch (Exception ex)
+      {
+        throw new ArgumentException("Host name could not be resolved.", hostName, ex);
       }
 
-      Connect(new IPEndPoint(hostAddresses[0],port));
+      Connect(new IPEndPoint(myAddress, port));
     }
 
     /// <summary>
@@ -386,7 +392,7 @@ namespace Zusi_Datenausgabe
 
         if (_clientConnection == null)
         {
-          _clientConnection = new TcpClient();
+          _clientConnection = new TcpClient(AddressFamily.InterNetwork);
         }
 
         _clientConnection.Connect(endPoint);
