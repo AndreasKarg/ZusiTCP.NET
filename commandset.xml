@@ -21,8 +21,8 @@
   <Command ID="2580" Name="LM PZB 1000Hz" Type="BoolAsSingle" />
   <Command ID="2581" Name="LM PZB 500Hz" Type="BoolAsSingle" />
   <Command ID="2582" Name="LM PZB Befehl" Type="BoolAsSingle" />
-  <Command ID="2583" Name="LM PZB Zugart U" Type="BoolAsSingle" />
-  <Command ID="2584" Name="LM PZB Zugart M" Type="BoolAsSingle" />
+  <Command ID="2583" Name="LM PZB Zugart U" Type="BoolAndSingle" />
+  <Command ID="2584" Name="LM PZB Zugart M" Type="BoolAndSingle" />
   <Command ID="2585" Name="LM PZB Zugart O" Type="BoolAsSingle" />
   <Command ID="2586" Name="LM LZB H" Type="BoolAsSingle" />
   <Command ID="2587" Name="LM LZB G" Type="BoolAsSingle" />

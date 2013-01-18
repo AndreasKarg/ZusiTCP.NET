@@ -827,6 +827,23 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
+    /// Handle incoming data that is sent as Single values by Zusi and can
+    /// be a bool value as well as a single value.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected void HandleDATA_BoolAndSingle(BinaryReader input, int id)
+    {
+      /* Data is delivered as Single values that are usually only either 0.0 or 1.0.
+       * In some cases (PZ80!) the values are no Booleans at all, so we just post to both events.
+       */
+      Single temp = input.ReadSingle();
+      bool value = (temp >= 0.5f);
+      PostToHost(BoolReceived, id, value);
+      PostToHost(FloatReceived, id, temp);
+    }
+
+    /// <summary>
     /// Handle incoming data of type Int that are sent as Single values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
