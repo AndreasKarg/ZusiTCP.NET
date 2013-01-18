@@ -26,6 +26,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -335,21 +336,33 @@ namespace Zusi_Datenausgabe
       ErrorReceived.Invoke(this, (ZusiTcpException)o);
     }
 
+    private void SendToServer(byte[] message)
+    {
+      try
+      {
+        _clientConnection.Client.Send(message);
+      }
+      catch (SocketException ex)
+      {
+        throw new ZusiTcpException("An error occured when trying to send data to the server.", ex);
+      }
+    }
+
     private void SendPacket(params byte[] message)
     {
-      _clientConnection.Client.Send(BitConverter.GetBytes(message.Length));
-      _clientConnection.Client.Send(message);
+      SendToServer(BitConverter.GetBytes(message.Length));
+      SendToServer(message);
     }
 
     private void SendPacket(params byte[][] message)
     {
       int iTempLength = message.Sum(item => item.Length);
 
-      _clientConnection.Client.Send(BitConverter.GetBytes(iTempLength));
+      SendToServer(BitConverter.GetBytes(iTempLength));
 
       foreach (var item in message)
       {
-        _clientConnection.Client.Send(item);
+        SendToServer(item);
       }
     }
 
@@ -408,46 +421,53 @@ namespace Zusi_Datenausgabe
           _clientConnection = new TcpClient(AddressFamily.InterNetwork);
         }
 
-        _clientConnection.Connect(endPoint);
-
-        if (_clientConnection.Connected)
+        try
         {
-          _streamReaderThread = new Thread(ReceiveLoop) { Name = "ZusiData Receiver" };
-          _streamReaderThread.IsBackground = true;
-
-          SendPacket(
-            Pack(0, 1, 2, (byte)ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
-            _stringEncoder.GetBytes(ClientId));
-
-          ExpectResponse(ResponseType.AckHello, 0);
-
-          var aGetData = from iData in RequestedData group iData by (iData / 256);
-
-          var reqDataBuffer = new List<byte[]>();
-
-          foreach (var aDataGroup in aGetData)
-          {
-            reqDataBuffer.Clear();
-            reqDataBuffer.Add(Pack(0, 3));
-
-            byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
-            reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
-
-            reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID % 256))));
-
-            SendPacket(reqDataBuffer.ToArray());
-
-            ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
-          }
-
-          SendPacket(0, 3, 0, 0);
-
-          ExpectResponse(ResponseType.AckNeededData, 0);
-
-          ConnectionState = ConnectionState.Connected;
-
-          _streamReaderThread.Start();
+          _clientConnection.Connect(endPoint);
         }
+        catch (SocketException ex)
+        {
+          throw new ZusiTcpException("Could not establish socket connection to TCP server. " +
+                                     "Is the server running and enabled?", ex);
+        }
+
+        Debug.Assert(_clientConnection.Connected);
+
+        _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
+        _streamReaderThread.IsBackground = true;
+
+        SendPacket(
+          Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
+          _stringEncoder.GetBytes(ClientId));
+
+        ExpectResponse(ResponseType.AckHello, 0);
+
+        var aGetData = from iData in RequestedData group iData by (iData/256);
+
+        var reqDataBuffer = new List<byte[]>();
+
+        foreach (var aDataGroup in aGetData)
+        {
+          reqDataBuffer.Clear();
+          reqDataBuffer.Add(Pack(0, 3));
+
+          byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
+          reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
+
+          reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID%256))));
+
+          SendPacket(reqDataBuffer.ToArray());
+
+          ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
+        }
+
+        SendPacket(0, 3, 0, 0);
+
+        ExpectResponse(ResponseType.AckNeededData, 0);
+
+        ConnectionState = ConnectionState.Connected;
+
+        _streamReaderThread.Start();
       }
 
       catch (Exception ex)
@@ -458,7 +478,8 @@ namespace Zusi_Datenausgabe
           _streamReaderThread = null;
         }
         ConnectionState = ConnectionState.Error;
-        throw new ZusiTcpException("Error connecting to server.", ex);
+
+        throw;
       }
     }
 
@@ -483,37 +504,31 @@ namespace Zusi_Datenausgabe
     {
       var readBuffer = new byte[7];
 
-      _clientConnection.Client.Receive(readBuffer, 7, SocketFlags.None);
-      MemoryStream bufStream = null;
-
       try
       {
-        bufStream = new MemoryStream(readBuffer);
+        _clientConnection.Client.Receive(readBuffer, 7, SocketFlags.None);
       }
-      catch
+      catch (SocketException ex)
       {
-        if (bufStream != null)
+        throw new ZusiTcpException("Error while waiting for a response from TCP server.", ex);
+      }
+
+      using (var bufStream = new MemoryStream(readBuffer))
+      {
+        var bufRead = new BinaryReader(bufStream);
+
+        int iPacketLength = bufRead.ReadInt32();
+        if (iPacketLength != 3)
         {
-          bufStream.Dispose();
+          throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
         }
-        throw;
-      }
-      var bufRead = new BinaryReader(bufStream);
 
-      int iPacketLength = bufRead.ReadInt32();
-      if (iPacketLength != 3)
-      {
-        throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
-      }
+        int iReadInstr = GetInstruction(bufStream.ReadByte(), bufStream.ReadByte());
+        if (iReadInstr != (int) expResponse)
+        {
+          throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
+        }
 
-      int iReadInstr = GetInstruction(bufStream.ReadByte(), bufStream.ReadByte());
-      if (iReadInstr != (int)expResponse)
-      {
-        throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
-      }
-
-      try
-      {
         int iResponse = bufStream.ReadByte();
         if (iResponse != 0)
         {
@@ -543,13 +558,6 @@ namespace Zusi_Datenausgabe
           }
         }
       }
-      catch
-      {
-        bufStream.Dispose();
-        throw;
-      }
-
-      bufStream.Close();
     }
 
     internal void ReceiveLoop()
