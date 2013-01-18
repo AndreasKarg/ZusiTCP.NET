@@ -459,7 +459,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Disconnnect()
     {
-      if (_streamReaderThread != null)
+      if((_streamReaderThread != null)&&(_streamReaderThread != Thread.CurrentThread))
       {
         _streamReaderThread.Abort();
       }
