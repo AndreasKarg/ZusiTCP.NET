@@ -202,6 +202,14 @@ namespace Zusi_Datenausgabe
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     public ZusiTcpConn(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml")
     {
+      if (SynchronizationContext.Current == null)
+      {
+        throw new ZusiTcpException("Cannot create TCP connection object: SynchronizationContext.Current is null. " +
+                                   "This happens when the object is created before the context is initialized in " +
+                                   "Application.Run() or equivalent. " +
+                                   "Possible solution: Create object later, e.g. when the user clicks the \"Connect\" button.");
+      }
+
       ClientId = clientId;
       ClientPriority = priority;
 
