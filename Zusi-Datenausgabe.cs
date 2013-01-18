@@ -319,6 +319,11 @@ namespace Zusi_Datenausgabe
 
     private void ErrorMarshal(object o)
     {
+      if (ErrorReceived == null)
+      {
+        return;
+      }
+
       ErrorReceived.Invoke(this, (ZusiTcpException)o);
     }
 
