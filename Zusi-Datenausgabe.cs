@@ -759,6 +759,11 @@ namespace Zusi_Datenausgabe
     /// <param name="value">Contains the new value of the measure.</param>
     protected void PostToHost<T>(ReceiveEvent<T> Event, int id, T value)
     {
+      if (Event == null)
+      {
+        return;
+      }
+
       _hostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
     }
 
