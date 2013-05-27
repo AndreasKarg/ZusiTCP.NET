@@ -234,11 +234,10 @@ namespace Zusi_Datenausgabe
         SendPacket(ida.ToArray(), lng, array);
       }
 
-      protected override void TryBeginAcceptConnection_IsMaster()
+      protected virtual void TryBeginAcceptConnection_IsMaster()
       {
         this.RequestedData.Clear();
         this.RequestedData.AddRange(ServerBase.GetAbonentedIds());
-        base.TryBeginAcceptConnection_IsMaster();
       }
 
       private void ConnectionConnectStatusChanged(object sender, EventArgs e)
@@ -282,7 +281,7 @@ namespace Zusi_Datenausgabe
             catch
             { SendPacket(Pack(0, 2, 255)); throw; }
             SendPacket(Pack(0, 2, 0));
-            Connect_SendRequests();
+            RequestDataFromZusi();
           }
           else
           {

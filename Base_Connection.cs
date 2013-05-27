@@ -345,7 +345,7 @@ namespace Zusi_Datenausgabe
 
     protected abstract void HandleHandshake();
 
-    protected void Connect_SendRequests()
+    protected void RequestDataFromZusi()
     {
       var aGetData = from iData in RequestedData group iData by (iData / 256);
 
@@ -368,11 +368,6 @@ namespace Zusi_Datenausgabe
 
       SendPacket(0, 3, 0, 0);
     }
-
-    /// <summary>
-    /// Informs the client that the connection is a master and it's now last chance to fill the RequestingData-list.
-    /// </summary>
-    protected virtual void TryBeginAcceptConnection_IsMaster() { }
 
     /// <summary>
     /// Disconnect from the TCP server.
@@ -563,32 +558,6 @@ namespace Zusi_Datenausgabe
           PostExToHost(newEx);
         }
       }
-    }
-
-    /// <summary>
-    /// Request the measurement passed as plain text in the parameter "name" from the server. Shorthand for
-    /// <c>TCP.RequestedData.Add(TCP.IDs[name]);</c>. Must be called before connecting.
-    /// </summary>
-    /// <param name="name">The name of the measurement.</param>
-    /// <exception cref="ZusiTcpException">Thrown, when communciation is not disconnected.</exception>
-    public void RequestData(string name)
-    {
-      if (ConnectionState != ConnectionState.Disconnected)
-        throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
-      _requestedData.Add(IDs[name]);
-    }
-
-    /// <summary>
-    /// Request the measurement passed as ID in the parameter "id" from the server. Shorthand for
-    /// <c>TCP.RequestedData.Add(id);</c>. Must be called before connecting.
-    /// </summary>
-    /// <param name="id">The ID of the measurement.</param>
-    /// <exception cref="ZusiTcpException">Thrown, when communciation is not disconnected.</exception>
-    public void RequestData(int id)
-    {
-      if (ConnectionState != ConnectionState.Disconnected)
-        throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
-      _requestedData.Add(id);
     }
 
     private void Dispose(bool disposing)

@@ -159,7 +159,7 @@ namespace Zusi_Datenausgabe
 
       ExpectResponse(ResponseType.AckHello, 0);
 
-      Connect_SendRequests();
+      RequestDataFromZusi();
 
       ExpectResponse(ResponseType.AckNeededData, 0);
     }
@@ -467,6 +467,32 @@ namespace Zusi_Datenausgabe
       }
 
       InitializeClient(clientConnection);
+    }
+
+    /// <summary>
+    /// Request the measurement passed as plain text in the parameter "name" from the server. Shorthand for
+    /// <c>TCP.RequestedData.Add(TCP.IDs[name]);</c>. Must be called before connecting.
+    /// </summary>
+    /// <param name="name">The name of the measurement.</param>
+    /// <exception cref="ZusiTcpException">Thrown, when communciation is not disconnected.</exception>
+    public void RequestData(string name)
+    {
+      if (ConnectionState != ConnectionState.Disconnected)
+        throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
+      RequestedData.Add(IDs[name]);
+    }
+
+    /// <summary>
+    /// Request the measurement passed as ID in the parameter "id" from the server. Shorthand for
+    /// <c>TCP.RequestedData.Add(id);</c>. Must be called before connecting.
+    /// </summary>
+    /// <param name="id">The ID of the measurement.</param>
+    /// <exception cref="ZusiTcpException">Thrown, when communciation is not disconnected.</exception>
+    public void RequestData(int id)
+    {
+      if (ConnectionState != ConnectionState.Disconnected)
+        throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
+      RequestedData.Add(id);
     }
   }
 
