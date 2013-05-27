@@ -151,17 +151,18 @@ namespace Zusi_Datenausgabe
       Connect(new IPEndPoint(myAddress, port));
     }
 
-    /// <summary>
-    /// Establish a connection to the TCP server.
-    /// </summary>
-    /// <param name="endPoint">Specifies an IP end point to which the interface tries to connect.</param>
-    /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
-    /// established.</exception>
-    public new void Connect(IPEndPoint endPoint)
+    protected override void HandleHandshake()
     {
-      base.Connect(endPoint);
-    }
+      SendPacket(
+        Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
+        StringEncoder.GetBytes(ClientId));
 
+      ExpectResponse(ResponseType.AckHello, 0);
+
+      Connect_SendRequests();
+
+      ExpectResponse(ResponseType.AckNeededData, 0);
+    }
 
     #region Data reception handlers
 
@@ -408,23 +409,23 @@ namespace Zusi_Datenausgabe
       switch (temp)
       {
         case 0:
-          result = new BrakeConfiguration() { HasMgBrake = false, Pitch = BrakePitch.G };
+          result = new BrakeConfiguration() {HasMgBrake = false, Pitch = BrakePitch.G};
           break;
 
         case 1:
-          result = new BrakeConfiguration() { HasMgBrake = false, Pitch = BrakePitch.P };
+          result = new BrakeConfiguration() {HasMgBrake = false, Pitch = BrakePitch.P};
           break;
 
         case 2:
-          result = new BrakeConfiguration() { HasMgBrake = false, Pitch = BrakePitch.R };
+          result = new BrakeConfiguration() {HasMgBrake = false, Pitch = BrakePitch.R};
           break;
 
         case 3:
-          result = new BrakeConfiguration() { HasMgBrake = true, Pitch = BrakePitch.P };
+          result = new BrakeConfiguration() {HasMgBrake = true, Pitch = BrakePitch.P};
           break;
 
         case 4:
-          result = new BrakeConfiguration() { HasMgBrake = true, Pitch = BrakePitch.R };
+          result = new BrakeConfiguration() {HasMgBrake = true, Pitch = BrakePitch.R};
           break;
 
         default:
@@ -433,10 +434,40 @@ namespace Zusi_Datenausgabe
 
       PostToHost(BrakeConfigReceived, id, result);
 
-      return sizeof(Int32);
+      return sizeof (Int32);
     }
 
     #endregion
+
+    /// <summary>
+    /// Establish a connection to the TCP server.
+    /// </summary>
+    /// <param name="endPoint">Specifies an IP end point to which the interface tries to connect.</param>
+    /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
+    /// established.</exception>
+    protected void Connect(IPEndPoint endPoint)
+    {
+      var clientConnection = new TcpClient(AddressFamily.InterNetwork);
+
+      ValidateConnectionState();
+      ConnectionState = ConnectionState.Connecting;
+      if (RequestedData.Count == 0)
+      {
+        throw (new ZusiTcpException("No Data marked to be requested. Request Data first."));
+      }
+
+      try
+      {
+        clientConnection.Connect(endPoint);
+      }
+      catch (SocketException ex)
+      {
+        throw new ZusiTcpException("Could not establish socket connection to TCP server. " +
+                                   "Is the server running and enabled?", ex);
+      }
+
+      InitializeClient(clientConnection);
+    }
   }
 
 }

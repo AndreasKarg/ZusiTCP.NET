@@ -167,7 +167,8 @@ namespace Zusi_Datenausgabe
         {
           TcpClient tc = _serverObj.AcceptTcpClient();
           cli = new TCPServerCleint(_doc, this);
-          cli.TryBeginAcceptConnection(tc);
+
+          cli.TryBeginAcceptConnection(tc, (Master != null) ? Master.RequestedData : null);
           cli = null;
         }
       }
@@ -190,6 +191,10 @@ namespace Zusi_Datenausgabe
       }
 
       public TCPServer ServerBase { set; get; }
+
+      protected override void HandleHandshake()
+      {
+      }
 
 
       protected int HandleDATA_4ByteCommand(BinaryReader input, int id)
@@ -241,12 +246,88 @@ namespace Zusi_Datenausgabe
         ServerBase.ConnectionConnectStatusChanged(this);
       }
 
-      public void TryBeginAcceptConnection(TcpClient clientConnection)
+      /// <summary>
+      /// Establish a connection to the TCP client as a server.
+      /// </summary>
+      /// <param name="clientConnection">The Client to Connect.</param>
+      /// <param name="RequestedToZusi">A List to restrict ID-Requests. If a requested the value is not in the list, the
+      /// connection will be terminated with error code 3. If the list is null all ID-Requests will be accepted. Note:
+      /// when this param is set, masters will be denyed with code 2 - master already connected.</param>
+      /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
+      /// established.</exception>
+      public void TryBeginAcceptConnection(TcpClient clientConnection, ICollection<int> RestrictToValues)
       {
-        if (ServerBase.Master == null)
-          base.TryBeginAcceptConnection(clientConnection, null);
-        else
-          base.TryBeginAcceptConnection(clientConnection, ServerBase.Master.RequestedData);
+        InitializeClient(clientConnection);
+      }
+
+      private void ReceiveLoop(object o)
+      {
+        System.Collections.ObjectModel.ReadOnlyCollection<int> RestrictToValues = (System.Collections.ObjectModel.ReadOnlyCollection<int>)o;
+        try
+        {
+          RequestedData.Clear();
+          try
+          { ExpectResponse(ResponseType.Hello, 0); }
+          catch
+          { SendPacket(Pack(0, 2, 255)); throw; }
+          if (this.ClientPriority == ClientPriority.Master)
+          {
+            if (RestrictToValues != null)
+            {
+              SendPacket(Pack(0, 2, 2));
+              throw new ZusiTcpException("Master is already connected. No more Master connections allowed.");
+            }
+            try
+            { TryBeginAcceptConnection_IsMaster(); }
+            catch
+            { SendPacket(Pack(0, 2, 255)); throw; }
+            SendPacket(Pack(0, 2, 0));
+            Connect_SendRequests();
+          }
+          else
+          {
+            SendPacket(Pack(0, 2, 0));
+            ExpectResponseAnswer requestedValues = null;
+            int dataGroup = -1;
+            while ((requestedValues == null) || (requestedValues.requestArea != 0) || ((requestedValues.requestArray != null) && (requestedValues.requestArray.Length != 0)))
+            {
+              try
+              { requestedValues = ExpectResponse(ResponseType.NeededData, dataGroup); }
+              catch
+              { SendPacket(Pack(0, 4, 255)); throw; }
+              foreach (int ValReq in requestedValues.requestArray)
+              {
+                if ((RestrictToValues != null) && (!RestrictToValues.Contains(ValReq)))
+                {
+                  SendPacket(Pack(0, 4, 3));
+                  throw new ZusiTcpException("Client requested dataset " + ValReq + " which was not requested when Zusi was connected.");
+                }
+                if (!RequestedData.Contains(ValReq))
+                  RequestedData.Add(ValReq);
+              }
+              SendPacket(Pack(0, 4, 0));
+            }
+          }
+        }
+        catch (Exception e)
+        {
+          Disconnnect();
+          ConnectionState = ConnectionState.Error;
+
+          if (e is ZusiTcpException)
+          {
+            PostExToHost(e as ZusiTcpException);
+          }
+          else
+          {
+            var newEx =
+              new ZusiTcpException("The connection can't be established.", e);
+
+            PostExToHost(newEx);
+          }
+        }
+        ConnectionState = ConnectionState.Connected;
+        ReceiveLoop();
       }
     }
   }

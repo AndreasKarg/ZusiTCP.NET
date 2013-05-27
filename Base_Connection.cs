@@ -16,13 +16,13 @@ namespace Zusi_Datenausgabe
   /// <summary>
   /// Represents a baseclass for all TCPconnections based on the Zusi-protocol.
   /// </summary>
-  public class Base_Connection : IDisposable
+  public abstract class Base_Connection : IDisposable
   {
     #region Fields
 
     private readonly SynchronizationContext _hostContext;
 
-    private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
+    protected readonly ASCIIEncoding StringEncoder = new ASCIIEncoding();
 
     private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
 
@@ -182,7 +182,7 @@ namespace Zusi_Datenausgabe
       {
         return _connectionState;
       }
-      private set
+      protected set
       {
         _connectionState = value;
         _requestedData.IsReadOnly = (value == ConnectionState.Connected);
@@ -300,7 +300,7 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    private static byte[] Pack(params byte[] message)
+    protected static byte[] Pack(params byte[] message)
     {
       return message;
     }
@@ -310,79 +310,42 @@ namespace Zusi_Datenausgabe
       return byteA * 256 + byteB;
     }
 
-    /// <summary>
-    /// Establish a connection to the TCP server.
-    /// </summary>
-    /// <param name="endPoint">Specifies an IP end point to which the interface tries to connect.</param>
-    /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
-    /// established.</exception>
-    protected void Connect(IPEndPoint endPoint)
+    protected void InitializeClient(TcpClient clientConnection)
     {
+      Debug.Assert(clientConnection.Connected);
+
+      _clientStream = clientConnection.GetStream();
+      _clientReader = new BinaryReader(_clientStream, StringEncoder);
+
       try
       {
-        if (ConnectionState == ConnectionState.Error)
-        {
-          throw (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
-        }
-        ConnectionState = ConnectionState.Connecting;
-        if (RequestedData.Count == 0)
-        {
-          throw (new ZusiTcpException("No Data marked to be requested. Request Data first."));
-        }
+        _streamReaderThread = new Thread(ReceiveLoop) { Name = "ZusiData Receiver", IsBackground = true };
 
-        if (_clientConnection == null)
-        {
-          _clientConnection = new TcpClient(AddressFamily.InterNetwork);
-        }
-
-        try
-        {
-          _clientConnection.Connect(endPoint);
-        }
-        catch (SocketException ex)
-        {
-          throw new ZusiTcpException("Could not establish socket connection to TCP server. " +
-                                     "Is the server running and enabled?", ex);
-        }
-
-
-        Debug.Assert(_clientConnection.Connected);
-
-        _clientStream = _clientConnection.GetStream();
-        _clientReader = new BinaryReader(_clientStream, _stringEncoder);
-
-        _streamReaderThread = new Thread(ReceiveLoop) { Name = "ZusiData Receiver" };
-        _streamReaderThread.IsBackground = true;
-
-        SendPacket(
-            Pack(0, 1, 2, (byte)ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
-            _stringEncoder.GetBytes(ClientId));
-
-        ExpectResponse(ResponseType.AckHello, 0);
-
-        Connect_SendRequests();
-
-        ExpectResponse(ResponseType.AckNeededData, 0);
+        HandleHandshake();
 
         ConnectionState = ConnectionState.Connected;
 
         _streamReaderThread.Start();
       }
-
       catch
       {
-        if (_streamReaderThread != null)
-        {
-          _streamReaderThread.Abort();
-          _streamReaderThread = null;
-        }
-        ConnectionState = ConnectionState.Error;
-
+        HandleError();
         throw;
       }
     }
 
-    private void Connect_SendRequests()
+    private void HandleError()
+    {
+      if (_streamReaderThread != null)
+        _streamReaderThread.Abort();
+      _streamReaderThread = null;
+
+      ConnectionState = ConnectionState.Error;
+    }
+
+    protected abstract void HandleHandshake();
+
+    protected void Connect_SendRequests()
     {
       var aGetData = from iData in RequestedData group iData by (iData / 256);
 
@@ -404,114 +367,6 @@ namespace Zusi_Datenausgabe
       }
 
       SendPacket(0, 3, 0, 0);
-    }
-
-    /// <summary>
-    /// Establish a connection to the TCP client as a server.
-    /// </summary>
-    /// <param name="clientConnection">The Client to Connect.</param>
-    /// <param name="RequestedToZusi">A List to restrict ID-Requests. If a requested the value is not in the list, the
-    /// connection will be terminated with error code 3. If the list is null all ID-Requests will be accepted. Note:
-    /// when this param is set, masters will be denyed with code 2 - master already connected.</param>
-    /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
-    /// established.</exception>
-    protected void TryBeginAcceptConnection(TcpClient clientConnection, ICollection<int> RestrictToValues)
-    {
-      try
-      {
-        if (ConnectionState == ConnectionState.Error)
-        {
-          throw (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
-        }
-        ConnectionState = ConnectionState.Connecting;
-
-        _clientConnection = clientConnection;
-
-        Debug.Assert(_clientConnection.Connected);
-
-        _clientStream = _clientConnection.GetStream();
-        _clientReader = new BinaryReader(_clientStream, _stringEncoder);
-
-        _streamReaderThread = new Thread(TryBeginAcceptConnection_Thread) { Name = "ZusiData Receiver" };
-        _streamReaderThread.IsBackground = true;
-
-        _streamReaderThread.Start(RestrictToValues);
-      }
-      catch
-      {
-        ConnectionState = ConnectionState.Error;
-        throw;
-      }
-    }
-
-    private void TryBeginAcceptConnection_Thread(object o)
-    {
-      System.Collections.ObjectModel.ReadOnlyCollection<int> RestrictToValues = (System.Collections.ObjectModel.ReadOnlyCollection<int>)o;
-      try
-      {
-        _requestedData.Clear();
-        try
-        { ExpectResponse(ResponseType.Hello, 0); }
-        catch
-        { SendPacket(Pack(0, 2, 255)); throw; }
-        if (this.ClientPriority == ClientPriority.Master)
-        {
-          if (RestrictToValues != null)
-          {
-            SendPacket(Pack(0, 2, 2));
-            throw new ZusiTcpException("Master is already connected. No more Master connections allowed.");
-          }
-          try
-          { TryBeginAcceptConnection_IsMaster(); }
-          catch
-          { SendPacket(Pack(0, 2, 255)); throw; }
-          SendPacket(Pack(0, 2, 0));
-          Connect_SendRequests();
-        }
-        else
-        {
-          SendPacket(Pack(0, 2, 0));
-          ExpectResponseAnswer requestedValues = null;
-          int dataGroup = -1;
-          while ((requestedValues == null) || (requestedValues.requestArea != 0) || ((requestedValues.requestArray != null) && (requestedValues.requestArray.Length != 0)))
-          {
-            try
-            { requestedValues = ExpectResponse(ResponseType.NeededData, dataGroup); }
-            catch
-            { SendPacket(Pack(0, 4, 255)); throw; }
-            foreach (int ValReq in requestedValues.requestArray)
-            {
-              if ((RestrictToValues != null) && (!RestrictToValues.Contains(ValReq)))
-              {
-                SendPacket(Pack(0, 4, 3));
-                throw new ZusiTcpException("Client requested dataset " + ValReq + " which was not requested when Zusi was connected.");
-              }
-              if (!_requestedData.Contains(ValReq))
-                _requestedData.Add(ValReq);
-            }
-            SendPacket(Pack(0, 4, 0));
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        Disconnnect();
-        ConnectionState = ConnectionState.Error;
-
-        if (e is ZusiTcpException)
-        {
-          PostExToHost(e as ZusiTcpException);
-        }
-        else
-        {
-          var newEx =
-              new ZusiTcpException("The connection can't be established.", e);
-
-          PostExToHost(newEx);
-        }
-      }
-      ConnectionState = ConnectionState.Connected;
-      ReceiveLoop();
     }
 
     /// <summary>
@@ -544,7 +399,7 @@ namespace Zusi_Datenausgabe
     /// <exception cref="ArgumentOutOfRangeException">expResponse-Type not supported</exception>
     /// <exception cref="ZusiTcpException">Can't continue connection, reasond: see message.</exception>
     /// <returns>An array with the requested Types for ResponseType.NeededData, null for other values.</returns>
-    private ExpectResponseAnswer ExpectResponse(ResponseType expResponse, int dataGroup)
+    protected ExpectResponseAnswer ExpectResponse(ResponseType expResponse, int dataGroup)
     {
       int iPacketLength = _clientReader.ReadInt32();
       if (!((iPacketLength == 3) || ((expResponse == ResponseType.Hello) && (iPacketLength >= 5)) || ((expResponse == ResponseType.NeededData) && (iPacketLength >= 4))))
@@ -623,7 +478,7 @@ namespace Zusi_Datenausgabe
       return null;
     }
 
-    private void ReceiveLoop()
+    protected virtual void ReceiveLoop()
     {
       var dataHandlers = new Dictionary<string, MethodInfo>();
 
@@ -760,7 +615,7 @@ namespace Zusi_Datenausgabe
 
     #region Nested type: ResponseType
 
-    private enum ResponseType
+    protected enum ResponseType
     {
       None = 0,
       Hello = 1,
@@ -773,7 +628,7 @@ namespace Zusi_Datenausgabe
 
     #region Nested type: ExpectResponseAnswer
 
-    private class ExpectResponseAnswer
+    protected class ExpectResponseAnswer
     {
       public ExpectResponseAnswer(int[] requestArray, int requestArea)
       {
@@ -841,6 +696,14 @@ namespace Zusi_Datenausgabe
         _hostContext.Post(ErrorMarshal, ex as ZusiTcpException);
       else
         ErrorMarshal(ex);
+    }
+
+    protected void ValidateConnectionState()
+    {
+      if (ConnectionState == ConnectionState.Error)
+      {
+        throw (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
+      }
     }
   }
 }
