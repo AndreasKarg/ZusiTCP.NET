@@ -66,63 +66,63 @@ namespace Zusi_Datenausgabe
   ///
   /// Notice that ZusiTcpConn implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
-	public class ZusiTcpConn : Base_Connection
+  public class ZusiTcpConn : Base_Connection
   {
- 
-	/// <summary>
-	/// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
-	/// </summary>
-	/// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
-	/// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-	/// <param name="commandsetDocument">The XML file containig the command set.</param>
-	/// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-	public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commandsetDocument, SynchronizationContext hostContext)
-		: base(clientId, priority, commandsetDocument, hostContext)	{	}
 
-	/// <summary>
-	/// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
-	/// </summary>
-	/// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
-	/// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-	/// <param name="commandsetDocument">The XML file containig the command set.</param>
-	public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commandsetDocument)
-		: base(clientId, priority, commandsetDocument)	{	}
+    /// <summary>
+    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// </summary>
+    /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="commandsetDocument">The XML file containig the command set.</param>
+    /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
+    public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commandsetDocument, SynchronizationContext hostContext)
+      : base(clientId, priority, commandsetDocument, hostContext) { }
 
-	/// <summary>
-	/// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
-	/// </summary>
-	/// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
-	/// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-	/// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-	/// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-	public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath, SynchronizationContext hostContext)
-		: base(clientId, priority, commandsetPath, hostContext)	{	}
+    /// <summary>
+    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// </summary>
+    /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="commandsetDocument">The XML file containig the command set.</param>
+    public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commandsetDocument)
+      : base(clientId, priority, commandsetDocument) { }
 
-	/// <summary>
-	/// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
-	/// </summary>
-	/// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
-	/// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-	/// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-	public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath)
-		: base(clientId, priority, commandsetPath)	{	}
+    /// <summary>
+    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// </summary>
+    /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
+    /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
+    public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath, SynchronizationContext hostContext)
+      : base(clientId, priority, commandsetPath, hostContext) { }
 
-	/// <summary>
-	/// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
-	/// </summary>
-	/// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
-	/// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-	/// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-	public ZusiTcpConn(string clientId, ClientPriority priority, SynchronizationContext hostContext)
-		: base(clientId, priority, hostContext)	{	}
+    /// <summary>
+    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// </summary>
+    /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
+    public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath)
+      : base(clientId, priority, commandsetPath) { }
 
-	/// <summary>
-	/// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
-	/// </summary>
-	/// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
-	/// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-	public ZusiTcpConn(string clientId, ClientPriority priority)
-		: base(clientId, priority)	{	}
+    /// <summary>
+    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// </summary>
+    /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
+    public ZusiTcpConn(string clientId, ClientPriority priority, SynchronizationContext hostContext)
+      : base(clientId, priority, hostContext) { }
+
+    /// <summary>
+    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// </summary>
+    /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    public ZusiTcpConn(string clientId, ClientPriority priority)
+      : base(clientId, priority) { }
 
 
 
@@ -159,11 +159,11 @@ namespace Zusi_Datenausgabe
     /// established.</exception>
     public new void Connect(IPEndPoint endPoint)
     {
-			base.Connect(endPoint);
+      base.Connect(endPoint);
     }
 
 
-   #region Data reception handlers
+    #region Data reception handlers
 
     /// <summary>
     /// Event used to handle incoming float data.
@@ -214,7 +214,7 @@ namespace Zusi_Datenausgabe
     {
       PostToHost(FloatReceived, id, input.ReadSingle());
 
-      return sizeof (Single);
+      return sizeof(Single);
     }
 
     /// <summary>
@@ -226,15 +226,15 @@ namespace Zusi_Datenausgabe
     {
       PostToHost(IntReceived, id, input.ReadInt32());
 
-      return sizeof (Int32);
+      return sizeof(Int32);
     }
 
-		/// <summary>
-		/// Handle incoming data of type String. This impentation forwards it to HandleDATA_ByteLengthString.
-		/// </summary>
-		/// <param name="input">The binary reader comprising the input data stream.</param>
-		/// <param name="id">Contains the Zusi command id for this packet.</param>
-		protected int HandleDATA_String(BinaryReader input, int id){return HandleDATA_ByteLengthString(input,id);}
+    /// <summary>
+    /// Handle incoming data of type String. This impentation forwards it to HandleDATA_ByteLengthString.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_String(BinaryReader input, int id) { return HandleDATA_ByteLengthString(input, id); }
 
     /// <summary>
     /// Handle incoming data of Strings with given Length.
@@ -243,36 +243,36 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_ByteLengthString(BinaryReader input, int id)
     {
-			string value = input.ReadString();
-			PostToHost(StringReceived, id, value);
+      string value = input.ReadString();
+      PostToHost(StringReceived, id, value);
 
-			return value.Length;
+      return value.Length;
     }
 
-		/// <summary>
-		/// Handle incoming data of Null-Terminated String.
-		/// </summary>
-		/// <param name="input">The binary reader comprising the input data stream.</param>
-		/// <param name="id">Contains the Zusi command id for this packet.</param>
-		protected int HandleDATA_NullString(BinaryReader input, int id)
-		{
-			var stringBuilder = new StringBuilder();
-			int bytesRead = 0;
-			byte curByte;
-			
-			do
-			{
-				curByte = input.ReadByte();
-				stringBuilder.Append(curByte);
-				bytesRead++;
-			} while (curByte != 0);
-			
-			
-			PostToHost(StringReceived, id, stringBuilder.ToString());
-			
-			return bytesRead;
-		}
-		
+    /// <summary>
+    /// Handle incoming data of Null-Terminated String.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_NullString(BinaryReader input, int id)
+    {
+      var stringBuilder = new StringBuilder();
+      int bytesRead = 0;
+      byte curByte;
+
+      do
+      {
+        curByte = input.ReadByte();
+        stringBuilder.Append(curByte);
+        bytesRead++;
+      } while (curByte != 0);
+
+
+      PostToHost(StringReceived, id, stringBuilder.ToString());
+
+      return bytesRead;
+    }
+
     /// <summary>
     /// Handle incoming data of type DateTime.
     /// </summary>
@@ -286,7 +286,7 @@ namespace Zusi_Datenausgabe
 
       PostToHost(DateTimeReceived, id, time);
 
-      return sizeof (Double);
+      return sizeof(Double);
     }
 
     /// <summary>
@@ -303,7 +303,7 @@ namespace Zusi_Datenausgabe
       bool value = (temp >= 0.5f);
       PostToHost(BoolReceived, id, value);
 
-      return sizeof (Single);
+      return sizeof(Single);
     }
 
     /// <summary>
@@ -322,7 +322,7 @@ namespace Zusi_Datenausgabe
       PostToHost(BoolReceived, id, value);
       PostToHost(FloatReceived, id, temp);
 
-      return sizeof (Single);
+      return sizeof(Single);
     }
 
     /// <summary>
@@ -339,7 +339,7 @@ namespace Zusi_Datenausgabe
       int value = (int)Math.Round(temp);
       PostToHost(IntReceived, id, value);
 
-      return sizeof (Single);
+      return sizeof(Single);
     }
 
     /// <summary>
@@ -356,7 +356,7 @@ namespace Zusi_Datenausgabe
       bool value = (temp == 1);
       PostToHost(BoolReceived, id, value);
 
-      return sizeof (Int32);
+      return sizeof(Int32);
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ namespace Zusi_Datenausgabe
       Int32 temp = input.ReadInt32();
       PostToHost(DoorsReceived, id, (DoorState)temp);
 
-      return sizeof (Int32);
+      return sizeof(Int32);
     }
 
     /// <summary>
@@ -388,7 +388,7 @@ namespace Zusi_Datenausgabe
       Int32 temp = input.ReadInt32();
       PostToHost(PZBReceived, id, (PZBSystem)temp);
 
-      return sizeof (Int32);
+      return sizeof(Int32);
     }
 
     /// <summary>
@@ -433,7 +433,7 @@ namespace Zusi_Datenausgabe
 
       PostToHost(BrakeConfigReceived, id, result);
 
-      return sizeof (Int32);
+      return sizeof(Int32);
     }
 
     #endregion
