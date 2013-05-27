@@ -231,8 +231,8 @@ namespace Zusi_Datenausgabe
 
       protected override void TryBeginAcceptConnection_IsMaster()
       {
-        this.RequestingData.Clear();
-        this.RequestingData.AddRange(ServerBase.GetAbonentedIds());
+        this.RequestedData.Clear();
+        this.RequestedData.AddRange(ServerBase.GetAbonentedIds());
         base.TryBeginAcceptConnection_IsMaster();
       }
 

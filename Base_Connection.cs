@@ -24,8 +24,7 @@ namespace Zusi_Datenausgabe
 
     private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
 
-    private readonly List<int> _requestingData = new List<int>();
-    private readonly System.Collections.ObjectModel.ReadOnlyCollection<int> _requestedData;
+    private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
 
     private TcpClient _clientConnection;
     private NetworkStream _clientStream;
@@ -59,7 +58,6 @@ namespace Zusi_Datenausgabe
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
     protected Base_Connection(string clientId, ClientPriority priority, TCPCommands commandsetDocument, SynchronizationContext hostContext)
     {
-      _requestedData = new System.Collections.ObjectModel.ReadOnlyCollection<int>(_requestingData);
       if (commandsetDocument == null)
         throw new ZusiTcpException("Cannot create TCP connection object: commandsetDocument is null. ");
       ClientId = clientId;
@@ -187,6 +185,7 @@ namespace Zusi_Datenausgabe
       private set
       {
         _connectionState = value;
+        _requestedData.IsReadOnly = (value == ConnectionState.Connected);
         if (_hostContext != null)
           _hostContext.Post(ConnectMarshal, new EventArgs());
         else
@@ -201,21 +200,10 @@ namespace Zusi_Datenausgabe
 
     /// <summary>
     /// Represents a list of all measurements which will be requested from Zusi on connecting. Add your required measurements
-    /// here before connecting to the server. Returns null after connection.
+    /// here before connecting to the server. List is read-only while connected.
     /// <seealso cref="IDs"/>
     /// </summary>
-    public List<int> RequestingData
-    {
-      get
-      {
-        return ((ConnectionState == ConnectionState.Disconnected) || (ConnectionState == ConnectionState.Connecting)) ? _requestingData : null;
-      }
-    }
-
-    /// <summary>
-    /// Represents a readonly list of all measurements requested from Zusi.
-    /// </summary>
-    public System.Collections.ObjectModel.ReadOnlyCollection<int> RequestedData
+    public ICollection<int> RequestedData
     {
       get
       {
@@ -427,7 +415,7 @@ namespace Zusi_Datenausgabe
     /// when this param is set, masters will be denyed with code 2 - master already connected.</param>
     /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
     /// established.</exception>
-    protected void TryBeginAcceptConnection(TcpClient clientConnection, System.Collections.ObjectModel.ReadOnlyCollection<int> RestrictToValues)
+    protected void TryBeginAcceptConnection(TcpClient clientConnection, ICollection<int> RestrictToValues)
     {
       try
       {
@@ -461,7 +449,7 @@ namespace Zusi_Datenausgabe
       System.Collections.ObjectModel.ReadOnlyCollection<int> RestrictToValues = (System.Collections.ObjectModel.ReadOnlyCollection<int>)o;
       try
       {
-        _requestingData.Clear();
+        _requestedData.Clear();
         try
         { ExpectResponse(ResponseType.Hello, 0); }
         catch
@@ -498,8 +486,8 @@ namespace Zusi_Datenausgabe
                 SendPacket(Pack(0, 4, 3));
                 throw new ZusiTcpException("Client requested dataset " + ValReq + " which was not requested when Zusi was connected.");
               }
-              if (!_requestingData.Contains(ValReq))
-                _requestingData.Add(ValReq);
+              if (!_requestedData.Contains(ValReq))
+                _requestedData.Add(ValReq);
             }
             SendPacket(Pack(0, 4, 0));
           }
@@ -732,7 +720,7 @@ namespace Zusi_Datenausgabe
     {
       if (ConnectionState != ConnectionState.Disconnected)
         throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
-      RequestingData.Add(IDs[name]);
+      _requestedData.Add(IDs[name]);
     }
 
     /// <summary>
@@ -745,7 +733,7 @@ namespace Zusi_Datenausgabe
     {
       if (ConnectionState != ConnectionState.Disconnected)
         throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
-      RequestingData.Add(id);
+      _requestedData.Add(id);
     }
 
     private void Dispose(bool disposing)
