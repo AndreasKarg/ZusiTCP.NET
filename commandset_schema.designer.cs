@@ -26,7 +26,7 @@ namespace Zusi_Datenausgabe
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://andik.g3th.net/commandset_schema.xsd")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://andik.g3th.net/commandset_schema.xsd", IsNullable = false)]
-    public partial class TCPCommands
+	public partial class TCPCommands
     {
 
         private List<CommandEntry> commandField;
@@ -273,7 +273,7 @@ namespace Zusi_Datenausgabe
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://andik.g3th.net/commandset_schema.xsd")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://andik.g3th.net/commandset_schema.xsd", IsNullable = true)]
-    public partial class CommandEntry
+	public partial class CommandEntry
     {
 
         private int idField;

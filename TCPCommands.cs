@@ -30,74 +30,82 @@ using System.Xml.Serialization;
 namespace Zusi_Datenausgabe
 {
 
-  /// <summary>
-  /// This class provides the XML file structure used to interpret Zusi data types.
-  /// </summary>
-  [EditorBrowsableAttribute(EditorBrowsableState.Never)]
-  public partial class TCPCommands
-  {
-    /// <summary>
-    /// Contains a list of Zusi commands accessible by their numeric id.
-    /// </summary>
-    [XmlIgnore]
-    public ZusiData<int, CommandEntry> CommandByID { get; private set; }
+	/// <summary>
+	/// This class provides the XML file structure used to interpret Zusi data types.
+	/// </summary>
+	[EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+	public partial class TCPCommands
+	{
+		/// <summary>
+		/// Contains a list of Zusi commands accessible by their numeric id.
+		/// </summary>
+		[XmlIgnore]
+		public ZusiData<int, CommandEntry> CommandByID { get; private set; }
 
-    /// <summary>
-    /// Contains a list of numeric Zusi command IDs accessible by their name
-    /// (Taken from the TCP Server's commandset.ini. See commandset.xml for
-    /// an adaption for this library.)
-    /// </summary>
-    [XmlIgnore]
-    public ZusiData<string, int> IDByName { get; private set; }
+		/// <summary>
+		/// Contains a list of numeric Zusi command IDs accessible by their name
+		/// (Taken from the TCP Server's commandset.ini. See commandset.xml for
+		/// an adaption for this library.)
+		/// </summary>
+		[XmlIgnore]
+		public ZusiData<string, int> IDByName { get; private set; }
 
-    /// <summary>
-    /// Contains a list of Zusi command names accessible by their numeric ID.
-    /// </summary>
-    [XmlIgnore]
-    public ZusiData<int, string> NameByID { get; private set; }
+		/// <summary>
+		/// Contains a list of Zusi command names accessible by their numeric ID.
+		/// </summary>
+		[XmlIgnore]
+		public ZusiData<int, string> NameByID { get; private set; }
 
-    /// <summary>
-    /// Identical to this.<see cref="CommandByID"/>.
-    /// </summary>
-    /// <param name="index">Contains the command's ID.</param>
-    public CommandEntry this[int index]
-    {
-      get
-      {
-        return CommandByID[index];
-      }
-    }
+		/// <summary>
+		/// Identical to this.<see cref="CommandByID"/>.
+		/// </summary>
+		/// <param name="index">Contains the command's ID.</param>
+		public CommandEntry this[int index]
+		{
+		  get
+		  {
+		    return CommandByID[index];
+		  }
+		}
 
-    private void InitializeDictionaries()
-    {
-      var tmpCommandByID = new Dictionary<int, CommandEntry>();
-      var tmpIDByName = new Dictionary<string, int>();
-      var tmpNameByID = new Dictionary<int, string>();
+		/// <summary>
+		/// Have to be called after changing the Command-collection to make the dictionarys behave properly.
+		/// </summary>
+		public void InitializeDictionaries()
+		{
+		  var tmpCommandByID = new Dictionary<int, CommandEntry>();
+		  var tmpIDByName = new Dictionary<string, int>();
+		  var tmpNameByID = new Dictionary<int, string>();
 
-      foreach (var entry in commandField)
-      {
-        tmpCommandByID.Add(entry.ID, entry);
-        tmpIDByName.Add(entry.Name, entry.ID);
-        tmpNameByID.Add(entry.ID, entry.Name);
-      }
+		  foreach (var entry in commandField)
+		  {
+		    tmpCommandByID.Add(entry.ID, entry);
+		    tmpIDByName.Add(entry.Name, entry.ID);
+		    tmpNameByID.Add(entry.ID, entry.Name);
+		  }
 
-      CommandByID = new ZusiData<int, CommandEntry>(tmpCommandByID);
-      IDByName = new ZusiData<string, int>(tmpIDByName);
-      NameByID = new ZusiData<int, string>(tmpNameByID);
-    }
+		  CommandByID = new ZusiData<int, CommandEntry>(tmpCommandByID);
+		  IDByName = new ZusiData<string, int>(tmpIDByName);
+		  NameByID = new ZusiData<int, string>(tmpNameByID);
+		}
 
-    /// <summary>
-    /// Load XML data from a file and create a TCPCommands instance from it.
-    /// </summary>
-    /// <param name="filePath">Contains the path to the XML file</param>
-    /// <returns>A new TCPCommands instance with data.</returns>
-    public static TCPCommands LoadFromFile(String filePath)
-    {
-      TCPCommands tempResult = TCPCommands.LoadFromFileInternal(filePath);
+		/// <summary>
+		/// Load XML data from a file and create a TCPCommands instance from it.
+		/// </summary>
+		/// <param name="filePath">Contains the path to the XML file</param>
+		/// <returns>A new TCPCommands instance with data.</returns>
+		public static TCPCommands LoadFromFile(String filePath)
+		{
+		  TCPCommands tempResult = TCPCommands.LoadFromFileInternal(filePath);
 
-      tempResult.InitializeDictionaries();
+		  tempResult.InitializeDictionaries();
 
-      return tempResult;
-    }
-  }
+		  return tempResult;
+		}
+	}
+
+	[EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+	public partial class CommandEntry
+	{
+	}
 }

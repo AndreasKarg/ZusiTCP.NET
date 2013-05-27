@@ -1,0 +1,16 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Zusi-Datenausgabe.cs">
+    <Files>
+      <File FileName="TCPCommands.cs" Line="106" Column="3" />
+      <File FileName="DataContainers.cs" Line="2" Column="26" />
+      <File FileName="Zusi-Datenausgabe.cs" Line="393" Column="4" />
+      <File FileName="ZusiTCPException.cs" Line="1" Column="1" />
+      <File FileName="commandset_schema.designer.cs" Line="276" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

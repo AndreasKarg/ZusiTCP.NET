@@ -34,9 +34,9 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -45,7 +45,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -69,13 +69,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="commandset_schema.designer.cs">
-	  <AutoGen>True</AutoGen>
-	</Compile>
-	
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="TCPCommands.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZusiTCPException.cs" />
+    <Compile Include="DataContainers.cs" />
+    <Compile Include="Base_Connection.cs" />
+    <Compile Include="TCPServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />
