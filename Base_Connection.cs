@@ -244,8 +244,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Dispose()
     {
-      Dispose(true);
-      GC.SuppressFinalize(this);
+      Disconnnect();
     }
 
     #endregion
@@ -561,28 +560,6 @@ namespace Zusi_Datenausgabe
         var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
         HandleException(newEx);
       }
-    }
-
-    private void Dispose(bool disposing)
-    {
-      if (!disposing)
-      {
-        return;
-      }
-
-      if (_clientConnection != null)
-      {
-        _clientConnection.Close();
-        _clientConnection = null;
-      }
-
-      if (_streamReaderThread == null)
-      {
-        return;
-      }
-
-      _streamReaderThread.Abort();
-      _streamReaderThread = null;
     }
 
     #region Nested type: ResponseType
