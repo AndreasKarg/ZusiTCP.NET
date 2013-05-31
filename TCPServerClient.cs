@@ -20,6 +20,66 @@ namespace Zusi_Datenausgabe
 
     protected override void HandleHandshake()
     {
+      RequestedData.Clear();
+      try
+      {
+        ExpectResponse(ResponseType.Hello, 0);
+      }
+      catch
+      {
+        SendPacket(Pack(0, 2, 255));
+        throw;
+      }
+      if (this.ClientPriority == ClientPriority.Master)
+      {
+        if (_restrictToValues != null)
+        {
+          SendPacket(Pack(0, 2, 2));
+          throw new ZusiTcpException("Master is already connected. No more Master connections allowed.");
+        }
+        try
+        {
+          TryBeginAcceptConnection_IsMaster();
+        }
+        catch
+        {
+          SendPacket(Pack(0, 2, 255));
+          throw;
+        }
+        SendPacket(Pack(0, 2, 0));
+        RequestDataFromZusi();
+      }
+      else
+      {
+        SendPacket(Pack(0, 2, 0));
+        ExpectResponseAnswer requestedValues = null;
+        int dataGroup = -1;
+        while ((requestedValues == null) || (requestedValues.requestArea != 0) ||
+               ((requestedValues.requestArray != null) && (requestedValues.requestArray.Length != 0)))
+        {
+          try
+          {
+            requestedValues = ExpectResponse(ResponseType.NeededData, dataGroup);
+          }
+          catch
+          {
+            SendPacket(Pack(0, 4, 255));
+            throw;
+          }
+          foreach (int ValReq in requestedValues.requestArray)
+          {
+            if ((_restrictToValues != null) && (!_restrictToValues.Contains(ValReq)))
+            {
+              SendPacket(Pack(0, 4, 3));
+              throw new ZusiTcpException("Client requested dataset " + ValReq +
+                                         " which was not requested when Zusi was connected.");
+            }
+            if (!RequestedData.Contains(ValReq))
+              RequestedData.Add(ValReq);
+          }
+          SendPacket(Pack(0, 4, 0));
+        }
+      }
     }
 
     public event EventHandler<CommandReceivedDelegateArgs> ConstByteCommandReceived;
@@ -107,70 +167,6 @@ namespace Zusi_Datenausgabe
 
     protected override void ReceiveLoop()
     {
-      try
-      {
-        RequestedData.Clear();
-        try
-        { ExpectResponse(ResponseType.Hello, 0); }
-        catch
-        { SendPacket(Pack(0, 2, 255)); throw; }
-        if (this.ClientPriority == ClientPriority.Master)
-        {
-          if (_restrictToValues != null)
-          {
-            SendPacket(Pack(0, 2, 2));
-            throw new ZusiTcpException("Master is already connected. No more Master connections allowed.");
-          }
-          try
-          { TryBeginAcceptConnection_IsMaster(); }
-          catch
-          { SendPacket(Pack(0, 2, 255)); throw; }
-          SendPacket(Pack(0, 2, 0));
-          RequestDataFromZusi();
-        }
-        else
-        {
-          SendPacket(Pack(0, 2, 0));
-          ExpectResponseAnswer requestedValues = null;
-          int dataGroup = -1;
-          while ((requestedValues == null) || (requestedValues.requestArea != 0) || ((requestedValues.requestArray != null) && (requestedValues.requestArray.Length != 0)))
-          {
-            try
-            { requestedValues = ExpectResponse(ResponseType.NeededData, dataGroup); }
-            catch
-            { SendPacket(Pack(0, 4, 255)); throw; }
-            foreach (int ValReq in requestedValues.requestArray)
-            {
-              if ((_restrictToValues != null) && (!_restrictToValues.Contains(ValReq)))
-              {
-                SendPacket(Pack(0, 4, 3));
-                throw new ZusiTcpException("Client requested dataset " + ValReq + " which was not requested when Zusi was connected.");
-              }
-              if (!RequestedData.Contains(ValReq))
-                RequestedData.Add(ValReq);
-            }
-            SendPacket(Pack(0, 4, 0));
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        Disconnnect();
-        ConnectionState = ConnectionState.Error;
-
-        if (e is ZusiTcpException)
-        {
-          PostExToHost(e as ZusiTcpException);
-        }
-        else
-        {
-          var newEx =
-            new ZusiTcpException("The connection can't be established.", e);
-
-          PostExToHost(newEx);
-        }
-      }
-      ConnectionState = ConnectionState.Connected;
       DefaultReceiveLoop();
     }
   }

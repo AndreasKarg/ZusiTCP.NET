@@ -319,7 +319,7 @@ namespace Zusi_Datenausgabe
 
       try
       {
-        _streamReaderThread = new Thread(ReceiveLoop) { Name = "ZusiData Receiver", IsBackground = true };
+        _streamReaderThread = new Thread(ReceiveLoopWrapper) { Name = "ZusiData Receiver", IsBackground = true };
 
         HandleHandshake();
 
@@ -327,20 +327,18 @@ namespace Zusi_Datenausgabe
 
         _streamReaderThread.Start();
       }
-      catch
+      catch (Exception e)
       {
-        HandleError();
-        throw;
+        HandleException( new ZusiTcpException("The connection can't be established.", e));
       }
     }
 
-    private void HandleError()
+    protected void HandleException(ZusiTcpException e)
     {
-      if (_streamReaderThread != null)
-        _streamReaderThread.Abort();
-      _streamReaderThread = null;
-
+      Disconnnect();
       ConnectionState = ConnectionState.Error;
+
+      PostExToHost(e);
     }
 
     protected abstract void HandleHandshake();
@@ -473,6 +471,28 @@ namespace Zusi_Datenausgabe
       return null;
     }
 
+    private void ReceiveLoopWrapper()
+    {
+      try
+      {
+        ReceiveLoop();
+      }
+      catch (ZusiTcpException e)
+      {
+        HandleException(e);
+      }
+      catch (Exception e)
+      {
+        var newEx =
+          new ZusiTcpException(
+            "An unhandled exception has occured in the TCP receiving loop. This is very probably " +
+            "a bug in the Zusi TCP interface for .NET. Please report this error to the author(s) " +
+            "of this application and/or the author(s) of the Zusi TCP interface for .NET.", e);
+
+        PostExToHost(newEx);
+      }
+    }
+
     protected abstract void ReceiveLoop();
 
     protected void DefaultReceiveLoop()
@@ -532,33 +552,14 @@ namespace Zusi_Datenausgabe
           }
         }
       }
-      catch (Exception e)
+      catch (EndOfStreamException e)
       {
-        Disconnnect();
-        ConnectionState = ConnectionState.Error;
+        /* EndOfStream occurs when the NetworkStream reaches its end while the binaryReader tries to read from it.
+         * This happens when the socket closes the stream.
+         */
 
-        if (e is ZusiTcpException)
-        {
-          PostExToHost(e as ZusiTcpException);
-        }
-        else if (e is EndOfStreamException)
-        {
-          /* EndOfStream occurs when the NetworkStream reaches its end while the binaryReader tries to read from it.
- * This happens when the socket closes the stream.
- */
-          var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
-          PostExToHost(newEx);
-        }
-        else
-        {
-          var newEx =
-              new ZusiTcpException(
-                  "An unhandled exception has occured in the TCP receiving loop. This is very probably " +
-                  "a bug in the Zusi TCP interface for .NET. Please report this error to the author(s) " +
-                  "of this application and/or the author(s) of the Zusi TCP interface for .NET.", e);
-
-          PostExToHost(newEx);
-        }
+        var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
+        HandleException(newEx);
       }
     }
 
@@ -661,10 +662,10 @@ namespace Zusi_Datenausgabe
     /// Raises the ErrorReceived-event.
     /// </summary>
     /// <param name="ex">The exception.</param>
-    protected void PostExToHost(ZusiTcpException ex)
+    private void PostExToHost(ZusiTcpException ex)
     {
       if (_hostContext != null)
-        _hostContext.Post(ErrorMarshal, ex as ZusiTcpException);
+        _hostContext.Post(ErrorMarshal, ex);
       else
         ErrorMarshal(ex);
     }
