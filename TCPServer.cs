@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -18,7 +19,7 @@ namespace Zusi_Datenausgabe
   {
     #region Fields
 
-    private readonly List<TCPServerCleint> _clients = new List<TCPServerCleint>();
+    private readonly List<TCPServerClient> _clients = new List<TCPServerClient>();
     private readonly List<Base_Connection> _clients_extern = new List<Base_Connection>();
     private readonly System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> _clients_extern_readonly;
 
@@ -42,7 +43,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <value>The clients.</value>
     public System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> Clients { get { return _clients_extern_readonly; } }
-    private TCPServerCleint MasterL { get; set; }
+    private TCPServerClient MasterL { get; set; }
     /// <summary>
     /// Gets the master.
     /// </summary>
@@ -54,30 +55,30 @@ namespace Zusi_Datenausgabe
         return;
       //ToDo: Code einfügen.
     }
-    private void ConstByteCommandReceived(byte[] array, int id, TCPServerCleint sender)
+    private void ConstByteCommandReceived(byte[] array, int id, TCPServerClient sender)
     {
       ServerRelatedRequest(array, id);
       if (sender.ClientPriority == ClientPriority.Master)
       {
-        foreach (TCPServerCleint cli in _clients)
+        foreach (TCPServerClient cli in _clients)
         {
           if (cli != sender)
             cli.SendByteCommand(array, id);
         }
       }
     }
-    private void LengthIn1ByteCommandReceived(byte[] array, int id, TCPServerCleint sender)
+    private void LengthIn1ByteCommandReceived(byte[] array, int id, TCPServerClient sender)
     {
       if (sender.ClientPriority == ClientPriority.Master)
       {
-        foreach (TCPServerCleint cli in _clients)
+        foreach (TCPServerClient cli in _clients)
         {
           if (cli != sender)
             cli.SendLengthIn1ByteCommand(array, id);
         }
       }
     }
-    private void ConnectionConnectStatusChanged(TCPServerCleint sender)
+    private void ConnectionConnectStatusChanged(TCPServerClient sender)
     {
       if (sender.ConnectionState == ConnectionState.Connected)
       {
@@ -106,7 +107,7 @@ namespace Zusi_Datenausgabe
     {
       List<int> lst = new List<int>();
       //Hier kann lst mit MUSS-ABONIEREN-Werten initialisiert werden, falls solcher gewünscht sind.
-      foreach (TCPServerCleint cli in _clients)
+      foreach (TCPServerClient cli in _clients)
       {
         foreach (int dat in cli.RequestedData)
         {
@@ -152,7 +153,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Stop()
     {
-      foreach (TCPServerCleint cli in _clients)
+      foreach (TCPServerClient cli in _clients)
       {
         cli.Disconnnect();
       }
@@ -160,15 +161,19 @@ namespace Zusi_Datenausgabe
     }
     private void RunningLoop()
     {
-      TCPServerCleint cli = null;
+      TCPServerClient cli = null;
       try
       {
         while (IsStarted)
         {
           TcpClient tc = _serverObj.AcceptTcpClient();
-          cli = new TCPServerCleint(_doc, this);
+          cli = new TCPServerClient(_doc, (Master != null) ? Master.RequestedData : null, GetAbonentedIds);
 
-          cli.TryBeginAcceptConnection(tc, (Master != null) ? Master.RequestedData : null);
+          cli.ConstByteCommandReceived += CLIOnConstByteCommandReceived;
+          cli.LengthIn1ByteCommandReceived += CLIOnLengthIn1ByteCommandReceived;
+          cli.ConnectionState_Changed += CLIOnConnectionStateChanged;
+
+          cli.TryBeginAcceptConnection(tc);
           cli = null;
         }
       }
@@ -181,153 +186,220 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    private class TCPServerCleint : Base_Connection
+    private void CLIOnConnectionStateChanged(object sender, EventArgs eventArgs)
     {
-      public TCPServerCleint(TCPCommands commandsetDocument, TCPServer ServerBase)
-        : base("Unknown", ClientPriority.Undefined, commandsetDocument, null)
-      {
-        this.ServerBase = ServerBase;
-        this.ConnectionState_Changed += ConnectionConnectStatusChanged;
-      }
+      Debug.Assert(sender is TCPServerClient);
+      ConnectionConnectStatusChanged(sender as TCPServerClient);
+    }
 
-      public TCPServer ServerBase { set; get; }
+    private void CLIOnLengthIn1ByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
+    {
+      Debug.Assert(sender is TCPServerClient);
+      LengthIn1ByteCommandReceived(args.Array, args.ID, sender as TCPServerClient);
+    }
 
-      protected override void HandleHandshake()
-      {
-      }
+    private void CLIOnConstByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
+    {
+      Debug.Assert(sender is TCPServerClient);
+      ConstByteCommandReceived(args.Array, args.ID, sender as TCPServerClient);
+    }
+  }
 
+  internal class TCPServerClient : Base_Connection
+  {
+    private ICollection<int> _restrictToValues;
 
-      protected int HandleDATA_4ByteCommand(BinaryReader input, int id)
-      {
-        ServerBase.ConstByteCommandReceived(input.ReadBytes(4), id, this);
-        return 4;
-      }
-      protected int HandleDATA_8ByteCommand(BinaryReader input, int id)
-      {
-        ServerBase.ConstByteCommandReceived(input.ReadBytes(8), id, this);
-        return 8;
-      }
-      protected int HandleDATA_LengthIn1ByteCommand(BinaryReader input, int id)
-      {
-        byte lng = input.ReadByte();
-        ServerBase.LengthIn1ByteCommandReceived(input.ReadBytes(lng), id, this);
-        return lng + 1;
-      }
+    private GetAbonentedIdsDelegate _getAbonentedIds;
 
-      public void SendByteCommand(byte[] array, int id)
-      {
-        if ((ConnectionState != ConnectionState.Connected) || (!RequestedData.Contains(id)))
-          return;
-        List<byte> ida = new List<byte>(System.BitConverter.GetBytes(id));
-        ida.RemoveAt(3);
-        ida.Reverse();
-        SendLargePacket(ida.ToArray(), array);
-      }
-      public void SendLengthIn1ByteCommand(byte[] array, int id)
-      {
-        if ((ConnectionState != ConnectionState.Connected) || (!RequestedData.Contains(id)))
-          return;
-        List<byte> ida = new List<byte>(System.BitConverter.GetBytes(id));
-        ida.RemoveAt(3);
-        ida.Reverse();
-        byte[] lng = { (byte)array.Length };
-        SendLargePacket(ida.ToArray(), lng, array);
-      }
+    public TCPServerClient(TCPCommands commandsetDocument, ICollection<int> restrictToValues, GetAbonentedIdsDelegate getAbonentedIds)
+      : base("Unknown", ClientPriority.Undefined, commandsetDocument, null)
+    {
+      _restrictToValues = restrictToValues;
+      _getAbonentedIds = getAbonentedIds;
+    }
 
-      protected virtual void TryBeginAcceptConnection_IsMaster()
-      {
-        this.RequestedData.Clear();
-        this.RequestedData.AddRange(ServerBase.GetAbonentedIds());
-      }
+    protected override void HandleHandshake()
+    {
+    }
 
-      private void ConnectionConnectStatusChanged(object sender, EventArgs e)
-      {
-        ServerBase.ConnectionConnectStatusChanged(this);
-      }
+    public event CommandReceivedDelegate ConstByteCommandReceived;
+    public event CommandReceivedDelegate LengthIn1ByteCommandReceived;
 
-      /// <summary>
-      /// Establish a connection to the TCP client as a server.
-      /// </summary>
-      /// <param name="clientConnection">The Client to Connect.</param>
-      /// <param name="RequestedToZusi">A List to restrict ID-Requests. If a requested the value is not in the list, the
-      /// connection will be terminated with error code 3. If the list is null all ID-Requests will be accepted. Note:
-      /// when this param is set, masters will be denyed with code 2 - master already connected.</param>
-      /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
-      /// established.</exception>
-      public void TryBeginAcceptConnection(TcpClient clientConnection, ICollection<int> RestrictToValues)
-      {
-        InitializeClient(clientConnection);
-      }
+    public void OnLengthIn1ByteCommandReceived(CommandReceivedDelegateArgs args)
+    {
+      CommandReceivedDelegate handler = LengthIn1ByteCommandReceived;
+      if (handler != null) handler(this, args);
+    }
 
-      private void ReceiveLoop(object o)
+    public void OnLengthIn1ByteCommandReceived(byte[] array, int id)
+    {
+      OnLengthIn1ByteCommandReceived(new CommandReceivedDelegateArgs(array, id));
+    }
+
+    public void OnConstByteCommandReceived(CommandReceivedDelegateArgs args)
+    {
+      CommandReceivedDelegate handler = ConstByteCommandReceived;
+      if (handler != null) handler(this, args);
+    }
+
+    public void OnConstByteCommandReceived(byte[] array, int id)
+    {
+      OnConstByteCommandReceived(new CommandReceivedDelegateArgs(array, id));
+    }
+
+    protected int HandleDATA_4ByteCommand(BinaryReader input, int id)
+    {
+      OnConstByteCommandReceived(input.ReadBytes(4), id);
+      return 4;
+    }
+    protected int HandleDATA_8ByteCommand(BinaryReader input, int id)
+    {
+      OnConstByteCommandReceived(input.ReadBytes(8), id);
+      return 8;
+    }
+
+    protected int HandleDATA_LengthIn1ByteCommand(BinaryReader input, int id)
+    {
+      byte lng = input.ReadByte();
+      OnLengthIn1ByteCommandReceived(input.ReadBytes(lng), id);
+      return lng + 1;
+    }
+
+    public void SendByteCommand(byte[] array, int id)
+    {
+      if ((ConnectionState != ConnectionState.Connected) || (!RequestedData.Contains(id)))
+        return;
+      List<byte> ida = new List<byte>(BitConverter.GetBytes(id));
+      ida.RemoveAt(3);
+      ida.Reverse();
+      SendLargePacket(ida.ToArray(), array);
+    }
+    public void SendLengthIn1ByteCommand(byte[] array, int id)
+    {
+      if ((ConnectionState != ConnectionState.Connected) || (!RequestedData.Contains(id)))
+        return;
+      List<byte> ida = new List<byte>(BitConverter.GetBytes(id));
+      ida.RemoveAt(3);
+      ida.Reverse();
+      byte[] lng = { (byte)array.Length };
+      SendLargePacket(ida.ToArray(), lng, array);
+    }
+
+    protected virtual void TryBeginAcceptConnection_IsMaster()
+    {
+      this.RequestedData.Clear();
+      this.RequestedData.AddRange(_getAbonentedIds());
+    }
+
+    /// <summary>
+    /// Establish a connection to the TCP client as a server.
+    /// </summary>
+    /// <param name="clientConnection">The Client to Connect.</param>
+    /// <param name="RequestedToZusi">A List to restrict ID-Requests. If a requested the value is not in the list, the
+    /// connection will be terminated with error code 3. If the list is null all ID-Requests will be accepted. Note:
+    /// when this param is set, masters will be denyed with code 2 - master already connected.</param>
+    /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
+    /// established.</exception>
+    public void TryBeginAcceptConnection(TcpClient clientConnection)
+    {
+      InitializeClient(clientConnection);
+    }
+
+    protected override void ReceiveLoop()
+    {
+      try
       {
-        System.Collections.ObjectModel.ReadOnlyCollection<int> RestrictToValues = (System.Collections.ObjectModel.ReadOnlyCollection<int>)o;
+        RequestedData.Clear();
         try
+        { ExpectResponse(ResponseType.Hello, 0); }
+        catch
+        { SendPacket(Pack(0, 2, 255)); throw; }
+        if (this.ClientPriority == ClientPriority.Master)
         {
-          RequestedData.Clear();
+          if (_restrictToValues != null)
+          {
+            SendPacket(Pack(0, 2, 2));
+            throw new ZusiTcpException("Master is already connected. No more Master connections allowed.");
+          }
           try
-          { ExpectResponse(ResponseType.Hello, 0); }
+          { TryBeginAcceptConnection_IsMaster(); }
           catch
           { SendPacket(Pack(0, 2, 255)); throw; }
-          if (this.ClientPriority == ClientPriority.Master)
-          {
-            if (RestrictToValues != null)
-            {
-              SendPacket(Pack(0, 2, 2));
-              throw new ZusiTcpException("Master is already connected. No more Master connections allowed.");
-            }
-            try
-            { TryBeginAcceptConnection_IsMaster(); }
-            catch
-            { SendPacket(Pack(0, 2, 255)); throw; }
-            SendPacket(Pack(0, 2, 0));
-            RequestDataFromZusi();
-          }
-          else
-          {
-            SendPacket(Pack(0, 2, 0));
-            ExpectResponseAnswer requestedValues = null;
-            int dataGroup = -1;
-            while ((requestedValues == null) || (requestedValues.requestArea != 0) || ((requestedValues.requestArray != null) && (requestedValues.requestArray.Length != 0)))
-            {
-              try
-              { requestedValues = ExpectResponse(ResponseType.NeededData, dataGroup); }
-              catch
-              { SendPacket(Pack(0, 4, 255)); throw; }
-              foreach (int ValReq in requestedValues.requestArray)
-              {
-                if ((RestrictToValues != null) && (!RestrictToValues.Contains(ValReq)))
-                {
-                  SendPacket(Pack(0, 4, 3));
-                  throw new ZusiTcpException("Client requested dataset " + ValReq + " which was not requested when Zusi was connected.");
-                }
-                if (!RequestedData.Contains(ValReq))
-                  RequestedData.Add(ValReq);
-              }
-              SendPacket(Pack(0, 4, 0));
-            }
-          }
+          SendPacket(Pack(0, 2, 0));
+          RequestDataFromZusi();
         }
-        catch (Exception e)
+        else
         {
-          Disconnnect();
-          ConnectionState = ConnectionState.Error;
-
-          if (e is ZusiTcpException)
+          SendPacket(Pack(0, 2, 0));
+          ExpectResponseAnswer requestedValues = null;
+          int dataGroup = -1;
+          while ((requestedValues == null) || (requestedValues.requestArea != 0) || ((requestedValues.requestArray != null) && (requestedValues.requestArray.Length != 0)))
           {
-            PostExToHost(e as ZusiTcpException);
-          }
-          else
-          {
-            var newEx =
-              new ZusiTcpException("The connection can't be established.", e);
-
-            PostExToHost(newEx);
+            try
+            { requestedValues = ExpectResponse(ResponseType.NeededData, dataGroup); }
+            catch
+            { SendPacket(Pack(0, 4, 255)); throw; }
+            foreach (int ValReq in requestedValues.requestArray)
+            {
+              if ((_restrictToValues != null) && (!_restrictToValues.Contains(ValReq)))
+              {
+                SendPacket(Pack(0, 4, 3));
+                throw new ZusiTcpException("Client requested dataset " + ValReq + " which was not requested when Zusi was connected.");
+              }
+              if (!RequestedData.Contains(ValReq))
+                RequestedData.Add(ValReq);
+            }
+            SendPacket(Pack(0, 4, 0));
           }
         }
-        ConnectionState = ConnectionState.Connected;
-        ReceiveLoop();
       }
+      catch (Exception e)
+      {
+        Disconnnect();
+        ConnectionState = ConnectionState.Error;
+
+        if (e is ZusiTcpException)
+        {
+          PostExToHost(e as ZusiTcpException);
+        }
+        else
+        {
+          var newEx =
+            new ZusiTcpException("The connection can't be established.", e);
+
+          PostExToHost(newEx);
+        }
+      }
+      ConnectionState = ConnectionState.Connected;
+      base.ReceiveLoop();
+    }
+  }
+
+  internal delegate void CommandReceivedDelegate(object sender, CommandReceivedDelegateArgs args);
+
+  internal delegate IEnumerable<int> GetAbonentedIdsDelegate();
+
+  internal struct CommandReceivedDelegateArgs
+  {
+    private readonly byte[] _array;
+    private readonly int _id;
+
+    public byte[] Array
+    {
+      [DebuggerStepThrough]
+      get { return _array; }
+    }
+
+    public int ID
+    {
+      [DebuggerStepThrough]
+      get { return _id; }
+    }
+
+    public CommandReceivedDelegateArgs(byte[] array, int id)
+    {
+      _array = array;
+      _id = id;
     }
   }
 }
