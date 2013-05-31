@@ -67,31 +67,6 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    private void ConnectionConnectStatusChanged(TCPServerClient sender)
-    {
-      if (sender.ConnectionState == ConnectionState.Connected)
-      {
-        if (sender.ClientPriority == ClientPriority.Master)
-          this.MasterL = sender;
-        if (!_clients.Contains(sender))
-          _clients.Add(sender);
-        if (!_clients_extern.Contains(sender))
-          _clients_extern.Add(sender);
-      }
-      else
-      {
-        if (sender == this.MasterL)
-          MasterL = null;
-        _clients.Remove(sender);
-        _clients_extern.Remove(sender);
-        if (sender.ConnectionState == ConnectionState.Error)
-        {
-          sender.Disconnnect();
-          sender.Dispose();
-        }
-      }
-    }
-
     private IEnumerable<int> GetAbonentedIds()
     {
       List<int> lst = new List<int>();
@@ -160,7 +135,7 @@ namespace Zusi_Datenausgabe
 
           cli.ConstByteCommandReceived += CLIOnConstByteCommandReceived;
           cli.LengthIn1ByteCommandReceived += OnLengthIn1ByteCommandReceived;
-          cli.ConnectionState_Changed += CLIOnConnectionStateChanged;
+          cli.ConnectionState_Changed += OnConnectionStateChanged;
 
           cli.TryBeginAcceptConnection(tc);
           cli = null;
@@ -175,10 +150,33 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    private void CLIOnConnectionStateChanged(object sender, EventArgs eventArgs)
+    private void OnConnectionStateChanged(object sender, EventArgs eventArgs)
     {
       Debug.Assert(sender is TCPServerClient);
-      ConnectionConnectStatusChanged(sender as TCPServerClient);
+
+      var serverClient = sender as TCPServerClient;
+
+      if (serverClient.ConnectionState == ConnectionState.Connected)
+      {
+        if (serverClient.ClientPriority == ClientPriority.Master)
+          MasterL = serverClient;
+        if (!_clients.Contains(serverClient))
+          _clients.Add(serverClient);
+        if (!_clients_extern.Contains(serverClient))
+          _clients_extern.Add(serverClient);
+      }
+      else
+      {
+        if (serverClient == MasterL)
+          MasterL = null;
+        _clients.Remove(serverClient);
+        _clients_extern.Remove(serverClient);
+        if (serverClient.ConnectionState == ConnectionState.Error)
+        {
+          serverClient.Disconnnect();
+          serverClient.Dispose();
+        }
+      }
     }
 
     private void OnLengthIn1ByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
