@@ -54,18 +54,6 @@ namespace Zusi_Datenausgabe
         return;
       //ToDo: Code einfügen.
     }
-    private void ConstByteCommandReceived(byte[] array, int id, TCPServerClient sender)
-    {
-      ServerRelatedRequest(array, id);
-      if (sender.ClientPriority == ClientPriority.Master)
-      {
-        foreach (TCPServerClient cli in _clients)
-        {
-          if (cli != sender)
-            cli.SendByteCommand(array, id);
-        }
-      }
-    }
 
     private IEnumerable<int> GetAbonentedIds()
     {
@@ -195,7 +183,19 @@ namespace Zusi_Datenausgabe
     private void CLIOnConstByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
     {
       Debug.Assert(sender is TCPServerClient);
-      ConstByteCommandReceived(args.Array, args.ID, sender as TCPServerClient);
+
+      var array = args.Array;
+      var id = args.ID;
+
+      var serverClient = sender as TCPServerClient;
+      ServerRelatedRequest(array, id);
+
+      if (serverClient.ClientPriority != ClientPriority.Master) return;
+
+      foreach (var client in _clients.Where(cli => cli != serverClient))
+      {
+        client.SendByteCommand(array, id);
+      }
     }
   }
 
