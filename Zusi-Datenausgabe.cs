@@ -164,6 +164,11 @@ namespace Zusi_Datenausgabe
       ExpectResponse(ResponseType.AckNeededData, 0);
     }
 
+    protected override void ReceiveLoop()
+    {
+      DefaultReceiveLoop();
+    }
+
     #region Data reception handlers
 
     /// <summary>

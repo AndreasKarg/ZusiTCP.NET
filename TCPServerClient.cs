@@ -171,7 +171,7 @@ namespace Zusi_Datenausgabe
         }
       }
       ConnectionState = ConnectionState.Connected;
-      base.ReceiveLoop();
+      DefaultReceiveLoop();
     }
   }
 }

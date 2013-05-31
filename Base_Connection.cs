@@ -473,7 +473,9 @@ namespace Zusi_Datenausgabe
       return null;
     }
 
-    protected virtual void ReceiveLoop()
+    protected abstract void ReceiveLoop();
+
+    protected void DefaultReceiveLoop()
     {
       var dataHandlers = new Dictionary<string, MethodInfo>();
 
