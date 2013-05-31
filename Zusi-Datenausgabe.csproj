@@ -73,6 +73,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="TCPCommands.cs" />
+    <Compile Include="TCPServerClient.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZusiTCPException.cs" />
