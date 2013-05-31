@@ -288,7 +288,7 @@ namespace Zusi_Datenausgabe
       SendToServer(message);
     }
 
-    protected void SendPacket(params byte[][] message)
+    protected void SendLargePacket(params byte[][] message)
     {
       int iTempLength = message.Sum(item => item.Length);
 
@@ -361,7 +361,7 @@ namespace Zusi_Datenausgabe
 
         reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID % 256))));
 
-        SendPacket(reqDataBuffer.ToArray());
+        SendLargePacket(reqDataBuffer.ToArray());
 
         ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
       }

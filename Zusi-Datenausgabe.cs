@@ -153,7 +153,7 @@ namespace Zusi_Datenausgabe
 
     protected override void HandleHandshake()
     {
-      SendPacket(
+      SendLargePacket(
         Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
         StringEncoder.GetBytes(ClientId));
 

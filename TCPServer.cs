@@ -221,7 +221,7 @@ namespace Zusi_Datenausgabe
         List<byte> ida = new List<byte>(System.BitConverter.GetBytes(id));
         ida.RemoveAt(3);
         ida.Reverse();
-        SendPacket(ida.ToArray(), array);
+        SendLargePacket(ida.ToArray(), array);
       }
       public void SendLengthIn1ByteCommand(byte[] array, int id)
       {
@@ -231,7 +231,7 @@ namespace Zusi_Datenausgabe
         ida.RemoveAt(3);
         ida.Reverse();
         byte[] lng = { (byte)array.Length };
-        SendPacket(ida.ToArray(), lng, array);
+        SendLargePacket(ida.ToArray(), lng, array);
       }
 
       protected virtual void TryBeginAcceptConnection_IsMaster()
