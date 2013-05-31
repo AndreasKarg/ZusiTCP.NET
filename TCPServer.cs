@@ -222,12 +222,12 @@ namespace Zusi_Datenausgabe
     {
     }
 
-    public event CommandReceivedDelegate ConstByteCommandReceived;
-    public event CommandReceivedDelegate LengthIn1ByteCommandReceived;
+    public event EventHandler<CommandReceivedDelegateArgs> ConstByteCommandReceived;
+    public event EventHandler<CommandReceivedDelegateArgs> LengthIn1ByteCommandReceived;
 
     public void OnLengthIn1ByteCommandReceived(CommandReceivedDelegateArgs args)
     {
-      CommandReceivedDelegate handler = LengthIn1ByteCommandReceived;
+      var handler = LengthIn1ByteCommandReceived;
       if (handler != null) handler(this, args);
     }
 
@@ -238,7 +238,7 @@ namespace Zusi_Datenausgabe
 
     public void OnConstByteCommandReceived(CommandReceivedDelegateArgs args)
     {
-      CommandReceivedDelegate handler = ConstByteCommandReceived;
+      var handler = ConstByteCommandReceived;
       if (handler != null) handler(this, args);
     }
 
@@ -375,11 +375,9 @@ namespace Zusi_Datenausgabe
     }
   }
 
-  internal delegate void CommandReceivedDelegate(object sender, CommandReceivedDelegateArgs args);
-
   internal delegate IEnumerable<int> GetAbonentedIdsDelegate();
 
-  internal struct CommandReceivedDelegateArgs
+  internal class CommandReceivedDelegateArgs : EventArgs
   {
     private readonly byte[] _array;
     private readonly int _id;
