@@ -66,17 +66,7 @@ namespace Zusi_Datenausgabe
         }
       }
     }
-    private void LengthIn1ByteCommandReceived(byte[] array, int id, TCPServerClient sender)
-    {
-      if (sender.ClientPriority == ClientPriority.Master)
-      {
-        foreach (TCPServerClient cli in _clients)
-        {
-          if (cli != sender)
-            cli.SendLengthIn1ByteCommand(array, id);
-        }
-      }
-    }
+
     private void ConnectionConnectStatusChanged(TCPServerClient sender)
     {
       if (sender.ConnectionState == ConnectionState.Connected)
@@ -169,7 +159,7 @@ namespace Zusi_Datenausgabe
           cli = new TCPServerClient(_doc, (Master != null) ? Master.RequestedData : null, GetAbonentedIds);
 
           cli.ConstByteCommandReceived += CLIOnConstByteCommandReceived;
-          cli.LengthIn1ByteCommandReceived += CLIOnLengthIn1ByteCommandReceived;
+          cli.LengthIn1ByteCommandReceived += OnLengthIn1ByteCommandReceived;
           cli.ConnectionState_Changed += CLIOnConnectionStateChanged;
 
           cli.TryBeginAcceptConnection(tc);
@@ -191,10 +181,17 @@ namespace Zusi_Datenausgabe
       ConnectionConnectStatusChanged(sender as TCPServerClient);
     }
 
-    private void CLIOnLengthIn1ByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
+    private void OnLengthIn1ByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
     {
       Debug.Assert(sender is TCPServerClient);
-      LengthIn1ByteCommandReceived(args.Array, args.ID, sender as TCPServerClient);
+      var serverClient = sender as TCPServerClient;
+
+      if (serverClient.ClientPriority != ClientPriority.Master) return;
+
+      foreach (var client in _clients.Where(cli => cli != serverClient))
+      {
+        client.SendLengthIn1ByteCommand(args.Array, args.ID);
+      }
     }
 
     private void CLIOnConstByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
