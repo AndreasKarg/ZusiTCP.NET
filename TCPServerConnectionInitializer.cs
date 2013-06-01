@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Zusi_Datenausgabe
@@ -98,11 +99,11 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    public TCPServerMasterConnection GetMasterConnection(GetAbonentedIdsDelegate getAbonentedIds)
+    public TCPServerMasterConnection GetMasterConnection(ICollection<int> requestedData)
     {
       if (_masterConnection == null)
       {
-        InitializeMasterConnection(getAbonentedIds);
+        InitializeMasterConnection(requestedData);
       }
       return _masterConnection;
     }
@@ -118,7 +119,7 @@ namespace Zusi_Datenausgabe
       _slaveConnection = new TCPServerSlaveConnection(HostContext, ClientConnection, ClientId, ClientPriority);
     }
 
-    private void InitializeMasterConnection(GetAbonentedIdsDelegate getAbonentedIds)
+    private void InitializeMasterConnection(ICollection<int> requestedData)
     {
       if (ClientPriority == ClientPriority.Undefined)
         throw new NotSupportedException("Cannot create master connection for unconnected client. Await handshake first.");
@@ -126,7 +127,7 @@ namespace Zusi_Datenausgabe
       if (ClientPriority != ClientPriority.Master)
         throw new NotSupportedException("Cannot create master connection for slave client.");
 
-      _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, getAbonentedIds);
+      _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, requestedData);
     }
 
     protected override void HandleHandshake()

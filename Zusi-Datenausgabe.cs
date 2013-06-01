@@ -159,7 +159,7 @@ namespace Zusi_Datenausgabe
 
       ExpectResponse(ResponseType.AckHello, 0);
 
-      RequestDataFromZusi();
+      RequestDataFromZusi(RequestedData);
 
       ExpectResponse(ResponseType.AckNeededData, 0);
     }

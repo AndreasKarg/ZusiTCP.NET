@@ -342,9 +342,9 @@ namespace Zusi_Datenausgabe
 
     protected abstract void HandleHandshake();
 
-    protected void RequestDataFromZusi()
+    protected void RequestDataFromZusi(IEnumerable<int> requestedData)
     {
-      var aGetData = from iData in RequestedData group iData by (iData / 256);
+      var aGetData = from iData in requestedData group iData by (iData / 256);
 
       var reqDataBuffer = new List<byte[]>();
 

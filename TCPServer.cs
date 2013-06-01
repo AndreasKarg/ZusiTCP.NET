@@ -49,6 +49,7 @@ namespace Zusi_Datenausgabe
 */
 
     private TCPServerMasterConnection _masterL;
+    private ICollection<int> _requestedData;
 
     /// <summary>
     /// Gets the master.
@@ -61,21 +62,6 @@ namespace Zusi_Datenausgabe
       if ((id < 3840) || (id >= 4096))
         return;
       //ToDo: Code einfügen.
-    }
-
-    private IEnumerable<int> GetAbonentedIds()
-    {
-      var lst = new List<int>();
-      //Hier kann lst mit MUSS-ABONIEREN-Werten initialisiert werden, falls solcher gewünscht sind.
-      foreach (var cli in _clients)
-      {
-        foreach (int dat in cli.RequestedData)
-        {
-          if ((!lst.Contains(dat)) && ((dat < 3840) || (dat >= 4096)))
-            lst.Add(dat);
-        }
-      }
-      return lst;
     }
 
     public bool IsStarted { get { return _accepterThread != null; } }
@@ -217,7 +203,7 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Master is already connected. Cannot accept more than one master.");
       }
 
-      _masterL = initializer.GetMasterConnection(GetAbonentedIds);
+      _masterL = initializer.GetMasterConnection(_requestedData);
       _masterL.ConnectionState_Changed += MasterConnectionStateChanged;
       _masterL.ErrorReceived += MasterErrorReceived;
       _masterL.DataSetReceived += MasterDataSetReceived;

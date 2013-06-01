@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
@@ -20,34 +21,19 @@ namespace Zusi_Datenausgabe
       OnDataSetReceived(new DataSet<byte[]>(id, payload));
     }
 
-    private GetAbonentedIdsDelegate _getAbonentedIds;
+    private ICollection<int> _requestedIds;
 
-    public TCPServerMasterConnection(SynchronizationContext hostContext, TcpClient client, String clientId, GetAbonentedIdsDelegate getAbonentedIds)
+    public TCPServerMasterConnection(SynchronizationContext hostContext, TcpClient client, String clientId, ICollection<int> requestedIds)
       : base(clientId, ClientPriority.Master, (TCPCommands)null, hostContext)
     {
-      _getAbonentedIds = getAbonentedIds;
+      _requestedIds = requestedIds;
       InitializeClient(client);
     }
 
     protected override void HandleHandshake()
     {
-      try
-      {
-        TryBeginAcceptConnectionIsMaster();
-      }
-      catch
-      {
-        SendPacket(Pack(0, 2, 255));
-        throw;
-      }
       SendPacket(Pack(0, 2, 0));
-      RequestDataFromZusi();
-    }
-
-    private void TryBeginAcceptConnectionIsMaster()
-    {
-      RequestedData.Clear();
-      RequestedData.AddRange(_getAbonentedIds());
+      RequestDataFromZusi(_requestedIds);
     }
 
     protected override void ReceiveLoop()

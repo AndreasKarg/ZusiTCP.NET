@@ -47,7 +47,7 @@ namespace Zusi_Datenausgabe
           throw;
         }
         SendPacket(Pack(0, 2, 0));
-        RequestDataFromZusi();
+        RequestDataFromZusi(RequestedData);
       }
       else
       {
