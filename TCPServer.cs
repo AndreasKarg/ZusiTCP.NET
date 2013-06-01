@@ -24,6 +24,14 @@ namespace Zusi_Datenausgabe
 
     #endregion
 
+    public event ErrorEvent OnError;
+
+    public void InvokeOnError(ZusiTcpException ex)
+    {
+      var handler = OnError;
+      if (handler != null) handler(this, ex);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Zusi_Datenausgabe.TCPServer"/> class.
     /// </summary>
@@ -47,7 +55,7 @@ namespace Zusi_Datenausgabe
     /// <value>The master.</value>
     public Base_Connection Master { get { return _masterL; } }
 
-    private void ServerRelatedRequest(byte[] array, int id)
+    private void HandleServerRelatedRequest(byte[] array, int id)
     {
       if ((id < 3840) || (id >= 4096))
         return;
@@ -156,7 +164,17 @@ namespace Zusi_Datenausgabe
 
     private void SlaveErrorReceived(object sender, ZusiTcpException zusiTcpException)
     {
-      throw new NotImplementedException();
+      var client = sender.AssertedCast<TCPServerSlaveConnection>();
+
+      KillClient(client);
+      InvokeOnError(new ZusiTcpException("A client generated an exception.", zusiTcpException));
+    }
+
+    private void KillClient(TCPServerSlaveConnection client)
+    {
+      Debug.Assert(_clients.Contains(client));
+      client.Dispose();
+      _clients.Remove(client);
     }
 
     private void SlaveConnectionStateChanged(object sender, EventArgs eventArgs)
@@ -172,8 +190,7 @@ namespace Zusi_Datenausgabe
           break;
         case ConnectionState.Error:
         case ConnectionState.Disconnected:
-          client.Dispose();
-          _clients.Remove(client);
+          KillClient(client);
           break;
         default:
           throw new ArgumentOutOfRangeException();
@@ -182,6 +199,10 @@ namespace Zusi_Datenausgabe
 
     private void OnSlaveDataRequested(object sender, EventArgs eventArgs)
     {
+      var client = sender.AssertedCast<TCPServerSlaveConnection>();
+      Debug.Assert(_clients.Contains(client));
+
+      //TODO: Implement manager for requested data.
       throw new NotImplementedException();
     }
 
@@ -203,7 +224,7 @@ namespace Zusi_Datenausgabe
 
     private void MasterDataSetReceived(DataSet<byte[]> dataSet)
     {
-      ServerRelatedRequest(dataSet.Value, dataSet.Id);
+      HandleServerRelatedRequest(dataSet.Value, dataSet.Id);
 
       foreach (var client in _clients)
       {
@@ -213,7 +234,16 @@ namespace Zusi_Datenausgabe
 
     private void MasterErrorReceived(object sender, ZusiTcpException zusiTcpException)
     {
-      throw new NotImplementedException();
+      KillMaster();
+
+      InvokeOnError(new ZusiTcpException("The master generated an exception.", zusiTcpException));
+    }
+
+    private void KillMaster()
+    {
+      Debug.Assert(_masterL != null);
+      _masterL.Dispose();
+      _masterL = null;
     }
 
     private void MasterConnectionStateChanged(object sender, EventArgs eventArgs)
@@ -224,8 +254,7 @@ namespace Zusi_Datenausgabe
       {
         case ConnectionState.Disconnected:
         case ConnectionState.Error:
-          _masterL.Dispose();
-          _masterL = null;
+          KillMaster();
           break;
         case ConnectionState.Connected:
         case ConnectionState.Connecting:
@@ -234,8 +263,6 @@ namespace Zusi_Datenausgabe
         default:
           throw new ArgumentOutOfRangeException();
       }
-
-      throw new NotImplementedException();
     }
   }
 
