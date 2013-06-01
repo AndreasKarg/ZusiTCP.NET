@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -15,8 +15,7 @@ namespace Zusi_Datenausgabe
     #region Fields
 
     private readonly List<TCPServerSlaveConnection> _clients = new List<TCPServerSlaveConnection>();
-    private readonly List<Base_Connection> _clientsExtern = new List<Base_Connection>();
-    private readonly System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> _clientsExternReadonly;
+    private readonly ReadOnlyCollection<TCPServerSlaveConnection> _clientsExternReadonly;
 
     private TcpListener _socketListener;
     private Thread _accepterThread;
@@ -38,14 +37,16 @@ namespace Zusi_Datenausgabe
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
     public TCPServer(TCPCommands commandsetDocument)
     {
-      _clientsExternReadonly = new System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection>(_clientsExtern);
+      _clientsExternReadonly = _clients.AsReadOnly();
       _doc = commandsetDocument;
     }
+/*
     /// <summary>
     /// Gets a list of all connected clients.
     /// </summary>
     /// <value>The clients.</value>
-    public System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> Clients { get { return _clientsExternReadonly; } }
+    public ReadOnlyCollection<Base_Connection> Clients { get { return _clientsExternReadonly; } }
+*/
 
     private TCPServerMasterConnection _masterL;
 
