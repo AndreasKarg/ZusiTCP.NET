@@ -1,14 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 
 namespace Zusi_Datenausgabe
@@ -18,12 +14,12 @@ namespace Zusi_Datenausgabe
   {
     #region Fields
 
-    private readonly List<TCPServerClient> _clients = new List<TCPServerClient>();
-    private readonly List<Base_Connection> _clients_extern = new List<Base_Connection>();
-    private readonly System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> _clients_extern_readonly;
+    private readonly List<TCPServerSlaveConnection> _clients = new List<TCPServerSlaveConnection>();
+    private readonly List<Base_Connection> _clientsExtern = new List<Base_Connection>();
+    private readonly System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> _clientsExternReadonly;
 
-    private TcpListener _serverObj = null;
-    private Thread _accepterThread = null;
+    private TcpListener _socketListener;
+    private Thread _accepterThread;
     private TCPCommands _doc;
 
     #endregion
@@ -31,23 +27,26 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Initializes a new instance of the <see cref="Zusi_Datenausgabe.TCPServer"/> class.
     /// </summary>
-    /// <param name="CommandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
-    public TCPServer(TCPCommands CommandsetDocument)
+    /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
+    public TCPServer(TCPCommands commandsetDocument)
     {
-      _clients_extern_readonly = new System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection>(_clients_extern);
-      _doc = CommandsetDocument;
+      _clientsExternReadonly = new System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection>(_clientsExtern);
+      _doc = commandsetDocument;
     }
     /// <summary>
     /// Gets a list of all connected clients.
     /// </summary>
     /// <value>The clients.</value>
-    public System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> Clients { get { return _clients_extern_readonly; } }
-    private TCPServerClient MasterL { get; set; }
+    public System.Collections.ObjectModel.ReadOnlyCollection<Base_Connection> Clients { get { return _clientsExternReadonly; } }
+
+    private TCPServerMasterConnection _masterL;
+
     /// <summary>
     /// Gets the master.
     /// </summary>
     /// <value>The master.</value>
-    public Base_Connection Master { get { return MasterL; } }
+    public Base_Connection Master { get { return _masterL; } }
+
     private void ServerRelatedRequest(byte[] array, int id)
     {
       if ((id < 3840) || (id >= 4096))
@@ -57,9 +56,9 @@ namespace Zusi_Datenausgabe
 
     private IEnumerable<int> GetAbonentedIds()
     {
-      List<int> lst = new List<int>();
+      var lst = new List<int>();
       //Hier kann lst mit MUSS-ABONIEREN-Werten initialisiert werden, falls solcher gewünscht sind.
-      foreach (TCPServerClient cli in _clients)
+      foreach (var cli in _clients)
       {
         foreach (int dat in cli.RequestedData)
         {
@@ -71,6 +70,7 @@ namespace Zusi_Datenausgabe
     }
 
     public bool IsStarted { get { return _accepterThread != null; } }
+
     /// <summary>
     /// Starts the server using the specified port.
     /// </summary>
@@ -85,16 +85,16 @@ namespace Zusi_Datenausgabe
       _accepterThread = new Thread(RunningLoop);
       try
       {
-        _serverObj = new TcpListener(IPAddress.Any, port);
-        _serverObj.Start();
+        _socketListener = new TcpListener(IPAddress.Any, port);
+        _socketListener.Start();
         _accepterThread.Start();
       }
       catch
       {
         _accepterThread = null;
-        if (_serverObj != null)
-          _serverObj.Stop();
-        _serverObj = null;
+        if (_socketListener != null)
+          _socketListener.Stop();
+        _socketListener = null;
         throw;
       }
 
@@ -105,94 +105,142 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Stop()
     {
-      foreach (TCPServerClient cli in _clients)
+      foreach (var cli in _clients)
       {
         cli.Disconnect();
       }
       _accepterThread.Abort();
     }
+
     private void RunningLoop()
     {
-      TCPServerClient cli = null;
       try
       {
         while (IsStarted)
         {
-          TcpClient tc = _serverObj.AcceptTcpClient();
-          cli = new TCPServerClient(_doc, (Master != null) ? Master.RequestedData : null, GetAbonentedIds);
+          TcpClient socketClient = _socketListener.AcceptTcpClient();
 
-          cli.ConstByteCommandReceived += CLIOnConstByteCommandReceived;
-          cli.LengthIn1ByteCommandReceived += OnLengthIn1ByteCommandReceived;
-          cli.ConnectionState_Changed += OnConnectionStateChanged;
-
-          cli.TryBeginAcceptConnection(tc);
-          cli = null;
+          //TODO: Cleanup Initializer class
+          var initializer = new TCPServerConnectionInitializer("", ClientPriority.Undefined);
+          initializer.MasterConnectionInitialized += MasterConnectionInitialized;
+          initializer.SlaveConnectionInitialized += SlaveConnectionInitialized;
+          initializer.InitializeClient(socketClient);
         }
       }
       catch
       {
-        if (cli != null)
-          cli.Dispose();
-        _serverObj.Stop();
+        _socketListener.Stop();
         throw;
       }
     }
 
-    private void OnConnectionStateChanged(object sender, EventArgs eventArgs)
+    private void SlaveConnectionInitialized(object sender, EventArgs eventArgs)
     {
-      Debug.Assert(sender is TCPServerClient);
+      var initializer = sender.AssertedCast<TCPServerConnectionInitializer>();
 
-      var serverClient = sender as TCPServerClient;
+      //TODO: Throw exception in client when ErrorReceived is not subscribed to.
 
-      if (serverClient.ConnectionState == ConnectionState.Connected)
+      //TODO: Improve slave handling.
+      if(_masterL != null)
       {
-        if (serverClient.ClientPriority == ClientPriority.Master)
-          MasterL = serverClient;
-        if (!_clients.Contains(serverClient))
-          _clients.Add(serverClient);
-        if (!_clients_extern.Contains(serverClient))
-          _clients_extern.Add(serverClient);
+        initializer.RefuseConnectionAndTerminate();
+        throw new NotSupportedException("Master is already connected. Cannot accept more clients.");
       }
-      else
+
+      var slave = initializer.SlaveConnection;
+      slave.DataRequested += OnSlaveDataRequested;
+      slave.ConnectionState_Changed += SlaveConnectionStateChanged;
+      slave.ErrorReceived += SlaveErrorReceived;
+      _clients.Add(slave);
+    }
+
+    private void SlaveErrorReceived(object sender, ZusiTcpException zusiTcpException)
+    {
+      throw new NotImplementedException();
+    }
+
+    private void SlaveConnectionStateChanged(object sender, EventArgs eventArgs)
+    {
+      var client = sender.AssertedCast<TCPServerSlaveConnection>();
+      Debug.Assert(_clients.Contains(client));
+
+      switch (client.ConnectionState)
       {
-        if (serverClient == MasterL)
-          MasterL = null;
-        _clients.Remove(serverClient);
-        _clients_extern.Remove(serverClient);
-        if (serverClient.ConnectionState == ConnectionState.Error)
-        {
-          serverClient.Disconnect();
-          serverClient.Dispose();
-        }
+        case ConnectionState.Connected:
+        case ConnectionState.Connecting:
+          /* Nothing to do */
+          break;
+        case ConnectionState.Error:
+        case ConnectionState.Disconnected:
+          client.Dispose();
+          _clients.Remove(client);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
       }
     }
 
-    private void OnLengthIn1ByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
+    private void OnSlaveDataRequested(object sender, EventArgs eventArgs)
     {
-      Debug.Assert(sender is TCPServerClient);
-      var serverClient = sender as TCPServerClient;
-
-      if (serverClient.ClientPriority != ClientPriority.Master) return;
-
-      foreach (var client in _clients.Where(cli => cli != serverClient))
-      {
-        client.SendLengthIn1ByteCommand(args.Array, args.ID);
-      }
+      throw new NotImplementedException();
     }
 
-    private void CLIOnConstByteCommandReceived(object sender, CommandReceivedDelegateArgs args)
+    private void MasterConnectionInitialized(object sender, EventArgs e)
     {
-      Debug.Assert(sender is TCPServerClient);
+      var initializer = sender.AssertedCast<TCPServerConnectionInitializer>();
 
+      if (_masterL != null)
+      {
+        initializer.RefuseConnectionAndTerminate();
+        throw new NotSupportedException("Master is already connected. Cannot accept more than one master.");
+      }
+
+      _masterL = initializer.GetMasterConnection(GetAbonentedIds);
+      _masterL.ConnectionState_Changed += MasterConnectionStateChanged;
+      _masterL.ErrorReceived += MasterErrorReceived;
+      _masterL.DataSetReceived += MasterDataSetReceived;
+    }
+
+    private void MasterDataSetReceived(DataSet<byte[]> dataSet)
+    {
+      CLIOnConstByteCommandReceived(new CommandReceivedDelegateArgs(dataSet.Value, dataSet.Id));
+    }
+
+    private void MasterErrorReceived(object sender, ZusiTcpException zusiTcpException)
+    {
+      throw new NotImplementedException();
+    }
+
+    private void MasterConnectionStateChanged(object sender, EventArgs eventArgs)
+    {
+      Debug.Assert(sender == _masterL);
+
+      switch (_masterL.ConnectionState)
+      {
+        case ConnectionState.Disconnected:
+        case ConnectionState.Error:
+          _masterL.Dispose();
+          _masterL = null;
+          break;
+        case ConnectionState.Connected:
+        case ConnectionState.Connecting:
+          // Nothing to do.
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
+
+      throw new NotImplementedException();
+    }
+
+    private void CLIOnConstByteCommandReceived(CommandReceivedDelegateArgs args)
+    {
       var array = args.Array;
       var id = args.ID;
 
-      var serverClient = sender as TCPServerClient;
       ServerRelatedRequest(array, id);
 
-      if (serverClient.ClientPriority != ClientPriority.Master) return;
-
-      foreach (var client in _clients.Where(cli => cli != serverClient))
+      foreach (var client in _clients)
       {
         client.SendByteCommand(array, id);
       }

@@ -134,6 +134,7 @@ namespace Zusi_Datenausgabe
       ida.Reverse();
       SendLargePacket(ida.ToArray(), array);
     }
+
     public void SendLengthIn1ByteCommand(byte[] array, int id)
     {
       if ((ConnectionState != ConnectionState.Connected) || (!RequestedData.Contains(id)))

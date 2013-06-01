@@ -64,7 +64,7 @@ namespace Zusi_Datenausgabe
     {
       // TODO: Find out whether there can be something meaningful here and use it.
 
-      _clientReader.ReadByte();
+      ClientReader.ReadByte();
       // The reader waits until a byte has been received without timeout.
       throw new NotSupportedException("A slave client sent data unexpectedly.");
     }

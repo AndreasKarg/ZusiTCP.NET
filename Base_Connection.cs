@@ -28,7 +28,7 @@ namespace Zusi_Datenausgabe
 
     protected TcpClient ClientConnection;
     private NetworkStream _clientStream;
-    protected BinaryReader _clientReader;
+    protected BinaryReader ClientReader;
 
     private Thread _streamReaderThread;
 
@@ -309,12 +309,12 @@ namespace Zusi_Datenausgabe
       return byteA * 256 + byteB;
     }
 
-    protected void InitializeClient(TcpClient clientConnection)
+    public void InitializeClient(TcpClient clientConnection)
     {
       Debug.Assert(clientConnection.Connected);
 
       _clientStream = clientConnection.GetStream();
-      _clientReader = new BinaryReader(_clientStream, StringEncoder);
+      ClientReader = new BinaryReader(_clientStream, StringEncoder);
 
       try
       {
@@ -393,13 +393,13 @@ namespace Zusi_Datenausgabe
     /// <returns>An array with the requested Types for ResponseType.NeededData, null for other values.</returns>
     protected ExpectResponseAnswer ExpectResponse(ResponseType expResponse, int dataGroup)
     {
-      int iPacketLength = _clientReader.ReadInt32();
+      int iPacketLength = ClientReader.ReadInt32();
       if (!((iPacketLength == 3) || ((expResponse == ResponseType.Hello) && (iPacketLength >= 5)) || ((expResponse == ResponseType.NeededData) && (iPacketLength >= 4))))
       {
         throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
       }
 
-      int iReadInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
+      int iReadInstr = GetInstruction(ClientReader.ReadByte(), ClientReader.ReadByte());
       if (iReadInstr != (int)expResponse)
       {
         throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
@@ -411,7 +411,7 @@ namespace Zusi_Datenausgabe
           break;
         case ResponseType.AckHello:
         case ResponseType.AckNeededData:
-          int iResponse = _clientReader.ReadByte();
+          int iResponse = ClientReader.ReadByte();
           if (iResponse == 0)
           {
             /* Response is an ACK */
@@ -446,23 +446,23 @@ namespace Zusi_Datenausgabe
           }
           break;
         case ResponseType.Hello:
-          int iVersion = _clientReader.ReadByte();
+          int iVersion = ClientReader.ReadByte();
           if (iVersion > 2)
           {
             throw new ZusiTcpException("Version not Supported.");
           }
-          this.ClientPriority = (ClientPriority)_clientReader.ReadByte();
-          this.ClientId = _clientReader.ReadString();
+          this.ClientPriority = (ClientPriority)ClientReader.ReadByte();
+          this.ClientId = ClientReader.ReadString();
           if (iPacketLength != (5 + ClientId.Length))
           {
             throw new ZusiTcpException("Invalid packet length: " + iPacketLength + " (Details: Client name didn't keep to length.)");
           }
           break;
         case ResponseType.NeededData:
-          int instructionGroup = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
+          int instructionGroup = GetInstruction(ClientReader.ReadByte(), ClientReader.ReadByte());
           List<int> requestedTypes = new List<int>();
           for (int i = 4; i < iPacketLength; i++)
-            requestedTypes.Add(GetInstruction(instructionGroup, _clientReader.ReadByte()));
+            requestedTypes.Add(GetInstruction(instructionGroup, ClientReader.ReadByte()));
           return new ExpectResponseAnswer(requestedTypes.ToArray(), instructionGroup);
         default:
           throw new ArgumentOutOfRangeException("expResponse");
@@ -504,9 +504,9 @@ namespace Zusi_Datenausgabe
       {
         while (ConnectionState == ConnectionState.Connected)
         {
-          int packetLength = _clientReader.ReadInt32();
+          int packetLength = ClientReader.ReadInt32();
 
-          int curInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
+          int curInstr = GetInstruction(ClientReader.ReadByte(), ClientReader.ReadByte());
 
           if (curInstr < 10)
           {
@@ -517,7 +517,7 @@ namespace Zusi_Datenausgabe
 
           while (bytesRead < packetLength)
           {
-            int curID = _clientReader.ReadByte() + 256 * curInstr;
+            int curID = ClientReader.ReadByte() + 256 * curInstr;
 
             bytesRead += 1;
 
@@ -547,7 +547,7 @@ namespace Zusi_Datenausgabe
               dataHandlers.Add(curCommand.Type, handlerMethod);
             }
 
-            bytesRead += (int)handlerMethod.Invoke(this, new object[] { _clientReader, curID });
+            bytesRead += (int)handlerMethod.Invoke(this, new object[] { ClientReader, curID });
           }
         }
       }
