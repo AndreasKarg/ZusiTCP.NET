@@ -54,8 +54,8 @@ namespace Zusi_Datenausgabe
         SendPacket(Pack(0, 2, 0));
         ExpectResponseAnswer requestedValues = null;
         int dataGroup = -1;
-        while ((requestedValues == null) || (requestedValues.requestArea != 0) ||
-               ((requestedValues.requestArray != null) && (requestedValues.requestArray.Length != 0)))
+        while ((requestedValues == null) || (requestedValues.RequestedDataGroup != 0) ||
+               ((requestedValues.RequestedValues != null) && (requestedValues.RequestedValues.Length != 0)))
         {
           try
           {
@@ -66,7 +66,7 @@ namespace Zusi_Datenausgabe
             SendPacket(Pack(0, 4, 255));
             throw;
           }
-          foreach (int ValReq in requestedValues.requestArray)
+          foreach (int ValReq in requestedValues.RequestedValues)
           {
             if ((_restrictToValues != null) && (!_restrictToValues.Contains(ValReq)))
             {

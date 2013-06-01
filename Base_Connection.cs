@@ -20,15 +20,15 @@ namespace Zusi_Datenausgabe
   {
     #region Fields
 
-    private readonly SynchronizationContext _hostContext;
+    protected readonly SynchronizationContext HostContext;
 
     protected readonly ASCIIEncoding StringEncoder = new ASCIIEncoding();
 
     private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
 
-    private TcpClient _clientConnection;
+    protected TcpClient ClientConnection;
     private NetworkStream _clientStream;
-    private BinaryReader _clientReader;
+    protected BinaryReader _clientReader;
 
     private Thread _streamReaderThread;
 
@@ -63,7 +63,7 @@ namespace Zusi_Datenausgabe
       ClientId = clientId;
       ClientPriority = priority;
 
-      _hostContext = hostContext;
+      HostContext = hostContext;
 
       _commands = commandsetDocument;
     }
@@ -186,8 +186,8 @@ namespace Zusi_Datenausgabe
       {
         _connectionState = value;
         _requestedData.IsReadOnly = (value == ConnectionState.Connected);
-        if (_hostContext != null)
-          _hostContext.Post(ConnectMarshal, new EventArgs());
+        if (HostContext != null)
+          HostContext.Post(ConnectMarshal, new EventArgs());
         else
           ConnectMarshal(new EventArgs());
       }
@@ -244,7 +244,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Dispose()
     {
-      Disconnnect();
+      Disconnect();
     }
 
     #endregion
@@ -304,7 +304,7 @@ namespace Zusi_Datenausgabe
       return message;
     }
 
-    private static int GetInstruction(int byteA, int byteB)
+    protected static int GetInstruction(int byteA, int byteB)
     {
       return byteA * 256 + byteB;
     }
@@ -334,7 +334,7 @@ namespace Zusi_Datenausgabe
 
     protected void HandleException(ZusiTcpException e)
     {
-      Disconnnect();
+      Disconnect();
       ConnectionState = ConnectionState.Error;
 
       PostExToHost(e);
@@ -369,18 +369,18 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Disconnect from the TCP server.
     /// </summary>
-    public void Disconnnect()
+    public void Disconnect()
     {
       if ((_streamReaderThread != null) && (_streamReaderThread != Thread.CurrentThread))
       {
         _streamReaderThread.Abort();
       }
       ConnectionState = ConnectionState.Disconnected;
-      if (_clientConnection != null)
+      if (ClientConnection != null)
       {
-        _clientConnection.Close();
+        ClientConnection.Close();
       }
-      _clientConnection = null;
+      ClientConnection = null;
     }
 
     /// <summary>
@@ -459,11 +459,11 @@ namespace Zusi_Datenausgabe
           }
           break;
         case ResponseType.NeededData:
-          int area = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
+          int instructionGroup = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
           List<int> requestedTypes = new List<int>();
           for (int i = 4; i < iPacketLength; i++)
-            requestedTypes.Add(GetInstruction(area, _clientReader.ReadByte()));
-          return new ExpectResponseAnswer(requestedTypes.ToArray(), area);
+            requestedTypes.Add(GetInstruction(instructionGroup, _clientReader.ReadByte()));
+          return new ExpectResponseAnswer(requestedTypes.ToArray(), instructionGroup);
         default:
           throw new ArgumentOutOfRangeException("expResponse");
       }
@@ -579,13 +579,13 @@ namespace Zusi_Datenausgabe
 
     protected class ExpectResponseAnswer
     {
-      public ExpectResponseAnswer(int[] requestArray, int requestArea)
+      public ExpectResponseAnswer(int[] requestedValues, int requestedDataGroup)
       {
-        this.requestArray = requestArray;
-        this.requestArea = requestArea;
+        RequestedValues = requestedValues;
+        RequestedDataGroup = requestedDataGroup;
       }
-      public int[] requestArray { get; private set; }
-      public int requestArea { get; private set; }
+      public int[] RequestedValues { get; private set; }
+      public int RequestedDataGroup { get; private set; }
     }
 
     #endregion
@@ -628,8 +628,8 @@ namespace Zusi_Datenausgabe
         return;
       }
 
-      if (_hostContext != null)
-        _hostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
+      if (HostContext != null)
+        HostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
       else
         EventMarshal<T>(new MarshalArgs<T>(Event, id, value));
 
@@ -641,8 +641,8 @@ namespace Zusi_Datenausgabe
     /// <param name="ex">The exception.</param>
     private void PostExToHost(ZusiTcpException ex)
     {
-      if (_hostContext != null)
-        _hostContext.Post(ErrorMarshal, ex);
+      if (HostContext != null)
+        HostContext.Post(ErrorMarshal, ex);
       else
         ErrorMarshal(ex);
     }

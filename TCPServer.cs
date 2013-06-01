@@ -107,7 +107,7 @@ namespace Zusi_Datenausgabe
     {
       foreach (TCPServerClient cli in _clients)
       {
-        cli.Disconnnect();
+        cli.Disconnect();
       }
       _accepterThread.Abort();
     }
@@ -161,7 +161,7 @@ namespace Zusi_Datenausgabe
         _clients_extern.Remove(serverClient);
         if (serverClient.ConnectionState == ConnectionState.Error)
         {
-          serverClient.Disconnnect();
+          serverClient.Disconnect();
           serverClient.Dispose();
         }
       }
