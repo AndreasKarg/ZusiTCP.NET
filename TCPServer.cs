@@ -252,31 +252,5 @@ namespace Zusi_Datenausgabe
       }
     }
   }
-
-  internal delegate IEnumerable<int> GetAbonentedIdsDelegate();
-
-  internal class CommandReceivedDelegateArgs : EventArgs
-  {
-    private readonly byte[] _array;
-    private readonly int _id;
-
-    public byte[] Array
-    {
-      [DebuggerStepThrough]
-      get { return _array; }
-    }
-
-    public int ID
-    {
-      [DebuggerStepThrough]
-      get { return _id; }
-    }
-
-    public CommandReceivedDelegateArgs(byte[] array, int id)
-    {
-      _array = array;
-      _id = id;
-    }
-  }
 }
 

@@ -74,7 +74,6 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="TCPCommands.cs" />
-    <Compile Include="TCPServerClient.cs" />
     <Compile Include="TCPServerConnectionInitializer.cs" />
     <Compile Include="TCPServerMasterConnection.cs" />
     <Compile Include="TCPServerSlaveConnection.cs" />
