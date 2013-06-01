@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -7,9 +8,20 @@ namespace Zusi_Datenausgabe
 {
   internal class TCPServerSlaveConnection : Base_Connection
   {
-    public event EventHandler DataRequested;
+    private HashSet<int> _requestedData;
+    public event EventHandler<EventArgs> DataRequested;
 
-    private void OnDataRequested()
+    public HashSet<int> RequestedData
+    {
+      [DebuggerStepThrough]
+      get
+      {
+        Debug.Assert(_requestedData != null);
+        return _requestedData;
+      }
+    }
+
+    private void OnDataRequested(ICollection<int> requestedData)
     {
       var handler = DataRequested;
       if (handler != null) handler(this, EventArgs.Empty);
@@ -39,20 +51,17 @@ namespace Zusi_Datenausgabe
           throw;
         }
         
-        foreach (int requestedValue in requestedValues.RequestedValues)
-        {
-          if (!RequestedData.Contains(requestedValue))
-            RequestedData.Add(requestedValue);
-        }
+        // TODO: Check for correct data group
+        _requestedData = new HashSet<int>(requestedValues.RequestedValues);
         SendPacket(Pack(0, 4, 0));
       }
 
-      OnDataRequested();
+      OnDataRequested(_requestedData);
     }
 
     public void SendByteCommand(byte[] array, int id)
     {
-      if ((ConnectionState != ConnectionState.Connected) || (!RequestedData.Contains(id)))
+      if ((ConnectionState != ConnectionState.Connected) || (!_requestedData.Contains(id)))
         return;
       List<byte> ida = new List<byte>(BitConverter.GetBytes(id));
       ida.RemoveAt(3);
@@ -67,6 +76,21 @@ namespace Zusi_Datenausgabe
       ClientReader.ReadByte();
       // The reader waits until a byte has been received without timeout.
       throw new NotSupportedException("A slave client sent data unexpectedly.");
+    }
+  }
+
+  internal class DataRequestedEventArgs : EventArgs
+  {
+    public DataRequestedEventArgs(ICollection<int> requestedIds)
+    {
+      _requestedIds = requestedIds;
+    }
+
+    private readonly ICollection<int> _requestedIds;
+
+    public ICollection<int> RequestedIds
+    {
+      get { return _requestedIds; }
     }
   }
 }

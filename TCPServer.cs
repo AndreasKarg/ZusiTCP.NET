@@ -49,7 +49,7 @@ namespace Zusi_Datenausgabe
 */
 
     private TCPServerMasterConnection _masterL;
-    private ICollection<int> _requestedData;
+    private ReferenceCounter<int> _requestedData = new ReferenceCounter<int>();
 
     /// <summary>
     /// Gets the master.
@@ -160,6 +160,9 @@ namespace Zusi_Datenausgabe
     private void KillClient(TCPServerSlaveConnection client)
     {
       Debug.Assert(_clients.Contains(client));
+      Debug.Assert(client.RequestedData != null);
+
+      _requestedData.ReleaseRange(client.RequestedData);
       client.Dispose();
       _clients.Remove(client);
     }
@@ -189,8 +192,7 @@ namespace Zusi_Datenausgabe
       var client = sender.AssertedCast<TCPServerSlaveConnection>();
       Debug.Assert(_clients.Contains(client));
 
-      //TODO: Implement manager for requested data.
-      throw new NotImplementedException();
+      _requestedData.ClaimRange(client.RequestedData);
     }
 
     private void MasterConnectionInitialized(object sender, EventArgs e)
@@ -203,7 +205,7 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Master is already connected. Cannot accept more than one master.");
       }
 
-      _masterL = initializer.GetMasterConnection(_requestedData);
+      _masterL = initializer.GetMasterConnection(_requestedData.ReferencedToIEnumerable());
       _masterL.ConnectionState_Changed += MasterConnectionStateChanged;
       _masterL.ErrorReceived += MasterErrorReceived;
       _masterL.DataSetReceived += MasterDataSetReceived;

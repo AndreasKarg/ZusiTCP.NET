@@ -99,7 +99,7 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    public TCPServerMasterConnection GetMasterConnection(ICollection<int> requestedData)
+    public TCPServerMasterConnection GetMasterConnection(IEnumerable<int> requestedData)
     {
       if (_masterConnection == null)
       {
@@ -119,7 +119,7 @@ namespace Zusi_Datenausgabe
       _slaveConnection = new TCPServerSlaveConnection(HostContext, ClientConnection, ClientId, ClientPriority);
     }
 
-    private void InitializeMasterConnection(ICollection<int> requestedData)
+    private void InitializeMasterConnection(IEnumerable<int> requestedData)
     {
       if (ClientPriority == ClientPriority.Undefined)
         throw new NotSupportedException("Cannot create master connection for unconnected client. Await handshake first.");
@@ -132,7 +132,6 @@ namespace Zusi_Datenausgabe
 
     protected override void HandleHandshake()
     {
-      RequestedData.Clear();
       try
       {
         ExpectResponse(ResponseType.Hello, 0);

@@ -24,8 +24,6 @@ namespace Zusi_Datenausgabe
 
     protected readonly ASCIIEncoding StringEncoder = new ASCIIEncoding();
 
-    private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
-
     protected TcpClient ClientConnection;
     private NetworkStream _clientStream;
     protected BinaryReader ClientReader;
@@ -176,7 +174,7 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Represents the current connection state of the client.
     /// </summary>
-    public ConnectionState ConnectionState
+    public virtual ConnectionState ConnectionState
     {
       get
       {
@@ -185,7 +183,6 @@ namespace Zusi_Datenausgabe
       protected set
       {
         _connectionState = value;
-        _requestedData.IsReadOnly = (value == ConnectionState.Connected);
         if (HostContext != null)
           HostContext.Post(ConnectMarshal, new EventArgs());
         else
@@ -197,19 +194,6 @@ namespace Zusi_Datenausgabe
     /// Represents the priority of the client. Cannot be changed after object creation.
     /// </summary>
     public ClientPriority ClientPriority { get; private set; }
-
-    /// <summary>
-    /// Represents a list of all measurements which will be requested from Zusi on connecting. Add your required measurements
-    /// here before connecting to the server. List is read-only while connected.
-    /// <seealso cref="IDs"/>
-    /// </summary>
-    public ICollection<int> RequestedData
-    {
-      get
-      {
-        return _requestedData;
-      }
-    }
 
     /// <summary>
     /// Returns the ID of the measurement specified in plain text.

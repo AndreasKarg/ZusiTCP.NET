@@ -21,9 +21,9 @@ namespace Zusi_Datenausgabe
       OnDataSetReceived(new DataSet<byte[]>(id, payload));
     }
 
-    private ICollection<int> _requestedIds;
+    private IEnumerable<int> _requestedIds;
 
-    public TCPServerMasterConnection(SynchronizationContext hostContext, TcpClient client, String clientId, ICollection<int> requestedIds)
+    public TCPServerMasterConnection(SynchronizationContext hostContext, TcpClient client, String clientId, IEnumerable<int> requestedIds)
       : base(clientId, ClientPriority.Master, (TCPCommands)null, hostContext)
     {
       _requestedIds = requestedIds;

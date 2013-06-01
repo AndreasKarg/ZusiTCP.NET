@@ -68,6 +68,7 @@ namespace Zusi_Datenausgabe
   /// </summary>
   public class ZusiTcpConn : Base_Connection
   {
+    private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
 
     /// <summary>
     /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
@@ -124,6 +125,31 @@ namespace Zusi_Datenausgabe
     public ZusiTcpConn(string clientId, ClientPriority priority)
       : base(clientId, priority) { }
 
+    /// <summary>
+    /// Represents a list of all measurements which will be requested from Zusi on connecting. Add your required measurements
+    /// here before connecting to the server. List is read-only while connected.
+    /// <seealso cref="Base_Connection.IDs"/>
+    /// </summary>
+    public ICollection<int> RequestedData
+    {
+      get
+      {
+        return _requestedData;
+      }
+    }
+
+    public override ConnectionState ConnectionState
+    {
+      get
+      {
+        return base.ConnectionState;
+      }
+      protected set
+      {
+        _requestedData.IsReadOnly = (value == ConnectionState.Connected);
+        base.ConnectionState = value;
+      }
+    }
 
 
     /// <summary>

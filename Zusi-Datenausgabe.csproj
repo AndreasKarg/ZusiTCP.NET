@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ObjectExtension.cs" />
+    <Compile Include="ReferenceCounter.cs" />
     <Compile Include="SwitchableReadOnlyList.cs" />
     <Compile Include="commandset_schema.designer.cs">
       <AutoGen>True</AutoGen>
