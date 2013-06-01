@@ -203,7 +203,12 @@ namespace Zusi_Datenausgabe
 
     private void MasterDataSetReceived(DataSet<byte[]> dataSet)
     {
-      CLIOnConstByteCommandReceived(new CommandReceivedDelegateArgs(dataSet.Value, dataSet.Id));
+      ServerRelatedRequest(dataSet.Value, dataSet.Id);
+
+      foreach (var client in _clients)
+      {
+        client.SendByteCommand(dataSet.Value, dataSet.Id);
+      }
     }
 
     private void MasterErrorReceived(object sender, ZusiTcpException zusiTcpException)
@@ -231,19 +236,6 @@ namespace Zusi_Datenausgabe
       }
 
       throw new NotImplementedException();
-    }
-
-    private void CLIOnConstByteCommandReceived(CommandReceivedDelegateArgs args)
-    {
-      var array = args.Array;
-      var id = args.ID;
-
-      ServerRelatedRequest(array, id);
-
-      foreach (var client in _clients)
-      {
-        client.SendByteCommand(array, id);
-      }
     }
   }
 
