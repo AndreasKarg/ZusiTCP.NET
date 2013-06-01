@@ -196,6 +196,7 @@ namespace Zusi_Datenausgabe
     }
 
     #region Data reception handlers
+    // ReSharper disable InconsistentNaming
 
     /// <summary>
     /// Event used to handle incoming float data.
@@ -440,23 +441,23 @@ namespace Zusi_Datenausgabe
       switch (temp)
       {
         case 0:
-          result = new BrakeConfiguration() {HasMgBrake = false, Pitch = BrakePitch.G};
+          result = new BrakeConfiguration {HasMgBrake = false, Pitch = BrakePitch.G};
           break;
 
         case 1:
-          result = new BrakeConfiguration() {HasMgBrake = false, Pitch = BrakePitch.P};
+          result = new BrakeConfiguration {HasMgBrake = false, Pitch = BrakePitch.P};
           break;
 
         case 2:
-          result = new BrakeConfiguration() {HasMgBrake = false, Pitch = BrakePitch.R};
+          result = new BrakeConfiguration {HasMgBrake = false, Pitch = BrakePitch.R};
           break;
 
         case 3:
-          result = new BrakeConfiguration() {HasMgBrake = true, Pitch = BrakePitch.P};
+          result = new BrakeConfiguration {HasMgBrake = true, Pitch = BrakePitch.P};
           break;
 
         case 4:
-          result = new BrakeConfiguration() {HasMgBrake = true, Pitch = BrakePitch.R};
+          result = new BrakeConfiguration {HasMgBrake = true, Pitch = BrakePitch.R};
           break;
 
         default:
@@ -468,6 +469,7 @@ namespace Zusi_Datenausgabe
       return sizeof (Int32);
     }
 
+    // ReSharper restore InconsistentNaming
     #endregion
 
     /// <summary>
