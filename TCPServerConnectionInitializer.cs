@@ -37,22 +37,22 @@ namespace Zusi_Datenausgabe
 
     #region Delegated Base Constructors
     public TCPServerConnectionInitializer(string clientId, ClientPriority priority, TCPCommands commandsetDocument, SynchronizationContext hostContext)
-      : base(clientId, priority, commandsetDocument, hostContext)
+      : base(clientId, priority, hostContext)
     {
     }
 
     public TCPServerConnectionInitializer(string clientId, ClientPriority priority, TCPCommands commandsetDocument)
-      : base(clientId, priority, commandsetDocument)
+      : base(clientId, priority)
     {
     }
 
     public TCPServerConnectionInitializer(string clientId, ClientPriority priority, string commandsetPath, SynchronizationContext hostContext)
-      : base(clientId, priority, commandsetPath, hostContext)
+      : base(clientId, priority, hostContext)
     {
     }
 
     public TCPServerConnectionInitializer(string clientId, ClientPriority priority, string commandsetPath)
-      : base(clientId, priority, commandsetPath)
+      : base(clientId, priority)
     {
     }
 

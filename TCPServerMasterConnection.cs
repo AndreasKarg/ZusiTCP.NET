@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  internal class TCPServerMasterConnection : Base_Connection
+  internal class TCPServerMasterConnection : ZusiTcpConn
   {
     public event Action<DataSet<byte[]>> DataSetReceived;
 
@@ -24,7 +24,7 @@ namespace Zusi_Datenausgabe
     private IEnumerable<int> _requestedIds;
 
     public TCPServerMasterConnection(SynchronizationContext hostContext, TcpClient client, String clientId, IEnumerable<int> requestedIds)
-      : base(clientId, ClientPriority.Master, (TCPCommands)null, hostContext)
+      : base(clientId, (ClientPriority) ClientPriority.Master, hostContext)
     {
       _requestedIds = requestedIds;
       InitializeClient(client);

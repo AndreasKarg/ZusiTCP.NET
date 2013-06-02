@@ -28,7 +28,7 @@ namespace Zusi_Datenausgabe
     }
 
     public TCPServerSlaveConnection(SynchronizationContext hostContext, TcpClient client, String clientId, ClientPriority priority)
-      : base(clientId, priority, (TCPCommands)null, hostContext)
+      : base(clientId, priority, hostContext)
     {
       InitializeClient(client);
     }
