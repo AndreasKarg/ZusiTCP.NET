@@ -86,6 +86,7 @@
     <Compile Include="DataContainers.cs" />
     <Compile Include="Base_Connection.cs" />
     <Compile Include="TCPServer.cs" />
+    <Compile Include="ZusiTcpReceiver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />

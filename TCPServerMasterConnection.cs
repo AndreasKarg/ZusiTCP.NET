@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  internal class TCPServerMasterConnection : ZusiTcpConn
+  internal class TCPServerMasterConnection : ZusiTcpReceiver
   {
     public event Action<DataSet<byte[]>> DataSetReceived;
 
@@ -24,8 +24,9 @@ namespace Zusi_Datenausgabe
     private IEnumerable<int> _requestedIds;
 
     public TCPServerMasterConnection(SynchronizationContext hostContext, IBinaryIO client, String clientId, IEnumerable<int> requestedIds)
-      : base(clientId, (ClientPriority) ClientPriority.Master, hostContext)
+      : base(clientId, (ClientPriority) ClientPriority.Master, hostContext, null)
     {
+      throw new NotImplementedException("This class has no command set defined.");
       _requestedIds = requestedIds;
       InitializeClient(client);
     }
