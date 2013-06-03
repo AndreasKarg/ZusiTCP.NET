@@ -1,4 +1,5 @@
 ﻿#region header
+
 // /*************************************************************************
 //  * RequestetDataClerk.cs
 //  * Contains main logic for the TCP interface.
@@ -22,16 +23,21 @@
 //  * If not, see <http://www.gnu.org/licenses/>.
 //  * 
 //  *************************************************************************/
+
 #endregion
+
+#region Using
 
 using System.Collections.Generic;
 using System.Diagnostics;
+
+#endregion
 
 namespace Zusi_Datenausgabe
 {
   public class ReferenceCounter<T>
   {
-    private Dictionary<T, int> _referenceCounts = new Dictionary<T, int>();
+    private readonly Dictionary<T, int> _referenceCounts = new Dictionary<T, int>();
 
     public void ClaimRange(IEnumerable<T> range)
     {
@@ -51,7 +57,7 @@ namespace Zusi_Datenausgabe
 
     private void ReleaseItem(T i)
     {
-      var val = _referenceCounts[i];
+      int val = _referenceCounts[i];
 
       Debug.Assert(val > 0);
 

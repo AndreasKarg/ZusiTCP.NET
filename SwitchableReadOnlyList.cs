@@ -1,4 +1,5 @@
 ﻿#region header
+
 /*************************************************************************
  * BlockingList.cs
  * Contains a List type whose contents can be set to readonly by the owner.
@@ -22,11 +23,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  * 
  *************************************************************************/
+
 #endregion
+
+#region Using
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+#endregion
 
 namespace Zusi_Datenausgabe
 {
@@ -71,12 +77,6 @@ namespace Zusi_Datenausgabe
 
     public bool IsReadOnly { get; set; }
 
-    private void ValidateWriteAccess()
-    {
-      if(IsReadOnly)
-        throw new NotSupportedException("This collection is in read-only mode.");
-    }
-
     public void Add(T item)
     {
       ValidateWriteAccess();
@@ -118,6 +118,14 @@ namespace Zusi_Datenausgabe
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
       return _list.GetEnumerator();
+    }
+
+    private void ValidateWriteAccess()
+    {
+      if (IsReadOnly)
+      {
+        throw new NotSupportedException("This collection is in read-only mode.");
+      }
     }
   }
 }

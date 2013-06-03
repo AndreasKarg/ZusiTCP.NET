@@ -1,8 +1,12 @@
+#region Using
+
 using System.Diagnostics;
+
+#endregion
 
 namespace Zusi_Datenausgabe
 {
-  static internal class ObjectExtension
+  internal static class ObjectExtension
   {
     public static T AssertedCast<T>(this object o) where T : class
     {

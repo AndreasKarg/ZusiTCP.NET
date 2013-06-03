@@ -22,54 +22,54 @@
  *
  *************************************************************************/
 
+#region Using
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml.Serialization;
 
+#endregion
+
 namespace Zusi_Datenausgabe
 {
-
   /// <summary>
-  /// This class provides the XML file structure used to interpret Zusi data types.
+  ///   This class provides the XML file structure used to interpret Zusi data types.
   /// </summary>
-  [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+  [EditorBrowsable(EditorBrowsableState.Advanced)]
   public partial class TCPCommands
   {
     /// <summary>
-    /// Contains a list of Zusi commands accessible by their numeric id.
+    ///   Contains a list of Zusi commands accessible by their numeric id.
     /// </summary>
     [XmlIgnore]
     public ZusiData<int, CommandEntry> CommandByID { get; private set; }
 
     /// <summary>
-    /// Contains a list of numeric Zusi command IDs accessible by their name
-    /// (Taken from the TCP Server's commandset.ini. See commandset.xml for
-    /// an adaption for this library.)
+    ///   Contains a list of numeric Zusi command IDs accessible by their name
+    ///   (Taken from the TCP Server's commandset.ini. See commandset.xml for
+    ///   an adaption for this library.)
     /// </summary>
     [XmlIgnore]
     public ZusiData<string, int> IDByName { get; private set; }
 
     /// <summary>
-    /// Contains a list of Zusi command names accessible by their numeric ID.
+    ///   Contains a list of Zusi command names accessible by their numeric ID.
     /// </summary>
     [XmlIgnore]
     public ZusiData<int, string> NameByID { get; private set; }
 
     /// <summary>
-    /// Identical to this.<see cref="CommandByID"/>.
+    ///   Identical to this.<see cref="CommandByID" />.
     /// </summary>
     /// <param name="index">Contains the command's ID.</param>
     public CommandEntry this[int index]
     {
-      get
-      {
-        return CommandByID[index];
-      }
+      get { return CommandByID[index]; }
     }
 
     /// <summary>
-    /// Have to be called after changing the Command-collection to make the dictionarys behave properly.
+    ///   Have to be called after changing the Command-collection to make the dictionarys behave properly.
     /// </summary>
     public void InitializeDictionaries()
     {
@@ -90,13 +90,13 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Load XML data from a file and create a TCPCommands instance from it.
+    ///   Load XML data from a file and create a TCPCommands instance from it.
     /// </summary>
     /// <param name="filePath">Contains the path to the XML file</param>
     /// <returns>A new TCPCommands instance with data.</returns>
     public static TCPCommands LoadFromFile(String filePath)
     {
-      TCPCommands tempResult = TCPCommands.LoadFromFileInternal(filePath);
+      TCPCommands tempResult = LoadFromFileInternal(filePath);
 
       tempResult.InitializeDictionaries();
 
@@ -104,7 +104,7 @@ namespace Zusi_Datenausgabe
     }
   }
 
-  [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+  [EditorBrowsable(EditorBrowsableState.Advanced)]
   public partial class CommandEntry
   {
   }

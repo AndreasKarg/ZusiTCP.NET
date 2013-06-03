@@ -1,4 +1,5 @@
 ﻿#region header
+
 // /*************************************************************************
 //  * TCPServerConnectionInitializer.cs
 //  * Contains main logic for the TCP interface.
@@ -22,18 +23,23 @@
 //  * If not, see <http://www.gnu.org/licenses/>.
 //  * 
 //  *************************************************************************/
+
 #endregion
+
+#region Using
 
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
+#endregion
+
 namespace Zusi_Datenausgabe
 {
   internal class TCPServerConnectionInitializer : Base_Connection
   {
-    private TCPServerSlaveConnection _slaveConnection;
     private TCPServerMasterConnection _masterConnection;
+    private TCPServerSlaveConnection _slaveConnection;
 
     #region Delegated Base Constructors
 
@@ -45,39 +51,48 @@ namespace Zusi_Datenausgabe
     public TCPServerConnectionInitializer(string clientId, ClientPriority priority)
       : base(clientId, priority)
     {
-    } 
+    }
+
     #endregion
-
-    public event EventHandler SlaveConnectionInitialized;
-    public event EventHandler MasterConnectionInitialized;
-
-    private void OnMasterConnectionInitialized()
-    {
-      var handler = MasterConnectionInitialized;
-      if (handler != null) handler(this, EventArgs.Empty);
-    }
-
-    private void OnSlaveConnectionInitialized()
-    {
-      var handler = SlaveConnectionInitialized;
-
-      if (handler != null) handler(this, EventArgs.Empty);
-    }
-
-    public void RefuseConnectionAndTerminate()
-    {
-      SendPacket(0,2,2);
-      Dispose();
-    }
 
     public TCPServerSlaveConnection SlaveConnection
     {
       get
       {
         if (_slaveConnection == null)
+        {
           InitializeSlaveConnection();
+        }
         return _slaveConnection;
       }
+    }
+
+    public event EventHandler SlaveConnectionInitialized;
+    public event EventHandler MasterConnectionInitialized;
+
+    private void OnMasterConnectionInitialized()
+    {
+      EventHandler handler = MasterConnectionInitialized;
+      if (handler != null)
+      {
+        handler(this, EventArgs.Empty);
+      }
+    }
+
+    private void OnSlaveConnectionInitialized()
+    {
+      EventHandler handler = SlaveConnectionInitialized;
+
+      if (handler != null)
+      {
+        handler(this, EventArgs.Empty);
+      }
+    }
+
+    public void RefuseConnectionAndTerminate()
+    {
+      SendPacket(0, 2, 2);
+      Dispose();
     }
 
     public TCPServerMasterConnection GetMasterConnection(IEnumerable<int> requestedData)
@@ -91,11 +106,15 @@ namespace Zusi_Datenausgabe
 
     private void InitializeSlaveConnection()
     {
-      if(ClientPriority == ClientPriority.Undefined)
+      if (ClientPriority == ClientPriority.Undefined)
+      {
         throw new NotSupportedException("Cannot create slave connection for unconnected client. Await handshake first.");
+      }
 
-      if(ClientPriority == ClientPriority.Master)
+      if (ClientPriority == ClientPriority.Master)
+      {
         throw new NotSupportedException("Cannot create slave connection for master client.");
+      }
 
       _slaveConnection = new TCPServerSlaveConnection(HostContext, ClientConnection, ClientId, ClientPriority);
     }
@@ -103,10 +122,14 @@ namespace Zusi_Datenausgabe
     private void InitializeMasterConnection(IEnumerable<int> requestedData)
     {
       if (ClientPriority == ClientPriority.Undefined)
+      {
         throw new NotSupportedException("Cannot create master connection for unconnected client. Await handshake first.");
+      }
 
       if (ClientPriority != ClientPriority.Master)
+      {
         throw new NotSupportedException("Cannot create master connection for slave client.");
+      }
 
       _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, requestedData);
     }

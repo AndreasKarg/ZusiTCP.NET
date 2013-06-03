@@ -1,4 +1,5 @@
 ﻿#region header
+
 // /*************************************************************************
 //  * ISourcedBinaryReader.cs
 //  * Contains main logic for the TCP interface.
@@ -22,9 +23,14 @@
 //  * If not, see <http://www.gnu.org/licenses/>.
 //  * 
 //  *************************************************************************/
+
 #endregion
 
+#region Using
+
 using System;
+
+#endregion
 
 namespace Zusi_Datenausgabe
 {

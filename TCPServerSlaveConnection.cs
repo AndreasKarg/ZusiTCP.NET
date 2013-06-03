@@ -1,15 +1,26 @@
+#region Using
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Sockets;
 using System.Threading;
+
+#endregion
 
 namespace Zusi_Datenausgabe
 {
   internal class TCPServerSlaveConnection : Base_Connection
   {
     private HashSet<int> _requestedData;
-    public event EventHandler<EventArgs> DataRequested;
+
+    public TCPServerSlaveConnection(SynchronizationContext hostContext,
+                                    IBinaryIO client,
+                                    String clientId,
+                                    ClientPriority priority)
+      : base(clientId, priority, hostContext)
+    {
+      InitializeClient(client);
+    }
 
     public HashSet<int> RequestedData
     {
@@ -21,16 +32,15 @@ namespace Zusi_Datenausgabe
       }
     }
 
+    public event EventHandler<EventArgs> DataRequested;
+
     private void OnDataRequested(ICollection<int> requestedData)
     {
       var handler = DataRequested;
-      if (handler != null) handler(this, EventArgs.Empty);
-    }
-
-    public TCPServerSlaveConnection(SynchronizationContext hostContext, IBinaryIO client, String clientId, ClientPriority priority)
-      : base(clientId, priority, hostContext)
-    {
-      InitializeClient(client);
+      if (handler != null)
+      {
+        handler(this, EventArgs.Empty);
+      }
     }
 
     protected override void HandleHandshake()
@@ -50,7 +60,7 @@ namespace Zusi_Datenausgabe
           SendPacket(Pack(0, 4, 255));
           throw;
         }
-        
+
         // TODO: Check for correct data group
         _requestedData = new HashSet<int>(requestedValues.RequestedValues);
         SendPacket(Pack(0, 4, 0));
@@ -62,8 +72,10 @@ namespace Zusi_Datenausgabe
     public void SendByteCommand(byte[] array, int id)
     {
       if ((ConnectionState != ConnectionState.Connected) || (!_requestedData.Contains(id)))
+      {
         return;
-      List<byte> ida = new List<byte>(BitConverter.GetBytes(id));
+      }
+      var ida = new List<byte>(BitConverter.GetBytes(id));
       ida.RemoveAt(3);
       ida.Reverse();
       SendLargePacket(ida.ToArray(), array);
@@ -81,12 +93,12 @@ namespace Zusi_Datenausgabe
 
   internal class DataRequestedEventArgs : EventArgs
   {
+    private readonly ICollection<int> _requestedIds;
+
     public DataRequestedEventArgs(ICollection<int> requestedIds)
     {
       _requestedIds = requestedIds;
     }
-
-    private readonly ICollection<int> _requestedIds;
 
     public ICollection<int> RequestedIds
     {

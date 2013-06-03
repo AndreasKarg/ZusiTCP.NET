@@ -1,3 +1,5 @@
+#region Using
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,45 +10,50 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 
+#endregion
+
 namespace Zusi_Datenausgabe
 {
   public abstract class ZusiTcpReceiver : Base_Connection
   {
+    private readonly TCPCommands _commands;
     private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
-    private TCPCommands _commands;
 
-    protected ZusiTcpReceiver(string clientId, ClientPriority priority, SynchronizationContext hostContext, TCPCommands commands)
+    protected ZusiTcpReceiver(string clientId,
+                              ClientPriority priority,
+                              SynchronizationContext hostContext,
+                              TCPCommands commands)
       : base(clientId, priority, hostContext)
     {
-      if (commands == null) throw new ArgumentNullException("commands");
+      if (commands == null)
+      {
+        throw new ArgumentNullException("commands");
+      }
       _commands = commands;
     }
 
     protected ZusiTcpReceiver(string clientId, ClientPriority priority, TCPCommands commands) : base(clientId, priority)
     {
-      if (commands == null) throw new ArgumentNullException("commands");
+      if (commands == null)
+      {
+        throw new ArgumentNullException("commands");
+      }
       _commands = commands;
     }
 
     /// <summary>
-    /// Represents a list of all measurements which will be requested from Zusi on connecting. Add your required measurements
-    /// here before connecting to the server. List is read-only while connected.
-    /// <seealso cref="IDs"/>
+    ///   Represents a list of all measurements which will be requested from Zusi on connecting. Add your required measurements
+    ///   here before connecting to the server. List is read-only while connected.
+    ///   <seealso cref="IDs" />
     /// </summary>
     public ICollection<int> RequestedData
     {
-      get
-      {
-        return _requestedData;
-      }
+      get { return _requestedData; }
     }
 
     public override ConnectionState ConnectionState
     {
-      get
-      {
-        return base.ConnectionState;
-      }
+      get { return base.ConnectionState; }
       protected set
       {
         _requestedData.IsReadOnly = (value == ConnectionState.Connected);
@@ -55,78 +62,68 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Represents all measurements available in Zusi as a key-value list. Can be used to convert plain text names of
-    /// measurements to their internal ID.
+    ///   Represents all measurements available in Zusi as a key-value list. Can be used to convert plain text names of
+    ///   measurements to their internal ID.
     /// </summary>
     /// <example>
-    /// <code>
-    /// ZusiTcpConn myConn = [...]
-    ///
-    /// int SpeedID = myConn.IDs["Geschwindigkeit"]
-    /// /* SpeedID now contains the value 01. */
-    /// </code>
+    ///   <code>
+    ///  ZusiTcpConn myConn = [...]
+    /// 
+    ///  int SpeedID = myConn.IDs["Geschwindigkeit"]
+    ///  /* SpeedID now contains the value 01. */
+    ///  </code>
     /// </example>
     public ZusiData<string, int> IDs
     {
-      get
-      {
-        return _commands.IDByName;
-      }
+      get { return _commands.IDByName; }
     }
 
     /// <summary>
-    /// Represents all measurements available in Zusi as a key-value list. Can be used to convert measurement IDs to their
-    /// plain text name.
+    ///   Represents all measurements available in Zusi as a key-value list. Can be used to convert measurement IDs to their
+    ///   plain text name.
     /// </summary>
     /// <example>
-    /// <code>
-    /// ZusiTcpConn myConn = [...]
-    ///
-    /// string SpeedName = myConn.ReverseIDs[1] /* ID 01 == current speed */
-    /// /* SpeedName now contains the value "Geschwindigkeit". */
-    /// </code>
+    ///   <code>
+    ///  ZusiTcpConn myConn = [...]
+    /// 
+    ///  string SpeedName = myConn.ReverseIDs[1] /* ID 01 == current speed */
+    ///  /* SpeedName now contains the value "Geschwindigkeit". */
+    ///  </code>
     /// </example>
     public ZusiData<int, string> ReverseIDs
     {
-      get
-      {
-        return _commands.NameByID;
-      }
+      get { return _commands.NameByID; }
     }
 
     /// <summary>
-    /// Returns the plain text name of the measurement specified by its ID.
+    ///   Returns the plain text name of the measurement specified by its ID.
     /// </summary>
     /// <param name="id">Internal ID of the measurement.</param>
     /// <returns>Name of the measurement.</returns>
     public string this[int id]
     {
-      get
-      {
-        return ReverseIDs[id];
-      }
+      get { return ReverseIDs[id]; }
     }
 
     /// <summary>
-    /// Returns the ID of the measurement specified in plain text.
+    ///   Returns the ID of the measurement specified in plain text.
     /// </summary>
     /// <param name="name">Name of the measurement.</param>
     /// <returns>Internal ID of the measurement.</returns>
     public int this[string name]
     {
-      get
-      {
-        return IDs[name];
-      }
+      get { return IDs[name]; }
     }
 
     /// <summary>
-    /// Establish a connection to the TCP server.
+    ///   Establish a connection to the TCP server.
     /// </summary>
     /// <param name="hostName">The name or IP address of the host.</param>
     /// <param name="port">The port on the server to connect to (Default: 1435).</param>
-    /// <exception cref="ArgumentException">This exception is thrown when the host address could
-    /// not be resolved.</exception>
+    /// <exception cref="ArgumentException">
+    ///   This exception is thrown when the host address could
+    ///   not be resolved.
+    /// </exception>
     public void Connect(string hostName, int port)
     {
       var hostAddresses = Dns.GetHostAddresses(hostName);
@@ -146,14 +143,16 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Establish a connection to the TCP server.
+    ///   Establish a connection to the TCP server.
     /// </summary>
     /// <param name="endPoint">Specifies an IP end point to which the interface tries to connect.</param>
-    /// <exception cref="ZusiTcpException">This exception is thrown when the connection could not be
-    /// established.</exception>
+    /// <exception cref="ZusiTcpException">
+    ///   This exception is thrown when the connection could not be
+    ///   established.
+    /// </exception>
     protected void Connect(IPEndPoint endPoint)
     {
-      var clientConnection = new TcpClient(AddressFamily.InterNetwork);
+      TcpClient clientConnection = new TcpClient(AddressFamily.InterNetwork);
 
       ValidateConnectionState();
       ConnectionState = ConnectionState.Connecting;
@@ -169,35 +168,40 @@ namespace Zusi_Datenausgabe
       catch (SocketException ex)
       {
         throw new ZusiTcpException("Could not establish socket connection to TCP server. " +
-                                   "Is the server running and enabled?", ex);
+                                   "Is the server running and enabled?",
+                                   ex);
       }
 
       InitializeClient(new BinaryIoTcpClient(clientConnection, true));
     }
 
     /// <summary>
-    /// Request the measurement passed as plain text in the parameter "name" from the server. Shorthand for
-    /// <c>TCP.RequestedData.Add(TCP.IDs[name]);</c>. Must be called before connecting.
+    ///   Request the measurement passed as plain text in the parameter "name" from the server. Shorthand for
+    ///   <c>TCP.RequestedData.Add(TCP.IDs[name]);</c>. Must be called before connecting.
     /// </summary>
     /// <param name="name">The name of the measurement.</param>
     /// <exception cref="ZusiTcpException">Thrown, when communciation is not disconnected.</exception>
     public void RequestData(string name)
     {
       if (ConnectionState != ConnectionState.Disconnected)
+      {
         throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
+      }
       RequestedData.Add(IDs[name]);
     }
 
     /// <summary>
-    /// Request the measurement passed as ID in the parameter "id" from the server. Shorthand for
-    /// <c>TCP.RequestedData.Add(id);</c>. Must be called before connecting.
+    ///   Request the measurement passed as ID in the parameter "id" from the server. Shorthand for
+    ///   <c>TCP.RequestedData.Add(id);</c>. Must be called before connecting.
     /// </summary>
     /// <param name="id">The ID of the measurement.</param>
     /// <exception cref="ZusiTcpException">Thrown, when communciation is not disconnected.</exception>
     public void RequestData(int id)
     {
       if (ConnectionState != ConnectionState.Disconnected)
+      {
         throw (new ZusiTcpException("Network state must be \"Disconnect\". Disconnect first!"));
+      }
       RequestedData.Add(id);
     }
 
@@ -242,7 +246,7 @@ namespace Zusi_Datenausgabe
 
           while (bytesRead < packetLength)
           {
-            int curID = ClientConnection.ReadByte() + 256 * curInstr;
+            int curID = ClientConnection.ReadByte() + 256*curInstr;
 
             bytesRead += 1;
 
@@ -256,7 +260,7 @@ namespace Zusi_Datenausgabe
                 String.Format("HandleDATA_{0}", curCommand.Type),
                 BindingFlags.Instance | BindingFlags.NonPublic,
                 null,
-                new[] { typeof(BinaryReader), typeof(int) },
+                new[] {typeof (BinaryReader), typeof (int)},
                 null);
 
               if (handlerMethod == null)
@@ -267,12 +271,12 @@ namespace Zusi_Datenausgabe
               }
 
               /* Make sure the handler method returns an int. */
-              Debug.Assert(handlerMethod.ReturnType == typeof(int));
+              Debug.Assert(handlerMethod.ReturnType == typeof (int));
 
               dataHandlers.Add(curCommand.Type, handlerMethod);
             }
 
-            bytesRead += (int)handlerMethod.Invoke(this, new object[] { ClientConnection, curID });
+            bytesRead += (int) handlerMethod.Invoke(this, new object[] {ClientConnection, curID});
           }
         }
       }
@@ -282,7 +286,7 @@ namespace Zusi_Datenausgabe
          * This happens when the socket closes the stream.
          */
 
-        var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
+        ZusiTcpException newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
         HandleException(newEx);
       }
     }

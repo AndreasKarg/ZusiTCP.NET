@@ -22,19 +22,23 @@
  *
  *************************************************************************/
 
+#region Using
+
 using System;
 using System.Runtime.Serialization;
+
+#endregion
 
 namespace Zusi_Datenausgabe
 {
   /// <summary>
-  /// Is thrown when an error occurs in the connection to the TCP server.
+  ///   Is thrown when an error occurs in the connection to the TCP server.
   /// </summary>
   [Serializable]
   public class ZusiTcpException : Exception
   {
     /// <summary>
-    /// Create a new ZusiTcpException using msg as message.
+    ///   Create a new ZusiTcpException using msg as message.
     /// </summary>
     /// <param name="msg">The exception message.</param>
     public ZusiTcpException(string msg)
@@ -43,14 +47,14 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Create a new ZusiTcpException.
+    ///   Create a new ZusiTcpException.
     /// </summary>
     public ZusiTcpException()
     {
     }
 
     /// <summary>
-    /// Create a new ZusiTcpException using msg as the message and e as the inner exception
+    ///   Create a new ZusiTcpException using msg as the message and e as the inner exception
     /// </summary>
     /// <param name="msg">The exception message.</param>
     /// <param name="e">The inner exception.</param>
@@ -60,7 +64,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Create a new ZusiTcpException with serialized data.
+    ///   Create a new ZusiTcpException with serialized data.
     /// </summary>
     /// <param name="serializationInfo">Serialization info</param>
     /// <param name="streamingContext">Streaming context</param>
