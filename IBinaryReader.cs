@@ -28,7 +28,7 @@ using System;
 
 namespace Zusi_Datenausgabe
 {
-  internal interface IBinaryReader : IDisposable
+  public interface IBinaryReader : IDisposable
   {
     void Close();
     int PeekChar();

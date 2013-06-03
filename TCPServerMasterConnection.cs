@@ -23,7 +23,7 @@ namespace Zusi_Datenausgabe
 
     private IEnumerable<int> _requestedIds;
 
-    public TCPServerMasterConnection(SynchronizationContext hostContext, TcpClient client, String clientId, IEnumerable<int> requestedIds)
+    public TCPServerMasterConnection(SynchronizationContext hostContext, IBinaryIO client, String clientId, IEnumerable<int> requestedIds)
       : base(clientId, (ClientPriority) ClientPriority.Master, hostContext)
     {
       _requestedIds = requestedIds;
@@ -41,18 +41,18 @@ namespace Zusi_Datenausgabe
       DefaultReceiveLoop();
     }
 
-    protected int HandleDATA_4ByteCommand(BinaryReader input, int id)
+    protected int HandleDATA_4ByteCommand(IBinaryReader input, int id)
     {
       OnDataSetReceived(id, input.ReadBytes(4));
       return 4;
     }
-    protected int HandleDATA_8ByteCommand(BinaryReader input, int id)
+    protected int HandleDATA_8ByteCommand(IBinaryReader input, int id)
     {
       OnDataSetReceived(id, input.ReadBytes(8));
       return 8;
     }
 
-    protected int HandleDATA_LengthIn1ByteCommand(BinaryReader input, int id)
+    protected int HandleDATA_LengthIn1ByteCommand(IBinaryReader input, int id)
     {
       var lng = input.ReadByte();
 

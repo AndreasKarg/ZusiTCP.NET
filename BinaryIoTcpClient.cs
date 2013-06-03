@@ -3,35 +3,46 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Zusi_Datenausgabe
 {
-  internal class BinaryIoTcpClient : IBinaryReader
+  public interface IBinaryIO : IBinaryReader
+  {
+    void SendToPeer(byte[] message);
+    bool Connected { get; }
+  }
+
+  internal class BinaryIoTcpClient : IBinaryIO
   {
     private NetworkStream _clientStream;
     private BinaryReader _clientReader;
-    private readonly TcpClient _tcpClient = new TcpClient();
+    private readonly TcpClient _tcpClient;
     private bool _isDisposed;
+    private bool _haveOwnershipOfTcpClient;
 
-    public void Connect(string hostname, int port)
+    public BinaryIoTcpClient(TcpClient tcpClient, bool takeOwnership)
     {
-      ValidateIsNotDisposed();
-      _tcpClient.Connect(hostname, port);
+      _tcpClient = tcpClient;
       InitializeStreamReader();
+      _haveOwnershipOfTcpClient = takeOwnership;
     }
 
-    public void Connect(IPAddress address, int port)
+    public static BinaryIoTcpClient CreateConnection(string hostname, int port)
     {
-      ValidateIsNotDisposed();
-      _tcpClient.Connect(address, port);
-      InitializeStreamReader();
+      return new BinaryIoTcpClient(new TcpClient(hostname, port), true);
     }
 
-    public void Connect(IPEndPoint remoteEP)
+    public static BinaryIoTcpClient CreateConnection(IPAddress address, int port)
     {
-      ValidateIsNotDisposed();
-      _tcpClient.Connect(remoteEP);
-      InitializeStreamReader();
+      var client = new TcpClient();
+      client.Connect(address, port);
+      return new BinaryIoTcpClient(client, true);
+    }
+
+    public static BinaryIoTcpClient CreateConnection(IPEndPoint remoteEP)
+    {
+      return new BinaryIoTcpClient(new TcpClient(remoteEP), true);
     }
 
     public bool Connected
@@ -41,18 +52,23 @@ namespace Zusi_Datenausgabe
 
     private void InitializeStreamReader()
     {
-      ValidateConnection();
       Debug.Assert(_tcpClient.Connected);
 
       _clientStream = _tcpClient.GetStream();
-      _clientReader = new BinaryReader(_clientStream);
+
+      //TODO: Cleanup
+      _clientReader = new BinaryReader(_clientStream, new ASCIIEncoding());
     }
 
     public void Close()
     {
-      _clientReader.Close();
-      _clientStream.Close();
-      _tcpClient.Close();
+      if (_haveOwnershipOfTcpClient)
+      {
+        _clientReader.Close();
+        _clientStream.Close();
+        _tcpClient.Close();
+      }
+
       _isDisposed = true;
     }
 
@@ -75,6 +91,12 @@ namespace Zusi_Datenausgabe
     }
 
     #region Delegating members.
+
+    public void SendToPeer(byte[] message)
+    {
+      ValidateConnection();
+      _clientStream.Write(message, 0, message.Length);
+    }
 
     public int PeekChar()
     {

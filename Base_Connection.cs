@@ -24,9 +24,7 @@ namespace Zusi_Datenausgabe
 
     protected readonly ASCIIEncoding StringEncoder = new ASCIIEncoding();
 
-    protected TcpClient ClientConnection;
-    private NetworkStream _clientStream;
-    protected BinaryReader ClientReader;
+    protected IBinaryIO ClientConnection;
 
     private Thread _streamReaderThread;
 
@@ -137,33 +135,21 @@ namespace Zusi_Datenausgabe
       ConnectionState_Changed.Invoke(this, (EventArgs)o);
     }
 
-    private void SendToServer(byte[] message)
-    {
-      try
-      {
-        _clientStream.Write(message, 0, message.Length);
-      }
-      catch (IOException ex)
-      {
-        throw new ZusiTcpException("An error occured when trying to send data to the server.", ex);
-      }
-    }
-
     protected void SendPacket(params byte[] message)
     {
-      SendToServer(BitConverter.GetBytes(message.Length));
-      SendToServer(message);
+      ClientConnection.SendToPeer(BitConverter.GetBytes(message.Length));
+      ClientConnection.SendToPeer(message);
     }
 
     protected void SendLargePacket(params byte[][] message)
     {
       int iTempLength = message.Sum(item => item.Length);
 
-      SendToServer(BitConverter.GetBytes(iTempLength));
+      ClientConnection.SendToPeer(BitConverter.GetBytes(iTempLength));
 
       foreach (var item in message)
       {
-        SendToServer(item);
+        ClientConnection.SendToPeer(item);
       }
     }
 
@@ -177,12 +163,10 @@ namespace Zusi_Datenausgabe
       return byteA * 256 + byteB;
     }
 
-    public void InitializeClient(TcpClient clientConnection)
+    public void InitializeClient(IBinaryIO clientConnection)
     {
       Debug.Assert(clientConnection.Connected);
-
-      _clientStream = clientConnection.GetStream();
-      ClientReader = new BinaryReader(_clientStream, StringEncoder);
+      ClientConnection = clientConnection;
 
       try
       {
@@ -261,13 +245,13 @@ namespace Zusi_Datenausgabe
     /// <returns>An array with the requested Types for ResponseType.NeededData, null for other values.</returns>
     protected ExpectResponseAnswer ExpectResponse(ResponseType expResponse, int dataGroup)
     {
-      int iPacketLength = ClientReader.ReadInt32();
+      int iPacketLength = ClientConnection.ReadInt32();
       if (!((iPacketLength == 3) || ((expResponse == ResponseType.Hello) && (iPacketLength >= 5)) || ((expResponse == ResponseType.NeededData) && (iPacketLength >= 4))))
       {
         throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
       }
 
-      int iReadInstr = GetInstruction(ClientReader.ReadByte(), ClientReader.ReadByte());
+      int iReadInstr = GetInstruction(ClientConnection.ReadByte(), ClientConnection.ReadByte());
       if (iReadInstr != (int)expResponse)
       {
         throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
@@ -279,7 +263,7 @@ namespace Zusi_Datenausgabe
           break;
         case ResponseType.AckHello:
         case ResponseType.AckNeededData:
-          int iResponse = ClientReader.ReadByte();
+          int iResponse = ClientConnection.ReadByte();
           if (iResponse == 0)
           {
             /* Response is an ACK */
@@ -314,23 +298,23 @@ namespace Zusi_Datenausgabe
           }
           break;
         case ResponseType.Hello:
-          int iVersion = ClientReader.ReadByte();
+          int iVersion = ClientConnection.ReadByte();
           if (iVersion > 2)
           {
             throw new ZusiTcpException("Version not Supported.");
           }
-          this.ClientPriority = (ClientPriority)ClientReader.ReadByte();
-          this.ClientId = ClientReader.ReadString();
+          this.ClientPriority = (ClientPriority)ClientConnection.ReadByte();
+          this.ClientId = ClientConnection.ReadString();
           if (iPacketLength != (5 + ClientId.Length))
           {
             throw new ZusiTcpException("Invalid packet length: " + iPacketLength + " (Details: Client name didn't keep to length.)");
           }
           break;
         case ResponseType.NeededData:
-          int instructionGroup = GetInstruction(ClientReader.ReadByte(), ClientReader.ReadByte());
+          int instructionGroup = GetInstruction(ClientConnection.ReadByte(), ClientConnection.ReadByte());
           List<int> requestedTypes = new List<int>();
           for (int i = 4; i < iPacketLength; i++)
-            requestedTypes.Add(GetInstruction(instructionGroup, ClientReader.ReadByte()));
+            requestedTypes.Add(GetInstruction(instructionGroup, ClientConnection.ReadByte()));
           return new ExpectResponseAnswer(requestedTypes.ToArray(), instructionGroup);
         default:
           throw new ArgumentOutOfRangeException("expResponse");

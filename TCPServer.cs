@@ -119,7 +119,7 @@ namespace Zusi_Datenausgabe
           var initializer = new TCPServerConnectionInitializer("", ClientPriority.Undefined);
           initializer.MasterConnectionInitialized += MasterConnectionInitialized;
           initializer.SlaveConnectionInitialized += SlaveConnectionInitialized;
-          initializer.InitializeClient(socketClient);
+          initializer.InitializeClient(new BinaryIoTcpClient(socketClient, true));
         }
       }
       catch

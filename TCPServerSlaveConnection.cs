@@ -27,7 +27,7 @@ namespace Zusi_Datenausgabe
       if (handler != null) handler(this, EventArgs.Empty);
     }
 
-    public TCPServerSlaveConnection(SynchronizationContext hostContext, TcpClient client, String clientId, ClientPriority priority)
+    public TCPServerSlaveConnection(SynchronizationContext hostContext, IBinaryIO client, String clientId, ClientPriority priority)
       : base(clientId, priority, hostContext)
     {
       InitializeClient(client);
@@ -73,7 +73,7 @@ namespace Zusi_Datenausgabe
     {
       // TODO: Find out whether there can be something meaningful here and use it.
 
-      ClientReader.ReadByte();
+      ClientConnection.ReadByte();
       // The reader waits until a byte has been received without timeout.
       throw new NotSupportedException("A slave client sent data unexpectedly.");
     }
