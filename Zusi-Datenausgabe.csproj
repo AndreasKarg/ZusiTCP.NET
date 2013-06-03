@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IBinaryReader.cs" />
     <Compile Include="ObjectExtension.cs" />
     <Compile Include="ReferenceCounter.cs" />
     <Compile Include="SwitchableReadOnlyList.cs" />
@@ -75,6 +76,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="TCPCommands.cs" />
+    <Compile Include="BinaryIoTcpClient.cs" />
     <Compile Include="TCPServerConnectionInitializer.cs" />
     <Compile Include="TCPServerMasterConnection.cs" />
     <Compile Include="TCPServerSlaveConnection.cs" />
