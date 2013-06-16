@@ -635,9 +635,6 @@ namespace Zusi_Datenausgabe
       }
       catch (Exception e)
       {
-        Disconnnect();
-        ConnectionState = ConnectionState.Error;
-
         if (e is ZusiTcpException)
         {
           _hostContext.Post(ErrorMarshal, e as ZusiTcpException);
@@ -650,6 +647,11 @@ namespace Zusi_Datenausgabe
           var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
           _hostContext.Post(ErrorMarshal, newEx);
         }
+        else if (e is ThreadAbortException)
+        {
+          /* Thread has been killed: Nothing to do. */
+          return;
+        }
         else
         {
           var newEx =
@@ -660,6 +662,9 @@ namespace Zusi_Datenausgabe
 
           _hostContext.Post(ErrorMarshal, newEx);
         }
+
+        Disconnnect();
+        ConnectionState = ConnectionState.Error;
       }
     }
 
