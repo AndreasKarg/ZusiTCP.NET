@@ -25,7 +25,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -498,7 +497,7 @@ namespace Zusi_Datenausgabe
         _streamReaderThread.Start();
       }
 
-      catch (Exception ex)
+      catch
       {
         if (_streamReaderThread != null)
         {
