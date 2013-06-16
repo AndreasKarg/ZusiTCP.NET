@@ -145,6 +145,18 @@ namespace Zusi_Datenausgabe
     public T Value { get; private set; }
   }
 
+  [Obsolete("This class has been renamed and may be removed in v2.0. Use new name ZusiTcpClientConnection instead.")]
+  public class ZusiTcpConn : ZusiTcpClientConnection
+  {
+    public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath = "commandset.xml") : base(clientId, priority, commandsetPath)
+    {
+    }
+
+    public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commands) : base(clientId, priority, commands)
+    {
+    }
+  }
+
   /// <summary>
   /// Represents the centerpiece of the Zusi TCP interface.
   ///
@@ -157,7 +169,7 @@ namespace Zusi_Datenausgabe
   /// </description></item>
   ///
   /// <item><description>
-  /// Create an instance of <see cref="ZusiTcpConn"/>, choosing a client priority. Recommended value for control desks is "High".
+  /// Create an instance of <see cref="ZusiTcpClientConnection"/>, choosing a client priority. Recommended value for control desks is "High".
   /// Add your event handlers to the appropriate events.
   /// </description></item>
   /// <item><description>
@@ -170,9 +182,9 @@ namespace Zusi_Datenausgabe
   /// dataset at a time.</description></item>
   /// </list></para>
   ///
-  /// Notice that ZusiTcpConn implements IDisposable, so remember to dispose of it properly when you are finished.
+  /// Notice that ZusiTcpClientConnection implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
-  public class ZusiTcpConn : IDisposable
+  public class ZusiTcpClientConnection : IDisposable
   {
     #region Fields
 
@@ -198,23 +210,23 @@ namespace Zusi_Datenausgabe
     public event ErrorEvent ErrorReceived;
 
     /// <summary>
-    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// Initializes a new <see cref="ZusiTcpClientConnection"/> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-    public ZusiTcpConn(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml") :
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml") :
       this(clientId, priority, TCPCommands.LoadFromFile(commandsetPath))
     {
     }
 
     /// <summary>
-    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// Initializes a new <see cref="ZusiTcpClientConnection"/> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commands">A set of commands.</param>
-    public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commands)
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, TCPCommands commands)
     {
       if (SynchronizationContext.Current == null)
       {
@@ -243,7 +255,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <example>
     /// <code>
-    /// ZusiTcpConn myConn = [...]
+    /// ZusiTcpClientConnection myConn = [...]
     ///
     /// int SpeedID = myConn.IDs["Geschwindigkeit"]
     /// /* SpeedID now contains the value 01. */
@@ -263,7 +275,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <example>
     /// <code>
-    /// ZusiTcpConn myConn = [...]
+    /// ZusiTcpClientConnection myConn = [...]
     ///
     /// string SpeedName = myConn.ReverseIDs[1] /* ID 01 == current speed */
     /// /* SpeedName now contains the value "Geschwindigkeit". */
