@@ -602,6 +602,8 @@ namespace Zusi_Datenausgabe
             }
 
             bytesRead += (int)handlerMethod.Invoke(this, new object[] {_clientReader, curID});
+
+            Debug.Assert(bytesRead <= packetLength);
           }
         }
       }
