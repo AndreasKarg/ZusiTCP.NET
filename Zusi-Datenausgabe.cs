@@ -583,90 +583,128 @@ namespace Zusi_Datenausgabe
 
     private void ReceiveLoop()
     {
-      var dataHandlers = new Dictionary<string, MethodInfo>();
-
       try
       {
-        while (ConnectionState == ConnectionState.Connected)
-        {
-          int packetLength = _clientReader.ReadInt32();
-
-          int curInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
-
-          if (curInstr < 10)
-          {
-            throw new ZusiTcpException("Unexpected Non-DATA instruction received.");
-          }
-
-          // The first 2 bytes have been the instruction.
-          int bytesRead = 2;
-
-          while (bytesRead < packetLength)
-          {
-            int curID = _clientReader.ReadByte() + 256 * curInstr;
-            // Another byte read for the ID.
-            bytesRead++;
-
-            CommandEntry curCommand = _commands[curID];
-
-            MethodInfo handlerMethod;
-
-            if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
-            {
-              handlerMethod = GetType().GetMethod(
-                String.Format("HandleDATA_{0}", curCommand.Type),
-                BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
-                new[] { typeof(BinaryReader), typeof(int) },
-                null);
-
-              if (handlerMethod == null)
-              {
-                throw new ZusiTcpException(
-                  String.Format(
-                    "Unknown type {0} for DATA ID {1} (\"{2}\") occured.", curCommand.Type, curID, curCommand.Name));
-              }
-
-              /* Make sure the handler method returns an int. */
-              Debug.Assert(handlerMethod.ReturnType == typeof(int));
-
-              dataHandlers.Add(curCommand.Type, handlerMethod);
-            }
-
-            bytesRead += (int)handlerMethod.Invoke(this, new object[] {_clientReader, curID});
-
-            Debug.Assert(bytesRead <= packetLength);
-          }
-        }
+        ReceiveLoopCore();
       }
       catch (Exception e)
       {
-        Disconnnect();
-        ConnectionState = ConnectionState.Error;
-
-        if (e is ZusiTcpException)
-        {
-          _hostContext.Post(ErrorMarshal, e as ZusiTcpException);
-        }
-        else if (e is EndOfStreamException)
-        {
-          /* EndOfStream occurs when the NetworkStream reaches its end while the binaryReader tries to read from it.
-           * This happens when the socket closes the stream.
-           */
-          var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
-          _hostContext.Post(ErrorMarshal, newEx);
-        }
-        else
-        {
-          var newEx =
-            new ZusiTcpException(
-              "An unhandled exception has occured in the TCP receiving loop. This is very probably " +
-              "a bug in the Zusi TCP interface for .NET. Please report this error to the author(s) " +
-              "of this application and/or the author(s) of the Zusi TCP interface for .NET.", e);
-
-          _hostContext.Post(ErrorMarshal, newEx);
-        }
+        HandleReceiveLoopException(e);
       }
+    }
+
+    private void ReceiveLoopCore()
+    {
+      var dataHandlers = new Dictionary<string, MethodInfo>();
+
+      while (ConnectionState == ConnectionState.Connected)
+      {
+        ReceivePacket(dataHandlers);
+      }
+    }
+
+    private void HandleReceiveLoopException(Exception e)
+    {
+      Disconnnect();
+      ConnectionState = ConnectionState.Error;
+
+      if (e is ZusiTcpException)
+      {
+        _hostContext.Post(ErrorMarshal, e as ZusiTcpException);
+      }
+      else if (e is EndOfStreamException)
+      {
+        /* EndOfStream occurs when the NetworkStream reaches its end while the binaryReader tries to read from it.
+         * This happens when the socket closes the stream.
+         */
+        var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
+        _hostContext.Post(ErrorMarshal, newEx);
+      }
+      else if (e is ThreadAbortException)
+      {
+        /* The thread has been killed. Nothing to do. */
+      }
+      else
+      {
+        var newEx =
+          new ZusiTcpException(
+            "An unhandled exception has occured in the TCP receiving loop. This is very probably " +
+            "a bug in the Zusi TCP interface for .NET. Please report this error to the author(s) " +
+            "of this application and/or the author(s) of the Zusi TCP interface for .NET.", e);
+
+        _hostContext.Post(ErrorMarshal, newEx);
+      }
+    }
+
+    private void ReceivePacket(Dictionary<string, MethodInfo> dataHandlers)
+    {
+      int packetLength = _clientReader.ReadInt32();
+
+      int curInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
+
+      if (curInstr < 10)
+      {
+        throw new ZusiTcpException("Unexpected Non-DATA instruction received.");
+      }
+
+      // The first 2 bytes have been the instruction.
+      int bytesRead = 2;
+
+      while (bytesRead < packetLength)
+      {
+        bytesRead += ReceiveDataSegment(dataHandlers, curInstr);
+      }
+
+      Debug.Assert(bytesRead == packetLength);
+    }
+
+    private int ReceiveDataSegment(Dictionary<string, MethodInfo> dataHandlers, int curInstr)
+    {
+      int curID = _clientReader.ReadByte() + 256*curInstr;
+
+      // One byte read for curID
+      int bytesRead = 1;
+
+      CommandEntry curCommand = _commands[curID];
+
+      MethodInfo handlerMethod = GetHandlerMethod(dataHandlers, curCommand, curID);
+
+      bytesRead += (int) handlerMethod.Invoke(this, new object[] {_clientReader, curID});
+      return bytesRead;
+    }
+
+    private MethodInfo GetHandlerMethod(Dictionary<string, MethodInfo> dataHandlers, CommandEntry curCommand, int curID)
+    {
+      MethodInfo handlerMethod;
+
+      if (dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
+        return handlerMethod;
+
+      handlerMethod = ReflectHandlerMethod(curCommand, curID);
+
+      dataHandlers.Add(curCommand.Type, handlerMethod);
+      return handlerMethod;
+    }
+
+    private MethodInfo ReflectHandlerMethod(CommandEntry curCommand, int curID)
+    {
+      MethodInfo handlerMethod = GetType().GetMethod(
+        String.Format("HandleDATA_{0}", curCommand.Type),
+        BindingFlags.Instance | BindingFlags.NonPublic,
+        null,
+        new[] {typeof (BinaryReader), typeof (int)},
+        null);
+
+      if (handlerMethod == null)
+      {
+        throw new ZusiTcpException(
+          String.Format(
+            "Unknown type {0} for DATA ID {1} (\"{2}\") occured.", curCommand.Type, curID, curCommand.Name));
+      }
+
+      /* Make sure the handler method returns an int. */
+      Debug.Assert(handlerMethod.ReturnType == typeof (int));
+      return handlerMethod;
     }
 
     /// <summary>
