@@ -592,11 +592,14 @@ namespace Zusi_Datenausgabe
             throw new ZusiTcpException("Unexpected Non-DATA instruction received.");
           }
 
-          int bytesRead = 0;
+          // The first 2 bytes have been the instruction.
+          int bytesRead = 2;
 
           while (bytesRead < packetLength)
           {
             int curID = _clientReader.ReadByte() + 256 * curInstr;
+            // Another byte read for the ID.
+            bytesRead++;
 
             CommandEntry curCommand = _commands[curID];
 
