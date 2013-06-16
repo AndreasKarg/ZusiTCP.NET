@@ -100,4 +100,9 @@ namespace Zusi_Datenausgabe
       return tempResult;
     }
   }
+
+  [EditorBrowsable(EditorBrowsableState.Never)]
+  public partial class CommandEntry
+  {
+  }
 }

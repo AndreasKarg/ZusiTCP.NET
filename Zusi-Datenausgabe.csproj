@@ -69,9 +69,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="commandset_schema.designer.cs">
-	  <AutoGen>True</AutoGen>
-	</Compile>
-	
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="TCPCommands.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
