@@ -803,21 +803,12 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_String(BinaryReader input, int id)
     {
-      var stringBuilder = new StringBuilder();
-      int bytesRead = 0;
-      byte curByte;
+      const int lengthPrefixSize = 1;
 
-      do
-      {
-        curByte = input.ReadByte();
-        stringBuilder.Append(curByte);
-        bytesRead++;
-      } while (curByte != 0);
+      string result = input.ReadString();
+      PostToHost(StringReceived, id, result);
 
-
-      PostToHost(StringReceived, id, stringBuilder.ToString());
-
-      return bytesRead;
+      return result.Length + lengthPrefixSize;
     }
 
     /// <summary>
