@@ -3,7 +3,7 @@ Imports Zusi_Datenausgabe
 Public Class CMainWindow
     ' We do want to have a ZusiTcpConn object, so here's the declaration
     ' With WithEvents we can handle events by marking the Subs with Handles MyTCPConnection.Exampleeventname
-    Private WithEvents MyTCPConnection As ZusiTcpConn
+    Private WithEvents MyTCPConnection As ZusiTcpClientConnection
     ' In this collection we'll save the states of th LMs.
     Private LmArray As New System.Collections.BitArray(8)
     ''' <summary>
@@ -13,7 +13,7 @@ Public Class CMainWindow
         InitializeComponent()
 
         ' When the application window is created, we create our new connection class as well.
-        MyTCPConnection = New ZusiTcpConn("Zusi TCP Demo 1", ClientPriority.Low)
+        MyTCPConnection = New ZusiTcpClientConnection("Zusi TCP Demo 1", ClientPriority.Low)
 
         ' We need to tell our connection object what measures to request from Zusi. 
         ' You may either use Zusi's native ID code or plain text as listed in the server's commandset.xml

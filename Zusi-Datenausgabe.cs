@@ -26,6 +26,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -144,6 +145,18 @@ namespace Zusi_Datenausgabe
     public T Value { get; private set; }
   }
 
+  [Obsolete("This class has been renamed and may be removed in v2.0. Use new name ZusiTcpClientConnection instead.")]
+  public class ZusiTcpConn : ZusiTcpClientConnection
+  {
+    public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath = "commandset.xml") : base(clientId, priority, commandsetPath)
+    {
+    }
+
+    public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commands) : base(clientId, priority, commands)
+    {
+    }
+  }
+
   /// <summary>
   /// Represents the centerpiece of the Zusi TCP interface.
   ///
@@ -156,7 +169,7 @@ namespace Zusi_Datenausgabe
   /// </description></item>
   ///
   /// <item><description>
-  /// Create an instance of <see cref="ZusiTcpConn"/>, choosing a client priority. Recommended value for control desks is "High".
+  /// Create an instance of <see cref="ZusiTcpClientConnection"/>, choosing a client priority. Recommended value for control desks is "High".
   /// Add your event handlers to the appropriate events.
   /// </description></item>
   /// <item><description>
@@ -169,9 +182,9 @@ namespace Zusi_Datenausgabe
   /// dataset at a time.</description></item>
   /// </list></para>
   ///
-  /// Notice that ZusiTcpConn implements IDisposable, so remember to dispose of it properly when you are finished.
+  /// Notice that ZusiTcpClientConnection implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
-  public class ZusiTcpConn : IDisposable
+  public class ZusiTcpClientConnection : IDisposable
   {
     #region Fields
 
@@ -181,7 +194,9 @@ namespace Zusi_Datenausgabe
 
     private readonly List<int> _requestedData = new List<int>();
 
-    private TcpClient _clientConnection = new TcpClient();
+    private TcpClient _clientConnection;
+    private NetworkStream _clientStream;
+    private BinaryReader _clientReader;
 
     private Thread _streamReaderThread;
 
@@ -195,19 +210,38 @@ namespace Zusi_Datenausgabe
     public event ErrorEvent ErrorReceived;
 
     /// <summary>
-    /// Initializes a new <see cref="ZusiTcpConn"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// Initializes a new <see cref="ZusiTcpClientConnection"/> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
-    /// <param name="priority"> Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-    public ZusiTcpConn(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml")
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml") :
+      this(clientId, priority, TCPCommands.LoadFromFile(commandsetPath))
     {
+    }
+
+    /// <summary>
+    /// Initializes a new <see cref="ZusiTcpClientConnection"/> object that uses the specified event handlers to pass datasets to the client application.
+    /// </summary>
+    /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
+    /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="commands">A set of commands.</param>
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, TCPCommands commands)
+    {
+      if (SynchronizationContext.Current == null)
+      {
+        throw new ZusiTcpException("Cannot create TCP connection object: SynchronizationContext.Current is null. " +
+                                   "This happens when the object is created before the context is initialized in " +
+                                   "Application.Run() or equivalent. " +
+                                   "Possible solution: Create object later, e.g. when the user clicks the \"Connect\" button.");
+      }
+
       ClientId = clientId;
       ClientPriority = priority;
 
       _hostContext = SynchronizationContext.Current;
 
-      _commands = TCPCommands.LoadFromFile(commandsetPath);
+      _commands = commands;
     }
 
     /// <summary>
@@ -221,7 +255,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <example>
     /// <code>
-    /// ZusiTcpConn myConn = [...]
+    /// ZusiTcpClientConnection myConn = [...]
     ///
     /// int SpeedID = myConn.IDs["Geschwindigkeit"]
     /// /* SpeedID now contains the value 01. */
@@ -241,7 +275,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <example>
     /// <code>
-    /// ZusiTcpConn myConn = [...]
+    /// ZusiTcpClientConnection myConn = [...]
     ///
     /// string SpeedName = myConn.ReverseIDs[1] /* ID 01 == current speed */
     /// /* SpeedName now contains the value "Geschwindigkeit". */
@@ -319,24 +353,41 @@ namespace Zusi_Datenausgabe
 
     private void ErrorMarshal(object o)
     {
+      if (ErrorReceived == null)
+      {
+        return;
+      }
+
       ErrorReceived.Invoke(this, (ZusiTcpException)o);
+    }
+
+    private void SendToServer(byte[] message)
+    {
+      try
+      {
+        _clientStream.Write(message, 0, message.Length);
+      }
+      catch (IOException ex)
+      {
+        throw new ZusiTcpException("An error occured when trying to send data to the server.", ex);
+      }
     }
 
     private void SendPacket(params byte[] message)
     {
-      _clientConnection.Client.Send(BitConverter.GetBytes(message.Length));
-      _clientConnection.Client.Send(message);
+      SendToServer(BitConverter.GetBytes(message.Length));
+      SendToServer(message);
     }
 
     private void SendPacket(params byte[][] message)
     {
       int iTempLength = message.Sum(item => item.Length);
 
-      _clientConnection.Client.Send(BitConverter.GetBytes(iTempLength));
+      SendToServer(BitConverter.GetBytes(iTempLength));
 
       foreach (var item in message)
       {
-        _clientConnection.Client.Send(item);
+        SendToServer(item);
       }
     }
 
@@ -360,13 +411,19 @@ namespace Zusi_Datenausgabe
     public void Connect(string hostName, int port)
     {
       var hostAddresses = Dns.GetHostAddresses(hostName);
+      IPAddress myAddress;
 
-      if(hostAddresses.Length == 0)
+      /* The TCP server supports only IPv4, so we have to filter out v6. */
+      try
       {
-        throw new ArgumentException("Host name could not be resolved.",hostName);
+        myAddress = hostAddresses.First(x => x.AddressFamily == AddressFamily.InterNetwork);
+      }
+      catch (Exception ex)
+      {
+        throw new ArgumentException("Host name could not be resolved.", hostName, ex);
       }
 
-      Connect(new IPEndPoint(hostAddresses[0],port));
+      Connect(new IPEndPoint(myAddress, port));
     }
 
     /// <summary>
@@ -386,49 +443,59 @@ namespace Zusi_Datenausgabe
 
         if (_clientConnection == null)
         {
-          _clientConnection = new TcpClient();
+          _clientConnection = new TcpClient(AddressFamily.InterNetwork);
         }
 
-        _clientConnection.Connect(endPoint);
-
-        if (_clientConnection.Connected)
+        try
         {
-          _streamReaderThread = new Thread(ReceiveLoop) { Name = "ZusiData Receiver" };
-          _streamReaderThread.IsBackground = true;
-
-          SendPacket(
-            Pack(0, 1, 2, (byte)ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
-            _stringEncoder.GetBytes(ClientId));
-
-          ExpectResponse(ResponseType.AckHello, 0);
-
-          var aGetData = from iData in RequestedData group iData by (iData / 256);
-
-          var reqDataBuffer = new List<byte[]>();
-
-          foreach (var aDataGroup in aGetData)
-          {
-            reqDataBuffer.Clear();
-            reqDataBuffer.Add(Pack(0, 3));
-
-            byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
-            reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
-
-            reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID % 256))));
-
-            SendPacket(reqDataBuffer.ToArray());
-
-            ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
-          }
-
-          SendPacket(0, 3, 0, 0);
-
-          ExpectResponse(ResponseType.AckNeededData, 0);
-
-          ConnectionState = ConnectionState.Connected;
-
-          _streamReaderThread.Start();
+          _clientConnection.Connect(endPoint);
         }
+        catch (SocketException ex)
+        {
+          throw new ZusiTcpException("Could not establish socket connection to TCP server. " +
+                                     "Is the server running and enabled?", ex);
+        }
+
+        Debug.Assert(_clientConnection.Connected);
+
+        _clientStream = _clientConnection.GetStream();
+        _clientReader = new BinaryReader(_clientStream);
+
+        _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
+        _streamReaderThread.IsBackground = true;
+
+        SendPacket(
+          Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
+          _stringEncoder.GetBytes(ClientId));
+
+        ExpectResponse(ResponseType.AckHello, 0);
+
+        var aGetData = from iData in RequestedData group iData by (iData/256);
+
+        var reqDataBuffer = new List<byte[]>();
+
+        foreach (var aDataGroup in aGetData)
+        {
+          reqDataBuffer.Clear();
+          reqDataBuffer.Add(Pack(0, 3));
+
+          byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
+          reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
+
+          reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID%256))));
+
+          SendPacket(reqDataBuffer.ToArray());
+
+          ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
+        }
+
+        SendPacket(0, 3, 0, 0);
+
+        ExpectResponse(ResponseType.AckNeededData, 0);
+
+        ConnectionState = ConnectionState.Connected;
+
+        _streamReaderThread.Start();
       }
 
       catch (Exception ex)
@@ -439,7 +506,8 @@ namespace Zusi_Datenausgabe
           _streamReaderThread = null;
         }
         ConnectionState = ConnectionState.Error;
-        throw new ZusiTcpException("Error connecting to server.", ex);
+
+        throw;
       }
     }
 
@@ -448,7 +516,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Disconnnect()
     {
-      if (_streamReaderThread != null)
+      if((_streamReaderThread != null)&&(_streamReaderThread != Thread.CurrentThread))
       {
         _streamReaderThread.Abort();
       }
@@ -462,114 +530,76 @@ namespace Zusi_Datenausgabe
 
     private void ExpectResponse(ResponseType expResponse, int dataGroup)
     {
-      var readBuffer = new byte[7];
-
-      _clientConnection.Client.Receive(readBuffer, 7, SocketFlags.None);
-      MemoryStream bufStream = null;
-
-      try
-      {
-        bufStream = new MemoryStream(readBuffer);
-      }
-      catch
-      {
-        if (bufStream != null)
-        {
-          bufStream.Dispose();
-        }
-        throw;
-      }
-      var bufRead = new BinaryReader(bufStream);
-
-      int iPacketLength = bufRead.ReadInt32();
+      int iPacketLength = _clientReader.ReadInt32();
       if (iPacketLength != 3)
       {
         throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
       }
 
-      int iReadInstr = GetInstruction(bufStream.ReadByte(), bufStream.ReadByte());
-      if (iReadInstr != (int)expResponse)
+      int iReadInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
+      if (iReadInstr != (int) expResponse)
       {
         throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
       }
 
-      try
+      int iResponse = _clientReader.ReadByte();
+      if (iResponse == 0)
       {
-        int iResponse = bufStream.ReadByte();
-        if (iResponse != 0)
-        {
-          switch (expResponse)
+        /* Response is an ACK */
+        return;
+      }
+
+      switch (expResponse)
+      {
+        case ResponseType.AckHello:
+          switch (iResponse)
           {
-            case ResponseType.AckHello:
-              switch (iResponse)
-              {
-                case 1:
-                  throw new ZusiTcpException("Too many connections.");
-                case 2:
-                  throw new ZusiTcpException("Zusi is already connected. No more connections allowed.");
-                default:
-                  throw new ZusiTcpException("HELLO not acknowledged.");
-              }
-
-            case ResponseType.AckNeededData:
-              switch (iResponse)
-              {
-                case 1:
-                  throw new ZusiTcpException("Unknown instruction set: " + dataGroup);
-                case 2:
-                  throw new ZusiTcpException("Client not connected");
-                default:
-                  throw new ZusiTcpException("NEEDED_DATA not acknowledged.");
-              }
+            case 1:
+              throw new ZusiTcpException("Too many connections.");
+            case 2:
+              throw new ZusiTcpException("Zusi is already connected. No more connections allowed.");
+            default:
+              throw new ZusiTcpException("HELLO not acknowledged.");
           }
-        }
-      }
-      catch
-      {
-        bufStream.Dispose();
-        throw;
-      }
 
-      bufStream.Close();
+        case ResponseType.AckNeededData:
+          switch (iResponse)
+          {
+            case 1:
+              throw new ZusiTcpException("Unknown instruction set: " + dataGroup);
+            case 2:
+              throw new ZusiTcpException("Client not connected");
+            default:
+              throw new ZusiTcpException("NEEDED_DATA not acknowledged.");
+          }
+      }
     }
 
-    internal void ReceiveLoop()
+    private void ReceiveLoop()
     {
-      const int bufSize = 256;
-
-      var recBuffer = new byte[bufSize];
-      var memStream = new MemoryStream(recBuffer);
-      var streamReader = new BinaryReader(memStream);
-      Socket tcpSocket = _clientConnection.Client;
       var dataHandlers = new Dictionary<string, MethodInfo>();
 
       try
       {
         while (ConnectionState == ConnectionState.Connected)
         {
-          TCPReceive(4, recBuffer);
-          memStream.Seek(0, SeekOrigin.Begin);
+          int packetLength = _clientReader.ReadInt32();
 
-          int packetLength = streamReader.ReadInt32();
-
-          if (packetLength > bufSize)
-          {
-            throw new ZusiTcpException("Buffer overflow on data receive.");
-          }
-
-          TCPReceive(packetLength, recBuffer);
-          memStream.Seek(0, SeekOrigin.Begin);
-
-          int curInstr = GetInstruction(memStream.ReadByte(), memStream.ReadByte());
+          int curInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
 
           if (curInstr < 10)
           {
             throw new ZusiTcpException("Unexpected Non-DATA instruction received.");
           }
 
-          while (memStream.Position < packetLength)
+          // The first 2 bytes have been the instruction.
+          int bytesRead = 2;
+
+          while (bytesRead < packetLength)
           {
-            int curID = memStream.ReadByte() + 256 * curInstr;
+            int curID = _clientReader.ReadByte() + 256 * curInstr;
+            // Another byte read for the ID.
+            bytesRead++;
 
             CommandEntry curCommand = _commands[curID];
 
@@ -591,31 +621,45 @@ namespace Zusi_Datenausgabe
                     "Unknown type {0} for DATA ID {1} (\"{2}\") occured.", curCommand.Type, curID, curCommand.Name));
               }
 
+              /* Make sure the handler method returns an int. */
+              Debug.Assert(handlerMethod.ReturnType == typeof(int));
+
               dataHandlers.Add(curCommand.Type, handlerMethod);
             }
 
-            handlerMethod.Invoke(this, new object[] { streamReader, curID });
+            bytesRead += (int)handlerMethod.Invoke(this, new object[] {_clientReader, curID});
+
+            Debug.Assert(bytesRead <= packetLength);
           }
         }
       }
-      catch (ZusiTcpException e)
+      catch (Exception e)
       {
         Disconnnect();
         ConnectionState = ConnectionState.Error;
-        _hostContext.Post(ErrorMarshal, e);
-      }
-    }
 
-    private void TCPReceive(int singleLength, byte[] recBuffer)
-    {
-      try
-      {
-        _clientConnection.Client.Receive(recBuffer, singleLength, SocketFlags.None);
-      }
-      catch (IndexOutOfRangeException e)
-      {
-        /* This happens when the server is shut down and the TCP connection is "forcefully" closed. */
-        throw new ZusiTcpException("Error in connection to TCP server.", e);
+        if (e is ZusiTcpException)
+        {
+          _hostContext.Post(ErrorMarshal, e as ZusiTcpException);
+        }
+        else if (e is EndOfStreamException)
+        {
+          /* EndOfStream occurs when the NetworkStream reaches its end while the binaryReader tries to read from it.
+           * This happens when the socket closes the stream.
+           */
+          var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
+          _hostContext.Post(ErrorMarshal, newEx);
+        }
+        else
+        {
+          var newEx =
+            new ZusiTcpException(
+              "An unhandled exception has occured in the TCP receiving loop. This is very probably " +
+              "a bug in the Zusi TCP interface for .NET. Please report this error to the author(s) " +
+              "of this application and/or the author(s) of the Zusi TCP interface for .NET.", e);
+
+          _hostContext.Post(ErrorMarshal, newEx);
+        }
       }
     }
 
@@ -748,6 +792,11 @@ namespace Zusi_Datenausgabe
     /// <param name="value">Contains the new value of the measure.</param>
     protected void PostToHost<T>(ReceiveEvent<T> Event, int id, T value)
     {
+      if (Event == null)
+      {
+        return;
+      }
+
       _hostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
     }
 
@@ -756,9 +805,11 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_Single(BinaryReader input, int id)
+    protected int HandleDATA_Single(BinaryReader input, int id)
     {
       PostToHost(FloatReceived, id, input.ReadSingle());
+
+      return sizeof (Single);
     }
 
     /// <summary>
@@ -766,9 +817,11 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_Int(BinaryReader input, int id)
+    protected int HandleDATA_Int(BinaryReader input, int id)
     {
       PostToHost(IntReceived, id, input.ReadInt32());
+
+      return sizeof (Int32);
     }
 
     /// <summary>
@@ -776,9 +829,14 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_String(BinaryReader input, int id)
+    protected int HandleDATA_String(BinaryReader input, int id)
     {
-      PostToHost(StringReceived, id, input.ReadString());
+      const int lengthPrefixSize = 1;
+
+      string result = input.ReadString();
+      PostToHost(StringReceived, id, result);
+
+      return result.Length + lengthPrefixSize;
     }
 
     /// <summary>
@@ -786,13 +844,15 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_DateTime(BinaryReader input, int id)
+    protected int HandleDATA_DateTime(BinaryReader input, int id)
     {
       // Delphi uses the double-based OLE Automation date for its date format.
       double temp = input.ReadDouble();
       DateTime time = DateTime.FromOADate(temp);
 
       PostToHost(DateTimeReceived, id, time);
+
+      return sizeof (Double);
     }
 
     /// <summary>
@@ -800,7 +860,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_BoolAsSingle(BinaryReader input, int id)
+    protected int HandleDATA_BoolAsSingle(BinaryReader input, int id)
     {
       /* Data is delivered as Single values that are only either 0.0 or 1.0.
        * For the sake of logic, convert these to actual booleans here.
@@ -808,6 +868,27 @@ namespace Zusi_Datenausgabe
       Single temp = input.ReadSingle();
       bool value = (temp >= 0.5f);
       PostToHost(BoolReceived, id, value);
+
+      return sizeof (Single);
+    }
+
+    /// <summary>
+    /// Handle incoming data that is sent as Single values by Zusi and can
+    /// be a bool value as well as a single value.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_BoolAndSingle(BinaryReader input, int id)
+    {
+      /* Data is delivered as Single values that are usually only either 0.0 or 1.0.
+       * In some cases (PZ80!) the values are no Booleans at all, so we just post to both events.
+       */
+      Single temp = input.ReadSingle();
+      bool value = (temp >= 0.5f);
+      PostToHost(BoolReceived, id, value);
+      PostToHost(FloatReceived, id, temp);
+
+      return sizeof (Single);
     }
 
     /// <summary>
@@ -815,7 +896,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_IntAsSingle(BinaryReader input, int id)
+    protected int HandleDATA_IntAsSingle(BinaryReader input, int id)
     {
       /* Data is delivered as Single values that are only either 0.0 or 1.0.
        * For the sake of logic, convert these to actual booleans here.
@@ -823,6 +904,8 @@ namespace Zusi_Datenausgabe
       Single temp = input.ReadSingle();
       int value = (int)Math.Round(temp);
       PostToHost(IntReceived, id, value);
+
+      return sizeof (Single);
     }
 
     /// <summary>
@@ -830,7 +913,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_BoolAsInt(BinaryReader input, int id)
+    protected int HandleDATA_BoolAsInt(BinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -838,6 +921,8 @@ namespace Zusi_Datenausgabe
       Int32 temp = input.ReadInt32();
       bool value = (temp == 1);
       PostToHost(BoolReceived, id, value);
+
+      return sizeof (Int32);
     }
 
     /// <summary>
@@ -845,13 +930,15 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_DoorsAsInt(BinaryReader input, int id)
+    protected int HandleDATA_DoorsAsInt(BinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
              */
       Int32 temp = input.ReadInt32();
       PostToHost(DoorsReceived, id, (DoorState)temp);
+
+      return sizeof (Int32);
     }
 
     /// <summary>
@@ -859,13 +946,15 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_PZBAsInt(BinaryReader input, int id)
+    protected int HandleDATA_PZBAsInt(BinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
              */
       Int32 temp = input.ReadInt32();
       PostToHost(PZBReceived, id, (PZBSystem)temp);
+
+      return sizeof (Int32);
     }
 
     /// <summary>
@@ -873,7 +962,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected void HandleDATA_BrakesAsInt(BinaryReader input, int id)
+    protected int HandleDATA_BrakesAsInt(BinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -909,6 +998,8 @@ namespace Zusi_Datenausgabe
       }
 
       PostToHost(BrakeConfigReceived, id, result);
+
+      return sizeof (Int32);
     }
 
     #endregion

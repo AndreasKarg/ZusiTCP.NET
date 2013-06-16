@@ -1,6 +1,6 @@
 'If we want to add a new type, we have to inherit the ZusiTcpCon.
 Public Class InheritedDatenausgabe
-    Inherits Zusi_Datenausgabe.ZusiTcpConn
+    Inherits Zusi_Datenausgabe.ZusiTcpClientConnection
     'Declare a construcor - the old needs attributes
     Public Sub New(ByVal clientID As String, ByVal priority As Zusi_Datenausgabe.ClientPriority)
         'Call - explicit - the old construcor

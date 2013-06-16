@@ -32,9 +32,9 @@ using System.Resources;
 [assembly: AssemblyTitle("Zusi-Datenausgabe")]
 [assembly: AssemblyDescription("Schnittstelle zur Zusi 2.4-Datenausgabe per TCP")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Andreas Karg, Grafing")]
+[assembly: AssemblyCompany("Andreas Karg, München")]
 [assembly: AssemblyProduct("Zusi-Datenausgabe")]
-[assembly: AssemblyCopyright("Copyright © Andreas Karg 2009-2011")]
+[assembly: AssemblyCopyright("Copyright © Andreas Karg 2009-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -56,6 +56,6 @@ using System.Resources;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.6")]
-[assembly: AssemblyFileVersion("1.1.6")]
+[assembly: AssemblyVersion("1.2")]
+[assembly: AssemblyFileVersion("1.2")]
 [assembly: NeutralResourcesLanguageAttribute("de")]
