@@ -468,7 +468,7 @@ namespace Zusi_Datenausgabe
           Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
           _stringEncoder.GetBytes(ClientId));
 
-        ExpectResponse(ResponseType.AckHello, 0);
+        ExpectAckHello();
 
         var aGetData = from iData in RequestedData group iData by (iData/256);
 
@@ -486,12 +486,12 @@ namespace Zusi_Datenausgabe
 
           SendPacket(reqDataBuffer.ToArray());
 
-          ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
+          ExpectAckNeededData(aDataGroup.Key);
         }
 
         SendPacket(0, 3, 0, 0);
 
-        ExpectResponse(ResponseType.AckNeededData, 0);
+        ExpectAckNeededData(0);
 
         ConnectionState = ConnectionState.Connected;
 
@@ -508,6 +508,42 @@ namespace Zusi_Datenausgabe
         ConnectionState = ConnectionState.Error;
 
         throw;
+      }
+    }
+
+    private void ExpectAckNeededData(int dataGroup)
+    {
+      var response = ReceiveResponse(ResponseType.AckNeededData);
+
+      switch (response)
+      {
+        case 0:
+          /* Response is an ACK. */
+          return;
+        case 1:
+          throw new ZusiTcpException("Unknown instruction set: " + dataGroup);
+        case 2:
+          throw new ZusiTcpException("Client not connected");
+        default:
+          throw new ZusiTcpException("NEEDED_DATA not acknowledged.");
+      }
+    }
+
+    private void ExpectAckHello()
+    {
+      var response = ReceiveResponse(ResponseType.AckHello);
+
+      switch (response)
+      {
+        case 0:
+          /* Response is an ACK. */
+          return;
+        case 1:
+          throw new ZusiTcpException("Too many connections.");
+        case 2:
+          throw new ZusiTcpException("Zusi is already connected. No more connections allowed.");
+        default:
+          throw new ZusiTcpException("HELLO not acknowledged.");
       }
     }
 
@@ -528,51 +564,22 @@ namespace Zusi_Datenausgabe
       _clientConnection = null;
     }
 
-    private void ExpectResponse(ResponseType expResponse, int dataGroup)
+    private int ReceiveResponse(ResponseType expectedInstruction)
     {
-      int iPacketLength = _clientReader.ReadInt32();
-      if (iPacketLength != 3)
+      int packetLength = _clientReader.ReadInt32();
+      if (packetLength != 3)
       {
-        throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
+        throw new ZusiTcpException("Invalid packet length: " + packetLength);
       }
 
-      int iReadInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
-      if (iReadInstr != (int) expResponse)
+      int readInstr = GetInstruction(_clientReader.ReadByte(), _clientReader.ReadByte());
+      if (readInstr != (int) expectedInstruction)
       {
-        throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
+        throw new ZusiTcpException("Invalid command from server: " + readInstr);
       }
 
-      int iResponse = _clientReader.ReadByte();
-      if (iResponse == 0)
-      {
-        /* Response is an ACK */
-        return;
-      }
-
-      switch (expResponse)
-      {
-        case ResponseType.AckHello:
-          switch (iResponse)
-          {
-            case 1:
-              throw new ZusiTcpException("Too many connections.");
-            case 2:
-              throw new ZusiTcpException("Zusi is already connected. No more connections allowed.");
-            default:
-              throw new ZusiTcpException("HELLO not acknowledged.");
-          }
-
-        case ResponseType.AckNeededData:
-          switch (iResponse)
-          {
-            case 1:
-              throw new ZusiTcpException("Unknown instruction set: " + dataGroup);
-            case 2:
-              throw new ZusiTcpException("Client not connected");
-            default:
-              throw new ZusiTcpException("NEEDED_DATA not acknowledged.");
-          }
-      }
+      int response = _clientReader.ReadByte();
+      return response;
     }
 
     private void ReceiveLoop()
