@@ -80,6 +80,21 @@ namespace Zusi_Datenausgabe
     public T Value { get; private set; }
   }
 
+  public class ErrorEventArgs : EventArgs
+  {
+    private readonly ZusiTcpException _exception;
+
+    public ErrorEventArgs(ZusiTcpException exception)
+    {
+      _exception = exception;
+    }
+
+    public ZusiTcpException Exception
+    {
+      get { return _exception; }
+    }
+  }
+
   /// <summary>
   /// Represents the centerpiece of the Zusi TCP interface.
   ///
@@ -178,7 +193,7 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Event called when an error has occured within the TCP interface.
     /// </summary>
-    public event ErrorEvent ErrorReceived;
+    public event EventHandler<ErrorEventArgs> ErrorReceived;
 
     /// <summary>
     /// Initializes a new <see cref="ZusiTcpClientConnection"/> object that uses the specified event handlers to pass datasets to the client application.
@@ -324,14 +339,18 @@ namespace Zusi_Datenausgabe
 
     #endregion
 
-    private void ErrorMarshal(object o)
+    private void ExceptionMarshal(object exception)
     {
+      var castException = exception as ZusiTcpException;
+
+      Debug.Assert(castException != null);
+
       if (ErrorReceived == null)
       {
         return;
       }
 
-      ErrorReceived.Invoke(this, (ZusiTcpException)o);
+      ErrorReceived.Invoke(this, new ErrorEventArgs(castException));
     }
 
     private void SendToServer(byte[] message)
@@ -583,7 +602,7 @@ namespace Zusi_Datenausgabe
 
       if (e is ZusiTcpException)
       {
-        _hostContext.Post(ErrorMarshal, e as ZusiTcpException);
+        _hostContext.Post(ExceptionMarshal, e as ZusiTcpException);
       }
       else if (e is EndOfStreamException)
       {
@@ -591,7 +610,7 @@ namespace Zusi_Datenausgabe
          * This happens when the socket closes the stream.
          */
         var newEx = new ZusiTcpException("Connection to the TCP server has been lost.", e);
-        _hostContext.Post(ErrorMarshal, newEx);
+        _hostContext.Post(ExceptionMarshal, newEx);
       }
       else if (e is ThreadAbortException)
       {
@@ -605,7 +624,7 @@ namespace Zusi_Datenausgabe
             "a bug in the Zusi TCP interface for .NET. Please report this error to the author(s) " +
             "of this application and/or the author(s) of the Zusi TCP interface for .NET.", e);
 
-        _hostContext.Post(ErrorMarshal, newEx);
+        _hostContext.Post(ExceptionMarshal, newEx);
       }
     }
 

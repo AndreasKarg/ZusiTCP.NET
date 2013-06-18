@@ -97,11 +97,11 @@ namespace ZusiTCPDemoApp
     }
 
 
-    private void TCPConnection_ErrorReceived(object sender, ZusiTcpException ex) // Handles MyTCPConnection.ErrorReceived
+    private void TCPConnection_ErrorReceived(object sender, ErrorEventArgs args) // Handles MyTCPConnection.ErrorReceived
     {
       // If something goes wrong...
       // ... show the user what the connection object has to say.
-      System.Windows.Forms.MessageBox.Show(String.Format("An error occured when receiving data: {0}", ex.Message));
+      System.Windows.Forms.MessageBox.Show(String.Format("An error occured when receiving data: {0}", args.Exception.Message));
 
       // ... reset the connection by explicitly calling Disconnect()
       MyTCPConnection.Disconnnect();
