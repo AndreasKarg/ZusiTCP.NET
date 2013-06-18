@@ -72,6 +72,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="DataReceptionHandler.cs" />
+    <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="ReceivableDataTypes.cs" />
     <Compile Include="TCPCommands.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />

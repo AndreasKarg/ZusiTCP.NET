@@ -23,7 +23,6 @@
  *************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -38,68 +37,6 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  /// <summary>
-  /// Represents a dictionary class that translates names of Zusi measurements to their internal numbers.
-  /// </summary>
-  /// <typeparam name="TMeasure">Key parameter. (ID list: The measurement's name)</typeparam>
-  /// <typeparam name="TValue">Value parameter. (ID list: The measurement's ID)</typeparam>
-  [Serializable]
-  public class ZusiData<TMeasure, TValue> : IEnumerable<KeyValuePair<TMeasure, TValue>>
-  {
-    private readonly Dictionary<TMeasure, TValue> _data = new Dictionary<TMeasure, TValue>();
-
-    /// <summary>
-    /// Equivalent to this[] on a regular <see cref="Dictionary{TKey,TValue}"/>
-    /// </summary>
-    /// <param name="id">ID of the measure.</param>
-    /// <returns>The value of the measure.</returns>
-    public TValue this[TMeasure id]
-    {
-      get
-      {
-        return _data[id];
-      }
-      internal set
-      {
-        _data[id] = value;
-      }
-    }
-
-    /// <summary>
-    /// Create a new ZusiData instance using source as the back-end storage object.
-    /// NOTE: The source object is used directly instead of duplicating its contents.
-    /// </summary>
-    /// <param name="source"></param>
-    public ZusiData(Dictionary<TMeasure, TValue> source)
-    {
-      _data = source;
-    }
-
-    /// <summary>
-    /// Returns an enumerator that iterates through the collection.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-    /// </returns>
-    /// <filterpriority>1</filterpriority>
-    public IEnumerator<KeyValuePair<TMeasure, TValue>> GetEnumerator()
-    {
-      return _data.GetEnumerator();
-    }
-
-    /// <summary>
-    /// Returns an enumerator that iterates through a collection.
-    /// </summary>
-    /// <returns>
-    /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-    /// </returns>
-    /// <filterpriority>2</filterpriority>
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-      return GetEnumerator();
-    }
-  }
-
   /// <summary>
   /// Represents the delegate type required for event handling. Used to transfer incoming data sets to the client application.
   /// </summary>
@@ -311,7 +248,7 @@ namespace Zusi_Datenausgabe
     /// /* SpeedID now contains the value 01. */
     /// </code>
     /// </example>
-    public ZusiData<string, int> IDs
+    public IReadOnlyDictionary<string, int> IDs
     {
       get
       {
@@ -331,7 +268,7 @@ namespace Zusi_Datenausgabe
     /// /* SpeedName now contains the value "Geschwindigkeit". */
     /// </code>
     /// </example>
-    public ZusiData<int, string> ReverseIDs
+    public IReadOnlyDictionary<int, string> ReverseIDs
     {
       get
       {

@@ -36,11 +36,18 @@ namespace Zusi_Datenausgabe
   [EditorBrowsableAttribute(EditorBrowsableState.Never)]
   public partial class TCPCommands
   {
+    private Dictionary<int, CommandEntry> _commandByID;
+    private Dictionary<string, int> _idByName;
+    private Dictionary<int, string> _nameByID;
+
     /// <summary>
     /// Contains a list of Zusi commands accessible by their numeric id.
     /// </summary>
     [XmlIgnore]
-    public ZusiData<int, CommandEntry> CommandByID { get; private set; }
+    public IReadOnlyDictionary<int, CommandEntry> CommandByID
+    {
+      get { return new ReadOnlyDictionary<int, CommandEntry>(_commandByID); }
+    }
 
     /// <summary>
     /// Contains a list of numeric Zusi command IDs accessible by their name
@@ -48,13 +55,19 @@ namespace Zusi_Datenausgabe
     /// an adaption for this library.)
     /// </summary>
     [XmlIgnore]
-    public ZusiData<string, int> IDByName { get; private set; }
+    public IReadOnlyDictionary<string, int> IDByName
+    {
+      get { return new ReadOnlyDictionary<string, int>(_idByName); }
+    }
 
     /// <summary>
     /// Contains a list of Zusi command names accessible by their numeric ID.
     /// </summary>
     [XmlIgnore]
-    public ZusiData<int, string> NameByID { get; private set; }
+    public IReadOnlyDictionary<int, string> NameByID
+    {
+      get { return new ReadOnlyDictionary<int, string>(_nameByID); }
+    }
 
     /// <summary>
     /// Identical to this.<see cref="CommandByID"/>.
@@ -70,20 +83,12 @@ namespace Zusi_Datenausgabe
 
     private void InitializeDictionaries()
     {
-      var tmpCommandByID = new Dictionary<int, CommandEntry>();
-      var tmpIDByName = new Dictionary<string, int>();
-      var tmpNameByID = new Dictionary<int, string>();
-
       foreach (var entry in commandField)
       {
-        tmpCommandByID.Add(entry.ID, entry);
-        tmpIDByName.Add(entry.Name, entry.ID);
-        tmpNameByID.Add(entry.ID, entry.Name);
+        _commandByID.Add(entry.ID, entry);
+        _idByName.Add(entry.Name, entry.ID);
+        _nameByID.Add(entry.ID, entry.Name);
       }
-
-      CommandByID = new ZusiData<int, CommandEntry>(tmpCommandByID);
-      IDByName = new ZusiData<string, int>(tmpIDByName);
-      NameByID = new ZusiData<int, string>(tmpNameByID);
     }
 
     /// <summary>
