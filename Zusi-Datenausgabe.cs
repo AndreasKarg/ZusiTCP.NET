@@ -204,6 +204,54 @@ namespace Zusi_Datenausgabe
 
     #endregion
 
+    public event ReceiveEvent<float> FloatReceived
+    {
+      add { _dataReceptionHandler.FloatReceived += value; }
+      remove { _dataReceptionHandler.FloatReceived -= value; }
+    }
+
+    public event ReceiveEvent<string> StringReceived
+    {
+      add { _dataReceptionHandler.StringReceived += value; }
+      remove { _dataReceptionHandler.StringReceived -= value; }
+    }
+
+    public event ReceiveEvent<int> IntReceived
+    {
+      add { _dataReceptionHandler.IntReceived += value; }
+      remove { _dataReceptionHandler.IntReceived -= value; }
+    }
+
+    public event ReceiveEvent<bool> BoolReceived
+    {
+      add { _dataReceptionHandler.BoolReceived += value; }
+      remove { _dataReceptionHandler.BoolReceived -= value; }
+    }
+
+    public event ReceiveEvent<DateTime> DateTimeReceived
+    {
+      add { _dataReceptionHandler.DateTimeReceived += value; }
+      remove { _dataReceptionHandler.DateTimeReceived -= value; }
+    }
+
+    public event ReceiveEvent<DoorState> DoorsReceived
+    {
+      add { _dataReceptionHandler.DoorsReceived += value; }
+      remove { _dataReceptionHandler.DoorsReceived -= value; }
+    }
+
+    public event ReceiveEvent<PZBSystem> PZBReceived
+    {
+      add { _dataReceptionHandler.PZBReceived += value; }
+      remove { _dataReceptionHandler.PZBReceived -= value; }
+    }
+
+    public event ReceiveEvent<BrakeConfiguration> BrakeConfigReceived
+    {
+      add { _dataReceptionHandler.BrakeConfigReceived += value; }
+      remove { _dataReceptionHandler.BrakeConfigReceived -= value; }
+    }
+
     /// <summary>
     /// Event called when an error has occured within the TCP interface.
     /// </summary>
@@ -312,11 +360,6 @@ namespace Zusi_Datenausgabe
       {
         return ConnectionState == ConnectionState.Disconnected ? _requestedData : null;
       }
-    }
-
-    public DataReceptionHandler DataReceptionHandler
-    {
-      get { return _dataReceptionHandler; }
     }
 
     /// <summary>
@@ -674,7 +717,7 @@ namespace Zusi_Datenausgabe
 
       CommandEntry curCommand = _commands[curID];
 
-      bytesRead += DataReceptionHandler.HandleData(curCommand, curID);
+      bytesRead += _dataReceptionHandler.HandleData(curCommand, curID);
       return bytesRead;
     }
 
