@@ -87,7 +87,7 @@ namespace Zusi_Datenausgabe
     /// <param name="Event">Contains the event that is to be thrown.</param>
     /// <param name="id">Contains the Zusi command ID.</param>
     /// <param name="value">Contains the new value of the measure.</param>
-    public void PostToHost<T>(ReceiveEvent<T> Event, int id, T value)
+    public void PostToHost<T>(EventHandler<DataReceivedEventArgs<T>> Event, int id, T value)
     {
       if (Event == null)
       {
@@ -303,54 +303,54 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Event used to handle incoming float data.
     /// </summary>
-    public event ReceiveEvent<float> FloatReceived;
+    public event EventHandler<DataReceivedEventArgs<float>> FloatReceived;
 
     /// <summary>
     /// Event used to handle incoming string data.
     /// </summary>
-    public event ReceiveEvent<string> StringReceived;
+    public event EventHandler<DataReceivedEventArgs<string>> StringReceived;
 
     /// <summary>
     /// Event used to handle incoming integer data.
     /// </summary>
-    public event ReceiveEvent<int> IntReceived;
+    public event EventHandler<DataReceivedEventArgs<int>> IntReceived;
 
     /// <summary>
     /// Event used to handle incoming boolean data.
     /// </summary>
-    public event ReceiveEvent<Boolean> BoolReceived;
+    public event EventHandler<DataReceivedEventArgs<Boolean>> BoolReceived;
 
     /// <summary>
     /// Event used to handle incoming DateTime data.
     /// </summary>
-    public event ReceiveEvent<DateTime> DateTimeReceived;
+    public event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived;
 
     /// <summary>
     /// Event used to handle incoming door status data.
     /// </summary>
-    public event ReceiveEvent<DoorState> DoorsReceived;
+    public event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived;
 
     /// <summary>
     /// Event used to handle incoming PZB system type data.
     /// </summary>
-    public event ReceiveEvent<PZBSystem> PZBReceived;
+    public event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived;
 
     /// <summary>
     /// Event used to handle incoming brake configuration data.
     /// </summary>
-    public event ReceiveEvent<BrakeConfiguration> BrakeConfigReceived;
+    public event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived;
 
     private struct MarshalArgs<T>
     {
-      public ReceiveEvent<T> Event { get; private set; }
+      public EventHandler<DataReceivedEventArgs<T>> Event { get; private set; }
 
-      public DataSet<T> Data { get; private set; }
+      public DataReceivedEventArgs<T> Data { get; private set; }
 
-      public MarshalArgs(ReceiveEvent<T> recveiveEvent, int id, T data)
+      public MarshalArgs(EventHandler<DataReceivedEventArgs<T>> recveiveEvent, int id, T data)
         : this()
       {
         Event = recveiveEvent;
-        Data = new DataSet<T>(id, data);
+        Data = new DataReceivedEventArgs<T>(id, data);
       }
     }
 

@@ -36,9 +36,9 @@ namespace Zusi_Datenausgabe
   [EditorBrowsableAttribute(EditorBrowsableState.Never)]
   public partial class TCPCommands
   {
-    private Dictionary<int, CommandEntry> _commandByID;
-    private Dictionary<string, int> _idByName;
-    private Dictionary<int, string> _nameByID;
+    private Dictionary<int, CommandEntry> _commandByID = new Dictionary<int, CommandEntry>();
+    private Dictionary<string, int> _idByName = new Dictionary<string, int>();
+    private Dictionary<int, string> _nameByID = new Dictionary<int, string>();
 
     /// <summary>
     /// Contains a list of Zusi commands accessible by their numeric id.

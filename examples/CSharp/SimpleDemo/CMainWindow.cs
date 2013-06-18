@@ -110,7 +110,7 @@ namespace ZusiTCPDemoApp
       BtnConnect.Text = "Connect";
     }
 
-    private void TCPConnection_BoolReceived(object sender, DataSet<bool> data) // Handles MyTCPConnection.BoolReceived
+    private void TCPConnection_BoolReceived(object sender, DataReceivedEventArgs<bool> data) // Handles MyTCPConnection.BoolReceived
     {
       switch (data.Id)
       {
@@ -124,7 +124,7 @@ namespace ZusiTCPDemoApp
       }
     }
 
-    private void TCPConnection_BrakeConfigReceived(object sender, DataSet<BrakeConfiguration> data) // Handles MyTCPConnection.BrakeConfigReceived
+    private void TCPConnection_BrakeConfigReceived(object sender, DataReceivedEventArgs<BrakeConfiguration> data) // Handles MyTCPConnection.BrakeConfigReceived
     {
       switch (data.Id)
       {
@@ -134,7 +134,7 @@ namespace ZusiTCPDemoApp
       }
     }
 
-    private void TCPConnection_DateTimeReceived(object sender, DataSet<DateTime> data) // Handles MyTCPConnection.DateTimeReceived  
+    private void TCPConnection_DateTimeReceived(object sender, DataReceivedEventArgs<DateTime> data) // Handles MyTCPConnection.DateTimeReceived  
     {
       switch (data.Id)
       {
@@ -147,7 +147,7 @@ namespace ZusiTCPDemoApp
       }
     }
 
-    private void TCPConnection_DoorsReceived(object sender, DataSet<DoorState> data) // Handles MyTCPConnection.DoorsReceived  
+    private void TCPConnection_DoorsReceived(object sender, DataReceivedEventArgs<DoorState> data) // Handles MyTCPConnection.DoorsReceived  
     {
       switch (data.Id)
       {
@@ -157,7 +157,7 @@ namespace ZusiTCPDemoApp
       }
     }
 
-    private void TCPConnection_FloatReceived(object sender, DataSet<float> data) // Handles MyTCPConnection.FloatReceived    
+    private void TCPConnection_FloatReceived(object sender, DataReceivedEventArgs<float> data) // Handles MyTCPConnection.FloatReceived    
     {
       switch (data.Id)
       {
@@ -173,7 +173,7 @@ namespace ZusiTCPDemoApp
       }
     }
 
-    private void TCPConnection_IntReceived(object sender, DataSet<int> data) // Handles MyTCPConnection.IntReceived   
+    private void TCPConnection_IntReceived(object sender, DataReceivedEventArgs<int> data) // Handles MyTCPConnection.IntReceived   
     {
       switch (data.Id)
       {
@@ -183,7 +183,7 @@ namespace ZusiTCPDemoApp
       }
     }
 
-    private void TCPConnection_PZBReceived(object sender, DataSet<PZBSystem> data) // Handles MyTCPConnection.PZBReceived  
+    private void TCPConnection_PZBReceived(object sender, DataReceivedEventArgs<PZBSystem> data) // Handles MyTCPConnection.PZBReceived  
     {
       switch (data.Id)
       {
@@ -231,7 +231,7 @@ namespace ZusiTCPDemoApp
       }
     }
 
-    private void TCPConnection_StringReceived(object sender, DataSet<string> data) // Handles MyTCPConnection.StringReceived        
+    private void TCPConnection_StringReceived(object sender, DataReceivedEventArgs<string> data) // Handles MyTCPConnection.StringReceived        
     {
       switch (data.Id)
       {

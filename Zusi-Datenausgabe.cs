@@ -42,7 +42,7 @@ namespace Zusi_Datenausgabe
   /// </summary>
   /// <param name="data">Contains the new dataset.</param>
   /// <param name="sender">Contains the object triggering the event.</param>
-  public delegate void ReceiveEvent<T>(object sender, DataSet<T> data);
+  public delegate void ReceiveEvent<T>(object sender, DataReceivedEventArgs<T> data);
 
   /// <summary>
   /// Represents the delegate type required for error event handling. Used to handle exceptions that occur in the reception thread.
@@ -55,16 +55,15 @@ namespace Zusi_Datenausgabe
   /// Represents a structure containing the key and value of one dataset received via the TCP interface.
   /// </summary>
   /// <typeparam name="T">Type of this data set. May be <see cref="float"/>, <see cref="string"/> or <see cref="byte"/>[]</typeparam>
-  public struct DataSet<T>
+  public class DataReceivedEventArgs<T> : EventArgs
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DataSet{T}"/> structure and fills the Id and Value fields with the values
+    /// Initializes a new instance of the <see cref="DataReceivedEventArgs{T}"/> structure and fills the Id and Value fields with the values
     /// passed to the id and value parameters respectively.
     /// </summary>
     /// <param name="id">The id number of the measurement.</param>
     /// <param name="value">The value of the measurement.</param>
-    public DataSet(int id, T value)
-      : this()
+    public DataReceivedEventArgs(int id, T value)
     {
       Id = id;
       Value = value;
@@ -100,7 +99,6 @@ namespace Zusi_Datenausgabe
   /// <list type="number">
   /// <item><description>
   /// Implement event handlers.
-  /// These must conform to the <see cref="ReceiveEvent{T}"/> delegate.
   /// All data sent by Zusi are converted to their appropriate types.
   /// </description></item>
   ///
@@ -141,49 +139,49 @@ namespace Zusi_Datenausgabe
 
     #endregion
 
-    public event ReceiveEvent<float> FloatReceived
+    public event EventHandler<DataReceivedEventArgs<float>> FloatReceived
     {
       add { _dataReceptionHandler.FloatReceived += value; }
       remove { _dataReceptionHandler.FloatReceived -= value; }
     }
 
-    public event ReceiveEvent<string> StringReceived
+    public event EventHandler<DataReceivedEventArgs<string>> StringReceived
     {
       add { _dataReceptionHandler.StringReceived += value; }
       remove { _dataReceptionHandler.StringReceived -= value; }
     }
 
-    public event ReceiveEvent<int> IntReceived
+    public event EventHandler<DataReceivedEventArgs<int>> IntReceived
     {
       add { _dataReceptionHandler.IntReceived += value; }
       remove { _dataReceptionHandler.IntReceived -= value; }
     }
 
-    public event ReceiveEvent<bool> BoolReceived
+    public event EventHandler<DataReceivedEventArgs<bool>> BoolReceived
     {
       add { _dataReceptionHandler.BoolReceived += value; }
       remove { _dataReceptionHandler.BoolReceived -= value; }
     }
 
-    public event ReceiveEvent<DateTime> DateTimeReceived
+    public event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived
     {
       add { _dataReceptionHandler.DateTimeReceived += value; }
       remove { _dataReceptionHandler.DateTimeReceived -= value; }
     }
 
-    public event ReceiveEvent<DoorState> DoorsReceived
+    public event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived
     {
       add { _dataReceptionHandler.DoorsReceived += value; }
       remove { _dataReceptionHandler.DoorsReceived -= value; }
     }
 
-    public event ReceiveEvent<PZBSystem> PZBReceived
+    public event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived
     {
       add { _dataReceptionHandler.PZBReceived += value; }
       remove { _dataReceptionHandler.PZBReceived -= value; }
     }
 
-    public event ReceiveEvent<BrakeConfiguration> BrakeConfigReceived
+    public event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived
     {
       add { _dataReceptionHandler.BrakeConfigReceived += value; }
       remove { _dataReceptionHandler.BrakeConfigReceived -= value; }
