@@ -38,20 +38,6 @@ using System.Threading;
 namespace Zusi_Datenausgabe
 {
   /// <summary>
-  /// Represents the delegate type required for event handling. Used to transfer incoming data sets to the client application.
-  /// </summary>
-  /// <param name="data">Contains the new dataset.</param>
-  /// <param name="sender">Contains the object triggering the event.</param>
-  public delegate void ReceiveEvent<T>(object sender, DataReceivedEventArgs<T> data);
-
-  /// <summary>
-  /// Represents the delegate type required for error event handling. Used to handle exceptions that occur in the reception thread.
-  /// </summary>
-  /// <param name="ex">Contains the exception that has occured.</param>
-  /// <param name="sender">Contains the object triggering the event.</param>
-  public delegate void ErrorEvent(object sender, ZusiTcpException ex);
-
-  /// <summary>
   /// Represents a structure containing the key and value of one dataset received via the TCP interface.
   /// </summary>
   /// <typeparam name="T">Type of this data set. May be <see cref="float"/>, <see cref="string"/> or <see cref="byte"/>[]</typeparam>
