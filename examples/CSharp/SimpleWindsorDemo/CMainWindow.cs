@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
+using Castle.Windsor;
+using Castle.Windsor.Installer;
 using Zusi_Datenausgabe;
 
 /* ZusiTCPDemoApp
@@ -19,11 +21,15 @@ namespace ZusiTCPDemoApp
   public partial class CMainWindow : Form
   {
     // We do want to have a ZusiTcpConn object, so here's the declaration
-    private ZusiTcpClientConnection MyTCPConnection;
+    private IZusiTcpClientConnection MyTCPConnection;
+    private readonly IWindsorContainer _container;
 
     public CMainWindow()
     {
       InitializeComponent();
+
+      _container = BootstrapContainer();
+
       try
       {
         RichTextBox1.Rtf = Properties.Resources.BlockFreiWarnung;
@@ -31,7 +37,10 @@ namespace ZusiTCPDemoApp
       catch { }
 
       // When the application window is created, we create our new connection class as well.
-      MyTCPConnection = new ZusiTcpClientConnection("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
+      //MyTCPConnection = new ZusiTcpClientConnection("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
+
+      var connectionFactory = _container.Resolve<IZusiTcpConnectionFactory>();
+      MyTCPConnection = connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low);
 
       MyTCPConnection.StringReceived      += TCPConnection_StringReceived;
       MyTCPConnection.FloatReceived       += TCPConnection_FloatReceived;
@@ -52,6 +61,13 @@ namespace ZusiTCPDemoApp
       MyTCPConnection.RequestData(2637); // "LM Block, bis zu dem die Strecke frei ist" => StringReceived        
       MyTCPConnection.RequestData(2649); // "PZB-System"   . . . . . . . . . . . . . .  => PZBReceived        
       MyTCPConnection.RequestData(2594); // "LM LZB Ü-System"  . . . . . . . . . . . .  => BoolReceived
+    }
+
+    private IWindsorContainer BootstrapContainer()
+    {
+      return new WindsorContainer()
+        .Install(new WindsorInstaller()
+        );
     }
 
 
