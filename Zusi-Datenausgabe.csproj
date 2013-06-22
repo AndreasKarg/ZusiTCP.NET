@@ -54,6 +54,21 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>examples\CSharp\SimpleWindsorDemo\packages\Castle.Core.3.2.0\lib\net35\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Facilities.Logging">
+      <HintPath>examples\CSharp\SimpleWindsorDemo\packages\Castle.LoggingFacility.3.2.0\lib\net35\Castle.Facilities.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Services.Logging.NLogIntegration">
+      <HintPath>examples\CSharp\SimpleWindsorDemo\packages\Castle.Core-NLog.3.2.0\lib\net35\Castle.Services.Logging.NLogIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>examples\CSharp\SimpleWindsorDemo\packages\Castle.Windsor.3.2.0\lib\net35\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>examples\CSharp\SimpleWindsorDemo\packages\NLog.2.0.1.2\lib\net35\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -77,6 +92,7 @@
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="ReceivableDataTypes.cs" />
     <Compile Include="TCPCommands.cs" />
+    <Compile Include="WindsorInstaller.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZusiTCPException.cs" />
@@ -86,6 +102,7 @@
     <None Include="commandset_schema.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="commandset.xml">
