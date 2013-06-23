@@ -265,10 +265,10 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-    public ZusiTcpClientConnection(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml") :
-      this(clientId, priority, TCPCommands.LoadFromFile(commandsetPath))
-    {
-    }
+    //public ZusiTcpClientConnection(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml") :
+    //  this(clientId, priority, TCPCommands.LoadFromFile(commandsetPath))
+    //{
+    //}
 
     /// <summary>
     /// Initializes a new <see cref="ZusiTcpClientConnection"/> object that uses the specified event handlers to pass datasets to the client application.

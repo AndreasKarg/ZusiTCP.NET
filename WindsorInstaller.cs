@@ -1,4 +1,6 @@
 ﻿using Castle.Facilities.TypedFactory;
+using Castle.MicroKernel;
+using Castle.MicroKernel.Context;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -15,6 +17,13 @@ namespace Zusi_Datenausgabe
         .WithServiceDefaultInterfaces()
         .LifestyleTransient());
       container.Register(Component.For<IZusiTcpConnectionFactory>().AsFactory());
+      container.Register(Component.For<TCPCommands>().UsingFactoryMethod(GetTCPCommands));
+
+    }
+
+    private TCPCommands GetTCPCommands(IKernel kernel, CreationContext context)
+    {
+      return (context.HasAdditionalArguments) ? TCPCommands.LoadFromFile((string) context.AdditionalArguments["filePath"]) : new TCPCommands();
     }
   }
 }

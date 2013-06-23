@@ -40,7 +40,7 @@ namespace ZusiTCPDemoApp
       //MyTCPConnection = new ZusiTcpClientConnection("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
       var connectionFactory = _container.Resolve<IZusiTcpConnectionFactory>();
-      MyTCPConnection = connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low);
+      MyTCPConnection = connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
       MyTCPConnection.StringReceived      += TCPConnection_StringReceived;
       MyTCPConnection.FloatReceived       += TCPConnection_FloatReceived;
