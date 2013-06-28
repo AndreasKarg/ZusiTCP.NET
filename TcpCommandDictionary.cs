@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Xml.Serialization;
 
 namespace Zusi_Datenausgabe
 {
@@ -9,6 +8,10 @@ namespace Zusi_Datenausgabe
     private readonly Dictionary<string, int> _idByName = new Dictionary<string, int>();
     private readonly Dictionary<int, string> _nameByID = new Dictionary<int, string>();
 
+    /// <summary>
+    /// Create an instance of TcpCommandDictionary and import data from one XmlTcpCommands instance.
+    /// </summary>
+    /// <param name="xmlTcpCommands">The XmlTcpCommands from where the data is to be imported.</param>
     public TcpCommandDictionary(XmlTcpCommands xmlTcpCommands)
     {
       foreach (var entry in xmlTcpCommands.Command)
@@ -17,6 +20,22 @@ namespace Zusi_Datenausgabe
         _idByName.Add(entry.Name, entry.ID);
         _nameByID.Add(entry.ID, entry.Name);
       }
+    }
+
+    /// <summary>
+    /// Create an instance of TcpCommandDictionary and import data from an XML file.
+    /// </summary>
+    /// <param name="xmlFilePath">Path to the XML file where the data is to be imported from.</param>
+    public TcpCommandDictionary(string xmlFilePath)
+      : this(XmlTcpCommands.LoadFromFile(xmlFilePath))
+    {
+    }
+
+    /// <summary>
+    /// Create an empty instance of TcpCommandDictionary.
+    /// </summary>
+    public TcpCommandDictionary()
+    {
     }
 
     /// <summary>
