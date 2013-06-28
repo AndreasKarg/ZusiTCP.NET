@@ -317,7 +317,7 @@ namespace Zusi_Datenausgabe
     {
       get
       {
-        return _commands.IDByName;
+        return _commands.TCPCommandDictionary.IDByName;
       }
     }
 
@@ -337,7 +337,7 @@ namespace Zusi_Datenausgabe
     {
       get
       {
-        return _commands.NameByID;
+        return _commands.TCPCommandDictionary.NameByID;
       }
     }
 

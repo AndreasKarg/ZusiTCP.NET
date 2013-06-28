@@ -32,16 +32,18 @@ namespace Zusi_Datenausgabe
         private List<CommandEntry> commandField;
 
         private static System.Xml.Serialization.XmlSerializer serializer;
+      private readonly TcpCommandDictionary _tcpCommandDictionary;
 
-        /// <summary>
+      /// <summary>
         /// XmlTcpCommands class constructor
         /// </summary>
         public XmlTcpCommands()
-        {
-            this.commandField = new List<CommandEntry>();
-        }
+      {
+        this.commandField = new List<CommandEntry>();
+        _tcpCommandDictionary = new TcpCommandDictionary(this);
+      }
 
-        [System.Xml.Serialization.XmlElementAttribute("Command", Order = 0)]
+      [System.Xml.Serialization.XmlElementAttribute("Command", Order = 0)]
         public List<CommandEntry> Command
         {
             get
@@ -66,7 +68,12 @@ namespace Zusi_Datenausgabe
             }
         }
 
-        #region Serialize/Deserialize
+      public TcpCommandDictionary TCPCommandDictionary
+      {
+        get { return _tcpCommandDictionary; }
+      }
+
+      #region Serialize/Deserialize
         /// <summary>
         /// Serializes current XmlTcpCommands object into an XML document
         /// </summary>
