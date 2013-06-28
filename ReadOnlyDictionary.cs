@@ -366,7 +366,7 @@ namespace Zusi_Datenausgabe
     }
   }
 
-  public interface IReadOnlyDictionary<TKey, TValue>
+  public interface IReadOnlyDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
   {
     /// <summary>
     /// Gets the number of key/value pairs contained in the
