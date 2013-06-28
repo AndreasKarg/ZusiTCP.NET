@@ -1,6 +1,6 @@
 ﻿/*************************************************************************
  * XmlTcpCommands.cs
- * Contains the XmlTcpCommands class.
+ * Contains attributes for XmlTcpCommands and related classes.
  *
  * (C) 2009-2012 Andreas Karg, <Clonkman@gmx.de>
  *
@@ -22,10 +22,7 @@
  *
  *************************************************************************/
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Xml.Serialization;
 
 namespace Zusi_Datenausgabe
 {
@@ -36,19 +33,11 @@ namespace Zusi_Datenausgabe
   [EditorBrowsableAttribute(EditorBrowsableState.Never)]
   public partial class XmlTcpCommands
   {
-    /// <summary>
-    /// Load XML data from a file and create a XmlTcpCommands instance from it.
-    /// </summary>
-    /// <param name="filePath">Contains the path to the XML file</param>
-    /// <returns>A new XmlTcpCommands instance with data.</returns>
-    public static XmlTcpCommands LoadFromFile(String filePath)
-    {
-      XmlTcpCommands tempResult = XmlTcpCommands.LoadFromFileInternal(filePath);
-
-      return tempResult;
-    }
   }
 
+  /// <summary>
+  /// This class provides one single command entry for use in XML command sets.
+  /// </summary>
   [EditorBrowsable(EditorBrowsableState.Never)]
   public partial class CommandEntry
   {

@@ -92,7 +92,7 @@
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="ReceivableDataTypes.cs" />
     <Compile Include="TcpCommandDictionary.cs" />
-    <Compile Include="XmlTcpCommands.cs" />
+    <Compile Include="XmlTcpCommandsAttributation.cs" />
     <Compile Include="WindsorInstaller.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
