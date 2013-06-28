@@ -2,7 +2,33 @@ using System.Collections.Generic;
 
 namespace Zusi_Datenausgabe
 {
-  public class TcpCommandDictionary
+  public interface ITcpCommandDictionary
+  {
+    /// <summary>
+    /// Contains a list of Zusi commands accessible by their numeric id.
+    /// </summary>
+    IReadOnlyDictionary<int, CommandEntry> CommandByID { get; }
+
+    /// <summary>
+    /// Contains a list of numeric Zusi command IDs accessible by their name
+    /// (Taken from the TCP Server's commandset.ini. See commandset.xml for
+    /// an adaption for this library.)
+    /// </summary>
+    IReadOnlyDictionary<string, int> IDByName { get; }
+
+    /// <summary>
+    /// Contains a list of Zusi command names accessible by their numeric ID.
+    /// </summary>
+    IReadOnlyDictionary<int, string> NameByID { get; }
+
+    /// <summary>
+    /// Identical to this.<see cref="CommandByID"/>.
+    /// </summary>
+    /// <param name="index">Contains the command's ID.</param>
+    CommandEntry this[int index] { get; }
+  }
+
+  public class TcpCommandDictionary : ITcpCommandDictionary
   {
     private readonly Dictionary<int, CommandEntry> _commandByID = new Dictionary<int, CommandEntry>();
     private readonly Dictionary<string, int> _idByName = new Dictionary<string, int>();

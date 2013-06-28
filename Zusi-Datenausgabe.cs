@@ -201,7 +201,7 @@ namespace Zusi_Datenausgabe
 
     private Thread _streamReaderThread;
 
-    private readonly TcpCommandDictionary _commands;
+    private readonly ITcpCommandDictionary _commands;
     private readonly DataReceptionHandler _dataReceptionHandler;
 
     #endregion
@@ -276,7 +276,7 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commands">A set of commands.</param>
-    public ZusiTcpClientConnection(string clientId, ClientPriority priority, TcpCommandDictionary commands)
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands)
     {
       if (SynchronizationContext.Current == null)
       {
