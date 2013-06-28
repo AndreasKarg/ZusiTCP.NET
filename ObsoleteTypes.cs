@@ -9,7 +9,7 @@ namespace Zusi_Datenausgabe
     //{
     //}
 
-    public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commands) : base(clientId, priority, commands)
+    public ZusiTcpConn(string clientId, ClientPriority priority, XmlTcpCommands commands) : base(clientId, priority, commands)
     {
     }
   }

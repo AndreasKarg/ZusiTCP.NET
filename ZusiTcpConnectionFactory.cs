@@ -10,6 +10,6 @@ namespace Zusi_Datenausgabe
 
     IZusiTcpClientConnection Create(string clientId, ClientPriority priority, String commandsetPath);
 
-    IZusiTcpClientConnection Create(string clientId, ClientPriority priority, TCPCommands commands);
+    IZusiTcpClientConnection Create(string clientId, ClientPriority priority, XmlTcpCommands commands);
   }
 }

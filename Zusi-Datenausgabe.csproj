@@ -91,7 +91,7 @@
     <Compile Include="ObsoleteTypes.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="ReceivableDataTypes.cs" />
-    <Compile Include="TCPCommands.cs" />
+    <Compile Include="XmlTcpCommands.cs" />
     <Compile Include="WindsorInstaller.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

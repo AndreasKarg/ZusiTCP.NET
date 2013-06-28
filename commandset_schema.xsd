@@ -6,7 +6,7 @@
     xmlns:tns="http://andik.g3th.net/commandset_schema.xsd"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
-  <xs:element name="TCPCommands">
+  <xs:element name="XmlTcpCommands">
     <xs:complexType>
       <xs:sequence minOccurs="1" maxOccurs="1">
         <xs:element name="Command" type="tns:CommandEntry" minOccurs="0" maxOccurs="unbounded"/>

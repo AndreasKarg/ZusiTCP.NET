@@ -13,17 +13,17 @@ namespace Zusi_Datenausgabe
     {
       container.AddFacility<TypedFactoryFacility>();
       container.Register(Classes.FromThisAssembly().Pick()
-        .Unless(t => t == typeof(TCPCommands))
+        .Unless(t => t == typeof(XmlTcpCommands))
         .WithServiceDefaultInterfaces()
         .LifestyleTransient());
       container.Register(Component.For<IZusiTcpConnectionFactory>().AsFactory());
-      container.Register(Component.For<TCPCommands>().UsingFactoryMethod(GetTCPCommands));
+      container.Register(Component.For<XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands));
 
     }
 
-    private TCPCommands GetTCPCommands(IKernel kernel, CreationContext context)
+    private XmlTcpCommands GetTCPCommands(IKernel kernel, CreationContext context)
     {
-      return (context.HasAdditionalArguments) ? TCPCommands.LoadFromFile((string) context.AdditionalArguments["filePath"]) : new TCPCommands();
+      return (context.HasAdditionalArguments) ? XmlTcpCommands.LoadFromFile((string) context.AdditionalArguments["filePath"]) : new XmlTcpCommands();
     }
   }
 }

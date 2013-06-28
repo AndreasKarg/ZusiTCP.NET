@@ -1,6 +1,6 @@
 ﻿/*************************************************************************
- * TCPCommands.cs
- * Contains the TCPCommands class.
+ * XmlTcpCommands.cs
+ * Contains the XmlTcpCommands class.
  *
  * (C) 2009-2012 Andreas Karg, <Clonkman@gmx.de>
  *
@@ -34,7 +34,7 @@ namespace Zusi_Datenausgabe
   /// This class provides the XML file structure used to interpret Zusi data types.
   /// </summary>
   [EditorBrowsableAttribute(EditorBrowsableState.Never)]
-  public partial class TCPCommands
+  public partial class XmlTcpCommands
   {
     private Dictionary<int, CommandEntry> _commandByID = new Dictionary<int, CommandEntry>();
     private Dictionary<string, int> _idByName = new Dictionary<string, int>();
@@ -92,13 +92,13 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Load XML data from a file and create a TCPCommands instance from it.
+    /// Load XML data from a file and create a XmlTcpCommands instance from it.
     /// </summary>
     /// <param name="filePath">Contains the path to the XML file</param>
-    /// <returns>A new TCPCommands instance with data.</returns>
-    public static TCPCommands LoadFromFile(String filePath)
+    /// <returns>A new XmlTcpCommands instance with data.</returns>
+    public static XmlTcpCommands LoadFromFile(String filePath)
     {
-      TCPCommands tempResult = TCPCommands.LoadFromFileInternal(filePath);
+      XmlTcpCommands tempResult = XmlTcpCommands.LoadFromFileInternal(filePath);
 
       tempResult.InitializeDictionaries();
 

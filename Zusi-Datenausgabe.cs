@@ -201,7 +201,7 @@ namespace Zusi_Datenausgabe
 
     private Thread _streamReaderThread;
 
-    private readonly TCPCommands _commands;
+    private readonly XmlTcpCommands _commands;
     private readonly DataReceptionHandler _dataReceptionHandler;
 
     #endregion
@@ -266,7 +266,7 @@ namespace Zusi_Datenausgabe
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     //public ZusiTcpClientConnection(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml") :
-    //  this(clientId, priority, TCPCommands.LoadFromFile(commandsetPath))
+    //  this(clientId, priority, XmlTcpCommands.LoadFromFile(commandsetPath))
     //{
     //}
 
@@ -276,7 +276,7 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commands">A set of commands.</param>
-    public ZusiTcpClientConnection(string clientId, ClientPriority priority, TCPCommands commands)
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, XmlTcpCommands commands)
     {
       if (SynchronizationContext.Current == null)
       {
