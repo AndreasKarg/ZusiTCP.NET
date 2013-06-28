@@ -6,7 +6,7 @@ namespace Zusi_Datenausgabe
   public class ZusiTcpConn : ZusiTcpClientConnection
   {
     public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath = "commandset.xml")
-      : base(clientId, priority, commandsetPath)
+      : base(clientId, priority, s => new TcpCommandDictionary(commandsetPath))
     {
     }
 

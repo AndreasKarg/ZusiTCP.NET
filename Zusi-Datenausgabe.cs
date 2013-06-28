@@ -264,9 +264,11 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <param name="dictionaryFactory">A factory method that takes a file path and returns one instance of an ITcpCommandDictionary</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-    public ZusiTcpClientConnection(string clientId, ClientPriority priority, String commandsetPath = "commandset.xml") :
-      this(clientId, priority, new TcpCommandDictionary(commandsetPath))
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, Func<string, ITcpCommandDictionary> dictionaryFactory,
+      string commandsetPath = "commandset.xml") :
+      this(clientId, priority, dictionaryFactory(commandsetPath))
     {
     }
 
