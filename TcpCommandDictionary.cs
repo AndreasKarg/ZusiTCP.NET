@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Zusi_Datenausgabe
 {
@@ -40,12 +42,7 @@ namespace Zusi_Datenausgabe
     /// <param name="xmlTcpCommands">The XmlTcpCommands from where the data is to be imported.</param>
     public TcpCommandDictionary(XmlTcpCommands xmlTcpCommands)
     {
-      foreach (var entry in xmlTcpCommands.Command)
-      {
-        _commandByID.Add(entry.ID, entry);
-        _idByName.Add(entry.Name, entry.ID);
-        _nameByID.Add(entry.ID, entry.Name);
-      }
+      Import(xmlTcpCommands);
     }
 
     /// <summary>
@@ -99,6 +96,41 @@ namespace Zusi_Datenausgabe
       get
       {
         return CommandByID[index];
+      }
+    }
+
+    public void Import(XmlTcpCommands source)
+    {
+      Import(source.Command);
+    }
+
+    public void Import(ITcpCommandDictionary source)
+    {
+      Import(source.CommandByID.Values);
+    }
+
+    private void Import(IEnumerable<CommandEntry> source)
+    {
+      foreach (var cmd in source)
+      {
+        ImportEntry(cmd);
+      }
+    }
+
+    private void ImportEntry(CommandEntry entry)
+    {
+      try
+      {
+        _commandByID.Add(entry.ID, entry);
+        _idByName.Add(entry.Name, entry.ID);
+        _nameByID.Add(entry.ID, entry.Name);
+      }
+      catch (ArgumentException ex)
+      {
+        var message = String.Format("Source already contains command entry for {1} ({0})", entry.Name,
+          entry.ID);
+
+        throw new ArgumentException(message, "entry", ex);
       }
     }
   }
