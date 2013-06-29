@@ -39,7 +39,7 @@ namespace Zusi_Datenausgabe
   /// This class provides one single command entry for use in XML command sets.
   /// </summary>
   [EditorBrowsable(EditorBrowsableState.Never)]
-  public partial class CommandEntry
+  public partial class CommandEntry : ICommandEntry
   {
   }
 }

@@ -27,7 +27,7 @@ namespace Zusi_Datenausgabe
       _hostContext = hostContext;
     }
 
-    public int HandleData(CommandEntry curCommand, int curID)
+    public int HandleData(ICommandEntry curCommand, int curID)
     {
       ValidateClientReader();
 
@@ -42,7 +42,7 @@ namespace Zusi_Datenausgabe
       Debug.Assert(_clientReader != null);
     }
 
-    public MethodInfo GetHandlerMethod(CommandEntry curCommand, int curID)
+    public MethodInfo GetHandlerMethod(ICommandEntry curCommand, int curID)
     {
       MethodInfo handlerMethod;
 
@@ -55,7 +55,7 @@ namespace Zusi_Datenausgabe
       return handlerMethod;
     }
 
-    private MethodInfo ReflectHandlerMethod(CommandEntry curCommand, int curID)
+    private MethodInfo ReflectHandlerMethod(ICommandEntry curCommand, int curID)
     {
       MethodInfo handlerMethod = GetType().GetMethod(
         String.Format("HandleDATA_{0}", curCommand.Type),

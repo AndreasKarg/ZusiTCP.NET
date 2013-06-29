@@ -380,7 +380,7 @@ namespace Zusi_Datenausgabe
         /// <param name="obj">Output CommandEntry object</param>
         /// <param name="exception">output Exception value if deserialize failed</param>
         /// <returns>true if this XmlSerializer can deserialize the object; otherwise, false</returns>
-        public static bool Deserialize(string xml, out CommandEntry obj, out System.Exception exception)
+        public static bool Deserialize(string xml, out ICommandEntry obj, out System.Exception exception)
         {
             exception = null;
             obj = default(CommandEntry);
@@ -396,19 +396,19 @@ namespace Zusi_Datenausgabe
             }
         }
 
-        public static bool Deserialize(string xml, out CommandEntry obj)
+        public static bool Deserialize(string xml, out ICommandEntry obj)
         {
             System.Exception exception = null;
             return Deserialize(xml, out obj, out exception);
         }
 
-        public static CommandEntry Deserialize(string xml)
+        public static ICommandEntry Deserialize(string xml)
         {
             System.IO.StringReader stringReader = null;
             try
             {
                 stringReader = new System.IO.StringReader(xml);
-                return ((CommandEntry)(Serializer.Deserialize(System.Xml.XmlReader.Create(stringReader))));
+                return ((ICommandEntry)(Serializer.Deserialize(System.Xml.XmlReader.Create(stringReader))));
             }
             finally
             {
@@ -476,7 +476,7 @@ namespace Zusi_Datenausgabe
         /// <param name="obj">Output CommandEntry object</param>
         /// <param name="exception">output Exception value if deserialize failed</param>
         /// <returns>true if this XmlSerializer can deserialize the object; otherwise, false</returns>
-        public static bool LoadFromFile(string fileName, System.Text.Encoding encoding, out CommandEntry obj, out System.Exception exception)
+        public static bool LoadFromFile(string fileName, System.Text.Encoding encoding, out ICommandEntry obj, out System.Exception exception)
         {
             exception = null;
             obj = default(CommandEntry);
@@ -492,23 +492,23 @@ namespace Zusi_Datenausgabe
             }
         }
 
-        public static bool LoadFromFile(string fileName, out CommandEntry obj, out System.Exception exception)
+        public static bool LoadFromFile(string fileName, out ICommandEntry obj, out System.Exception exception)
         {
             return LoadFromFile(fileName, Encoding.UTF8, out obj, out exception);
         }
 
-        public static bool LoadFromFile(string fileName, out CommandEntry obj)
+        public static bool LoadFromFile(string fileName, out ICommandEntry obj)
         {
             System.Exception exception = null;
             return LoadFromFile(fileName, out obj, out exception);
         }
 
-        public static CommandEntry LoadFromFile(string fileName)
+        public static ICommandEntry LoadFromFile(string fileName)
         {
             return LoadFromFile(fileName, Encoding.UTF8);
         }
 
-        public static CommandEntry LoadFromFile(string fileName, System.Text.Encoding encoding)
+        public static ICommandEntry LoadFromFile(string fileName, System.Text.Encoding encoding)
         {
             System.IO.FileStream file = null;
             System.IO.StreamReader sr = null;

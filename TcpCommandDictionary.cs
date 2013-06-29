@@ -9,7 +9,7 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Contains a list of Zusi commands accessible by their numeric id.
     /// </summary>
-    IReadOnlyDictionary<int, CommandEntry> CommandByID { get; }
+    IReadOnlyDictionary<int, ICommandEntry> CommandByID { get; }
 
     /// <summary>
     /// Contains a list of numeric Zusi command IDs accessible by their name
@@ -27,12 +27,12 @@ namespace Zusi_Datenausgabe
     /// Identical to this.<see cref="CommandByID"/>.
     /// </summary>
     /// <param name="index">Contains the command's ID.</param>
-    CommandEntry this[int index] { get; }
+    ICommandEntry this[int index] { get; }
   }
 
   public class TcpCommandDictionary : ITcpCommandDictionary
   {
-    private readonly Dictionary<int, CommandEntry> _commandByID = new Dictionary<int, CommandEntry>();
+    private readonly Dictionary<int, ICommandEntry> _commandByID = new Dictionary<int, ICommandEntry>();
     private readonly Dictionary<string, int> _idByName = new Dictionary<string, int>();
     private readonly Dictionary<int, string> _nameByID = new Dictionary<int, string>();
 
@@ -64,9 +64,9 @@ namespace Zusi_Datenausgabe
     /// <summary>
     /// Contains a list of Zusi commands accessible by their numeric id.
     /// </summary>
-    public IReadOnlyDictionary<int, CommandEntry> CommandByID
+    public IReadOnlyDictionary<int, ICommandEntry> CommandByID
     {
-      get { return new ReadOnlyDictionary<int, CommandEntry>(_commandByID); }
+      get { return new ReadOnlyDictionary<int, ICommandEntry>(_commandByID); }
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ namespace Zusi_Datenausgabe
     /// Identical to this.<see cref="CommandByID"/>.
     /// </summary>
     /// <param name="index">Contains the command's ID.</param>
-    public CommandEntry this[int index]
+    public ICommandEntry this[int index]
     {
       get
       {
@@ -101,7 +101,7 @@ namespace Zusi_Datenausgabe
 
     public void Import(XmlTcpCommands source)
     {
-      Import(source.Command);
+      Import(source.Command.Cast<ICommandEntry>());
     }
 
     public void Import(ITcpCommandDictionary source)
@@ -109,7 +109,7 @@ namespace Zusi_Datenausgabe
       Import(source.CommandByID.Values);
     }
 
-    private void Import(IEnumerable<CommandEntry> source)
+    private void Import(IEnumerable<ICommandEntry> source)
     {
       foreach (var cmd in source)
       {
@@ -117,7 +117,7 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    private void ImportEntry(CommandEntry entry)
+    private void ImportEntry(ICommandEntry entry)
     {
       try
       {

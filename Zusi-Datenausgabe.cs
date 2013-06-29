@@ -723,13 +723,13 @@ namespace Zusi_Datenausgabe
       // One byte read for curID
       int bytesRead = 1;
 
-      CommandEntry curCommand = _commands[curID];
+      ICommandEntry curCommand = _commands[curID];
 
       bytesRead += _dataReceptionHandler.HandleData(curCommand, curID);
       return bytesRead;
     }
 
-    private MethodInfo GetHandlerMethod(CommandEntry curCommand, int curID)
+    private MethodInfo GetHandlerMethod(ICommandEntry curCommand, int curID)
     {
       return _dataReceptionHandler.GetHandlerMethod(curCommand, curID);
     }
