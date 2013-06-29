@@ -188,7 +188,7 @@ namespace Zusi_Datenausgabe
   public class ZusiTcpClientConnection : IZusiTcpClientConnection
   {
     #region Fields
-
+    // TODO: DIfy this class
     private readonly SynchronizationContext _hostContext;
 
     private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();

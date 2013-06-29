@@ -7,6 +7,7 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
+  // TODO: DIfy
   public class DataReceptionHandler
   {
     private readonly SynchronizationContext _hostContext;
