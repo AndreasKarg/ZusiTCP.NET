@@ -41,8 +41,7 @@ namespace Zusi_Datenausgabe
   [DebuggerDisplay("Count = {Count}")]
   [ComVisible(false)]
   [DebuggerTypeProxy(typeof(ReadOnlyDictionaryDebugView<,>))]
-  public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
-                                                  ICollection, IReadOnlyDictionary<TKey, TValue>
+  public class ReadOnlyDictionary<TKey, TValue> : ICollection, IReadOnlyDictionary<TKey, TValue>
   {
     private readonly IDictionary<TKey, TValue> _source;
     private object _syncRoot;
@@ -366,7 +365,7 @@ namespace Zusi_Datenausgabe
     }
   }
 
-  public interface IReadOnlyDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
+  public interface IReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
   {
     /// <summary>
     /// Gets the number of key/value pairs contained in the

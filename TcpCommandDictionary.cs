@@ -32,16 +32,19 @@ namespace Zusi_Datenausgabe
 
   public class TcpCommandDictionary : ITcpCommandDictionary
   {
-    private readonly Dictionary<int, ICommandEntry> _commandByID = new Dictionary<int, ICommandEntry>();
-    private readonly Dictionary<string, int> _idByName = new Dictionary<string, int>();
-    private readonly Dictionary<int, string> _nameByID = new Dictionary<int, string>();
+    private readonly IDictionary<int, ICommandEntry> _commandByID;
+    private readonly IDictionary<string, int> _idByName;
+    private readonly IDictionary<int, string> _nameByID;
 
     /// <summary>
     /// Create an instance of TcpCommandDictionary and import data from one XmlTcpCommands instance.
     /// </summary>
     /// <param name="xmlTcpCommands">The XmlTcpCommands from where the data is to be imported.</param>
-    public TcpCommandDictionary(XmlTcpCommands xmlTcpCommands)
+    public TcpCommandDictionary(XmlTcpCommands xmlTcpCommands, IDictionary<int, ICommandEntry> commandByID, IDictionary<string, int> idByName, IDictionary<int, string> nameByID)
     {
+      _commandByID = commandByID;
+      _idByName = idByName;
+      _nameByID = nameByID;
       Import(xmlTcpCommands);
     }
 
@@ -49,16 +52,19 @@ namespace Zusi_Datenausgabe
     /// Create an instance of TcpCommandDictionary and import data from an XML file.
     /// </summary>
     /// <param name="xmlFilePath">Path to the XML file where the data is to be imported from.</param>
-    public TcpCommandDictionary(string xmlFilePath)
-      : this(XmlTcpCommands.LoadFromFile(xmlFilePath))
+    public TcpCommandDictionary(string xmlFilePath, IDictionary<int, ICommandEntry> commandByID, IDictionary<string, int> idByName, IDictionary<int, string> nameByID)
+      : this(XmlTcpCommands.LoadFromFile(xmlFilePath), commandByID, idByName, nameByID)
     {
     }
 
     /// <summary>
     /// Create an empty instance of TcpCommandDictionary.
     /// </summary>
-    public TcpCommandDictionary()
+    public TcpCommandDictionary(IDictionary<int, ICommandEntry> commandByID, IDictionary<string, int> idByName, IDictionary<int, string> nameByID)
     {
+      _commandByID = commandByID;
+      _idByName = idByName;
+      _nameByID = nameByID;
     }
 
     /// <summary>

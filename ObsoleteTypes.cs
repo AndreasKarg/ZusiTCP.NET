@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Zusi_Datenausgabe
 {
@@ -6,15 +7,17 @@ namespace Zusi_Datenausgabe
   public class ZusiTcpConn : ZusiTcpClientConnection
   {
     public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath = "commandset.xml")
-      : base(clientId, priority, s => new TcpCommandDictionary(commandsetPath))
+      : base(clientId, priority, s => new TcpCommandDictionary(commandsetPath,
+        new Dictionary<int, ICommandEntry>(), new Dictionary<string, int>(), new Dictionary<int, string>()))
     {
     }
 
-    public ZusiTcpConn(string clientId, ClientPriority priority, ITcpCommandDictionary commands) : base(clientId, priority, commands)
+    public ZusiTcpConn(string clientId, ClientPriority priority, ITcpCommandDictionary commands)
+      : base(clientId, priority, commands)
     {
     }
   }
 
   [Obsolete("This type is obsolete. Use DataReceivedEventArgs<> instead.", true)]
-  public struct ZusiData {}
+  public struct ZusiData { }
 }
