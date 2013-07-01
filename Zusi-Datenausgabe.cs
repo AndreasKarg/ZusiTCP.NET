@@ -118,11 +118,6 @@ namespace Zusi_Datenausgabe
     string this[int id] { get; }
 
     /// <summary>
-    /// Dispose of the TCP connection.
-    /// </summary>
-    void Dispose();
-
-    /// <summary>
     /// Establish a connection to the TCP server.
     /// </summary>
     /// <param name="hostName">The name or IP address of the host.</param>
