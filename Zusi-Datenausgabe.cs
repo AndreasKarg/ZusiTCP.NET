@@ -492,65 +492,12 @@ namespace Zusi_Datenausgabe
     {
       try
       {
-        if (ConnectionState == ConnectionState.Error)
-        {
-          throw (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
-        }
-
-        if (_clientConnection == null)
-        {
-          _clientConnection = new TcpClient(AddressFamily.InterNetwork);
-        }
-
-        try
-        {
-          _clientConnection.Connect(endPoint);
-        }
-        catch (SocketException ex)
-        {
-          throw new ZusiTcpException("Could not establish socket connection to TCP server. " +
-                                     "Is the server running and enabled?", ex);
-        }
-
-        Debug.Assert(_clientConnection.Connected);
-
-        _clientStream = _clientConnection.GetStream();
-        _clientReader = new BinaryReader(_clientStream);
-        _dataReceptionHandler.ClientReader = _clientReader;
+        EstablishConnection(endPoint);
 
         _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
         _streamReaderThread.IsBackground = true;
 
-        SendPacket(
-          Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
-          _stringEncoder.GetBytes(ClientId));
-
-        ExpectAckHello();
-
-        var aGetData = from iData in RequestedData group iData by (iData/256);
-
-        var reqDataBuffer = new List<byte[]>();
-
-        foreach (var aDataGroup in aGetData)
-        {
-          reqDataBuffer.Clear();
-          reqDataBuffer.Add(Pack(0, 3));
-
-          byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
-          reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
-
-          reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID%256))));
-
-          SendPacket(reqDataBuffer.ToArray());
-
-          ExpectAckNeededData(aDataGroup.Key);
-        }
-
-        SendPacket(0, 3, 0, 0);
-
-        ExpectAckNeededData(0);
-
-        ConnectionState = ConnectionState.Connected;
+        HandleHandshake();
 
         _streamReaderThread.Start();
       }
@@ -566,6 +513,82 @@ namespace Zusi_Datenausgabe
 
         throw;
       }
+    }
+
+    private void HandleHandshake()
+    {
+      SendHello();
+      ExpectAckHello();
+      RequestData();
+      ExpectAckNeededData(0);
+
+      ConnectionState = ConnectionState.Connected;
+    }
+
+    private void SendHello()
+    {
+      SendPacket(
+        Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
+        _stringEncoder.GetBytes(ClientId));
+    }
+
+    private void RequestData()
+    {
+      var aGetData = from iData in RequestedData group iData by (iData/256);
+
+      var reqDataBuffer = new List<byte[]>();
+
+      foreach (var aDataGroup in aGetData)
+      {
+        reqDataBuffer.Clear();
+        reqDataBuffer.Add(Pack(0, 3));
+
+        byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
+        reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
+
+        reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID%256))));
+
+        SendPacket(reqDataBuffer.ToArray());
+
+        ExpectAckNeededData(aDataGroup.Key);
+      }
+
+      SendDataRequestConclusion();
+    }
+
+    private void SendDataRequestConclusion()
+    {
+      SendPacket(0, 3, 0, 0);
+    }
+
+    private void EstablishConnection(IPEndPoint endPoint)
+    {
+      if (ConnectionState == ConnectionState.Error)
+      {
+        throw (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
+      }
+
+      if (_clientConnection == null)
+      {
+        _clientConnection = new TcpClient(AddressFamily.InterNetwork);
+      }
+
+      try
+      {
+        _clientConnection.Connect(endPoint);
+      }
+      catch (SocketException ex)
+      {
+        throw new ZusiTcpException("Could not establish socket connection to TCP server. " +
+                                   "Is the server running and enabled?",
+          ex);
+      }
+
+      Debug.Assert(_clientConnection.Connected);
+
+      _clientStream = _clientConnection.GetStream();
+      _clientReader = new BinaryReader(_clientStream);
+      _dataReceptionHandler.ClientReader = _clientReader;
     }
 
     private void ExpectAckNeededData(int dataGroup)
