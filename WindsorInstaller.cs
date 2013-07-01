@@ -22,6 +22,7 @@ namespace Zusi_Datenausgabe
         .WithServiceFirstInterface()
         .LifestyleTransient(),
         Component.For<IZusiTcpConnectionFactory>().AsFactory(),
+        Component.For<INetworkIOHandlerFactory>().AsFactory(),
         Component.For<XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()//,
         //Component.For<>()
         );
