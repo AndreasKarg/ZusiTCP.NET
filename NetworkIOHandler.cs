@@ -7,14 +7,16 @@ using System.Net.Sockets;
 
 namespace Zusi_Datenausgabe
 {
-  public class NetworkIOHandler
+  public class NetworkIOHandler : IBinaryReader, IDisposable
   {
     private readonly TcpClient _clientConnection = new TcpClient(AddressFamily.InterNetwork);
     private NetworkStream _clientStream;
+
     private BinaryReader _clientReader;
 
-    public NetworkIOHandler()
+    public NetworkIOHandler(IPEndPoint endPoint)
     {
+      EstablishConnection(endPoint);
     }
 
     public BinaryReader ClientReader
@@ -52,7 +54,7 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    public void EstablishConnection(IPEndPoint endPoint)
+    private void EstablishConnection(IPEndPoint endPoint)
     {
       try
       {
@@ -71,9 +73,127 @@ namespace Zusi_Datenausgabe
       _clientReader = new BinaryReader(_clientStream);
     }
 
+    #region IBinaryReader delegating members
+    public int PeekChar()
+    {
+      return _clientReader.PeekChar();
+    }
+
+    public int Read()
+    {
+      return _clientReader.Read();
+    }
+
+    public bool ReadBoolean()
+    {
+      return _clientReader.ReadBoolean();
+    }
+
+    public byte ReadByte()
+    {
+      return _clientReader.ReadByte();
+    }
+
+    public sbyte ReadSByte()
+    {
+      return _clientReader.ReadSByte();
+    }
+
+    public char ReadChar()
+    {
+      return _clientReader.ReadChar();
+    }
+
+    public short ReadInt16()
+    {
+      return _clientReader.ReadInt16();
+    }
+
+    public ushort ReadUInt16()
+    {
+      return _clientReader.ReadUInt16();
+    }
+
+    public int ReadInt32()
+    {
+      return _clientReader.ReadInt32();
+    }
+
+    public uint ReadUInt32()
+    {
+      return _clientReader.ReadUInt32();
+    }
+
+    public long ReadInt64()
+    {
+      return _clientReader.ReadInt64();
+    }
+
+    public ulong ReadUInt64()
+    {
+      return _clientReader.ReadUInt64();
+    }
+
+    public float ReadSingle()
+    {
+      return _clientReader.ReadSingle();
+    }
+
+    public double ReadDouble()
+    {
+      return _clientReader.ReadDouble();
+    }
+
+    public decimal ReadDecimal()
+    {
+      return _clientReader.ReadDecimal();
+    }
+
+    public string ReadString()
+    {
+      return _clientReader.ReadString();
+    }
+
+    public int Read(char[] buffer, int index, int count)
+    {
+      return _clientReader.Read(buffer, index, count);
+    }
+
+    public char[] ReadChars(int count)
+    {
+      return _clientReader.ReadChars(count);
+    }
+
+    public int Read(byte[] buffer, int index, int count)
+    {
+      return _clientReader.Read(buffer, index, count);
+    }
+
+    public byte[] ReadBytes(int count)
+    {
+      return _clientReader.ReadBytes(count);
+    }
+    #endregion
+
+    #region Implementation of IDisposable and related methods
+
+    public void Dispose()
+    {
+      Disconnect();
+    }
+
+    public void Close()
+    {
+      Disconnect();
+    }
+
     public void Disconnect()
     {
       _clientConnection.Close();
+      _clientReader.Close();
+      _clientStream.Close();
     }
+
+    #endregion
   }
 }

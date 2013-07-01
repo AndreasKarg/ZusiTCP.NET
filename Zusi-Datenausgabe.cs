@@ -262,7 +262,6 @@ namespace Zusi_Datenausgabe
       Func<SynchronizationContext, DataReceptionHandler> handlerFactory, string commandsetPath = "commandset.xml") :
       this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory)
     {
-      _networkIOHandler = new NetworkIOHandler();
     }
 
     /// <summary>
@@ -276,7 +275,6 @@ namespace Zusi_Datenausgabe
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
       Func<SynchronizationContext, DataReceptionHandler> receptionHandlerFactory)
     {
-      _networkIOHandler = new NetworkIOHandler();
       if (SynchronizationContext.Current == null)
       {
         throw new ZusiTcpException("Cannot create TCP connection object: SynchronizationContext.Current is null. " +
@@ -466,7 +464,7 @@ namespace Zusi_Datenausgabe
           throw (new ZusiTcpException("Network state is \"Error\". Disconnect first!"));
         }
 
-        _networkIOHandler.EstablishConnection(endPoint);
+        _networkIOHandler = new NetworkIOHandler(endPoint);
         _dataReceptionHandler.ClientReader = _networkIOHandler.ClientReader;
 
         _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
