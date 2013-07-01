@@ -194,7 +194,7 @@ namespace Zusi_Datenausgabe
 
     private readonly ITcpCommandDictionary _commands;
     private readonly DataReceptionHandler _dataReceptionHandler;
-    private NetworkIOHandler _networkIOHandler;
+    private INetworkIOHandler _networkIOHandler;
 
     #endregion
 

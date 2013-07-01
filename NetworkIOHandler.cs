@@ -7,7 +7,16 @@ using System.Net.Sockets;
 
 namespace Zusi_Datenausgabe
 {
-  public class NetworkIOHandler : IBinaryReader, IDisposable
+  public interface INetworkIOHandler : IBinaryReader
+  {
+    void SendToServer(byte[] message);
+    void SendPacket(params byte[] message);
+    void SendPacket(params byte[][] message);
+    void Close();
+    void Disconnect();
+  }
+
+  public class NetworkIOHandler : INetworkIOHandler, IDisposable
   {
     private readonly TcpClient _clientConnection = new TcpClient(AddressFamily.InterNetwork);
     private NetworkStream _clientStream;
@@ -19,7 +28,7 @@ namespace Zusi_Datenausgabe
       EstablishConnection(endPoint);
     }
 
-    private void SendToServer(byte[] message)
+    public void SendToServer(byte[] message)
     {
       try
       {
