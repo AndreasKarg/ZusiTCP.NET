@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Zusi_Datenausgabe
 {
@@ -8,12 +9,13 @@ namespace Zusi_Datenausgabe
   {
     public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath = "commandset.xml")
       : base(clientId, priority, s => new TcpCommandDictionary(commandsetPath,
-        new Dictionary<int, ICommandEntry>(), new Dictionary<string, int>(), new Dictionary<int, string>()))
+        new Dictionary<int, ICommandEntry>(), new Dictionary<string, int>(), new Dictionary<int, string>()),
+      context => new DataReceptionHandler(context, new Dictionary<string, MethodInfo>()))
     {
     }
 
     public ZusiTcpConn(string clientId, ClientPriority priority, ITcpCommandDictionary commands)
-      : base(clientId, priority, commands)
+      : base(clientId, priority, commands, context => new DataReceptionHandler(context, new Dictionary<string, MethodInfo>()))
     {
     }
   }

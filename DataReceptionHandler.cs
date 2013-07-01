@@ -11,7 +11,7 @@ namespace Zusi_Datenausgabe
   public class DataReceptionHandler
   {
     private readonly SynchronizationContext _hostContext;
-    private readonly Dictionary<string,MethodInfo> _dataHandlers = new Dictionary<string, MethodInfo>();
+    private readonly IDictionary<string,MethodInfo> _dataHandlers;
     private BinaryReader _clientReader;
 
     public BinaryReader ClientReader
@@ -23,9 +23,10 @@ namespace Zusi_Datenausgabe
       set { _clientReader = value; }
     }
 
-    public DataReceptionHandler(SynchronizationContext hostContext)
+    public DataReceptionHandler(SynchronizationContext hostContext, IDictionary<string, MethodInfo> dataHandlers)
     {
       _hostContext = hostContext;
+      _dataHandlers = dataHandlers;
     }
 
     public int HandleData(ICommandEntry curCommand, int curID)

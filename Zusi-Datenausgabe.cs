@@ -262,8 +262,8 @@ namespace Zusi_Datenausgabe
     /// <param name="dictionaryFactory">A factory method that takes a file path and returns one instance of an ITcpCommandDictionary</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, Func<string, ITcpCommandDictionary> dictionaryFactory,
-      string commandsetPath = "commandset.xml") :
-      this(clientId, priority, dictionaryFactory(commandsetPath))
+      Func<SynchronizationContext, DataReceptionHandler> handlerFactory, string commandsetPath = "commandset.xml") :
+      this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory)
     {
     }
 
@@ -273,7 +273,10 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commands">A set of commands.</param>
-    public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands)
+    /// <param name="receptionHandlerFactory">A delegate to a factory method that produces a DataReceptionHandler using the
+    /// synchronization context as parameter.</param>
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
+      Func<SynchronizationContext, DataReceptionHandler> receptionHandlerFactory)
     {
       if (SynchronizationContext.Current == null)
       {
@@ -288,7 +291,7 @@ namespace Zusi_Datenausgabe
 
       _hostContext = SynchronizationContext.Current;
 
-      _dataReceptionHandler = new DataReceptionHandler(_hostContext);
+      _dataReceptionHandler = receptionHandlerFactory(_hostContext);
 
       _commands = commands;
     }
