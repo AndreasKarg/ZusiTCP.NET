@@ -91,7 +91,6 @@
     <Compile Include="IBinaryReader.cs" />
     <Compile Include="ICommandEntry.cs" />
     <Compile Include="NetworkIOHandler.cs" />
-    <Compile Include="ObsoleteTypes.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="ReceivableDataTypes.cs" />
     <Compile Include="TcpCommandDictionary.cs" />
