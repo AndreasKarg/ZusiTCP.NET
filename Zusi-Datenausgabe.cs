@@ -465,7 +465,7 @@ namespace Zusi_Datenausgabe
         }
 
         _networkIOHandler = new NetworkIOHandler(endPoint);
-        _dataReceptionHandler.ClientReader = _networkIOHandler.ClientReader;
+        _dataReceptionHandler.ClientReader = _networkIOHandler;
 
         _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
         _streamReaderThread.IsBackground = true;
@@ -585,19 +585,19 @@ namespace Zusi_Datenausgabe
 
     private int ReceiveResponse(ResponseType expectedInstruction)
     {
-      int packetLength = _networkIOHandler.ClientReader.ReadInt32();
+      int packetLength = _networkIOHandler.ReadInt32();
       if (packetLength != 3)
       {
         throw new ZusiTcpException("Invalid packet length: " + packetLength);
       }
 
-      int readInstr = GetInstruction(_networkIOHandler.ClientReader.ReadByte(), _networkIOHandler.ClientReader.ReadByte());
+      int readInstr = GetInstruction(_networkIOHandler.ReadByte(), _networkIOHandler.ReadByte());
       if (readInstr != (int) expectedInstruction)
       {
         throw new ZusiTcpException("Invalid command from server: " + readInstr);
       }
 
-      int response = _networkIOHandler.ClientReader.ReadByte();
+      int response = _networkIOHandler.ReadByte();
       return response;
     }
 
@@ -656,9 +656,9 @@ namespace Zusi_Datenausgabe
 
     private void ReceivePacket()
     {
-      int packetLength = _networkIOHandler.ClientReader.ReadInt32();
+      int packetLength = _networkIOHandler.ReadInt32();
 
-      int curInstr = GetInstruction(_networkIOHandler.ClientReader.ReadByte(), _networkIOHandler.ClientReader.ReadByte());
+      int curInstr = GetInstruction(_networkIOHandler.ReadByte(), _networkIOHandler.ReadByte());
 
       if (curInstr < 10)
       {
@@ -678,7 +678,7 @@ namespace Zusi_Datenausgabe
 
     private int ReceiveDataSegment(int curInstr)
     {
-      int curID = _networkIOHandler.ClientReader.ReadByte() + 256*curInstr;
+      int curID = _networkIOHandler.ReadByte() + 256*curInstr;
 
       // One byte read for curID
       int bytesRead = 1;

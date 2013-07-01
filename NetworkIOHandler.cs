@@ -19,11 +19,6 @@ namespace Zusi_Datenausgabe
       EstablishConnection(endPoint);
     }
 
-    public BinaryReader ClientReader
-    {
-      get { return _clientReader; }
-    }
-
     private void SendToServer(byte[] message)
     {
       try

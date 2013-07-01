@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 
@@ -12,9 +11,9 @@ namespace Zusi_Datenausgabe
   {
     private readonly SynchronizationContext _hostContext;
     private readonly IDictionary<string,MethodInfo> _dataHandlers;
-    private BinaryReader _clientReader;
+    private IBinaryReader _clientReader;
 
-    public BinaryReader ClientReader
+    public IBinaryReader ClientReader
     {
       [DebuggerStepThrough]
       get { return _clientReader; }
@@ -63,7 +62,7 @@ namespace Zusi_Datenausgabe
         String.Format("HandleDATA_{0}", curCommand.Type),
         BindingFlags.Instance | BindingFlags.NonPublic,
         null,
-        new[] { typeof(BinaryReader), typeof(int) },
+        new[] { typeof(IBinaryReader), typeof(int) },
         null);
 
       if (handlerMethod == null)
@@ -104,7 +103,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_Single(BinaryReader input, int id)
+    protected int HandleDATA_Single(IBinaryReader input, int id)
     {
       PostToHost(FloatReceived, id, input.ReadSingle());
 
@@ -116,7 +115,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_Int(BinaryReader input, int id)
+    protected int HandleDATA_Int(IBinaryReader input, int id)
     {
       PostToHost(IntReceived, id, input.ReadInt32());
 
@@ -128,7 +127,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_String(BinaryReader input, int id)
+    protected int HandleDATA_String(IBinaryReader input, int id)
     {
       const int lengthPrefixSize = 1;
 
@@ -143,7 +142,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_DateTime(BinaryReader input, int id)
+    protected int HandleDATA_DateTime(IBinaryReader input, int id)
     {
       // Delphi uses the double-based OLE Automation date for its date format.
       double temp = input.ReadDouble();
@@ -159,7 +158,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_BoolAsSingle(BinaryReader input, int id)
+    protected int HandleDATA_BoolAsSingle(IBinaryReader input, int id)
     {
       /* Data is delivered as Single values that are only either 0.0 or 1.0.
        * For the sake of logic, convert these to actual booleans here.
@@ -177,7 +176,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_BoolAndSingle(BinaryReader input, int id)
+    protected int HandleDATA_BoolAndSingle(IBinaryReader input, int id)
     {
       /* Data is delivered as Single values that are usually only either 0.0 or 1.0.
        * In some cases (PZ80!) the values are no Booleans at all, so we just post to both events.
@@ -195,7 +194,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_IntAsSingle(BinaryReader input, int id)
+    protected int HandleDATA_IntAsSingle(IBinaryReader input, int id)
     {
       /* Data is delivered as Single values that are only either 0.0 or 1.0.
        * For the sake of logic, convert these to actual booleans here.
@@ -212,7 +211,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_BoolAsInt(BinaryReader input, int id)
+    protected int HandleDATA_BoolAsInt(IBinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -229,7 +228,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_DoorsAsInt(BinaryReader input, int id)
+    protected int HandleDATA_DoorsAsInt(IBinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -245,7 +244,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_PZBAsInt(BinaryReader input, int id)
+    protected int HandleDATA_PZBAsInt(IBinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -261,7 +260,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_BrakesAsInt(BinaryReader input, int id)
+    protected int HandleDATA_BrakesAsInt(IBinaryReader input, int id)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
