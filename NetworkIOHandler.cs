@@ -9,7 +9,7 @@ namespace Zusi_Datenausgabe
 {
   public class NetworkIOHandler
   {
-    private TcpClient _clientConnection;
+    private readonly TcpClient _clientConnection = new TcpClient(AddressFamily.InterNetwork);
     private NetworkStream _clientStream;
     private BinaryReader _clientReader;
 
@@ -54,11 +54,6 @@ namespace Zusi_Datenausgabe
 
     public void EstablishConnection(IPEndPoint endPoint)
     {
-      if (_clientConnection == null)
-      {
-        _clientConnection = new TcpClient(AddressFamily.InterNetwork);
-      }
-
       try
       {
         _clientConnection.Connect(endPoint);
@@ -78,11 +73,7 @@ namespace Zusi_Datenausgabe
 
     public void Disconnect()
     {
-      if (_clientConnection != null)
-      {
-        _clientConnection.Close();
-      }
-      _clientConnection = null;
+      _clientConnection.Close();
     }
   }
 }
