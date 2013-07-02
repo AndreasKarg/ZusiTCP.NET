@@ -41,8 +41,7 @@ namespace Zusi_Datenausgabe
   [DebuggerDisplay("Count = {Count}")]
   [ComVisible(false)]
   [DebuggerTypeProxy(typeof(ReadOnlyDictionaryDebugView<,>))]
-  public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
-                                                  ICollection, IReadOnlyDictionary<TKey, TValue>
+  public class ReadOnlyDictionary<TKey, TValue> : ICollection, IReadOnlyDictionary<TKey, TValue>, IDictionary<TKey, TValue>
   {
     private readonly IDictionary<TKey, TValue> _source;
     private object _syncRoot;
