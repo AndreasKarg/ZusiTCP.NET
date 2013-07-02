@@ -41,6 +41,7 @@ namespace ZusiTCPDemoApp
 
       var connectionFactory = _container.Resolve<IZusiTcpConnectionFactory>();
       MyTCPConnection = connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
+      //MyTCPConnection = new ZusiTcpClientConnectionNoWindsor("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
       MyTCPConnection.StringReceived      += TCPConnection_StringReceived;
       MyTCPConnection.FloatReceived       += TCPConnection_FloatReceived;

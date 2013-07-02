@@ -18,7 +18,7 @@ namespace Zusi_Datenausgabe
         Component.For(typeof(IDictionary<,>)).ImplementedBy(typeof(Dictionary<,>)).LifestyleTransient(),
         Classes.FromThisAssembly().Pick()
         .Unless(t => (t == typeof(XmlTcpCommands))
-                   /*||(t == typeof(ReadOnlyDictionary<,>))*/)
+                   ||(t == typeof(ZusiTcpClientConnectionNoWindsor)))
         .WithServiceFirstInterface()
         .LifestyleTransient(),
         Component.For<IZusiTcpConnectionFactory>().AsFactory(),
