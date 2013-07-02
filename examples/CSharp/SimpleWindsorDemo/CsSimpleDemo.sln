@@ -5,7 +5,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsSimpleDemo", "CsSimpleDem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zusi-Datenausgabe", "..\..\..\Zusi-Datenausgabe.csproj", "{F99B982E-EB0C-44A8-A9E1-C8103795AF41}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{25649A6E-206E-47DA-9017-20BF85E1C36F}"
+	ProjectSection(SolutionItems) = preProject
+		CsSimpleDemo.vsmdi = CsSimpleDemo.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zusi-Datenausgabe_Test", "..\..\..\Zusi-Datenausgabe_Test\Zusi-Datenausgabe_Test.csproj", "{8363835A-03D7-4632-9DA0-CB5157129CD7}"
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = CsSimpleDemo.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -35,6 +47,16 @@ Global
 		{F99B982E-EB0C-44A8-A9E1-C8103795AF41}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F99B982E-EB0C-44A8-A9E1-C8103795AF41}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F99B982E-EB0C-44A8-A9E1-C8103795AF41}.Release|x86.ActiveCfg = Release|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8363835A-03D7-4632-9DA0-CB5157129CD7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -88,6 +88,8 @@
     </Compile>
     <Compile Include="DataReceptionHandler.cs" />
     <Compile Include="EventArgsInheritors.cs" />
+    <Compile Include="GenericTypedMethodList.cs" />
+    <Compile Include="TypedEventManager.cs" />
     <Compile Include="IBinaryReader.cs" />
     <Compile Include="ICommandEntry.cs" />
     <Compile Include="NetworkIOHandler.cs" />
