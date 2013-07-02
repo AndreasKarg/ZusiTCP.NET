@@ -25,10 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.EventManager
 {
   public interface ITypedEventManager : ITypedEventInvoker
   {

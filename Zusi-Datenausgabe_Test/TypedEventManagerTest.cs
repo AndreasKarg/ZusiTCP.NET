@@ -2,8 +2,7 @@
 using Castle.Windsor;
 using Zusi_Datenausgabe;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
+using Zusi_Datenausgabe.EventManager;
 
 namespace Zusi_Datenausgabe_Test
 {

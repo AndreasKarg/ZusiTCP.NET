@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.EventManager
 {
   public abstract class EventManagerBase<TKey>
   {
