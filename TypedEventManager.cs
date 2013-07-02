@@ -41,87 +41,33 @@ namespace Zusi_Datenausgabe
     void Invoke<T>(object sender, DataReceivedEventArgs<T> eventArgs);
   }
 
-  public class TypedEventManager : ITypedEventManager
+  public class TypedEventManager : EventManagerBase<Type>, ITypedEventManager
   {
-    private IDictionary<Type, ITypedMethodListBase> _eventHandlers;
-    private ITypedMethodListFactory _methodListFactory;
-
-    public TypedEventManager(IDictionary<Type, ITypedMethodListBase> eventHandlers, ITypedMethodListFactory methodListFactory)
+    public TypedEventManager(ITypedMethodListFactory methodListFactory) : base(methodListFactory)
     {
-      _eventHandlers = eventHandlers;
-      _methodListFactory = methodListFactory;
     }
+
+    #region Implementation of ITypedEventInvoker
+
+    public void Invoke<T>(object sender, DataReceivedEventArgs<T> eventArgs)
+    {
+      Invoke(typeof(T), sender, eventArgs);
+    }
+
+    #endregion
+
+    #region Implementation of ITypedEventManager
 
     public void Subscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
     {
-      var handlerList = GetDictionaryEntry<T>();
-      handlerList.Subscribe(handler);
+      Subscribe(typeof(T), handler);
     }
 
     public void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
     {
-      ITypedMethodList<DataReceivedEventArgs<T>> handlerList;
-      var entryExists = TryGetDictionaryEntry(typeof (T), out handlerList);
-
-      if (!entryExists)
-        return;
-
-      handlerList.Unsubscribe(handler);
+      Unsubscribe(typeof(T), handler);
     }
 
-    public void Invoke<T>(object sender, DataReceivedEventArgs<T> eventArgs)
-    {
-      ITypedMethodList<DataReceivedEventArgs<T>> handlerList;
-      var entryExists = TryGetDictionaryEntry(typeof(T), out handlerList);
-
-      if (!entryExists)
-        return;
-
-      handlerList.Invoke(sender, eventArgs);
-    }
-
-    private ITypedMethodList<DataReceivedEventArgs<T>> GetDictionaryEntry<T>()
-    {
-      var type = typeof (T);
-      ITypedMethodListBase handlerList;
-
-      ITypedMethodList<DataReceivedEventArgs<T>> typedMethodList;
-      if (TryGetDictionaryEntry(type, out typedMethodList))
-        return typedMethodList;
-
-      var newList = CreateNewList<T>(type);
-      return newList;
-    }
-
-    private bool TryGetDictionaryEntry<T>(Type type, out ITypedMethodList<DataReceivedEventArgs<T>> result)
-    {
-      ITypedMethodListBase handlerList;
-      var entryFound = _eventHandlers.TryGetValue(type, out handlerList);
-
-      if (entryFound)
-      {
-        result = CastToListType<T>(handlerList);
-        return true;
-      }
-
-      result = null;
-      return false;
-    }
-
-    private ITypedMethodList<DataReceivedEventArgs<T>> CastToListType<T>(ITypedMethodListBase handlerList)
-    {
-      Debug.Assert(handlerList is ITypedMethodList<DataReceivedEventArgs<T>>);
-
-      return handlerList as ITypedMethodList<DataReceivedEventArgs<T>>;
-    }
-
-    private ITypedMethodList<DataReceivedEventArgs<T>> CreateNewList<T>(Type type)
-    {
-      Debug.Assert(type == typeof(T));
-
-      var newList = _methodListFactory.Create<DataReceivedEventArgs<T>>();
-      _eventHandlers[type] = newList;
-      return newList;
-    }
+    #endregion
   }
 }
