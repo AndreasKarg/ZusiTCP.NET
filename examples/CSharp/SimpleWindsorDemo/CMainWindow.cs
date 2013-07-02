@@ -44,15 +44,15 @@ namespace ZusiTCPDemoApp
       MyTCPConnection = _connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
       //MyTCPConnection = new ZusiTcpClientConnectionNoWindsor("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
-      MyTCPConnection.StringReceived      += TCPConnection_StringReceived;
-      MyTCPConnection.FloatReceived       += TCPConnection_FloatReceived;
-      MyTCPConnection.DateTimeReceived    += TCPConnection_DateTimeReceived;
-      MyTCPConnection.PZBReceived         += TCPConnection_PZBReceived;
-      MyTCPConnection.BoolReceived        += TCPConnection_BoolReceived;
-      MyTCPConnection.IntReceived         += TCPConnection_IntReceived;
-      MyTCPConnection.DoorsReceived       += TCPConnection_DoorsReceived;
-      MyTCPConnection.BrakeConfigReceived += TCPConnection_BrakeConfigReceived;
       MyTCPConnection.ErrorReceived       += TCPConnection_ErrorReceived;
+      MyTCPConnection.Subscribe<bool>(TCPConnection_BoolReceived);
+      MyTCPConnection.Subscribe<BrakeConfiguration>(TCPConnection_BrakeConfigReceived);
+      MyTCPConnection.Subscribe<DateTime>(TCPConnection_DateTimeReceived);
+      MyTCPConnection.Subscribe<DoorState>(TCPConnection_DoorsReceived);
+      MyTCPConnection.Subscribe<float>(TCPConnection_FloatReceived);
+      MyTCPConnection.Subscribe<int>(TCPConnection_IntReceived);
+      MyTCPConnection.Subscribe<PZBSystem>(TCPConnection_PZBReceived);
+      MyTCPConnection.Subscribe<string>(TCPConnection_StringReceived);
 
 
       // We need to tell our connection object what measures to request from Zusi.

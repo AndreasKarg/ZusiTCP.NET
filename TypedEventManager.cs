@@ -30,10 +30,14 @@ using System.Diagnostics;
 
 namespace Zusi_Datenausgabe
 {
-  public interface ITypedEventManager
+  public interface ITypedEventManager : ITypedEventInvoker
   {
     void Subscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler);
     void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler);
+  }
+
+  public interface ITypedEventInvoker
+  {
     void Invoke<T>(object sender, DataReceivedEventArgs<T> eventArgs);
   }
 

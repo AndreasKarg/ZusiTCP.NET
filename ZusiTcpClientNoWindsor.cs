@@ -67,54 +67,6 @@ namespace Zusi_Datenausgabe
 
     #region Delegating members to _clientConnection
 
-    public event EventHandler<DataReceivedEventArgs<float>> FloatReceived
-    {
-      add { _clientConnection.FloatReceived += value; }
-      remove { _clientConnection.FloatReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<string>> StringReceived
-    {
-      add { _clientConnection.StringReceived += value; }
-      remove { _clientConnection.StringReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<int>> IntReceived
-    {
-      add { _clientConnection.IntReceived += value; }
-      remove { _clientConnection.IntReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<bool>> BoolReceived
-    {
-      add { _clientConnection.BoolReceived += value; }
-      remove { _clientConnection.BoolReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived
-    {
-      add { _clientConnection.DateTimeReceived += value; }
-      remove { _clientConnection.DateTimeReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived
-    {
-      add { _clientConnection.DoorsReceived += value; }
-      remove { _clientConnection.DoorsReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived
-    {
-      add { _clientConnection.PZBReceived += value; }
-      remove { _clientConnection.PZBReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived
-    {
-      add { _clientConnection.BrakeConfigReceived += value; }
-      remove { _clientConnection.BrakeConfigReceived -= value; }
-    }
-
     public event EventHandler<ErrorEventArgs> ErrorReceived
     {
       add { _clientConnection.ErrorReceived += value; }
@@ -184,6 +136,16 @@ namespace Zusi_Datenausgabe
     public void RequestData(int id)
     {
       _clientConnection.RequestData(id);
+    }
+
+    public void Subscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
+    {
+      _clientConnection.Subscribe(handler);
+    }
+
+    public void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
+    {
+      _clientConnection.Unsubscribe(handler);
     }
 
     #endregion

@@ -20,58 +20,6 @@ namespace Zusi_Datenausgabe
 
     int HandleData(ICommandEntry curCommand, int curID);
     MethodInfo GetHandlerMethod(ICommandEntry curCommand, int curID);
-
-    /// <summary>
-    /// When you have received a data packet from the server and are done
-    /// processing it in a HandleDATA-routine, call PostToHost() to trigger
-    /// an event for this type.
-    /// </summary>
-    /// <typeparam name="T">Contains the data type for which the event is thrown.
-    /// This can be safely ommitted.</typeparam>
-    /// <param name="Event">Contains the event that is to be thrown.</param>
-    /// <param name="id">Contains the Zusi command ID.</param>
-    /// <param name="value">Contains the new value of the measure.</param>
-    void PostToHost<T>(EventHandler<DataReceivedEventArgs<T>> Event, int id, T value);
-
-    /// <summary>
-    /// Event used to handle incoming float data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<float>> FloatReceived;
-
-    /// <summary>
-    /// Event used to handle incoming string data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<string>> StringReceived;
-
-    /// <summary>
-    /// Event used to handle incoming integer data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<int>> IntReceived;
-
-    /// <summary>
-    /// Event used to handle incoming boolean data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<Boolean>> BoolReceived;
-
-    /// <summary>
-    /// Event used to handle incoming DateTime data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived;
-
-    /// <summary>
-    /// Event used to handle incoming door status data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived;
-
-    /// <summary>
-    /// Event used to handle incoming PZB system type data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived;
-
-    /// <summary>
-    /// Event used to handle incoming brake configuration data.
-    /// </summary>
-    event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived;
   }
 
   public class DataReceptionHandler : IDataReceptionHandler
@@ -79,6 +27,7 @@ namespace Zusi_Datenausgabe
     private readonly SynchronizationContext _hostContext;
     private readonly IDictionary<string,MethodInfo> _dataHandlers;
     private IBinaryReader _clientReader;
+    private ITypedEventInvoker _eventInvoker;
 
     public IBinaryReader ClientReader
     {
@@ -89,10 +38,12 @@ namespace Zusi_Datenausgabe
       set { _clientReader = value; }
     }
 
-    public DataReceptionHandler(SynchronizationContext hostContext, IDictionary<string, MethodInfo> dataHandlers)
+    public DataReceptionHandler(SynchronizationContext hostContext, ITypedEventInvoker eventInvoker,
+      IDictionary<string, MethodInfo> dataHandlers)
     {
       _hostContext = hostContext;
       _dataHandlers = dataHandlers;
+      _eventInvoker = eventInvoker;
     }
 
     public int HandleData(ICommandEntry curCommand, int curID)
@@ -152,17 +103,11 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <typeparam name="T">Contains the data type for which the event is thrown.
     /// This can be safely ommitted.</typeparam>
-    /// <param name="Event">Contains the event that is to be thrown.</param>
     /// <param name="id">Contains the Zusi command ID.</param>
     /// <param name="value">Contains the new value of the measure.</param>
-    public void PostToHost<T>(EventHandler<DataReceivedEventArgs<T>> Event, int id, T value)
+    public void PostToHost<T>(int id, T value)
     {
-      if (Event == null)
-      {
-        return;
-      }
-
-      _hostContext.Post(EventMarshal<T>, new DataReceptionHandler.MarshalArgs<T>(Event, id, value));
+      _hostContext.Post(EventMarshal<T>, new MarshalArgs<T>(id, value));
     }
 
     /// <summary>
@@ -172,7 +117,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_Single(IBinaryReader input, int id)
     {
-      PostToHost(FloatReceived, id, input.ReadSingle());
+      PostToHost(id, input.ReadSingle());
 
       return sizeof(Single);
     }
@@ -184,7 +129,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_Int(IBinaryReader input, int id)
     {
-      PostToHost(IntReceived, id, input.ReadInt32());
+      PostToHost(id, input.ReadInt32());
 
       return sizeof(Int32);
     }
@@ -199,7 +144,7 @@ namespace Zusi_Datenausgabe
       const int lengthPrefixSize = 1;
 
       string result = input.ReadString();
-      PostToHost(StringReceived, id, result);
+      PostToHost(id, result);
 
       return result.Length + lengthPrefixSize;
     }
@@ -215,7 +160,7 @@ namespace Zusi_Datenausgabe
       double temp = input.ReadDouble();
       DateTime time = DateTime.FromOADate(temp);
 
-      PostToHost(DateTimeReceived, id, time);
+      PostToHost(id, time);
 
       return sizeof(Double);
     }
@@ -232,7 +177,7 @@ namespace Zusi_Datenausgabe
        */
       Single temp = input.ReadSingle();
       bool value = (temp >= 0.5f);
-      PostToHost(BoolReceived, id, value);
+      PostToHost(id, value);
 
       return sizeof(Single);
     }
@@ -250,8 +195,8 @@ namespace Zusi_Datenausgabe
        */
       Single temp = input.ReadSingle();
       bool value = (temp >= 0.5f);
-      PostToHost(BoolReceived, id, value);
-      PostToHost(FloatReceived, id, temp);
+      PostToHost(id, value);
+      PostToHost(id, temp);
 
       return sizeof(Single);
     }
@@ -268,7 +213,7 @@ namespace Zusi_Datenausgabe
        */
       Single temp = input.ReadSingle();
       int value = (int)Math.Round(temp);
-      PostToHost(IntReceived, id, value);
+      PostToHost(id, value);
 
       return sizeof(Single);
     }
@@ -285,7 +230,7 @@ namespace Zusi_Datenausgabe
              */
       Int32 temp = input.ReadInt32();
       bool value = (temp == 1);
-      PostToHost(BoolReceived, id, value);
+      PostToHost(id, value);
 
       return sizeof(Int32);
     }
@@ -301,7 +246,7 @@ namespace Zusi_Datenausgabe
              * For the sake of logic, convert these to actual booleans here.
              */
       Int32 temp = input.ReadInt32();
-      PostToHost(DoorsReceived, id, (DoorState)temp);
+      PostToHost(id, (DoorState)temp);
 
       return sizeof(Int32);
     }
@@ -317,7 +262,7 @@ namespace Zusi_Datenausgabe
              * For the sake of logic, convert these to actual booleans here.
              */
       Int32 temp = input.ReadInt32();
-      PostToHost(PZBReceived, id, (PZBSystem)temp);
+      PostToHost(id, (PZBSystem)temp);
 
       return sizeof(Int32);
     }
@@ -362,62 +307,19 @@ namespace Zusi_Datenausgabe
           throw new ZusiTcpException("Invalid value received for brake configuration.");
       }
 
-      PostToHost(BrakeConfigReceived, id, result);
+      PostToHost(id, result);
 
       return sizeof(Int32);
     }
     #endregion
 
-    /// <summary>
-    /// Event used to handle incoming float data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<float>> FloatReceived;
-
-    /// <summary>
-    /// Event used to handle incoming string data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<string>> StringReceived;
-
-    /// <summary>
-    /// Event used to handle incoming integer data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<int>> IntReceived;
-
-    /// <summary>
-    /// Event used to handle incoming boolean data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<Boolean>> BoolReceived;
-
-    /// <summary>
-    /// Event used to handle incoming DateTime data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived;
-
-    /// <summary>
-    /// Event used to handle incoming door status data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived;
-
-    /// <summary>
-    /// Event used to handle incoming PZB system type data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived;
-
-    /// <summary>
-    /// Event used to handle incoming brake configuration data.
-    /// </summary>
-    public event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived;
-
     private struct MarshalArgs<T>
     {
-      public EventHandler<DataReceivedEventArgs<T>> Event { get; private set; }
-
       public DataReceivedEventArgs<T> Data { get; private set; }
 
-      public MarshalArgs(EventHandler<DataReceivedEventArgs<T>> recveiveEvent, int id, T data)
+      public MarshalArgs(int id, T data)
         : this()
       {
-        Event = recveiveEvent;
         Data = new DataReceivedEventArgs<T>(id, data);
       }
     }
@@ -425,7 +327,7 @@ namespace Zusi_Datenausgabe
     private void EventMarshal<T>(object o)
     {
       var margs = (MarshalArgs<T>)o;
-      margs.Event.Invoke(this, margs.Data);
+      _eventInvoker.Invoke(this,margs.Data);
     }
   }
 
@@ -433,6 +335,6 @@ namespace Zusi_Datenausgabe
   {
     void Release(IDataReceptionHandler handler);
 
-    IDataReceptionHandler Create(SynchronizationContext hostContext);
+    IDataReceptionHandler Create(SynchronizationContext hostContext, ITypedEventInvoker eventInvoker);
   }
 }
