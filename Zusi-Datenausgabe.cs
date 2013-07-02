@@ -193,7 +193,7 @@ namespace Zusi_Datenausgabe
     private Thread _streamReaderThread;
 
     private readonly ITcpCommandDictionary _commands;
-    private readonly DataReceptionHandler _dataReceptionHandler;
+    private readonly IDataReceptionHandler _dataReceptionHandler;
     private INetworkIOHandler _networkIOHandler;
     private INetworkIOHandlerFactory _networkHandlerFactory;
 
@@ -260,7 +260,7 @@ namespace Zusi_Datenausgabe
     /// <param name="dictionaryFactory">A factory method that takes a file path and returns one instance of an ITcpCommandDictionary</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, Func<string, ITcpCommandDictionary> dictionaryFactory,
-      Func<SynchronizationContext, DataReceptionHandler> handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, string commandsetPath = "commandset.xml") :
+      IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, string commandsetPath = "commandset.xml") :
       this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory, networkHandlerFactory)
     {
     }
@@ -274,7 +274,7 @@ namespace Zusi_Datenausgabe
     /// <param name="receptionHandlerFactory">A delegate to a factory method that produces a DataReceptionHandler using the
     /// synchronization context as parameter.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
-      Func<SynchronizationContext, DataReceptionHandler> receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory)
+      IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory)
     {
       if (SynchronizationContext.Current == null)
       {
@@ -289,7 +289,7 @@ namespace Zusi_Datenausgabe
 
       _hostContext = SynchronizationContext.Current;
 
-      _dataReceptionHandler = receptionHandlerFactory(_hostContext);
+      _dataReceptionHandler = receptionHandlerFactory.Create(_hostContext);
 
       _commands = commands;
       _networkHandlerFactory = networkHandlerFactory;

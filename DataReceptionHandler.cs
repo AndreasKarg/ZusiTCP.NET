@@ -7,7 +7,74 @@ using System.Threading;
 namespace Zusi_Datenausgabe
 {
   // TODO: DIfy
-  public class DataReceptionHandler
+  public interface IDataReceptionHandler
+  {
+    IBinaryReader ClientReader
+    {
+      [DebuggerStepThrough]
+      get;
+
+      [DebuggerStepThrough]
+      set;
+    }
+
+    int HandleData(ICommandEntry curCommand, int curID);
+    MethodInfo GetHandlerMethod(ICommandEntry curCommand, int curID);
+
+    /// <summary>
+    /// When you have received a data packet from the server and are done
+    /// processing it in a HandleDATA-routine, call PostToHost() to trigger
+    /// an event for this type.
+    /// </summary>
+    /// <typeparam name="T">Contains the data type for which the event is thrown.
+    /// This can be safely ommitted.</typeparam>
+    /// <param name="Event">Contains the event that is to be thrown.</param>
+    /// <param name="id">Contains the Zusi command ID.</param>
+    /// <param name="value">Contains the new value of the measure.</param>
+    void PostToHost<T>(EventHandler<DataReceivedEventArgs<T>> Event, int id, T value);
+
+    /// <summary>
+    /// Event used to handle incoming float data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<float>> FloatReceived;
+
+    /// <summary>
+    /// Event used to handle incoming string data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<string>> StringReceived;
+
+    /// <summary>
+    /// Event used to handle incoming integer data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<int>> IntReceived;
+
+    /// <summary>
+    /// Event used to handle incoming boolean data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<Boolean>> BoolReceived;
+
+    /// <summary>
+    /// Event used to handle incoming DateTime data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived;
+
+    /// <summary>
+    /// Event used to handle incoming door status data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived;
+
+    /// <summary>
+    /// Event used to handle incoming PZB system type data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived;
+
+    /// <summary>
+    /// Event used to handle incoming brake configuration data.
+    /// </summary>
+    event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived;
+  }
+
+  public class DataReceptionHandler : IDataReceptionHandler
   {
     private readonly SynchronizationContext _hostContext;
     private readonly IDictionary<string,MethodInfo> _dataHandlers;
@@ -360,5 +427,12 @@ namespace Zusi_Datenausgabe
       var margs = (MarshalArgs<T>)o;
       margs.Event.Invoke(this, margs.Data);
     }
+  }
+
+  public interface IDataReceptionHandlerFactory
+  {
+    void Release(IDataReceptionHandler handler);
+
+    IDataReceptionHandler Create(SynchronizationContext hostContext);
   }
 }
