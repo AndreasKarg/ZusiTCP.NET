@@ -38,12 +38,8 @@ namespace Zusi_Datenausgabe
 
   public class TypedMethodList<T> : ITypedMethodList<T>, IDisposable where T : EventArgs
   {
-    private IList<EventHandler<T>> _handlers;
-
-    public TypedMethodList(IList<EventHandler<T>> handlers)
-    {
-      _handlers = handlers;
-    }
+    // TODO: Find out how to inject this kind of thing...
+    private List<EventHandler<T>> _handlers = new List<EventHandler<T>>();
 
     #region Implementation of ITypedMethodList<>
 
