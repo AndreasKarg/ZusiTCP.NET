@@ -16,7 +16,8 @@
             if (disposing && (components != null))
             {
                 components.Dispose();
-                MyTCPConnection.Dispose();
+                _connectionFactory.Dispose();
+                _container.Dispose();
             }
             base.Dispose(disposing);
         }

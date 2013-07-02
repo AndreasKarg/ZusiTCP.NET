@@ -23,6 +23,7 @@ namespace ZusiTCPDemoApp
     // We do want to have a ZusiTcpConn object, so here's the declaration
     private IZusiTcpClientConnection MyTCPConnection;
     private readonly IWindsorContainer _container;
+    private IZusiTcpConnectionFactory _connectionFactory;
 
     public CMainWindow()
     {
@@ -39,8 +40,8 @@ namespace ZusiTCPDemoApp
       // When the application window is created, we create our new connection class as well.
       //MyTCPConnection = new ZusiTcpClientConnection("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
-      var connectionFactory = _container.Resolve<IZusiTcpConnectionFactory>();
-      MyTCPConnection = connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
+      _connectionFactory = _container.Resolve<IZusiTcpConnectionFactory>();
+      MyTCPConnection = _connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
       //MyTCPConnection = new ZusiTcpClientConnectionNoWindsor("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
       MyTCPConnection.StringReceived      += TCPConnection_StringReceived;

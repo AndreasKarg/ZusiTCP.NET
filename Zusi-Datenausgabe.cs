@@ -37,7 +37,7 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  public interface IZusiTcpClientConnection : IDisposable
+  public interface IZusiTcpClientConnection
   {
     event EventHandler<DataReceivedEventArgs<float>> FloatReceived;
     event EventHandler<DataReceivedEventArgs<string>> StringReceived;
@@ -180,7 +180,7 @@ namespace Zusi_Datenausgabe
   ///
   /// Notice that ZusiTcpClientConnection implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
-  public class ZusiTcpClientConnection : IZusiTcpClientConnection
+  public class ZusiTcpClientConnection : IZusiTcpClientConnection, IDisposable
   {
     #region Fields
     // TODO: DIfy this class
