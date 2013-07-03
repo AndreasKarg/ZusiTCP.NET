@@ -68,13 +68,13 @@
     <Compile Include="TypedEventManagerTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Shadow Include="Test References\Zusi-Datenausgabe.accessor" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Zusi-Datenausgabe.csproj">
       <Project>{F99B982E-EB0C-44A8-A9E1-C8103795AF41}</Project>
       <Name>Zusi-Datenausgabe</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Test References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

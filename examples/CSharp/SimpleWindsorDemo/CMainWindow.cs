@@ -53,6 +53,7 @@ namespace ZusiTCPDemoApp
       MyTCPConnection.Subscribe<int>(TCPConnection_IntReceived);
       MyTCPConnection.Subscribe<PZBSystem>(TCPConnection_PZBReceived);
       MyTCPConnection.Subscribe<string>(TCPConnection_StringReceived);
+      MyTCPConnection.Subscribe<float>(2561, SpeedReceived);
 
 
       // We need to tell our connection object what measures to request from Zusi.
@@ -180,7 +181,7 @@ namespace ZusiTCPDemoApp
       switch (data.Id)
       {
         case 2561: // "Geschwindigkeit" => FloatReceived    
-          lblGeschw.Text = String.Format("Geschwindigkeit: {0} km/h ", data.Value.ToString("0.00")); // two decimals  
+          //SpeedReceived(sender, data);
           break;
         case 2576: // "Fahrstufe" => FloatReceived               
           lblFahrstufe.Text = String.Format("Fahrstufe: {0}", data.Value.ToString("0")); // no decimals     
@@ -189,6 +190,11 @@ namespace ZusiTCPDemoApp
           // For unknown IDs...  
           break;
       }
+    }
+
+    private void SpeedReceived(object sender, DataReceivedEventArgs<float> data)
+    {
+      lblGeschw.Text = String.Format("Geschwindigkeit: {0} km/h ", data.Value.ToString("0.00")); // two decimals
     }
 
     private void TCPConnection_IntReceived(object sender, DataReceivedEventArgs<int> data) // Handles MyTCPConnection.IntReceived   
