@@ -90,6 +90,7 @@
     <Compile Include="EventArgsInheritors.cs" />
     <Compile Include="EventManager\EventManager.cs" />
     <Compile Include="EventManager\EventManagerBase.cs" />
+    <Compile Include="EventManager\TypedAndGenericEventManager.cs" />
     <Compile Include="GenericTypedMethodList.cs" />
     <Compile Include="EventManager\TypedEventManager.cs" />
     <Compile Include="IBinaryReader.cs" />
