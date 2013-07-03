@@ -42,7 +42,7 @@ namespace Zusi_Datenausgabe.EventManager
       handlerList.Invoke(sender, eventArgs);
     }
 
-    private ITypedMethodList<DataReceivedEventArgs<T>> GetDictionaryEntry<T>(TKey key)
+    protected ITypedMethodList<DataReceivedEventArgs<T>> GetDictionaryEntry<T>(TKey key)
     {
       ITypedMethodList<DataReceivedEventArgs<T>> typedMethodList;
       if (TryGetDictionaryEntry(key, out typedMethodList))
@@ -69,9 +69,15 @@ namespace Zusi_Datenausgabe.EventManager
 
     private ITypedMethodList<DataReceivedEventArgs<T>> CastToListType<T>(ITypedMethodListBase handlerList)
     {
-      Debug.Assert(handlerList is ITypedMethodList<DataReceivedEventArgs<T>>);
+      var result = handlerList as ITypedMethodList<DataReceivedEventArgs<T>>;
 
-      return handlerList as ITypedMethodList<DataReceivedEventArgs<T>>;
+      if(result == null)
+        throw new InvalidCastException(String.Format("The requested method list has a different type from what is expected.\n" +
+                                                     "Requested Type: {0}\n" +
+                                                     "Actual Type:    {1}",
+                                                     typeof(T), handlerList.GetType()));
+
+      return result;
     }
 
     private ITypedMethodList<DataReceivedEventArgs<T>> CreateNewList<T>(TKey key)

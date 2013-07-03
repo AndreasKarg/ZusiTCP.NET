@@ -15,6 +15,7 @@ namespace Zusi_Datenausgabe.EventManager
 
   public interface IEventManager<in TKey> : IEventSubscriber<TKey>, IEventInvoker<TKey>
   {
+    void SetupTypeForKey<T>(TKey key);
   }
 
   public class EventManager<TKey> : EventManagerBase<TKey>, IEventManager<TKey>
@@ -37,5 +38,20 @@ namespace Zusi_Datenausgabe.EventManager
     {
       base.Invoke(key, sender, eventArgs);
     }
+
+    public void SetupTypeForKey<T>(TKey key)
+    {
+      try
+      {
+        GetDictionaryEntry<T>(key);
+      }
+      catch (InvalidCastException ex)
+      {
+        throw new ArgumentException(string.Format("A different type has already been registered for key {0}. " +
+                                                  "See inner exception for details.", key), "key", ex);
+      }
+    }
   }
+
+
 }

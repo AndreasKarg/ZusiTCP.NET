@@ -34,11 +34,10 @@ namespace Zusi_Datenausgabe.EventManager
 
   public class TypedAndGenericEventManager<TKey> : ITypedAndGenericEventManager<TKey>
   {
-    private TypedEventManager _typedManager;
+    private ITypedEventManager _typedManager;
+    private IEventManager<TKey> _genericManager;
 
-    private EventManager<TKey> _genericManager;
-
-    public TypedAndGenericEventManager(TypedEventManager typedManager, EventManager<TKey> genericManager)
+    public TypedAndGenericEventManager(ITypedEventManager typedManager, IEventManager<TKey> genericManager)
     {
       _typedManager = typedManager;
       _genericManager = genericManager;
@@ -68,6 +67,11 @@ namespace Zusi_Datenausgabe.EventManager
     {
       _genericManager.Invoke(key, sender, eventArgs);
       _typedManager.Invoke(sender, eventArgs);
+    }
+
+    public void SetupTypeForKey<T>(TKey key)
+    {
+      _genericManager.SetupTypeForKey<T>(key);
     }
   }
 }
