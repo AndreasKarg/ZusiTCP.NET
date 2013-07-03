@@ -145,6 +145,10 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="id">The ID of the measurement.</param>
     void RequestData(int id);
+
+    //TODO: Document
+    void RequestData<T>(string name, EventHandler<DataReceivedEventArgs<T>> eventHandler);
+    void RequestData<T>(int id, EventHandler<DataReceivedEventArgs<T>> eventHandler);
   }
 
   /// <summary>
@@ -700,6 +704,18 @@ namespace Zusi_Datenausgabe
     public void RequestData(int id)
     {
       _requestedData.Add(id);
+    }
+
+    public void RequestData<T>(string name, EventHandler<DataReceivedEventArgs<T>> eventHandler)
+    {
+      RequestData(IDs[name], eventHandler);
+    }
+
+    public void RequestData<T>(int id, EventHandler<DataReceivedEventArgs<T>> eventHandler)
+    {
+      RequestData(id);
+
+      Subscribe(id, eventHandler);
     }
 
     private void Dispose(bool disposing)

@@ -138,6 +138,16 @@ namespace Zusi_Datenausgabe
       _clientConnection.RequestData(id);
     }
 
+    public void RequestData<T>(string name, EventHandler<DataReceivedEventArgs<T>> eventHandler)
+    {
+      _clientConnection.RequestData(name, eventHandler);
+    }
+
+    public void RequestData<T>(int id, EventHandler<DataReceivedEventArgs<T>> eventHandler)
+    {
+      _clientConnection.RequestData(id, eventHandler);
+    }
+
     public void Subscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
     {
       _clientConnection.Subscribe(handler);

@@ -53,12 +53,11 @@ namespace ZusiTCPDemoApp
       MyTCPConnection.Subscribe<int>(TCPConnection_IntReceived);
       MyTCPConnection.Subscribe<PZBSystem>(TCPConnection_PZBReceived);
       MyTCPConnection.Subscribe<string>(TCPConnection_StringReceived);
-      MyTCPConnection.Subscribe<float>(2561, SpeedReceived);
 
 
       // We need to tell our connection object what measures to request from Zusi.
       // You may either use Zusi's native ID code or plain text as listed in the server's commandset.xml        
-      MyTCPConnection.RequestData("Geschwindigkeit"); //2561 . . . . . . . . . . . . .  => FloatReceived        
+      MyTCPConnection.RequestData<float>("Geschwindigkeit", SpeedReceived); //2561 . . . . . . . . . . . . .  => FloatReceived
       MyTCPConnection.RequestData(2576); // "Fahrstufe"  . . . . . . . . . . . . . . .  => FloatReceived        
       MyTCPConnection.RequestData(2610); // "Uhrzeit"  . . . . . . . . . . . . . . . .  => DateTimeReceived        
       MyTCPConnection.RequestData(2637); // "LM Block, bis zu dem die Strecke frei ist" => StringReceived        
