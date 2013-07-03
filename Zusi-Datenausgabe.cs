@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -38,7 +39,7 @@ using Zusi_Datenausgabe.EventManager;
 
 namespace Zusi_Datenausgabe
 {
-  public interface IZusiTcpClientConnection
+  public interface IZusiTcpClientConnection : ITypedEventSubscriber, IEventSubscriber<int>
   {
     /// <summary>
     /// Event called when an error has occured within the TCP interface.
@@ -144,9 +145,6 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="id">The ID of the measurement.</param>
     void RequestData(int id);
-
-    void Subscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler);
-    void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler);
   }
 
   /// <summary>
@@ -192,7 +190,7 @@ namespace Zusi_Datenausgabe
     private INetworkIOHandler _networkIOHandler;
     private INetworkIOHandlerFactory _networkHandlerFactory;
 
-    private ITypedEventSubscriber _eventManager;
+    private ITypedAndGenericEventManager<int> _eventManager;
 
     #endregion
 
@@ -206,6 +204,16 @@ namespace Zusi_Datenausgabe
     public void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
     {
       _eventManager.Unsubscribe(handler);
+    }
+
+    public void Subscribe<T>(int id, EventHandler<DataReceivedEventArgs<T>> handler)
+    {
+      _eventManager.Subscribe(id, handler);
+    }
+
+    public void Unsubscribe<T>(int id, EventHandler<DataReceivedEventArgs<T>> handler)
+    {
+      _eventManager.Unsubscribe(id, handler);
     }
 
     #endregion
@@ -223,7 +231,7 @@ namespace Zusi_Datenausgabe
     /// <param name="dictionaryFactory">A factory method that takes a file path and returns one instance of an ITcpCommandDictionary</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, Func<string, ITcpCommandDictionary> dictionaryFactory,
-      IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedEventManager eventManager, string commandsetPath = "commandset.xml") :
+      IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager, string commandsetPath = "commandset.xml") :
       this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory, networkHandlerFactory, eventManager)
     {
     }
@@ -237,7 +245,7 @@ namespace Zusi_Datenausgabe
     /// <param name="receptionHandlerFactory">A delegate to a factory method that produces a DataReceptionHandler using the
     /// synchronization context as parameter.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
-      IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedEventManager eventManager)
+      IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager)
     {
       if (SynchronizationContext.Current == null)
       {
@@ -257,6 +265,19 @@ namespace Zusi_Datenausgabe
       _commands = commands;
       _networkHandlerFactory = networkHandlerFactory;
       _eventManager = eventManager;
+
+      InitializeEventTypes(eventManager);
+    }
+
+    private void InitializeEventTypes(ITypedAndGenericEventManager<int> eventManager)
+    {
+      //throw new NotImplementedException();
+
+      // TODO: Maybe expose key list separately?
+      //foreach (var command in _commands.CommandByID.Values)
+      //{
+      //  eventManager.SetupTypeForKey<>();
+      //}
     }
 
     /// <summary>

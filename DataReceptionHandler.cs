@@ -28,7 +28,7 @@ namespace Zusi_Datenausgabe
     private readonly SynchronizationContext _hostContext;
     private readonly IDictionary<string,MethodInfo> _dataHandlers;
     private IBinaryReader _clientReader;
-    private ITypedEventInvoker _eventInvoker;
+    private IEventInvoker<int> _eventInvoker;
 
     public IBinaryReader ClientReader
     {
@@ -39,7 +39,7 @@ namespace Zusi_Datenausgabe
       set { _clientReader = value; }
     }
 
-    public DataReceptionHandler(SynchronizationContext hostContext, ITypedEventInvoker eventInvoker,
+    public DataReceptionHandler(SynchronizationContext hostContext, IEventInvoker<int> eventInvoker,
       IDictionary<string, MethodInfo> dataHandlers)
     {
       _hostContext = hostContext;
@@ -328,7 +328,7 @@ namespace Zusi_Datenausgabe
     private void EventMarshal<T>(object o)
     {
       var margs = (MarshalArgs<T>)o;
-      _eventInvoker.Invoke(this,margs.Data);
+      _eventInvoker.Invoke(margs.Data.Id, this, margs.Data);
     }
   }
 
@@ -336,6 +336,6 @@ namespace Zusi_Datenausgabe
   {
     void Release(IDataReceptionHandler handler);
 
-    IDataReceptionHandler Create(SynchronizationContext hostContext, ITypedEventInvoker eventInvoker);
+    IDataReceptionHandler Create(SynchronizationContext hostContext, IEventInvoker<int> eventInvoker);
   }
 }

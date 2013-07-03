@@ -148,6 +148,16 @@ namespace Zusi_Datenausgabe
       _clientConnection.Unsubscribe(handler);
     }
 
+    public void Subscribe<T>(int key, EventHandler<DataReceivedEventArgs<T>> handler)
+    {
+      _clientConnection.Subscribe(key, handler);
+    }
+
+    public void Unsubscribe<T>(int key, EventHandler<DataReceivedEventArgs<T>> handler)
+    {
+      _clientConnection.Unsubscribe(key, handler);
+    }
+
     #endregion
 
     #region Implementation of IDisposable
