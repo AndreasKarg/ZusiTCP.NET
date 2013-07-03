@@ -44,20 +44,20 @@ namespace ZusiTCPDemoApp
       MyTCPConnection = _connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
       //MyTCPConnection = new ZusiTcpClientConnectionNoWindsor("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
-      MyTCPConnection.StringReceived      += TCPConnection_StringReceived;
-      MyTCPConnection.FloatReceived       += TCPConnection_FloatReceived;
-      MyTCPConnection.DateTimeReceived    += TCPConnection_DateTimeReceived;
-      MyTCPConnection.PZBReceived         += TCPConnection_PZBReceived;
-      MyTCPConnection.BoolReceived        += TCPConnection_BoolReceived;
-      MyTCPConnection.IntReceived         += TCPConnection_IntReceived;
-      MyTCPConnection.DoorsReceived       += TCPConnection_DoorsReceived;
-      MyTCPConnection.BrakeConfigReceived += TCPConnection_BrakeConfigReceived;
       MyTCPConnection.ErrorReceived       += TCPConnection_ErrorReceived;
+      MyTCPConnection.Subscribe<bool>(TCPConnection_BoolReceived);
+      MyTCPConnection.Subscribe<BrakeConfiguration>(TCPConnection_BrakeConfigReceived);
+      MyTCPConnection.Subscribe<DateTime>(TCPConnection_DateTimeReceived);
+      MyTCPConnection.Subscribe<DoorState>(TCPConnection_DoorsReceived);
+      MyTCPConnection.Subscribe<float>(TCPConnection_FloatReceived);
+      MyTCPConnection.Subscribe<int>(TCPConnection_IntReceived);
+      MyTCPConnection.Subscribe<PZBSystem>(TCPConnection_PZBReceived);
+      MyTCPConnection.Subscribe<string>(TCPConnection_StringReceived);
 
 
       // We need to tell our connection object what measures to request from Zusi.
       // You may either use Zusi's native ID code or plain text as listed in the server's commandset.xml        
-      MyTCPConnection.RequestData("Geschwindigkeit"); //2561 . . . . . . . . . . . . .  => FloatReceived        
+      MyTCPConnection.RequestData<float>("Geschwindigkeit", SpeedReceived); //2561 . . . . . . . . . . . . .  => FloatReceived
       MyTCPConnection.RequestData(2576); // "Fahrstufe"  . . . . . . . . . . . . . . .  => FloatReceived        
       MyTCPConnection.RequestData(2610); // "Uhrzeit"  . . . . . . . . . . . . . . . .  => DateTimeReceived        
       MyTCPConnection.RequestData(2637); // "LM Block, bis zu dem die Strecke frei ist" => StringReceived        
@@ -180,7 +180,7 @@ namespace ZusiTCPDemoApp
       switch (data.Id)
       {
         case 2561: // "Geschwindigkeit" => FloatReceived    
-          lblGeschw.Text = String.Format("Geschwindigkeit: {0} km/h ", data.Value.ToString("0.00")); // two decimals  
+          //SpeedReceived(sender, data);
           break;
         case 2576: // "Fahrstufe" => FloatReceived               
           lblFahrstufe.Text = String.Format("Fahrstufe: {0}", data.Value.ToString("0")); // no decimals     
@@ -189,6 +189,11 @@ namespace ZusiTCPDemoApp
           // For unknown IDs...  
           break;
       }
+    }
+
+    private void SpeedReceived(object sender, DataReceivedEventArgs<float> data)
+    {
+      lblGeschw.Text = String.Format("Geschwindigkeit: {0} km/h ", data.Value.ToString("0.00")); // two decimals
     }
 
     private void TCPConnection_IntReceived(object sender, DataReceivedEventArgs<int> data) // Handles MyTCPConnection.IntReceived   

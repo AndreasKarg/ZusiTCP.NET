@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,22 +33,14 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using Zusi_Datenausgabe.EventManager;
 
 [assembly: CLSCompliant(true)]
 
 namespace Zusi_Datenausgabe
 {
-  public interface IZusiTcpClientConnection
+  public interface IZusiTcpClientConnection : ITypedEventSubscriber, IEventSubscriber<int>
   {
-    event EventHandler<DataReceivedEventArgs<float>> FloatReceived;
-    event EventHandler<DataReceivedEventArgs<string>> StringReceived;
-    event EventHandler<DataReceivedEventArgs<int>> IntReceived;
-    event EventHandler<DataReceivedEventArgs<bool>> BoolReceived;
-    event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived;
-    event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived;
-    event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived;
-    event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived;
-
     /// <summary>
     /// Event called when an error has occured within the TCP interface.
     /// </summary>
@@ -152,6 +145,10 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="id">The ID of the measurement.</param>
     void RequestData(int id);
+
+    //TODO: Document
+    void RequestData<T>(string name, EventHandler<DataReceivedEventArgs<T>> eventHandler);
+    void RequestData<T>(int id, EventHandler<DataReceivedEventArgs<T>> eventHandler);
   }
 
   /// <summary>
@@ -193,59 +190,37 @@ namespace Zusi_Datenausgabe
     private Thread _streamReaderThread;
 
     private readonly ITcpCommandDictionary _commands;
-    private readonly DataReceptionHandler _dataReceptionHandler;
+    private readonly IDataReceptionHandler _dataReceptionHandler;
     private INetworkIOHandler _networkIOHandler;
     private INetworkIOHandlerFactory _networkHandlerFactory;
 
+    private ITypedAndGenericEventManager<int> _eventManager;
+
     #endregion
 
-    public event EventHandler<DataReceivedEventArgs<float>> FloatReceived
+    #region Delegating methods for _eventManager
+
+    public void Subscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
     {
-      add { _dataReceptionHandler.FloatReceived += value; }
-      remove { _dataReceptionHandler.FloatReceived -= value; }
+      _eventManager.Subscribe(handler);
     }
 
-    public event EventHandler<DataReceivedEventArgs<string>> StringReceived
+    public void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler)
     {
-      add { _dataReceptionHandler.StringReceived += value; }
-      remove { _dataReceptionHandler.StringReceived -= value; }
+      _eventManager.Unsubscribe(handler);
     }
 
-    public event EventHandler<DataReceivedEventArgs<int>> IntReceived
+    public void Subscribe<T>(int id, EventHandler<DataReceivedEventArgs<T>> handler)
     {
-      add { _dataReceptionHandler.IntReceived += value; }
-      remove { _dataReceptionHandler.IntReceived -= value; }
+      _eventManager.Subscribe(id, handler);
     }
 
-    public event EventHandler<DataReceivedEventArgs<bool>> BoolReceived
+    public void Unsubscribe<T>(int id, EventHandler<DataReceivedEventArgs<T>> handler)
     {
-      add { _dataReceptionHandler.BoolReceived += value; }
-      remove { _dataReceptionHandler.BoolReceived -= value; }
+      _eventManager.Unsubscribe(id, handler);
     }
 
-    public event EventHandler<DataReceivedEventArgs<DateTime>> DateTimeReceived
-    {
-      add { _dataReceptionHandler.DateTimeReceived += value; }
-      remove { _dataReceptionHandler.DateTimeReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<DoorState>> DoorsReceived
-    {
-      add { _dataReceptionHandler.DoorsReceived += value; }
-      remove { _dataReceptionHandler.DoorsReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<PZBSystem>> PZBReceived
-    {
-      add { _dataReceptionHandler.PZBReceived += value; }
-      remove { _dataReceptionHandler.PZBReceived -= value; }
-    }
-
-    public event EventHandler<DataReceivedEventArgs<BrakeConfiguration>> BrakeConfigReceived
-    {
-      add { _dataReceptionHandler.BrakeConfigReceived += value; }
-      remove { _dataReceptionHandler.BrakeConfigReceived -= value; }
-    }
+    #endregion
 
     /// <summary>
     /// Event called when an error has occured within the TCP interface.
@@ -260,8 +235,8 @@ namespace Zusi_Datenausgabe
     /// <param name="dictionaryFactory">A factory method that takes a file path and returns one instance of an ITcpCommandDictionary</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, Func<string, ITcpCommandDictionary> dictionaryFactory,
-      Func<SynchronizationContext, DataReceptionHandler> handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, string commandsetPath = "commandset.xml") :
-      this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory, networkHandlerFactory)
+      IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager, string commandsetPath = "commandset.xml") :
+      this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory, networkHandlerFactory, eventManager)
     {
     }
 
@@ -274,7 +249,7 @@ namespace Zusi_Datenausgabe
     /// <param name="receptionHandlerFactory">A delegate to a factory method that produces a DataReceptionHandler using the
     /// synchronization context as parameter.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
-      Func<SynchronizationContext, DataReceptionHandler> receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory)
+      IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager)
     {
       if (SynchronizationContext.Current == null)
       {
@@ -289,10 +264,24 @@ namespace Zusi_Datenausgabe
 
       _hostContext = SynchronizationContext.Current;
 
-      _dataReceptionHandler = receptionHandlerFactory(_hostContext);
+      _dataReceptionHandler = receptionHandlerFactory.Create(_hostContext, eventManager);
 
       _commands = commands;
       _networkHandlerFactory = networkHandlerFactory;
+      _eventManager = eventManager;
+
+      InitializeEventTypes(eventManager);
+    }
+
+    private void InitializeEventTypes(ITypedAndGenericEventManager<int> eventManager)
+    {
+      //throw new NotImplementedException();
+
+      // TODO: Maybe expose key list separately?
+      //foreach (var command in _commands.CommandByID.Values)
+      //{
+      //  eventManager.SetupTypeForKey<>();
+      //}
     }
 
     /// <summary>
@@ -715,6 +704,18 @@ namespace Zusi_Datenausgabe
     public void RequestData(int id)
     {
       _requestedData.Add(id);
+    }
+
+    public void RequestData<T>(string name, EventHandler<DataReceivedEventArgs<T>> eventHandler)
+    {
+      RequestData(IDs[name], eventHandler);
+    }
+
+    public void RequestData<T>(int id, EventHandler<DataReceivedEventArgs<T>> eventHandler)
+    {
+      RequestData(id);
+
+      Subscribe(id, eventHandler);
     }
 
     private void Dispose(bool disposing)
