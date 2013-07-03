@@ -2,7 +2,7 @@
 
 namespace Zusi_Datenausgabe.EventManager
 {
-  internal interface IEventManager<in TKey> : IEventInvoker<TKey>
+  internal interface IEventSubscriber<in TKey>
   {
     void Subscribe<T>(TKey key, EventHandler<DataReceivedEventArgs<T>> handler);
     void Unsubscribe<T>(TKey key, EventHandler<DataReceivedEventArgs<T>> handler);
@@ -11,6 +11,10 @@ namespace Zusi_Datenausgabe.EventManager
   internal interface IEventInvoker<in TKey>
   {
     void Invoke<T>(TKey key, object sender, DataReceivedEventArgs<T> eventArgs);
+  }
+
+  internal interface IEventManager<in TKey> : IEventSubscriber<TKey>, IEventInvoker<TKey>
+  {
   }
 
   class EventManager<TKey> : EventManagerBase<TKey>, IEventManager<TKey>

@@ -192,7 +192,7 @@ namespace Zusi_Datenausgabe
     private INetworkIOHandler _networkIOHandler;
     private INetworkIOHandlerFactory _networkHandlerFactory;
 
-    private ITypedEventManager _eventManager;
+    private ITypedEventSubscriber _eventManager;
 
     #endregion
 

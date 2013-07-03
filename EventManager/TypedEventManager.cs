@@ -28,7 +28,7 @@ using System;
 
 namespace Zusi_Datenausgabe.EventManager
 {
-  public interface ITypedEventManager : ITypedEventInvoker
+  public interface ITypedEventSubscriber
   {
     void Subscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler);
     void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler);
@@ -37,6 +37,10 @@ namespace Zusi_Datenausgabe.EventManager
   public interface ITypedEventInvoker
   {
     void Invoke<T>(object sender, DataReceivedEventArgs<T> eventArgs);
+  }
+
+  public interface ITypedEventManager : ITypedEventSubscriber, ITypedEventInvoker
+  {
   }
 
   public class TypedEventManager : EventManagerBase<Type>, ITypedEventManager
