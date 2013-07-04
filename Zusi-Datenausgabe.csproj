@@ -87,6 +87,9 @@
     <Compile Include="commandset_schema.designer.cs">
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="DataHandler\DataHandlerBase.cs" />
+    <Compile Include="DataHandler\DataHandlerDictionary.cs" />
+    <Compile Include="DataHandler\DataHandlerImplementations.cs" />
     <Compile Include="DataReceptionHandler.cs" />
     <Compile Include="EventArgsInheritors.cs" />
     <Compile Include="EventManager\EventManager.cs" />

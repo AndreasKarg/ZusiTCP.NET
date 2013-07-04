@@ -3,6 +3,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Context;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 
@@ -13,6 +14,7 @@ namespace Zusi_Datenausgabe
     public void Install(IWindsorContainer container, IConfigurationStore store)
     {
       container.AddFacility<TypedFactoryFacility>();
+      container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
       container.Register(
         Component.For(typeof(IDictionary<,>)).ImplementedBy(typeof(Dictionary<,>)).LifestyleTransient(),
         Classes.FromThisAssembly().Pick()
@@ -24,8 +26,7 @@ namespace Zusi_Datenausgabe
         Component.For<INetworkIOHandlerFactory>().AsFactory(),
         Component.For<ITypedMethodListFactory>().AsFactory(),
         Component.For<IDataReceptionHandlerFactory>().AsFactory(),
-        Component.For<XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()//,
-        //Component.For<>()
+        Component.For<XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()
         );
     }
 
