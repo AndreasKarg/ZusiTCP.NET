@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace Zusi_Datenausgabe.DataHandler
@@ -59,7 +59,23 @@ namespace Zusi_Datenausgabe.DataHandler
       }
     }
 
-    //public DataHandler<T> CastToOutputType<T>()
+    public IDataHandler GetHandler(string inputType)
+    {
+      try
+      {
+        return _handlers[inputType];
+      }
+      catch (KeyNotFoundException ex)
+      {
+        throw new ArgumentException("No handler was registered for input type " + inputType, "inputType", ex);
+      }
+    }
+
+    public IDataHandler this[string inputType]
+    {
+      [DebuggerStepThrough]
+      get { return GetHandler(inputType); }
+    }
   }
 
   [Serializable]
