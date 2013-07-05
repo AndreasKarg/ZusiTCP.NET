@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Zusi_Datenausgabe.EventManager;
 
 namespace Zusi_Datenausgabe.DataReader
 {
@@ -32,6 +33,9 @@ namespace Zusi_Datenausgabe.DataReader
   {
     string InputType { get; }
     Type OutputType { get; }
+
+    //TODO: Find a way to get rid of the references as parameter.
+    int ReadDataAndInvokeEvents(int id, IBinaryReader binaryReader, IEventInvoker<int> eventInvoker);
   }
 
   public interface IDataReader<out TOutput>
@@ -58,6 +62,16 @@ namespace Zusi_Datenausgabe.DataReader
       {
         return typeof(TOutput);
       }
+    }
+
+    public int ReadDataAndInvokeEvents(int id, IBinaryReader binaryReader, IEventInvoker<int> eventInvoker)
+    {
+      int bytesRead;
+      var data = HandleData(binaryReader, out bytesRead);
+
+      eventInvoker.Invoke(id, this, new DataReceivedEventArgs<TOutput>(id, data));
+
+      return bytesRead;
     }
 
     #endregion

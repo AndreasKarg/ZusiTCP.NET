@@ -24,15 +24,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
+using Zusi_Datenausgabe.DataReader;
 using Zusi_Datenausgabe.EventManager;
 
 [assembly: CLSCompliant(true)]
@@ -235,8 +234,9 @@ namespace Zusi_Datenausgabe
     /// <param name="dictionaryFactory">A factory method that takes a file path and returns one instance of an ITcpCommandDictionary</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, Func<string, ITcpCommandDictionary> dictionaryFactory,
-      IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager, string commandsetPath = "commandset.xml") :
-      this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory, networkHandlerFactory, eventManager)
+      IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager,
+      IEventMarshalFactory marshalFactory, string commandsetPath = "commandset.xml") :
+      this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory, networkHandlerFactory, eventManager, marshalFactory)
     {
     }
 
@@ -246,10 +246,11 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commands">A set of commands.</param>
-    /// <param name="receptionHandlerFactory">A delegate to a factory method that produces a DataReceptionHandler using the
+    /// <param name="receptionHandlerFactoryOld">A delegate to a factory method that produces a DataReceptionHandlerOld using the
     /// synchronization context as parameter.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
-      IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager)
+      IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager,
+      IEventMarshalFactory marshalFactory)
     {
       if (SynchronizationContext.Current == null)
       {
@@ -264,7 +265,7 @@ namespace Zusi_Datenausgabe
 
       _hostContext = SynchronizationContext.Current;
 
-      _dataReceptionHandler = receptionHandlerFactory.Create(_hostContext, eventManager);
+      _dataReceptionHandler = receptionHandlerFactory.Create(marshalFactory.Create(_hostContext, eventManager), commands);
 
       _commands = commands;
       _networkHandlerFactory = networkHandlerFactory;
@@ -675,15 +676,8 @@ namespace Zusi_Datenausgabe
       // One byte read for curID
       int bytesRead = 1;
 
-      ICommandEntry curCommand = _commands[curID];
-
-      bytesRead += _dataReceptionHandler.HandleData(curCommand, curID);
+      bytesRead += _dataReceptionHandler.HandleData(curID);
       return bytesRead;
-    }
-
-    private MethodInfo GetHandlerMethod(ICommandEntry curCommand, int curID)
-    {
-      return _dataReceptionHandler.GetHandlerMethod(curCommand, curID);
     }
 
     /// <summary>

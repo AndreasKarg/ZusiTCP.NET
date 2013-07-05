@@ -8,7 +8,7 @@ using Zusi_Datenausgabe.EventManager;
 namespace Zusi_Datenausgabe
 {
   // TODO: DIfy
-  public interface IDataReceptionHandler
+  public interface IDataReceptionHandlerOld
   {
     IBinaryReader ClientReader
     {
@@ -23,7 +23,7 @@ namespace Zusi_Datenausgabe
     MethodInfo GetHandlerMethod(ICommandEntry curCommand, int curID);
   }
 
-  public class DataReceptionHandler : IDataReceptionHandler
+  public class DataReceptionHandlerOld : IDataReceptionHandlerOld
   {
     private readonly SynchronizationContext _hostContext;
     private readonly IDictionary<string,MethodInfo> _dataHandlers;
@@ -39,7 +39,7 @@ namespace Zusi_Datenausgabe
       set { _clientReader = value; }
     }
 
-    public DataReceptionHandler(SynchronizationContext hostContext, IEventInvoker<int> eventInvoker,
+    public DataReceptionHandlerOld(SynchronizationContext hostContext, IEventInvoker<int> eventInvoker,
       IDictionary<string, MethodInfo> dataHandlers)
     {
       _hostContext = hostContext;
@@ -91,7 +91,7 @@ namespace Zusi_Datenausgabe
             "Unknown type {0} for DATA ID {1} (\"{2}\") occured.", curCommand.Type, curID, curCommand.Name));
       }
 
-      /* Make sure the handler method returns an int. */
+      /* Make sure the handlerOld method returns an int. */
       Debug.Assert(handlerMethod.ReturnType == typeof(int));
       return handlerMethod;
     }
@@ -332,10 +332,10 @@ namespace Zusi_Datenausgabe
     }
   }
 
-  public interface IDataReceptionHandlerFactory
+  public interface IDataReceptionHandlerFactoryOld
   {
-    void Release(IDataReceptionHandler handler);
+    void Release(IDataReceptionHandlerOld handlerOld);
 
-    IDataReceptionHandler Create(SynchronizationContext hostContext, IEventInvoker<int> eventInvoker);
+    IDataReceptionHandlerOld Create(SynchronizationContext hostContext, IEventInvoker<int> eventInvoker);
   }
 }
