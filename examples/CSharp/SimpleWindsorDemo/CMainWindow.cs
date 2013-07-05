@@ -14,7 +14,7 @@ using Zusi_Datenausgabe;
  * - Tell your ZusiTcpConn object what measures you want to receive
  * 
  * Everything else is explained below. */
-using Zusi_Datenausgabe.DataHandler;
+using Zusi_Datenausgabe.DataReader;
 
 namespace ZusiTCPDemoApp
 {
@@ -44,7 +44,7 @@ namespace ZusiTCPDemoApp
       MyTCPConnection = _connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
       //MyTCPConnection = new ZusiTcpClientConnectionNoWindsor("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
-      var dings = _container.Resolve<IDataHandlerDictionary>();
+      var dings = _container.Resolve<IDataReaderDictionary>();
 
       MyTCPConnection.ErrorReceived       += TCPConnection_ErrorReceived;
       MyTCPConnection.Subscribe<bool>(TCPConnection_BoolReceived);

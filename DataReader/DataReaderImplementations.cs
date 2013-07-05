@@ -1,10 +1,10 @@
 using System;
 
-namespace Zusi_Datenausgabe.DataHandler
+namespace Zusi_Datenausgabe.DataReader
 {
-  public class DataHandlerForSingle : DataHandlerBase<float>
+  public class DataReaderForSingle : DataReaderBase<float>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override float HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -23,9 +23,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForInt : DataHandlerBase<int>
+  public class DataReaderForInt : DataReaderBase<int>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override int HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -44,9 +44,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForString : DataHandlerBase<string>
+  public class DataReaderForString : DataReaderBase<string>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override string HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -70,9 +70,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForDateTime : DataHandlerBase<DateTime>
+  public class DataReaderForDateTime : DataReaderBase<DateTime>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override DateTime HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -94,9 +94,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForBoolAsSingle : DataHandlerBase<bool>
+  public class DataReaderForBoolAsSingle : DataReaderBase<bool>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override bool HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -121,9 +121,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForBoolAndSingle : DataHandlerBase<Tuple<bool, float>>
+  public class DataReaderForBoolAndSingle : DataReaderBase<Tuple<bool, float>>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override Tuple<bool, float> HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -149,9 +149,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForIntAsSingle : DataHandlerBase<int>
+  public class DataReaderForIntAsSingle : DataReaderBase<int>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override int HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -176,9 +176,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForBoolAsInt : DataHandlerBase<bool>
+  public class DataReaderForBoolAsInt : DataReaderBase<bool>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override bool HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -201,9 +201,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForDoorsAsInt : DataHandlerBase<DoorState>
+  public class DataReaderForDoorsAsInt : DataReaderBase<DoorState>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override DoorState HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -227,9 +227,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForBrakesAsInt : DataHandlerBase<BrakeConfiguration>
+  public class DataReaderForBrakesAsInt : DataReaderBase<BrakeConfiguration>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override BrakeConfiguration HandleData(IBinaryReader reader, out int bytesRead)
     {
@@ -281,9 +281,9 @@ namespace Zusi_Datenausgabe.DataHandler
     #endregion
   }
 
-  public class DataHandlerForPzbAsInt : DataHandlerBase<PZBSystem>
+  public class DataReaderForPzbAsInt : DataReaderBase<PZBSystem>
   {
-    #region Overrides of DataHandlerBase<TOutput>
+    #region Overrides of DataReaderBase<TOutput>
 
     public override PZBSystem HandleData(IBinaryReader reader, out int bytesRead)
     {

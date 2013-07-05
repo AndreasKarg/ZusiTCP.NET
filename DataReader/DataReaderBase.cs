@@ -1,6 +1,6 @@
-﻿#region header
+#region header
 // /*************************************************************************
-//  * DataHandler.cs
+//  * DataReaderBase.cs
 //  * Contains logic for the TCP interface.
 //  * 
 //  * (C) 2013-2013 Andreas Karg, <Clonkman@gmx.de>
@@ -26,29 +26,29 @@
 
 using System;
 
-namespace Zusi_Datenausgabe.DataHandler
+namespace Zusi_Datenausgabe.DataReader
 {
-  public interface IDataHandler
+  public interface IDataReader
   {
     string InputType { get; }
     Type OutputType { get; }
   }
 
-  public interface IDataHandler<out TOutput>
+  public interface IDataReader<out TOutput>
   {
     //TODO: Find a way to get rid of the reader reference as parameter.
     TOutput HandleData(IBinaryReader reader, out int bytesRead);
   }
 
-  public abstract class DataHandlerBase<TOutput> : IDataHandler, IDataHandler<TOutput>
+  public abstract class DataReaderBase<TOutput> : IDataReader, IDataReader<TOutput>
   {
-    #region Implementation of IDataHandler<out TOutput>
+    #region Implementation of IDataReader<out TOutput>
 
     public abstract TOutput HandleData(IBinaryReader reader, out int bytesRead);
 
     #endregion
 
-    #region Implementation of IDataHandler
+    #region Implementation of IDataReader
 
     public abstract string InputType { get; }
 

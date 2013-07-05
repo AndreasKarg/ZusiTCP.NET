@@ -1,6 +1,6 @@
-﻿#region header
+#region header
 // /*************************************************************************
-//  * DataHandlerDictionary.cs
+//  * DataReaderDictionary.cs
 //  * Contains logic for the TCP interface.
 //  * 
 //  * (C) 2013-2013 Andreas Karg, <Clonkman@gmx.de>
@@ -29,57 +29,64 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
-namespace Zusi_Datenausgabe.DataHandler
+namespace Zusi_Datenausgabe.DataReader
 {
-  public interface IDataHandlerDictionary
+  public interface IDataReaderDictionary
   {
+    IDataReader GetReader(string inputType);
+
+    IDataReader this[string inputType]
+    {
+      [DebuggerStepThrough]
+      get;
+    }
   }
 
-  public class DataHandlerDictionary : IDataHandlerDictionary
+  public class DataReaderDictionary : IDataReaderDictionary
   {
-    private readonly IDictionary<string, IDataHandler> _handlers;
+    private readonly IDictionary<string, IDataReader> _readers;
 
-    public DataHandlerDictionary(IEnumerable<IDataHandler> handlerClasses, IDictionary<string, IDataHandler> handlers)
+    public DataReaderDictionary(IEnumerable<IDataReader> readers, IDictionary<string, IDataReader> readerDictionary)
     {
-      _handlers = handlers;
+      _readers = readerDictionary;
 
-      InitializeHandlers(handlerClasses);
+      InitializeReaders(readers);
     }
 
-    private void InitializeHandlers(IEnumerable<IDataHandler> handlerList)
+    private void InitializeReaders(IEnumerable<IDataReader> readers)
     {
-      foreach (var dataHandler in handlerList)
+      foreach (var reader in readers)
       {
-        var inputType = dataHandler.InputType;
-        if(_handlers.ContainsKey(inputType))
-          throw new DataHandlerException("A handler for input type " + inputType +
-                                        " has already been registered by " + _handlers[inputType].GetType());
+        var inputType = reader.InputType;
+        if(_readers.ContainsKey(inputType))
+          throw new DataReaderException("A reader for input type " + inputType +
+                                        " has already been registered by " + _readers[inputType].GetType());
 
-        _handlers[inputType] = dataHandler;
+        _readers[inputType] = reader;
       }
     }
 
-    public IDataHandler GetHandler(string inputType)
+    public IDataReader GetReader(string inputType)
     {
       try
       {
-        return _handlers[inputType];
+        return _readers[inputType];
       }
       catch (KeyNotFoundException ex)
       {
-        throw new ArgumentException("No handler was registered for input type " + inputType, "inputType", ex);
+        throw new ArgumentException("No reader was registered for input type " + inputType, "inputType", ex);
       }
     }
 
-    public IDataHandler this[string inputType]
+    public IDataReader this[string inputType]
     {
       [DebuggerStepThrough]
-      get { return GetHandler(inputType); }
+      get { return GetReader(inputType); }
     }
   }
 
   [Serializable]
-  public class DataHandlerException : Exception
+  public class DataReaderException : Exception
   {
     //
     // For guidelines regarding the creation of new exception types, see
@@ -88,19 +95,19 @@ namespace Zusi_Datenausgabe.DataHandler
     //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
     //
 
-    public DataHandlerException()
+    public DataReaderException()
     {
     }
 
-    public DataHandlerException(string message) : base(message)
+    public DataReaderException(string message) : base(message)
     {
     }
 
-    public DataHandlerException(string message, Exception inner) : base(message, inner)
+    public DataReaderException(string message, Exception inner) : base(message, inner)
     {
     }
 
-    protected DataHandlerException(
+    protected DataReaderException(
       SerializationInfo info,
       StreamingContext context) : base(info, context)
     {
