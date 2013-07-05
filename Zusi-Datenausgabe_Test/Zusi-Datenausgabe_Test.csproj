@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">
-      <HintPath>..\packages\Castle.Core.3.2.0\lib\net35\Castle.Core.dll</HintPath>
+      <HintPath>..\examples\CSharp\SimpleWindsorDemo\packages\Castle.Core.3.2.0\lib\net40-client\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Facilities.Logging">
       <HintPath>..\packages\Castle.LoggingFacility.3.2.0\lib\net35\Castle.Facilities.Logging.dll</HintPath>
@@ -43,7 +43,7 @@
       <HintPath>..\packages\Castle.Core-NLog.3.2.0\lib\net35\Castle.Services.Logging.NLogIntegration.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Windsor">
-      <HintPath>..\packages\Castle.Windsor.3.2.0\lib\net35\Castle.Windsor.dll</HintPath>
+      <HintPath>..\examples\CSharp\SimpleWindsorDemo\packages\Castle.Windsor.3.2.0\lib\net40\Castle.Windsor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="NLog">
@@ -75,6 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Test References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

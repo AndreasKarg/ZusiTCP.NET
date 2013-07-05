@@ -1,5 +1,6 @@
 ﻿namespace Zusi_Datenausgabe
 {
+  // TODO: Maybe get rid of this?
   public interface ICommandEntry
   {
     [System.Xml.Serialization.XmlAttributeAttribute()]

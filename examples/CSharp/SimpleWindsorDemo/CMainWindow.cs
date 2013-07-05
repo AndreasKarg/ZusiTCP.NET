@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using Zusi_Datenausgabe;
-
 /* ZusiTCPDemoApp
  * This example shows basic usage of Andreas Karg's Zusi TCP interface for .Net.
  * It is published under the GNU General Public License v3.0. Base your own work on it, play around, do what you want. :-)
@@ -15,6 +14,7 @@ using Zusi_Datenausgabe;
  * - Tell your ZusiTcpConn object what measures you want to receive
  * 
  * Everything else is explained below. */
+using Zusi_Datenausgabe.DataReader;
 
 namespace ZusiTCPDemoApp
 {
@@ -43,6 +43,8 @@ namespace ZusiTCPDemoApp
       _connectionFactory = _container.Resolve<IZusiTcpConnectionFactory>();
       MyTCPConnection = _connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
       //MyTCPConnection = new ZusiTcpClientConnectionNoWindsor("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
+
+      var dings = _container.Resolve<IDataReaderDictionary>();
 
       MyTCPConnection.ErrorReceived       += TCPConnection_ErrorReceived;
       MyTCPConnection.Subscribe<bool>(TCPConnection_BoolReceived);

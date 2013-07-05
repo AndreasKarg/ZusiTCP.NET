@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Zusi_Datenausgabe</RootNamespace>
     <AssemblyName>Zusi-Datenausgabe</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -32,6 +32,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -86,10 +87,14 @@
     <Compile Include="commandset_schema.designer.cs">
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="DataReceptionHandler.cs" />
+    <Compile Include="DataReader\DataReaderBase.cs" />
+    <Compile Include="DataReader\DataReaderDictionary.cs" />
+    <Compile Include="DataReader\DataReaderImplementations.cs" />
+    <Compile Include="DataReader\DataReceptionHandler.cs" />
     <Compile Include="EventArgsInheritors.cs" />
     <Compile Include="EventManager\EventManager.cs" />
     <Compile Include="EventManager\EventManagerBase.cs" />
+    <Compile Include="EventManager\EventMarshal.cs" />
     <Compile Include="EventManager\TypedAndGenericEventManager.cs" />
     <Compile Include="GenericTypedMethodList.cs" />
     <Compile Include="EventManager\TypedEventManager.cs" />
