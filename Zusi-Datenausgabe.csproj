@@ -91,7 +91,6 @@
     <Compile Include="DataReader\DataReaderDictionary.cs" />
     <Compile Include="DataReader\DataReaderImplementations.cs" />
     <Compile Include="DataReader\DataReceptionHandler.cs" />
-    <Compile Include="DataReceptionHandler.cs" />
     <Compile Include="EventArgsInheritors.cs" />
     <Compile Include="EventManager\EventManager.cs" />
     <Compile Include="EventManager\EventManagerBase.cs" />

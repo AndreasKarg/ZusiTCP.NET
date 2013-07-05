@@ -29,7 +29,6 @@ namespace Zusi_Datenausgabe
         Component.For<IZusiTcpConnectionFactory>().AsFactory(),
         Component.For<INetworkIOHandlerFactory>().AsFactory(),
         Component.For<ITypedMethodListFactory>().AsFactory(),
-        Component.For<IDataReceptionHandlerFactoryOld>().AsFactory(),
         Component.For<IDataReceptionHandlerFactory>().AsFactory(),
         Component.For<IEventMarshalFactory>().AsFactory(),
         Component.For<XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()
