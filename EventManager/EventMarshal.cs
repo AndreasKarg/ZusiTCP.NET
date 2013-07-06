@@ -3,15 +3,15 @@ using System.Threading;
 namespace Zusi_Datenausgabe.EventManager
 {
   // TODO: Maybe make the marshal generic and have a reference next to each event?
-  public class EventMarshal<TKey> : IEventInvoker<TKey>
+  public class EventMarshal<TKey> : IEventInvocator<TKey>
   {
     private readonly SynchronizationContext _hostContext;
-    private readonly IEventInvoker<TKey> _invoker;
+    private readonly IEventInvocator<TKey> _invocator;
 
-    public EventMarshal(SynchronizationContext hostContext, IEventInvoker<TKey> invoker)
+    public EventMarshal(SynchronizationContext hostContext, IEventInvocator<TKey> invocator)
     {
       _hostContext = hostContext;
-      _invoker = invoker;
+      _invocator = invocator;
     }
 
     public void Invoke<T>(TKey key, object sender, DataReceivedEventArgs<T> eventArgs)
@@ -27,7 +27,7 @@ namespace Zusi_Datenausgabe.EventManager
     private void MarshalEvent<T>(object o)
     {
       var margs = (MarshalArgs<T>)o;
-      _invoker.Invoke(margs.Key, margs.Sender, margs.Data);
+      _invocator.Invoke(margs.Key, margs.Sender, margs.Data);
     }
 
     private struct MarshalArgs<TData>
@@ -50,6 +50,6 @@ namespace Zusi_Datenausgabe.EventManager
 
   public interface IEventMarshalFactory
   {
-    EventMarshal<TKey> Create<TKey>(SynchronizationContext hostContext, IEventInvoker<TKey> invoker);
+    EventMarshal<TKey> Create<TKey>(SynchronizationContext hostContext, IEventInvocator<TKey> invocator);
   }
 }

@@ -9,12 +9,12 @@ namespace Zusi_Datenausgabe.EventManager
     void Unsubscribe<T>(TKey key, EventHandler<DataReceivedEventArgs<T>> handler);
   }
 
-  public interface IEventInvoker<in TKey>
+  public interface IEventInvocator<in TKey>
   {
     void Invoke<T>(TKey key, object sender, DataReceivedEventArgs<T> eventArgs);
   }
 
-  public interface IEventManager<in TKey> : IEventSubscriber<TKey>, IEventInvoker<TKey>
+  public interface IEventManager<in TKey> : IEventSubscriber<TKey>, IEventInvocator<TKey>
   {
     void SetupTypeForKey<T>(TKey key);
   }

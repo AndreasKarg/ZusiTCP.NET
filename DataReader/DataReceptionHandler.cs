@@ -23,14 +23,14 @@ namespace Zusi_Datenausgabe.DataReader
   public class DataReceptionHandler : IDataReceptionHandler
   {
     private readonly IDataReaderDictionary _readersByType;
-    private readonly IEventInvoker<int> _eventManager;
+    private readonly IEventInvocator<int> _eventManager;
     private readonly ITcpCommandDictionary _commandDictionary;
 
     private readonly IDictionary<int, IDataReader> _readersById;
 
     public IBinaryReader ClientReader { get; set; }
 
-    public DataReceptionHandler(IDataReaderDictionary readersByType, IEventInvoker<int> eventManager,
+    public DataReceptionHandler(IDataReaderDictionary readersByType, IEventInvocator<int> eventManager,
       ITcpCommandDictionary commandDictionary, IDictionary<int, IDataReader> readersById)
     {
       _readersByType = readersByType;
@@ -100,7 +100,7 @@ namespace Zusi_Datenausgabe.DataReader
 
   public interface IDataReceptionHandlerFactory
   {
-    IDataReceptionHandler Create(IEventInvoker<int> eventManager,
+    IDataReceptionHandler Create(IEventInvocator<int> eventManager,
       ITcpCommandDictionary commandDictionary);
   }
 }

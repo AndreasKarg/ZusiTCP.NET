@@ -35,12 +35,12 @@ namespace Zusi_Datenausgabe.EventManager
     void Unsubscribe<T>(EventHandler<DataReceivedEventArgs<T>> handler);
   }
 
-  public interface ITypedEventInvoker
+  public interface ITypedEventInvocator
   {
     void Invoke<T>(object sender, DataReceivedEventArgs<T> eventArgs);
   }
 
-  public interface ITypedEventManager : ITypedEventSubscriber, ITypedEventInvoker
+  public interface ITypedEventManager : ITypedEventSubscriber, ITypedEventInvocator
   {
   }
 
@@ -50,7 +50,7 @@ namespace Zusi_Datenausgabe.EventManager
     {
     }
 
-    #region Implementation of ITypedEventInvoker
+    #region Implementation of ITypedEventInvocator
 
     public void Invoke<T>(object sender, DataReceivedEventArgs<T> eventArgs)
     {

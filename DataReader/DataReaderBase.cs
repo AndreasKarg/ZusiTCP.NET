@@ -36,7 +36,7 @@ namespace Zusi_Datenausgabe.DataReader
     Type OutputType { get; }
 
     //TODO: Find a way to get rid of the references as parameter.
-    int ReadDataAndInvokeEvents(int id, IBinaryReader binaryReader, IEventInvoker<int> eventInvoker);
+    int ReadDataAndInvokeEvents(int id, IBinaryReader binaryReader, IEventInvocator<int> eventInvocator);
   }
 
   public interface IDataReader<out TOutput>
@@ -65,12 +65,12 @@ namespace Zusi_Datenausgabe.DataReader
       }
     }
 
-    public int ReadDataAndInvokeEvents(int id, IBinaryReader binaryReader, IEventInvoker<int> eventInvoker)
+    public int ReadDataAndInvokeEvents(int id, IBinaryReader binaryReader, IEventInvocator<int> eventInvocator)
     {
       int bytesRead;
       var data = HandleData(binaryReader, out bytesRead);
 
-      eventInvoker.Invoke(id, this, new DataReceivedEventArgs<TOutput>(id, data));
+      eventInvocator.Invoke(id, this, new DataReceivedEventArgs<TOutput>(id, data));
 
       return bytesRead;
     }
