@@ -39,13 +39,7 @@ namespace Zusi_Datenausgabe.DataReader
     int ReadDataAndInvokeEvents(int id, IBinaryReader binaryReader, IEventInvocator<int> eventInvocator);
   }
 
-  public interface IDataReader<out TOutput>
-  {
-    //TODO: Find a way to get rid of the reader reference as parameter.
-    TOutput HandleData(IBinaryReader reader, out int bytesRead);
-  }
-
-  public abstract class DataReaderBase<TOutput> : IDataReader, IDataReader<TOutput>
+  public abstract class DataReaderBase<TOutput> : IDataReader
   {
     #region Implementation of IDataReader<out TOutput>
 
