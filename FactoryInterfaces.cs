@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 
 namespace Zusi_Datenausgabe
 {
@@ -12,12 +11,5 @@ namespace Zusi_Datenausgabe
     IZusiTcpClientConnection Create(string clientId, ClientPriority priority, String commandsetPath);
 
     IZusiTcpClientConnection Create(string clientId, ClientPriority priority, XmlTcpCommands commands);
-  }
-
-  public interface INetworkIOHandlerFactory : IDisposable
-  {
-    void Close(INetworkIOHandler handler);
-
-    INetworkIOHandler Create(IPEndPoint endPoint);
   }
 }

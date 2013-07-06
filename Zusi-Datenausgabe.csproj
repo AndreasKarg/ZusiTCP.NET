@@ -98,9 +98,9 @@
     <Compile Include="EventManager\TypedAndGenericEventManager.cs" />
     <Compile Include="TypedMethodList\GenericTypedMethodList.cs" />
     <Compile Include="EventManager\TypedEventManager.cs" />
-    <Compile Include="IBinaryReader.cs" />
+    <Compile Include="NetworkIO\IBinaryReader.cs" />
     <Compile Include="ICommandEntry.cs" />
-    <Compile Include="NetworkIOHandler.cs" />
+    <Compile Include="NetworkIO\NetworkIOHandler.cs" />
     <Compile Include="ReadOnlyDictionary\ReadOnlyDictionary.cs" />
     <Compile Include="ReceivableDataTypes.cs" />
     <Compile Include="TcpCommandDictionary.cs" />

@@ -5,8 +5,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.NetworkIO
 {
+  public interface INetworkIOHandlerFactory : IDisposable
+  {
+    void Close(INetworkIOHandler handler);
+
+    INetworkIOHandler Create(IPEndPoint endPoint);
+  }
+
   public interface INetworkIOHandler : IBinaryReader
   {
     void SendToServer(byte[] message);

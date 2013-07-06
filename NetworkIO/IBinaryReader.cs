@@ -26,7 +26,7 @@
 
 using System;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.NetworkIO
 {
   public interface IBinaryReader
   {
