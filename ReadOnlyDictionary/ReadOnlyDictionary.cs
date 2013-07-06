@@ -1,4 +1,4 @@
-﻿/* These classes are based on http://www.cuttingedge.it/blogs/steven/pivot/entry.php?id=29
+/* These classes are based on http://www.cuttingedge.it/blogs/steven/pivot/entry.php?id=29
  * The author explicitly states that their work is released to the public domain.
  */
 
@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.ReadOnlyDictionary
 {
   /// <summary>
   /// Provides the base class for a generic read-only dictionary.
@@ -68,11 +68,11 @@ namespace Zusi_Datenausgabe
 
     /// <summary>
     /// Gets the number of key/value pairs contained in the
-    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"></see>.
+    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"></see>.
     /// </summary>
     /// <value>The number of key/value pairs.</value>
     /// <returns>The number of key/value pairs contained in the
-    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"></see>.</returns>
+    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"></see>.</returns>
     public int Count
     {
       get { return _source.Count; }
@@ -94,7 +94,7 @@ namespace Zusi_Datenausgabe
 
     /// <summary>
     /// Gets a collection containing the values of the
-    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"/>.
+    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"/>.
     /// </summary>
     /// <value>The collection of values.</value>
     public ICollection<TValue> Values
@@ -166,7 +166,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>This method is not supported by the 
-    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"/>.</summary>
+    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"/>.</summary>
     /// <param name="key">
     /// The object to use as the key of the element to add.</param>
     /// <param name="value">
@@ -176,14 +176,14 @@ namespace Zusi_Datenausgabe
       ThrowNotSupportedException();
     }
 
-    /// <summary>Determines whether the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2" />
+    /// <summary>Determines whether the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2" />
     /// contains the specified key.</summary>
     /// <returns>
-    /// True if the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2" /> contains
+    /// True if the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2" /> contains
     /// an element with the specified key; otherwise, false.
     /// </returns>
     /// <param name="key">The key to locate in the
-    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"></see>.</param>
+    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"></see>.</param>
     /// <exception cref="T:System.ArgumentNullException">
     /// Thrown when the key is null.
     /// </exception>
@@ -193,7 +193,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// This method is not supported by the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"/>.
+    /// This method is not supported by the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"/>.
     /// </summary>
     /// <param name="key">The key of the element to remove.</param>
     /// <returns>
@@ -214,7 +214,7 @@ namespace Zusi_Datenausgabe
     /// otherwise, the default value for the type of the value parameter.
     /// This parameter is passed uninitialized.</param>
     /// <returns>
-    /// <b>true</b> if the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2" /> contains
+    /// <b>true</b> if the <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2" /> contains
     /// an element with the specified key; otherwise, <b>false</b>.
     /// </returns>
     public bool TryGetValue(TKey key, out TValue value)
@@ -234,7 +234,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>This method is not supported by the 
-    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"/>.</summary>
+    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"/>.</summary>
     void ICollection<KeyValuePair<TKey, TValue>>.Clear()
     {
       ThrowNotSupportedException();
@@ -278,7 +278,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>This method is not supported by the
-    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary`2"/>.</summary>
+    /// <see cref="T:Zusi_Datenausgabe.ReadOnlyDictionary.ReadOnlyDictionary`2"/>.</summary>
     /// <param name="item">
     /// The object to remove from the ICollection.
     /// </param>

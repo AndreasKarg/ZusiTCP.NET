@@ -33,6 +33,7 @@ using System.Text;
 using System.Threading;
 using Zusi_Datenausgabe.DataReader;
 using Zusi_Datenausgabe.EventManager;
+using Zusi_Datenausgabe.ReadOnlyDictionary;
 
 [assembly: CLSCompliant(true)]
 
