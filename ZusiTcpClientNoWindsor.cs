@@ -60,7 +60,7 @@ namespace Zusi_Datenausgabe
     }
 
 
-    public ZusiTcpClientConnectionNoWindsor(string clientId, ClientPriority priority, XmlTcpCommands commands)
+    public ZusiTcpClientConnectionNoWindsor(string clientId, ClientPriority priority, TcpCommands.XmlTcpCommands commands)
       : this()
     {
       _clientConnection = _connectionFactory.Create(clientId, priority, commands);

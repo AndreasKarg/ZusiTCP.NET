@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Zusi_Datenausgabe.EventManager;
 using Zusi_Datenausgabe.NetworkIO;
+using Zusi_Datenausgabe.TcpCommands;
 
 namespace Zusi_Datenausgabe.DataReader
 {

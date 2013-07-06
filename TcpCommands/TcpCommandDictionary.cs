@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Zusi_Datenausgabe.ReadOnlyDictionary;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.TcpCommands
 {
   public interface ITcpCommandDictionary
   {

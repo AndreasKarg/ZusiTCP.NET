@@ -35,6 +35,7 @@ using Zusi_Datenausgabe.DataReader;
 using Zusi_Datenausgabe.EventManager;
 using Zusi_Datenausgabe.NetworkIO;
 using Zusi_Datenausgabe.ReadOnlyDictionary;
+using Zusi_Datenausgabe.TcpCommands;
 
 [assembly: CLSCompliant(true)]
 

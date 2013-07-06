@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------------
 #pragma warning disable 1591
 #pragma warning disable 1573
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.TcpCommands
 {
     using System;
     using System.Diagnostics;
@@ -29,7 +29,7 @@ namespace Zusi_Datenausgabe
     public partial class XmlTcpCommands
     {
 
-        private List<CommandEntry> commandField;
+        private List<TcpCommands.CommandEntry> commandField;
 
         private static System.Xml.Serialization.XmlSerializer serializer;
 
@@ -38,11 +38,11 @@ namespace Zusi_Datenausgabe
         /// </summary>
         public XmlTcpCommands()
       {
-        this.commandField = new List<CommandEntry>();
+        this.commandField = new List<TcpCommands.CommandEntry>();
       }
 
       [System.Xml.Serialization.XmlElementAttribute("Command", Order = 0)]
-        public List<CommandEntry> Command
+        public List<TcpCommands.CommandEntry> Command
         {
             get
             {
@@ -60,7 +60,7 @@ namespace Zusi_Datenausgabe
             {
                 if ((serializer == null))
                 {
-                    serializer = new System.Xml.Serialization.XmlSerializer(typeof(XmlTcpCommands));
+                    serializer = new System.Xml.Serialization.XmlSerializer(typeof(TcpCommands.XmlTcpCommands));
                 }
                 return serializer;
             }
@@ -111,10 +111,10 @@ namespace Zusi_Datenausgabe
         /// <param name="obj">Output XmlTcpCommands object</param>
         /// <param name="exception">output Exception value if deserialize failed</param>
         /// <returns>true if this XmlSerializer can deserialize the object; otherwise, false</returns>
-        public static bool Deserialize(string xml, out XmlTcpCommands obj, out System.Exception exception)
+        public static bool Deserialize(string xml, out TcpCommands.XmlTcpCommands obj, out System.Exception exception)
         {
             exception = null;
-            obj = default(XmlTcpCommands);
+            obj = default(TcpCommands.XmlTcpCommands);
             try
             {
                 obj = Deserialize(xml);
@@ -127,19 +127,19 @@ namespace Zusi_Datenausgabe
             }
         }
 
-        public static bool Deserialize(string xml, out XmlTcpCommands obj)
+        public static bool Deserialize(string xml, out TcpCommands.XmlTcpCommands obj)
         {
             System.Exception exception = null;
             return Deserialize(xml, out obj, out exception);
         }
 
-        public static XmlTcpCommands Deserialize(string xml)
+        public static TcpCommands.XmlTcpCommands Deserialize(string xml)
         {
             System.IO.StringReader stringReader = null;
             try
             {
                 stringReader = new System.IO.StringReader(xml);
-                return ((XmlTcpCommands)(Serializer.Deserialize(System.Xml.XmlReader.Create(stringReader))));
+                return ((TcpCommands.XmlTcpCommands)(Serializer.Deserialize(System.Xml.XmlReader.Create(stringReader))));
             }
             finally
             {
@@ -207,10 +207,10 @@ namespace Zusi_Datenausgabe
         /// <param name="obj">Output XmlTcpCommands object</param>
         /// <param name="exception">output Exception value if deserialize failed</param>
         /// <returns>true if this XmlSerializer can deserialize the object; otherwise, false</returns>
-        public static bool LoadFromFile(string fileName, System.Text.Encoding encoding, out XmlTcpCommands obj, out System.Exception exception)
+        public static bool LoadFromFile(string fileName, System.Text.Encoding encoding, out TcpCommands.XmlTcpCommands obj, out System.Exception exception)
         {
             exception = null;
-            obj = default(XmlTcpCommands);
+            obj = default(TcpCommands.XmlTcpCommands);
             try
             {
                 obj = LoadFromFile(fileName, encoding);
@@ -223,23 +223,23 @@ namespace Zusi_Datenausgabe
             }
         }
 
-        public static bool LoadFromFile(string fileName, out XmlTcpCommands obj, out System.Exception exception)
+        public static bool LoadFromFile(string fileName, out TcpCommands.XmlTcpCommands obj, out System.Exception exception)
         {
             return LoadFromFile(fileName, Encoding.UTF8, out obj, out exception);
         }
 
-        public static bool LoadFromFile(string fileName, out XmlTcpCommands obj)
+        public static bool LoadFromFile(string fileName, out TcpCommands.XmlTcpCommands obj)
         {
             System.Exception exception = null;
             return LoadFromFile(fileName, out obj, out exception);
         }
 
-        public static XmlTcpCommands LoadFromFile(string fileName)
+        public static TcpCommands.XmlTcpCommands LoadFromFile(string fileName)
         {
             return LoadFromFile(fileName, Encoding.UTF8);
         }
 
-        public static XmlTcpCommands LoadFromFile(string fileName, System.Text.Encoding encoding)
+        public static TcpCommands.XmlTcpCommands LoadFromFile(string fileName, System.Text.Encoding encoding)
         {
             System.IO.FileStream file = null;
             System.IO.StreamReader sr = null;
@@ -329,7 +329,7 @@ namespace Zusi_Datenausgabe
             {
                 if ((serializer == null))
                 {
-                    serializer = new System.Xml.Serialization.XmlSerializer(typeof(CommandEntry));
+                    serializer = new System.Xml.Serialization.XmlSerializer(typeof(TcpCommands.CommandEntry));
                 }
                 return serializer;
             }
@@ -383,7 +383,7 @@ namespace Zusi_Datenausgabe
         public static bool Deserialize(string xml, out ICommandEntry obj, out System.Exception exception)
         {
             exception = null;
-            obj = default(CommandEntry);
+            obj = default(TcpCommands.CommandEntry);
             try
             {
                 obj = Deserialize(xml);
@@ -479,7 +479,7 @@ namespace Zusi_Datenausgabe
         public static bool LoadFromFile(string fileName, System.Text.Encoding encoding, out ICommandEntry obj, out System.Exception exception)
         {
             exception = null;
-            obj = default(CommandEntry);
+            obj = default(TcpCommands.CommandEntry);
             try
             {
                 obj = LoadFromFile(fileName, encoding);

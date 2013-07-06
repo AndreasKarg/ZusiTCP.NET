@@ -24,7 +24,7 @@ namespace Zusi_Datenausgabe
 
         Component.For(typeof (IDictionary<,>)).ImplementedBy(typeof (Dictionary<,>)).LifestyleTransient(),
         Classes.FromThisAssembly().Pick()
-          .Unless(t => (t == typeof (XmlTcpCommands))
+          .Unless(t => (t == typeof (TcpCommands.XmlTcpCommands))
                        || (t == typeof (ZusiTcpClientConnectionNoWindsor)))
           .WithServiceFirstInterface()
           .LifestyleTransient(),
@@ -35,13 +35,13 @@ namespace Zusi_Datenausgabe
         Component.For<IDataReceptionHandlerFactory>().AsFactory(),
         Component.For<IEventMarshalFactory>().AsFactory(),
 
-        Component.For<XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()
+        Component.For<TcpCommands.XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()
         );
     }
 
-    private XmlTcpCommands GetTCPCommands(IKernel kernel, CreationContext context)
+    private TcpCommands.XmlTcpCommands GetTCPCommands(IKernel kernel, CreationContext context)
     {
-      return (context.HasAdditionalArguments) ? XmlTcpCommands.LoadFromFile((string) context.AdditionalArguments["filePath"]) : new XmlTcpCommands();
+      return (context.HasAdditionalArguments) ? TcpCommands.XmlTcpCommands.LoadFromFile((string) context.AdditionalArguments["filePath"]) : new TcpCommands.XmlTcpCommands();
     }
   }
 }

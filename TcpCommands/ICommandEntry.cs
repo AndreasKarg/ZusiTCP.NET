@@ -1,4 +1,4 @@
-﻿namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.TcpCommands
 {
   // TODO: Maybe get rid of this?
   public interface ICommandEntry

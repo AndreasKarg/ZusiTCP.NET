@@ -84,7 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="commandset_schema.designer.cs">
+    <Compile Include="TcpCommands\commandset_schema.designer.cs">
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="DataReader\DataReaderBase.cs" />
@@ -96,15 +96,15 @@
     <Compile Include="EventManager\EventManagerBase.cs" />
     <Compile Include="EventManager\EventMarshal.cs" />
     <Compile Include="EventManager\TypedAndGenericEventManager.cs" />
+    <Compile Include="TcpCommands\ICommandEntry.cs" />
     <Compile Include="TypedMethodList\GenericTypedMethodList.cs" />
     <Compile Include="EventManager\TypedEventManager.cs" />
     <Compile Include="NetworkIO\IBinaryReader.cs" />
-    <Compile Include="ICommandEntry.cs" />
     <Compile Include="NetworkIO\NetworkIOHandler.cs" />
     <Compile Include="ReadOnlyDictionary\ReadOnlyDictionary.cs" />
     <Compile Include="ReceivableDataTypes.cs" />
-    <Compile Include="TcpCommandDictionary.cs" />
-    <Compile Include="XmlTcpCommandsAttributation.cs" />
+    <Compile Include="TcpCommands\TcpCommandDictionary.cs" />
+    <Compile Include="TcpCommands\XmlTcpCommandsAttributation.cs" />
     <Compile Include="WindsorInstaller.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -114,7 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />
-    <None Include="commandset_schema.xsd">
+    <None Include="TcpCommands\commandset_schema.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
