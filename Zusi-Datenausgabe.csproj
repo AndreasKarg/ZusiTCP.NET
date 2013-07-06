@@ -96,7 +96,7 @@
     <Compile Include="EventManager\EventManagerBase.cs" />
     <Compile Include="EventManager\EventMarshal.cs" />
     <Compile Include="EventManager\TypedAndGenericEventManager.cs" />
-    <Compile Include="GenericTypedMethodList.cs" />
+    <Compile Include="TypedMethodList\GenericTypedMethodList.cs" />
     <Compile Include="EventManager\TypedEventManager.cs" />
     <Compile Include="IBinaryReader.cs" />
     <Compile Include="ICommandEntry.cs" />
@@ -148,6 +148,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

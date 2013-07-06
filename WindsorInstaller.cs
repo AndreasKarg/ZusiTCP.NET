@@ -8,6 +8,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using Zusi_Datenausgabe.DataReader;
 using Zusi_Datenausgabe.EventManager;
+using Zusi_Datenausgabe.TypedMethodList;
 
 namespace Zusi_Datenausgabe
 {

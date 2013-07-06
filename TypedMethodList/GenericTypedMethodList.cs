@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.TypedMethodList
 {
   public interface ITypedMethodList<T> : ITypedMethodListBase where T: EventArgs
   {
