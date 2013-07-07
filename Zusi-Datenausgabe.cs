@@ -131,6 +131,7 @@ namespace Zusi_Datenausgabe
     {
     }
 
+
     /// <summary>
     /// Initializes a new <see cref="ZusiTcpClientConnection"/> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
@@ -139,7 +140,7 @@ namespace Zusi_Datenausgabe
     /// <param name="commands">A set of commands.</param>
     /// <param name="receptionHandlerFactoryOld">A delegate to a factory method that produces a DataReceptionHandlerOld using the
     /// synchronization context as parameter.</param>
-    public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
+    private ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
       IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager,
       IEventMarshalFactory marshalFactory)
     {

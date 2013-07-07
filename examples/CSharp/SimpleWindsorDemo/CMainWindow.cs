@@ -44,8 +44,6 @@ namespace ZusiTCPDemoApp
       MyTCPConnection = _connectionFactory.Create("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
       //MyTCPConnection = new ZusiTcpClientConnectionNoWindsor("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
-      var dings = _container.Resolve<IDataReaderDictionary>();
-
       MyTCPConnection.ErrorReceived       += TCPConnection_ErrorReceived;
       MyTCPConnection.Subscribe<bool>(TCPConnection_BoolReceived);
       MyTCPConnection.Subscribe<BrakeConfiguration>(TCPConnection_BrakeConfigReceived);

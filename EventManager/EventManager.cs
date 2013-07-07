@@ -53,6 +53,4 @@ namespace Zusi_Datenausgabe.EventManager
       }
     }
   }
-
-
 }
