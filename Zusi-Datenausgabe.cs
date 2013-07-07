@@ -124,10 +124,10 @@ namespace Zusi_Datenausgabe
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="dictionaryFactory">A factory method that takes a file path and returns one instance of an ITcpCommandDictionary</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-    public ZusiTcpClientConnection(string clientId, ClientPriority priority, Func<string, ITcpCommandDictionary> dictionaryFactory,
+    public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionaryFactory dictionaryFactory,
       IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager,
       IEventMarshalFactory marshalFactory, string commandsetPath = "commandset.xml") :
-      this(clientId, priority, dictionaryFactory(commandsetPath), handlerFactory, networkHandlerFactory, eventManager, marshalFactory)
+      this(clientId, priority, dictionaryFactory.Create(commandsetPath), handlerFactory, networkHandlerFactory, eventManager, marshalFactory)
     {
     }
 

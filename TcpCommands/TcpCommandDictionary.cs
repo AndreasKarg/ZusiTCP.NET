@@ -141,4 +141,10 @@ namespace Zusi_Datenausgabe.TcpCommands
       }
     }
   }
+
+  public interface ITcpCommandDictionaryFactory
+  {
+    ITcpCommandDictionary Create(string xmlFilePath);
+    ITcpCommandDictionary Create(XmlTcpCommands xmlTcpCommands);
+  }
 }

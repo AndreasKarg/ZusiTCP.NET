@@ -9,6 +9,7 @@ using Castle.Windsor;
 using Zusi_Datenausgabe.DataReader;
 using Zusi_Datenausgabe.EventManager;
 using Zusi_Datenausgabe.NetworkIO;
+using Zusi_Datenausgabe.TcpCommands;
 using Zusi_Datenausgabe.TypedMethodList;
 
 namespace Zusi_Datenausgabe
@@ -34,6 +35,7 @@ namespace Zusi_Datenausgabe
         Component.For<ITypedMethodListFactory>().AsFactory(),
         Component.For<IDataReceptionHandlerFactory>().AsFactory(),
         Component.For<IEventMarshalFactory>().AsFactory(),
+        Component.For<ITcpCommandDictionaryFactory>().AsFactory(),
 
         Component.For<TcpCommands.XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()
         );
