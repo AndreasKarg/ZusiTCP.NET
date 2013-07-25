@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IZusiTcpClientConnection.cs" />
     <Compile Include="TcpCommands\commandset_schema.designer.cs">
       <AutoGen>True</AutoGen>
     </Compile>
