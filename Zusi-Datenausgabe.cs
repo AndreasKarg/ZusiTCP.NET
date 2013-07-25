@@ -161,22 +161,9 @@ namespace Zusi_Datenausgabe
       _commands = commands;
       _networkHandlerFactory = networkHandlerFactory;
       _eventManager = eventManager;
-
-      InitializeEventTypes(eventManager);
     }
 
-    private void InitializeEventTypes(ITypedAndGenericEventManager<int> eventManager)
-    {
-      //throw new NotImplementedException();
-
-      // TODO: Maybe expose key list separately?
-      //foreach (var command in _commands.CommandByID.Values)
-      //{
-      //  eventManager.SetupTypeForKey<>();
-      //}
-    }
-
-    /// <summary>
+        /// <summary>
     /// Represents the name of the client.
     /// </summary>
     public string ClientId { get; private set; }
