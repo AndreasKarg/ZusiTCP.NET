@@ -14,9 +14,13 @@ namespace Zusi_Datenausgabe.EventManager
     void Invoke<T>(TKey key, object sender, DataReceivedEventArgs<T> eventArgs);
   }
 
-  public interface IEventManager<in TKey> : IEventSubscriber<TKey>, IEventInvocator<TKey>
+  public delegate bool GetEventTypeDelegate<in T>(T key, out Type eventType);
+
+  public interface IEventManager<TKey> : IEventSubscriber<TKey>, IEventInvocator<TKey>
   {
     void SetupTypeForKey<T>(TKey key);
+
+    GetEventTypeDelegate<TKey> GetEventTypeDelegate { get; set; }
   }
 
   public class EventManager<TKey> : EventManagerBase<TKey>, IEventManager<TKey>
@@ -52,5 +56,18 @@ namespace Zusi_Datenausgabe.EventManager
                                                   "See inner exception for details.", key), "key", ex);
       }
     }
+
+    protected override bool TryGetTypeForKey(TKey key, out Type type)
+    {
+      if (GetEventTypeDelegate == null)
+      {
+        type = null;
+        return false;
+      }
+
+      return GetEventTypeDelegate(key, out type);
+    }
+
+    public GetEventTypeDelegate<TKey> GetEventTypeDelegate { get; set; }
   }
 }

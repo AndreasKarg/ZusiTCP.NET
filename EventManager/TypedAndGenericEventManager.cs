@@ -28,7 +28,7 @@ using System;
 
 namespace Zusi_Datenausgabe.EventManager
 {
-  public interface ITypedAndGenericEventManager<in TKey> : ITypedEventSubscriber, IEventManager<TKey>
+  public interface ITypedAndGenericEventManager<TKey> : ITypedEventSubscriber, IEventManager<TKey>
   {
   }
 
@@ -73,5 +73,7 @@ namespace Zusi_Datenausgabe.EventManager
     {
       _genericManager.SetupTypeForKey<T>(key);
     }
+
+    public GetEventTypeDelegate<TKey> GetEventTypeDelegate { get; set; }
   }
 }
