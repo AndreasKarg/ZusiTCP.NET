@@ -17,12 +17,14 @@ namespace Zusi_Datenausgabe.DataReader
       _commandDictionary = commandDictionary;
     }
 
-    private void AcquireNewReader(int id)
+    public bool GetOutputType(int id, out Type eventtype)
     {
-      var command = _commandDictionary[id];
-      var reader = _readersByType[command.Type];
+      var reader = GetReader(id);
 
-      _readersById[id] = reader;
+      eventtype = reader.OutputType;
+
+      // Todo: Make sure missing IDs don't break anything.
+      return true;
     }
 
     public IDataReader GetReader(int id)
@@ -40,14 +42,12 @@ namespace Zusi_Datenausgabe.DataReader
       return result;
     }
 
-    public bool GetOutputType(int id, out Type eventtype)
+    private void AcquireNewReader(int id)
     {
-      var reader = GetReader(id);
+      var command = _commandDictionary[id];
+      var reader = _readersByType[command.Type];
 
-      eventtype = reader.OutputType;
-
-      // Todo: Make sure missing IDs don't break anything.
-      return true;
+      _readersById[id] = reader;
     }
   }
 
