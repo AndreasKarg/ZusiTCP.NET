@@ -18,7 +18,8 @@ namespace Zusi_Datenausgabe.DataReader
           .WithServiceBase(),
 
           Component.For<IDataReceptionHandler>().ImplementedBy<DataReceptionHandler>().LifestyleTransient(),
-          Component.For<IDataReaderDictionary>().ImplementedBy<DataReaderDictionary>().LifestyleTransient()
+          Component.For<IDataReaderDictionary>().ImplementedBy<DataReaderDictionary>().LifestyleTransient(),
+          Component.For<IDataReaderManager>().ImplementedBy<DataReaderManager>().LifestyleTransient()
         );
     }
   }
