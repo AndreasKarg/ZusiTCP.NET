@@ -66,6 +66,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CastleWindsorWiringTest.cs" />
+    <Compile Include="DependencyGraphWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypedEventManagerTest.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Context;
@@ -6,9 +7,11 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using Castle.Windsor.Installer;
 using Zusi_Datenausgabe.DataReader;
 using Zusi_Datenausgabe.EventManager;
 using Zusi_Datenausgabe.NetworkIO;
+using Zusi_Datenausgabe.TcpCommands;
 using Zusi_Datenausgabe.TypedMethodList;
 
 namespace Zusi_Datenausgabe
@@ -19,29 +22,25 @@ namespace Zusi_Datenausgabe
     {
       container.AddFacility<TypedFactoryFacility>();
       container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
-      container.Register(
-        Component.For(typeof (EventMarshal<>)).LifestyleTransient(),
 
+      container.Install(
+        new TcpCommandsInstaller(),
+        new EventManagerInstaller(),
+        new DataReaderInstaller(),
+        new NetworkIOInstaller(),
+        new GenericTypedMethodListInstaller()
+        );
+
+      container.Register(
         Component.For(typeof (IDictionary<,>)).ImplementedBy(typeof (Dictionary<,>)).LifestyleTransient(),
-        Classes.FromThisAssembly().Pick()
-          .Unless(t => (t == typeof (TcpCommands.XmlTcpCommands))
-                       || (t == typeof (ZusiTcpClientConnectionNoWindsor)))
+
+        Classes.FromThisAssembly().InSameNamespaceAs<WindsorInstaller>()
+          .Unless(t => (t == typeof (ZusiTcpClientConnectionNoWindsor)))
           .WithServiceFirstInterface()
           .LifestyleTransient(),
 
-        Component.For<IZusiTcpConnectionFactory>().AsFactory(),
-        Component.For<INetworkIOHandlerFactory>().AsFactory(),
-        Component.For<ITypedMethodListFactory>().AsFactory(),
-        Component.For<IDataReceptionHandlerFactory>().AsFactory(),
-        Component.For<IEventMarshalFactory>().AsFactory(),
-
-        Component.For<TcpCommands.XmlTcpCommands>().UsingFactoryMethod(GetTCPCommands).LifestyleTransient()
+        Component.For<IZusiTcpConnectionFactory>().AsFactory()
         );
-    }
-
-    private TcpCommands.XmlTcpCommands GetTCPCommands(IKernel kernel, CreationContext context)
-    {
-      return (context.HasAdditionalArguments) ? TcpCommands.XmlTcpCommands.LoadFromFile((string) context.AdditionalArguments["filePath"]) : new TcpCommands.XmlTcpCommands();
     }
   }
 }

@@ -49,9 +49,17 @@ namespace Zusi_Datenausgabe.EventManager
       if (TryGetDictionaryEntry(key, out typedMethodList))
         return typedMethodList;
 
-      var newList = CreateNewList<T>(key);
-      return newList;
+      Type dataType;
+
+      if (TryGetTypeForKey(key, out dataType) && (dataType != typeof(T)))
+      {
+        throw new InvalidOperationException(string.Format("Wrong delegate type {1} supplied for key {0}. Should have been: {2}", key, typeof(T), dataType));
+      }
+
+      return CreateNewList<T>(key);
     }
+
+    protected abstract bool TryGetTypeForKey(TKey key, out Type type);
 
     private bool TryGetDictionaryEntry<T>(TKey key, out ITypedMethodList<DataReceivedEventArgs<T>> result)
     {

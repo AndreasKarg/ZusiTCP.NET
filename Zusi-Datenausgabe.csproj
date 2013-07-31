@@ -79,7 +79,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataReader\DataReaderManager.cs" />
     <Compile Include="IZusiTcpClientConnection.cs" />
+    <Compile Include="AuxiliaryClasses\ThreadSafeDefaultLifetimeScope.cs" />
+    <Compile Include="DataReader\DataReaderInstaller.cs" />
+    <Compile Include="EventManager\EventManagerInstaller.cs" />
+    <Compile Include="NetworkIO\NetworkIOInstaller.cs" />
+    <Compile Include="ReadOnlyDictionary\ReadOnlyDictionaryInstaller.cs" />
     <Compile Include="TcpCommands\commandset_schema.designer.cs">
       <AutoGen>True</AutoGen>
     </Compile>
@@ -93,6 +99,7 @@
     <Compile Include="EventManager\EventMarshal.cs" />
     <Compile Include="EventManager\TypedAndGenericEventManager.cs" />
     <Compile Include="TcpCommands\ICommandEntry.cs" />
+    <Compile Include="TcpCommands\TcpCommandsInstaller.cs" />
     <Compile Include="TypedMethodList\GenericTypedMethodList.cs" />
     <Compile Include="EventManager\TypedEventManager.cs" />
     <Compile Include="NetworkIO\IBinaryReader.cs" />
@@ -101,6 +108,7 @@
     <Compile Include="ReceivableDataTypes.cs" />
     <Compile Include="TcpCommands\TcpCommandDictionary.cs" />
     <Compile Include="TcpCommands\XmlTcpCommandsAttributation.cs" />
+    <Compile Include="TypedMethodList\GenericTypedMethodListInstaller.cs" />
     <Compile Include="WindsorInstaller.cs" />
     <Compile Include="Zusi-Datenausgabe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -72,5 +72,11 @@ namespace Zusi_Datenausgabe.EventManager
     }
 
     #endregion
+
+    protected override bool TryGetTypeForKey(Type key, out Type type)
+    {
+      type = key;
+      return true;
+    }
   }
 }
