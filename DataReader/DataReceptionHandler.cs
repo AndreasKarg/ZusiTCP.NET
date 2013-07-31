@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Castle.Components.DictionaryAdapter.Xml;
 using Zusi_Datenausgabe.EventManager;
 using Zusi_Datenausgabe.NetworkIO;
 using Zusi_Datenausgabe.TcpCommands;
@@ -27,10 +28,12 @@ namespace Zusi_Datenausgabe.DataReader
 
     public IBinaryReader ClientReader { get; set; }
 
-    public DataReceptionHandler(IEventInvocator<int> eventManager, IDataReaderManager dataReaderManager)
+    public DataReceptionHandler(IEventManager<int> eventManager, IDataReaderManager dataReaderManager)
     {
       _eventManager = eventManager;
       _dataReaderManager = dataReaderManager;
+
+      eventManager.GetEventTypeDelegate = dataReaderManager.GetOutputType;
     }
 
     public int HandleData(int id)

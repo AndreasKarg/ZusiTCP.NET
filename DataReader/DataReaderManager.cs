@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Zusi_Datenausgabe.TcpCommands;
 
@@ -38,10 +39,21 @@ namespace Zusi_Datenausgabe.DataReader
 
       return result;
     }
+
+    public bool GetOutputType(int id, out Type eventtype)
+    {
+      var reader = GetReader(id);
+
+      eventtype = reader.OutputType;
+
+      // Todo: Make sure missing IDs don't break anything.
+      return true;
+    }
   }
 
   public interface IDataReaderManager
   {
     IDataReader GetReader(int id);
+    bool GetOutputType(int id, out Type eventtype);
   }
 }
