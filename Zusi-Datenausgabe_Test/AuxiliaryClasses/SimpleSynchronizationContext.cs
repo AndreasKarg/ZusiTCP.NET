@@ -34,9 +34,9 @@ namespace Zusi_Datenausgabe_Test.AuxiliaryClasses
       return (T) _queue.Dequeue();
     }
 
-    public object Peek()
+    public T Peek()
     {
-      return _queue.Peek();
+      return (T) _queue.Peek();
     }
 
     public bool Contains(T obj)
