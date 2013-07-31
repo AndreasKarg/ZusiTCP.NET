@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuxiliaryClasses\SimpleSynchronizationContext.cs" />
+    <Compile Include="AuxiliaryClasses\ThreadSafeQueueTest.cs" />
     <Compile Include="CastleWindsorWiringTest.cs" />
     <Compile Include="DependencyGraphWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
