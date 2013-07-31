@@ -41,23 +41,6 @@ namespace Zusi_Datenausgabe.DataReader
 
       return reader.ReadDataAndInvokeEvents(id, ClientReader, _eventManager);
     }
-
-    private struct MarshalArgs<T>
-    {
-      public DataReceivedEventArgs<T> Data { get; private set; }
-
-      public MarshalArgs(int id, T data)
-        : this()
-      {
-        Data = new DataReceivedEventArgs<T>(id, data);
-      }
-    }
-
-    private void EventMarshal<T>(object o)
-    {
-      var margs = (DataReceptionHandler.MarshalArgs<T>)o;
-      _eventManager.Invoke(margs.Data.Id, this, margs.Data);
-    }
   }
 
   public interface IDataReceptionHandlerFactory
