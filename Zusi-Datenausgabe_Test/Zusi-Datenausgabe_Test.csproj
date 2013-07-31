@@ -66,8 +66,10 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuxiliaryClasses\HelperMethods.cs" />
     <Compile Include="AuxiliaryClasses\SimpleSynchronizationContext.cs" />
     <Compile Include="AuxiliaryClasses\ThreadSafeQueueTest.cs" />
+    <Compile Include="AuxiliaryClasses\SynchronizationContextTest.cs" />
     <Compile Include="CastleWindsorWiringTest.cs" />
     <Compile Include="DependencyGraphWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
