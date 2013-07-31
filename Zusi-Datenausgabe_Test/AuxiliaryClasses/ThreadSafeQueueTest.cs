@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Zusi_Datenausgabe_Test.AuxiliaryClasses
 {
@@ -42,7 +41,6 @@ namespace Zusi_Datenausgabe_Test.AuxiliaryClasses
       var syncroot = queue.SyncRoot;
       Assert.IsNotNull(syncroot);
 
-      Assert.Fail("Fix enumerator!");
       foreach (var item in queue)
       {
         Assert.IsTrue(item == string1 || item == string2);

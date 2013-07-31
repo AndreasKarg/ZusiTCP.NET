@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe_Test.AuxiliaryClasses
 {
-  internal class ThreadSafeQueue<T>
+  internal class ThreadSafeQueue<T> : IEnumerable<T>
   {
     private readonly Queue _queue = Queue.Synchronized(new Queue());
 
@@ -24,9 +24,19 @@ namespace Zusi_Datenausgabe_Test.AuxiliaryClasses
       _queue.Enqueue(obj);
     }
 
-    public IEnumerator GetEnumerator()
+    public IEnumerator<T> GetEnumerator()
     {
-      return _queue.GetEnumerator() as IEnumerator<T>;
+      var iterator = _queue.GetEnumerator();
+
+      while (iterator.MoveNext())
+      {
+        yield return (T) iterator.Current;
+      }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return _queue.GetEnumerator();
     }
 
     public T Dequeue()
