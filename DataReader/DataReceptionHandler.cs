@@ -41,35 +41,11 @@ namespace Zusi_Datenausgabe.DataReader
 
     public int HandleData(int id)
     {
-      int bytesRead;
-      bool success = TryUseSavedReader(id, out bytesRead);
-
-      if (success)
-        return bytesRead;
-
-      AcquireNewReader(id);
-
-      success = TryUseSavedReader(id, out bytesRead);
-
-      Debug.Assert(success);
-
-      return bytesRead;
-    }
-
-    private bool TryUseSavedReader(int id, out int bytesRead)
-    {
-      IDataReader reader;
-
-      if (!_readersById.TryGetValue(id, out reader))
-      {
-        bytesRead = 0;
-        return false;
-      }
+      IDataReader reader = GetReader(id);
 
       Debug.Assert(ClientReader != null);
-      bytesRead = reader.ReadDataAndInvokeEvents(id, ClientReader, _eventManager);
 
-      return true;
+      return reader.ReadDataAndInvokeEvents(id, ClientReader, _eventManager);
     }
 
     private void AcquireNewReader(int id)
@@ -78,6 +54,21 @@ namespace Zusi_Datenausgabe.DataReader
       var reader = _readersByType[command.Type];
 
       _readersById[id] = reader;
+    }
+
+    private IDataReader GetReader(int id)
+    {
+      IDataReader result;
+
+      if (_readersById.TryGetValue(id, out result))
+        return result;
+
+      AcquireNewReader(id);
+
+      bool readerNowExists = _readersById.TryGetValue(id, out result);
+      Debug.Assert(readerNowExists); // Todo: Make sure this can't be broken in release builds
+
+      return result;
     }
 
     private struct MarshalArgs<T>
