@@ -82,6 +82,7 @@ namespace Zusi_Datenausgabe
     private readonly IDataReceptionHandler _dataReceptionHandler;
     private INetworkIOHandler _networkIOHandler;
     private INetworkIOHandlerFactory _networkHandlerFactory;
+    private IHandshakeHandlerFactory _handshakeFactory;
 
     private ITypedAndGenericEventManager<int> _eventManager;
 
@@ -125,8 +126,8 @@ namespace Zusi_Datenausgabe
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     public ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionaryFactory dictionaryFactory,
       IDataReceptionHandlerFactory handlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager,
-      IEventMarshalFactory marshalFactory, string commandsetPath = "commandset.xml") :
-      this(clientId, priority, dictionaryFactory.Create(commandsetPath), handlerFactory, networkHandlerFactory, eventManager, marshalFactory)
+      IEventMarshalFactory marshalFactory, IHandshakeHandlerFactory handshakeFactory, string commandsetPath = "commandset.xml") :
+      this(clientId, priority, dictionaryFactory.Create(commandsetPath), handlerFactory, networkHandlerFactory, eventManager, marshalFactory, handshakeFactory)
     {
     }
 
@@ -141,7 +142,7 @@ namespace Zusi_Datenausgabe
     /// synchronization context as parameter.</param>
     private ZusiTcpClientConnection(string clientId, ClientPriority priority, ITcpCommandDictionary commands,
       IDataReceptionHandlerFactory receptionHandlerFactory, INetworkIOHandlerFactory networkHandlerFactory, ITypedAndGenericEventManager<int> eventManager,
-      IEventMarshalFactory marshalFactory)
+      IEventMarshalFactory marshalFactory, IHandshakeHandlerFactory handshakeFactory)
     {
       if (SynchronizationContext.Current == null)
       {
@@ -160,6 +161,7 @@ namespace Zusi_Datenausgabe
 
       _commands = commands;
       _networkHandlerFactory = networkHandlerFactory;
+      _handshakeFactory = handshakeFactory;
       _eventManager = eventManager;
     }
 
@@ -330,7 +332,7 @@ namespace Zusi_Datenausgabe
         _streamReaderThread = new Thread(ReceiveLoop) { Name = "ZusiData Receiver" };
         _streamReaderThread.IsBackground = true;
 
-        new HandshakeHandler(_networkIOHandler).HandleHandshake(RequestedData, ClientPriority, ClientId);
+        _handshakeFactory.Create(_networkIOHandler).HandleHandshake(RequestedData, ClientPriority, ClientId);
         ConnectionState = ConnectionState.Connected;
 
         _streamReaderThread.Start();

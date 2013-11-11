@@ -14,7 +14,8 @@ namespace Zusi_Datenausgabe.NetworkIO
           .InSameNamespaceAs<NetworkIOInstaller>()
           .LifestyleTransient()
           .WithServiceAllInterfaces(),
-        Component.For<INetworkIOHandlerFactory>().AsFactory()
+        Component.For<INetworkIOHandlerFactory>().AsFactory(),
+        Component.For<IHandshakeHandlerFactory>().AsFactory()
         );
     }
   }

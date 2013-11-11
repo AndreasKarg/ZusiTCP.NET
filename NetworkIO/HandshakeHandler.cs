@@ -6,7 +6,17 @@ using Zusi_Datenausgabe.AuxiliaryClasses;
 
 namespace Zusi_Datenausgabe.NetworkIO
 {
-  public class HandshakeHandler
+  public interface IHandshakeHandler
+  {
+    void HandleHandshake(IEnumerable<int> requestedData, ClientPriority clientPriority, string clientId);
+  }
+
+  public interface IHandshakeHandlerFactory
+  {
+    IHandshakeHandler Create(INetworkIOHandler networkIOHandler);
+  }
+
+  public class HandshakeHandler : IHandshakeHandler
   {
     private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
     private readonly INetworkIOHandler _networkIOHandler;
