@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuxiliaryClasses\BitbangingHelpers.cs" />
     <Compile Include="DataReader\DataReaderManager.cs" />
     <Compile Include="IZusiTcpClientConnection.cs" />
     <Compile Include="AuxiliaryClasses\ThreadSafeDefaultLifetimeScope.cs" />

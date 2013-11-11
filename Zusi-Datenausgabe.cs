@@ -31,6 +31,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Zusi_Datenausgabe.AuxiliaryClasses;
 using Zusi_Datenausgabe.DataReader;
 using Zusi_Datenausgabe.EventManager;
 using Zusi_Datenausgabe.NetworkIO;
@@ -285,17 +286,7 @@ namespace Zusi_Datenausgabe
       ErrorReceived.Invoke(this, new ErrorEventArgs(castException));
     }
 
-    private static byte[] Pack(params byte[] message)
-    {
-      return message;
-    }
-
-    private static int GetInstruction(int byteA, int byteB)
-    {
-      return byteA * 256 + byteB;
-    }
-
-    /// <summary>
+      /// <summary>
     /// Establish a connection to the TCP server.
     /// </summary>
     /// <param name="hostName">The name or IP address of the host.</param>
@@ -341,7 +332,7 @@ namespace Zusi_Datenausgabe
         _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
         _streamReaderThread.IsBackground = true;
 
-        HandleHandshake();
+        HandleHandshake(RequestedData);
 
         _streamReaderThread.Start();
       }
@@ -359,11 +350,11 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    private void HandleHandshake()
+    private void HandleHandshake(IEnumerable<int> requestedData)
     {
       SendHello();
       ExpectAckHello();
-      RequestData();
+      RequestData(requestedData);
       ExpectAckNeededData(0);
 
       ConnectionState = ConnectionState.Connected;
@@ -371,26 +362,25 @@ namespace Zusi_Datenausgabe
 
     private void SendHello()
     {
-      _networkIOHandler.SendPacket(
-        Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
+      _networkIOHandler.SendPacket(BitbangingHelpers.Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
         _stringEncoder.GetBytes(ClientId));
     }
 
-    private void RequestData()
+    private void RequestData(IEnumerable<int> requestedData)
     {
-      var aGetData = from iData in RequestedData group iData by (iData/256);
+      var aGetData = from iData in requestedData group iData by (iData/256);
 
       var reqDataBuffer = new List<byte[]>();
 
       foreach (var aDataGroup in aGetData)
       {
         reqDataBuffer.Clear();
-        reqDataBuffer.Add(Pack(0, 3));
+        reqDataBuffer.Add(BitbangingHelpers.Pack(0, 3));
 
         byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
-        reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
+        reqDataBuffer.Add(BitbangingHelpers.Pack(tempDataGroup[1], tempDataGroup[0]));
 
-        reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID%256))));
+        reqDataBuffer.AddRange(aDataGroup.Select(iID => BitbangingHelpers.Pack(Convert.ToByte(iID%256))));
 
         _networkIOHandler.SendPacket(reqDataBuffer.ToArray());
 
@@ -463,7 +453,7 @@ namespace Zusi_Datenausgabe
         throw new ZusiTcpException("Invalid packet length: " + packetLength);
       }
 
-      int readInstr = GetInstruction(_networkIOHandler.ReadByte(), _networkIOHandler.ReadByte());
+      int readInstr = BitbangingHelpers.GetInstruction(_networkIOHandler.ReadByte(), _networkIOHandler.ReadByte());
       if (readInstr != (int) expectedInstruction)
       {
         throw new ZusiTcpException("Invalid command from server: " + readInstr);
@@ -530,7 +520,7 @@ namespace Zusi_Datenausgabe
     {
       int packetLength = _networkIOHandler.ReadInt32();
 
-      int curInstr = GetInstruction(_networkIOHandler.ReadByte(), _networkIOHandler.ReadByte());
+      int curInstr = BitbangingHelpers.GetInstruction(_networkIOHandler.ReadByte(), _networkIOHandler.ReadByte());
 
       if (curInstr < 10)
       {
