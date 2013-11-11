@@ -42,7 +42,7 @@ using Zusi_Datenausgabe.TcpCommands;
 
 namespace Zusi_Datenausgabe
 {
-    /// <summary>
+  /// <summary>
   /// Represents the centerpiece of the Zusi TCP interface.
   ///
   /// <para>Usage:
@@ -73,8 +73,6 @@ namespace Zusi_Datenausgabe
     #region Fields
     // TODO: DIfy this class
     private readonly SynchronizationContext _hostContext;
-
-    private readonly ASCIIEncoding _stringEncoder = new ASCIIEncoding();
 
     private readonly List<int> _requestedData = new List<int>();
 
@@ -165,7 +163,7 @@ namespace Zusi_Datenausgabe
       _eventManager = eventManager;
     }
 
-        /// <summary>
+    /// <summary>
     /// Represents the name of the client.
     /// </summary>
     public string ClientId { get; private set; }
@@ -286,7 +284,7 @@ namespace Zusi_Datenausgabe
       ErrorReceived.Invoke(this, new ErrorEventArgs(castException));
     }
 
-      /// <summary>
+    /// <summary>
     /// Establish a connection to the TCP server.
     /// </summary>
     /// <param name="hostName">The name or IP address of the host.</param>
@@ -329,10 +327,11 @@ namespace Zusi_Datenausgabe
         _networkIOHandler = _networkHandlerFactory.Create(endPoint);
         _dataReceptionHandler.ClientReader = _networkIOHandler;
 
-        _streamReaderThread = new Thread(ReceiveLoop) {Name = "ZusiData Receiver"};
+        _streamReaderThread = new Thread(ReceiveLoop) { Name = "ZusiData Receiver" };
         _streamReaderThread.IsBackground = true;
 
-        HandleHandshake(RequestedData);
+        new HandshakeHandler(_networkIOHandler).HandleHandshake(RequestedData, ClientPriority, ClientId);
+        ConnectionState = ConnectionState.Connected;
 
         _streamReaderThread.Start();
       }
@@ -350,117 +349,18 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    private void HandleHandshake(IEnumerable<int> requestedData)
-    {
-      SendHello();
-      ExpectAckHello();
-      RequestData(requestedData);
-      ExpectAckNeededData(0);
-
-      ConnectionState = ConnectionState.Connected;
-    }
-
-    private void SendHello()
-    {
-      _networkIOHandler.SendPacket(BitbangingHelpers.Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(_stringEncoder.GetByteCount(ClientId))),
-        _stringEncoder.GetBytes(ClientId));
-    }
-
-    private void RequestData(IEnumerable<int> requestedData)
-    {
-      var aGetData = from iData in requestedData group iData by (iData/256);
-
-      var reqDataBuffer = new List<byte[]>();
-
-      foreach (var aDataGroup in aGetData)
-      {
-        reqDataBuffer.Clear();
-        reqDataBuffer.Add(BitbangingHelpers.Pack(0, 3));
-
-        byte[] tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
-        reqDataBuffer.Add(BitbangingHelpers.Pack(tempDataGroup[1], tempDataGroup[0]));
-
-        reqDataBuffer.AddRange(aDataGroup.Select(iID => BitbangingHelpers.Pack(Convert.ToByte(iID%256))));
-
-        _networkIOHandler.SendPacket(reqDataBuffer.ToArray());
-
-        ExpectAckNeededData(aDataGroup.Key);
-      }
-
-      SendDataRequestConclusion();
-    }
-
-    private void SendDataRequestConclusion()
-    {
-      _networkIOHandler.SendPacket(0, 3, 0, 0);
-    }
-
-    private void ExpectAckNeededData(int dataGroup)
-    {
-      var response = ReceiveResponse(ResponseType.AckNeededData);
-
-      switch (response)
-      {
-        case 0:
-          /* Response is an ACK. */
-          return;
-        case 1:
-          throw new ZusiTcpException("Unknown instruction set: " + dataGroup);
-        case 2:
-          throw new ZusiTcpException("Client not connected");
-        default:
-          throw new ZusiTcpException("NEEDED_DATA not acknowledged.");
-      }
-    }
-
-    private void ExpectAckHello()
-    {
-      var response = ReceiveResponse(ResponseType.AckHello);
-
-      switch (response)
-      {
-        case 0:
-          /* Response is an ACK. */
-          return;
-        case 1:
-          throw new ZusiTcpException("Too many connections.");
-        case 2:
-          throw new ZusiTcpException("Zusi is already connected. No more connections allowed.");
-        default:
-          throw new ZusiTcpException("HELLO not acknowledged.");
-      }
-    }
-
     /// <summary>
     /// Disconnect from the TCP server.
     /// </summary>
     public void Disconnnect()
     {
-      if((_streamReaderThread != null)&&(_streamReaderThread != Thread.CurrentThread))
+      if ((_streamReaderThread != null) && (_streamReaderThread != Thread.CurrentThread))
       {
         _streamReaderThread.Abort();
       }
       ConnectionState = ConnectionState.Disconnected;
       _networkIOHandler.Disconnect();
       _networkHandlerFactory.Close(_networkIOHandler);
-    }
-
-    private int ReceiveResponse(ResponseType expectedInstruction)
-    {
-      int packetLength = _networkIOHandler.ReadInt32();
-      if (packetLength != 3)
-      {
-        throw new ZusiTcpException("Invalid packet length: " + packetLength);
-      }
-
-      int readInstr = BitbangingHelpers.GetInstruction(_networkIOHandler.ReadByte(), _networkIOHandler.ReadByte());
-      if (readInstr != (int) expectedInstruction)
-      {
-        throw new ZusiTcpException("Invalid command from server: " + readInstr);
-      }
-
-      int response = _networkIOHandler.ReadByte();
-      return response;
     }
 
     private void ReceiveLoop()
@@ -540,7 +440,7 @@ namespace Zusi_Datenausgabe
 
     private int ReceiveDataSegment(int curInstr)
     {
-      int curID = _networkIOHandler.ReadByte() + 256*curInstr;
+      int curID = _networkIOHandler.ReadByte() + 256 * curInstr;
 
       // One byte read for curID
       int bytesRead = 1;
@@ -602,19 +502,6 @@ namespace Zusi_Datenausgabe
       _streamReaderThread.Abort();
       _streamReaderThread = null;
     }
-
-    #region Nested type: ResponseType
-
-    private enum ResponseType
-    {
-      None = 0,
-
-      AckHello = 2,
-
-      AckNeededData = 4
-    }
-
-    #endregion
   }
 
   /// <summary>
