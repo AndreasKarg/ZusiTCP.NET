@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Zusi_Datenausgabe.AuxiliaryClasses;
-using Zusi_Datenausgabe.NetworkIO;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.NetworkIO
 {
   public class HandshakeHandler
   {
