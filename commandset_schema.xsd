@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="commandset_schema"
     targetNamespace="http://andik.g3th.net/commandset_schema.xsd"
     elementFormDefault="qualified"

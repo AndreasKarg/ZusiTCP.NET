@@ -1,4 +1,4 @@
-﻿#region header
+#region header
 
 // /*************************************************************************
 //  * ISourcedBinaryReader.cs

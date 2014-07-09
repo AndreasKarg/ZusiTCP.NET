@@ -260,7 +260,7 @@ namespace Zusi_Datenausgabe
                 String.Format("HandleDATA_{0}", curCommand.Type),
                 BindingFlags.Instance | BindingFlags.NonPublic,
                 null,
-                new[] {typeof (BinaryReader), typeof (int)},
+                new[] {typeof (IBinaryReader), typeof (int)},
                 null);
 
               if (handlerMethod == null)

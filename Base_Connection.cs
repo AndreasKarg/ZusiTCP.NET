@@ -1,4 +1,4 @@
-#region Using
+﻿#region Using
 
 using System;
 using System.Collections.Generic;
@@ -73,6 +73,7 @@ namespace Zusi_Datenausgabe
       get { return _connectionState; }
       protected set
       {
+        if (_connectionState == value) return; //Connection State did not change.
         _connectionState = value;
         if (HostContext != null)
         {

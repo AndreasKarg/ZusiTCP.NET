@@ -1,4 +1,4 @@
-#region Using
+﻿#region Using
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,8 @@ namespace Zusi_Datenausgabe
     #region Fields
 
     private readonly List<TCPServerSlaveConnection> _clients = new List<TCPServerSlaveConnection>();
-    private readonly ReadOnlyCollection<TCPServerSlaveConnection> _clientsExternReadonly;
+    private readonly List<Base_Connection> _clientsExtern = new List<Base_Connection>();
+    private readonly ReadOnlyCollection<Base_Connection> _clientsExternReadonly;
 
     private Thread _accepterThread;
     private TCPCommands _doc;
@@ -36,7 +37,7 @@ namespace Zusi_Datenausgabe
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
     public TCPServer(TCPCommands commandsetDocument)
     {
-      _clientsExternReadonly = _clients.AsReadOnly();
+      _clientsExternReadonly = _clientsExtern.AsReadOnly();
       _doc = commandsetDocument;
     }
 
@@ -47,6 +48,11 @@ namespace Zusi_Datenausgabe
     public Base_Connection Master
     {
       get { return _masterL; }
+    }
+
+    public ReadOnlyCollection<Base_Connection> Clients
+    {
+      get { return _clientsExternReadonly;}
     }
 
     public bool IsStarted
@@ -125,7 +131,7 @@ namespace Zusi_Datenausgabe
           TcpClient socketClient = _socketListener.AcceptTcpClient();
 
           //TODO: Cleanup Initializer class
-          TCPServerConnectionInitializer initializer = new TCPServerConnectionInitializer("", ClientPriority.Undefined);
+          TCPServerConnectionInitializer initializer = new TCPServerConnectionInitializer("", ClientPriority.Undefined, _doc, null); //Not Syncronized
           initializer.MasterConnectionInitialized += MasterConnectionInitialized;
           initializer.SlaveConnectionInitialized += SlaveConnectionInitialized;
           initializer.InitializeClient(new BinaryIoTcpClient(socketClient, true));
@@ -156,6 +162,9 @@ namespace Zusi_Datenausgabe
       slave.ConnectionState_Changed += SlaveConnectionStateChanged;
       slave.ErrorReceived += SlaveErrorReceived;
       _clients.Add(slave);
+      _clientsExtern.Add(slave);
+      HashSet<int> requestedData = slave.RequestedData;
+      if (requestedData != null) OnSlaveDataRequested(slave, null); //ToDo: No good behaviour.
     }
 
     private void SlaveErrorReceived(object sender, ZusiTcpException zusiTcpException)
@@ -171,9 +180,11 @@ namespace Zusi_Datenausgabe
       Debug.Assert(_clients.Contains(client));
       Debug.Assert(client.RequestedData != null);
 
+      if (!_clients.Contains(client)) return;
       _requestedData.ReleaseRange(client.RequestedData);
-      client.Dispose();
       _clients.Remove(client);
+      _clientsExtern.Remove(client);
+      client.Dispose();
     }
 
     private void SlaveConnectionStateChanged(object sender, EventArgs eventArgs)
@@ -213,7 +224,6 @@ namespace Zusi_Datenausgabe
         initializer.RefuseConnectionAndTerminate();
         throw new NotSupportedException("Master is already connected. Cannot accept more than one master.");
       }
-
       _masterL = initializer.GetMasterConnection(_requestedData.ReferencedToIEnumerable());
       _masterL.ConnectionState_Changed += MasterConnectionStateChanged;
       _masterL.ErrorReceived += MasterErrorReceived;
@@ -239,14 +249,18 @@ namespace Zusi_Datenausgabe
 
     private void KillMaster()
     {
-      Debug.Assert(_masterL != null);
-      _masterL.Dispose();
-      _masterL = null;
+      //Debug.Assert(_masterL != null);
+      if (_masterL != null)
+      {
+        _masterL.Dispose();
+        _masterL = null;
+      }
     }
 
     private void MasterConnectionStateChanged(object sender, EventArgs eventArgs)
     {
-      Debug.Assert(sender == _masterL);
+      if (_masterL == null) return;
+      //Debug.Assert(sender == _masterL);
 
       switch (_masterL.ConnectionState)
       {

@@ -1,4 +1,4 @@
-﻿#region header
+#region header
 
 // /*************************************************************************
 //  * TCPServerConnectionInitializer.cs
@@ -40,17 +40,20 @@ namespace Zusi_Datenausgabe
   {
     private TCPServerMasterConnection _masterConnection;
     private TCPServerSlaveConnection _slaveConnection;
+    private TCPCommands _commands;
 
     #region Delegated Base Constructors
 
-    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, SynchronizationContext hostContext)
+    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, TCPCommands commands, SynchronizationContext hostContext)
       : base(clientId, priority, hostContext)
     {
+      _commands = commands;
     }
 
-    public TCPServerConnectionInitializer(string clientId, ClientPriority priority)
+    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, TCPCommands commands)
       : base(clientId, priority)
     {
+      _commands = commands;
     }
 
     #endregion
@@ -131,7 +134,7 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Cannot create master connection for slave client.");
       }
 
-      _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, requestedData);
+      _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, requestedData, _commands);
     }
 
     protected override void HandleHandshake()

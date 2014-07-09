@@ -36,11 +36,8 @@ namespace Zusi_Datenausgabe
 
     private void OnDataRequested(ICollection<int> requestedData)
     {
-      var handler = DataRequested;
-      if (handler != null)
-      {
-        handler(this, EventArgs.Empty);
-      }
+      if (DataRequested == null) return;
+      DataRequested.Invoke(this, EventArgs.Empty);
     }
 
     protected override void HandleHandshake()
@@ -62,7 +59,10 @@ namespace Zusi_Datenausgabe
         }
 
         // TODO: Check for correct data group
-        _requestedData = new HashSet<int>(requestedValues.RequestedValues);
+        if (_requestedData == null)
+          _requestedData = new HashSet<int>(requestedValues.RequestedValues);
+        else
+          _requestedData.AddRange(requestedValues.RequestedValues);
         SendPacket(Pack(0, 4, 0));
       }
 

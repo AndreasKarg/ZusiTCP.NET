@@ -1,4 +1,4 @@
-﻿#region header
+#region header
 
 // /*************************************************************************
 //  * RequestetDataClerk.cs
@@ -73,6 +73,7 @@ namespace Zusi_Datenausgabe
 
     public void ClaimItem(T item)
     {
+      if (!_referenceCounts.ContainsKey(item)) _referenceCounts.Add(item, 0);
       _referenceCounts[item]++;
     }
 

@@ -1,0 +1,1 @@
+copy "..\..\..\bin\Debug\Zusi-Datenausgabe.dll" "Zusi-Datenausgabe.dll" /Y & C:\Windows\Microsoft.NET\Framework\v3.5\csc /r:../../../bin/Debug/Zusi-Datenausgabe.dll ServerTest1.cs & if NOT ERRORLEVEL 1 ServerTest1 

@@ -1,4 +1,4 @@
-﻿Zusi-Datenausgabe-Schnittstelle für Zusi 2.4 unter einer .NET-Umgebung
+Zusi-Datenausgabe-Schnittstelle für Zusi 2.4 unter einer .NET-Umgebung
 
 Diese Anleitung gilt für die Verwendung von Microsoft Visual Studio. Mit anderen Entwicklungsumgebungen habe ich unter .NET noch nicht
 gearbeitet. Ich gehe aber davon aus, dass der Ablauf ähnlich bis gleich sein dürfte.

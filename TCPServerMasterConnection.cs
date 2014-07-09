@@ -15,14 +15,12 @@ namespace Zusi_Datenausgabe
     public TCPServerMasterConnection(SynchronizationContext hostContext,
                                      IBinaryIO client,
                                      String clientId,
-                                     IEnumerable<int> requestedIds)
-      : base(clientId, ClientPriority.Master, hostContext, null)
+                                     IEnumerable<int> requestedIds,
+                                     TCPCommands commands)
+      : base(clientId, ClientPriority.Master, hostContext, commands)
     {
-      throw new NotImplementedException("This class has no command set defined.");
-      /*
       _requestedIds = requestedIds;
       InitializeClient(client);
-*/
     }
 
     public event Action<DataSet<byte[]>> DataSetReceived;
