@@ -236,7 +236,7 @@ namespace Zusi_Datenausgabe
       string value = input.ReadString();
       PostToHost(StringReceived, id, value);
 
-      return value.Length;
+      return value.Length + 1;
     }
 
     /// <summary>
