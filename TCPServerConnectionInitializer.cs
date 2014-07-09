@@ -134,7 +134,7 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Cannot create master connection for slave client.");
       }
 
-      _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, requestedData, _commands);
+      _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, new List<int>(requestedData), _commands);
     }
 
     protected override void HandleHandshake()

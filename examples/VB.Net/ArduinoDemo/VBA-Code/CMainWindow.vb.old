@@ -1,4 +1,4 @@
-ï»¿Imports Zusi_Datenausgabe
+Imports Zusi_Datenausgabe
 'Hinweis: ich habe jetzt nicht viele Assembyls importiert. Wenn was nicht so gut geht > einfach mehr Assemblys importieren.
 Public Class CMainWindow
     ' We do want to have a ZusiTcpConn object, so here's the declaration
@@ -7,7 +7,7 @@ Public Class CMainWindow
     ' In this collection we'll save the states of th LMs.
     Private LmArray As New System.Collections.BitArray(8)
     ''' <summary>
-    ''' Der Konstrukor. Er wird noch vor dem Start aufgerufen und sorgt dafï¿½r, dass unser Form so aussieht, wie wir es uns vorstellen.
+    ''' Der Konstrukor. Er wird noch vor dem Start aufgerufen und sorgt dafür, dass unser Form so aussieht, wie wir es uns vorstellen.
     ''' </summary>
     Public Sub New()
         InitializeComponent()
@@ -27,7 +27,7 @@ Public Class CMainWindow
         MyTCPConnection.RequestData(2585)   'LM PZB Zugart O  . . .  => BoolReceived
         MyTCPConnection.RequestData(2596)   'LM Sifa  . . . . . . .  => BoolReceived
 
-        'Die ComboBox mit Eintrï¿½gen fï¿½llen
+        'Die ComboBox mit Einträgen füllen
         AddCom2Combo(CbCom)
     End Sub
     ''' <summary>
@@ -51,7 +51,7 @@ Public Class CMainWindow
                 System.Windows.Forms.MessageBox.Show(String.Format("An error occured when trying to connect: {0}", ex.Message))
 
                 ' ... reset the connection by explicitly calling Disconnect()
-                MyTCPConnection.Disconnect()
+                MyTCPConnection.Disconnnect()
 
                 ' ... and then change the button label to "Verbinden".
                 BtnConnect.Text = "Verbinden"
@@ -60,14 +60,14 @@ Public Class CMainWindow
             ' If we're currently connected or the connection fell into an error state...
         Else
             ' ... reset the connection by explicitly calling Disconnect()
-            MyTCPConnection.Disconnect()
+            MyTCPConnection.Disconnnect()
 
             ' ... and then change the button label to "Verbinden".
             BtnConnect.Text = "Verbinden"
         End If
     End Sub
     ''' <summary>
-    ''' Wird ausgelï¿½st, wenn in der TCPConnection ein Fehler aufgetreten ist.
+    ''' Wird ausgelöst, wenn in der TCPConnection ein Fehler aufgetreten ist.
     ''' </summary>
     Private Sub MyTCPConnection_ErrorReceived(ByVal sender As Object, ByVal ex As Zusi_Datenausgabe.ZusiTcpException) Handles MyTCPConnection.ErrorReceived
         ' If something goes wrong...
@@ -75,7 +75,7 @@ Public Class CMainWindow
         System.Windows.Forms.MessageBox.Show(String.Format("An error occured when receiving data: {0}", ex.Message))
 
         ' ... reset the connection by explicitly calling Disconnect()
-        MyTCPConnection.Disconnect()
+        MyTCPConnection.Disconnnect()
 
         ' ... and then change the button label to "Verbinden".
         BtnConnect.Text = "Verbinden"
@@ -108,12 +108,12 @@ Public Class CMainWindow
             System.Threading.Thread.Sleep(500)
             If Serial.BytesToRead > 0 Then
                 If Not Serial.ReadLine() = "I am a drivers desk" & System.Text.Encoding.UTF8.GetString(New Byte() {13}) Then
-                    System.Windows.Forms.MessageBox.Show("An dem gewï¿½hlten Port scheint das falsche Gerï¿½t angeschlossen zu sein!")
+                    System.Windows.Forms.MessageBox.Show("An dem gewählten Port scheint das falsche Gerät angeschlossen zu sein!")
                     Serial.Close()
                     ComCon.Text = "Verbinden"
                 End If
             Else
-                System.Windows.Forms.MessageBox.Show("An dem gewï¿½hlten Port scheint kein Gerï¿½t angeschlossen zu sein!")
+                System.Windows.Forms.MessageBox.Show("An dem gewählten Port scheint kein Gerät angeschlossen zu sein!")
                 Serial.Close()
                 ComCon.Text = "Verbinden"
             End If
@@ -124,7 +124,7 @@ Public Class CMainWindow
     End Sub
 
     ''' <summary>
-    ''' Wird ausgelï¿½st, wenn ein Boolean-Wert empfangen wurde.
+    ''' Wird ausgelöst, wenn ein Boolean-Wert empfangen wurde.
     ''' </summary>
     Private Sub MyTCPConnection_BoolReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Boolean)) Handles MyTCPConnection.BoolReceived
         Select Case data.Id
@@ -143,7 +143,7 @@ Public Class CMainWindow
             Case 2596   'Lm Sifa
                 LmArray(6) = data.Value
         End Select
-        If Serial.IsOpen Then 'Wenn wir mit unserer Hadware verbunden sind, kï¿½nnen wir die Daten gleich senden.
+        If Serial.IsOpen Then 'Wenn wir mit unserer Hadware verbunden sind, können wir die Daten gleich senden.
             Dim OutChar(2) As Byte
             OutChar(0) = 80     'P
             LmArray.CopyTo(OutChar, 1) 'die Werte nach OutChar(1) kopieren.
@@ -151,7 +151,7 @@ Public Class CMainWindow
         End If
     End Sub
     ''' <summary>
-    ''' Wird ausgelï¿½st, wenn ein Single-Wert empfangen wurde.
+    ''' Wird ausgelöst, wenn ein Single-Wert empfangen wurde.
     ''' </summary>
     Private Sub MyTCPConnection_FloatReceived(ByVal sender As Object, ByVal data As Zusi_Datenausgabe.DataSet(Of Single)) Handles MyTCPConnection.FloatReceived
         If Serial.IsOpen Then
@@ -173,7 +173,7 @@ Public Class CMainWindow
                 System.Windows.Forms.MessageBox.Show(String.Format("An error occured when processing data: {0}", ex.Message))
 
                 ' ... reset the connection by explicitly calling Disconnect()
-                MyTCPConnection.Disconnect()
+                MyTCPConnection.Disconnnect()
 
                 ' ... and then change the button label to "Verbinden".
                 BtnConnect.Text = "Verbinden"

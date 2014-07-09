@@ -12,6 +12,7 @@ namespace Zusi_Datenausgabe
   internal class TCPServerSlaveConnection : Base_Connection
   {
     private HashSet<int> _requestedData;
+    private IBinaryIO _InitializerClient;
 
     public TCPServerSlaveConnection(SynchronizationContext hostContext,
                                     IBinaryIO client,
@@ -19,7 +20,13 @@ namespace Zusi_Datenausgabe
                                     ClientPriority priority)
       : base(clientId, priority, hostContext)
     {
-      InitializeClient(client);
+      _InitializerClient = client;
+      //InitializeClient(client); //WARNING: Slave will no longer be Initialized automaticly. Server has to do it manually.
+    }
+
+    public void InitializeClient()
+    {
+      InitializeClient(_InitializerClient);
     }
 
     public HashSet<int> RequestedData
@@ -33,11 +40,19 @@ namespace Zusi_Datenausgabe
     }
 
     public event EventHandler<EventArgs> DataRequested;
+    ///<summary>Allows the Server to check if the Data Request can be terminated early. 
+    /// If someone throws an exception in this Event, data will be refused.</summary>
+    public event EventHandler<EventArgs> DataChecking;
 
     private void OnDataRequested(ICollection<int> requestedData)
     {
       if (DataRequested == null) return;
       DataRequested.Invoke(this, EventArgs.Empty);
+    }
+    private void OnDataChecking(ICollection<int> requestedData)
+    {
+      if (DataChecking == null) return;
+      DataChecking.Invoke(this, EventArgs.Empty);
     }
 
     protected override void HandleHandshake()
@@ -58,11 +73,27 @@ namespace Zusi_Datenausgabe
           throw;
         }
 
+        try
+        {
+          HashSet<int> reqDatOld = _requestedData;
+          _requestedData = new HashSet<int>(requestedValues.RequestedValues);
+          OnDataChecking(requestedValues.RequestedValues);
+          _requestedData = reqDatOld;
+        }
+        catch
+        {
+          SendPacket(Pack(0, 4, 3));
+          throw;
+        }
+
+
         // TODO: Check for correct data group
         if (_requestedData == null)
           _requestedData = new HashSet<int>(requestedValues.RequestedValues);
         else
           _requestedData.AddRange(requestedValues.RequestedValues);
+
+
         SendPacket(Pack(0, 4, 0));
       }
 

@@ -55,6 +55,16 @@ namespace Zusi_Datenausgabe
       }
     }
 
+    public bool ExistAll(IEnumerable<T> range)
+    {
+      foreach (var i in range)
+      {
+        if (!ExistItem(i)) return false;
+      }
+      return true;
+    }
+
+
     private void ReleaseItem(T i)
     {
       int val = _referenceCounts[i];
@@ -75,6 +85,12 @@ namespace Zusi_Datenausgabe
     {
       if (!_referenceCounts.ContainsKey(item)) _referenceCounts.Add(item, 0);
       _referenceCounts[item]++;
+    }
+
+    public bool ExistItem(T item)
+    {
+      if (!_referenceCounts.ContainsKey(item)) return false;
+      return _referenceCounts[item] > 0;
     }
 
     public void Clear()

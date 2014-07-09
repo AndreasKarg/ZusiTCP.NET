@@ -13,6 +13,11 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
+  ///<summary>This class represents a TCP Server that connects multiple slaves 
+  /// (slaves can be implented using class ZusiTcpCon) with a master (normally Zusi).
+  /// Slaves normally should be connected before the master is connected, but can also be connected 
+  /// after the master when no new data is required. Otherwise the client will be denyed.</summary>
+  ///<remarks>Warning: This class lacks documentation. But method names should do it.</remarks>
   [EditorBrowsable(EditorBrowsableState.Advanced)]
   public class TCPServer
   {
@@ -39,6 +44,7 @@ namespace Zusi_Datenausgabe
     {
       _clientsExternReadonly = _clientsExtern.AsReadOnly();
       _doc = commandsetDocument;
+      _anywayReqReadonly = new System.Collections.ObjectModel.ReadOnlyCollection<int>(_anywayReq);
     }
 
     /// <summary>
@@ -50,19 +56,57 @@ namespace Zusi_Datenausgabe
       get { return _masterL; }
     }
 
+    private System.Collections.Generic.List<int> _anywayReq = new System.Collections.Generic.List<int>();
+    private System.Collections.ObjectModel.ReadOnlyCollection<int> _anywayReqReadonly;
+    /// <summary>
+    ///   Sets the given Ids to be requested from the master even if no client wants them.
+    /// </summary>
+    public void RepalceAnywayRequested(IEnumerable<int> newAnywayReq)
+    {
+      if (_masterL != null)
+        throw new System.InvalidOperationException();
+      _requestedData.ReleaseRange(_anywayReq);
+      _anywayReq.Clear();
+      _anywayReq.AddRange(newAnywayReq);
+      _requestedData.ClaimRange(_anywayReq);
+    }
+    /// <summary>
+    ///   Gets a List of Ids that will be requested from the master even if no client wants them. 
+    ///   Usefull for clients that want to connec after the master.
+    /// </summary>
+    /// <value>A readonly List of Ids that will be requested from the master even if no client wants them.</value>
+    public System.Collections.ObjectModel.ReadOnlyCollection<int> AnywayRequested
+    {
+      get { return _anywayReqReadonly;}
+    }
+
+
+    /// <summary>
+    ///   Gets the Clients.
+    /// </summary>
+    /// <value>A readonly List of all connected (or connecting) Clients.</value>
     public ReadOnlyCollection<Base_Connection> Clients
     {
       get { return _clientsExternReadonly;}
     }
 
+    /// <summary>
+    ///   Gets if the server is started.
+    /// </summary>
+    /// <value>True when the server is started, otherwise false.</value>
     public bool IsStarted
     {
       get { return _accepterThread != null; }
     }
 
+    /// <summary>
+    ///   Returns any Exeption thrown by any connected or connecting client. If this event occurs it does normally
+    ///   NOT mean, that the server is about to close. Often some client is disconnecting or failed to connect.
+    /// </summary>
+    /// <remarks>Note: At the moment even a simple disconnect can cause this event to be raised. This may change in future.</remarks>
     public event ErrorEvent OnError;
 
-    public void InvokeOnError(ZusiTcpException ex)
+    protected void InvokeOnError(ZusiTcpException ex) //ToDo: Why on earth was this method Public?
     {
       ErrorEvent handler = OnError;
       if (handler != null)
@@ -150,21 +194,16 @@ namespace Zusi_Datenausgabe
 
       //TODO: Throw exception in client when ErrorReceived is not subscribed to.
 
-      //TODO: Improve slave handling.
-      if (_masterL != null)
-      {
-        initializer.RefuseConnectionAndTerminate();
-        throw new NotSupportedException("Master is already connected. Cannot accept more clients.");
-      }
+      //No Check if master is null any more due to the check if data is already requested.
 
       TCPServerSlaveConnection slave = initializer.SlaveConnection;
       slave.DataRequested += OnSlaveDataRequested;
+      slave.DataChecking += OnSlaveDataChecking;
       slave.ConnectionState_Changed += SlaveConnectionStateChanged;
       slave.ErrorReceived += SlaveErrorReceived;
       _clients.Add(slave);
       _clientsExtern.Add(slave);
-      HashSet<int> requestedData = slave.RequestedData;
-      if (requestedData != null) OnSlaveDataRequested(slave, null); //ToDo: No good behaviour.
+      slave.InitializeClient();
     }
 
     private void SlaveErrorReceived(object sender, ZusiTcpException zusiTcpException)
@@ -195,6 +234,18 @@ namespace Zusi_Datenausgabe
       switch (client.ConnectionState)
       {
         case ConnectionState.Connected:
+          if (_masterL != null)
+          {
+            foreach(var val in client.RequestedData)
+            {
+              byte[] data;
+              if (_masterL.TryGetBufferValue(val, out data))
+              {
+                client.SendByteCommand(data, val);
+              }
+            }
+          }
+          break;
         case ConnectionState.Connecting:
           /* Nothing to do */
           break;
@@ -207,11 +258,34 @@ namespace Zusi_Datenausgabe
       }
     }
 
+    private void OnSlaveDataChecking(object sender, EventArgs eventArgs)
+    {
+      TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
+      if (_masterL != null)
+      {
+        foreach(var val in client.RequestedData)
+        {
+          if (!_masterL.RequestedData.Contains(val))
+            throw new NotSupportedException(string.Format("Master is already connected. Cannot accept Data {0}, " + 
+                                                          "because it's not already requested.", val));
+        }
+      }
+    }
+
     private void OnSlaveDataRequested(object sender, EventArgs eventArgs)
     {
       TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
       Debug.Assert(_clients.Contains(client));
 
+      if (_masterL != null)
+      {
+        foreach(var val in client.RequestedData)
+        {
+          if (!_masterL.RequestedData.Contains(val))
+            throw new NotSupportedException(string.Format("Master is already connected. Cannot accept Data {0}, " + 
+                                                          "because it's not already requested.", val));
+        }
+      }
       _requestedData.ClaimRange(client.RequestedData);
     }
 

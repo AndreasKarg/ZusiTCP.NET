@@ -46,7 +46,7 @@ namespace Zusi_Datenausgabe
     ///   here before connecting to the server. List is read-only while connected.
     ///   <seealso cref="IDs" />
     /// </summary>
-    public ICollection<int> RequestedData
+    public virtual ICollection<int> RequestedData
     {
       get { return _requestedData; }
     }

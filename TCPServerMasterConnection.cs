@@ -10,20 +10,32 @@ namespace Zusi_Datenausgabe
 {
   internal class TCPServerMasterConnection : ZusiTcpReceiver
   {
-    private readonly IEnumerable<int> _requestedIds;
+    private readonly IList<int> _requestedIds;
+    private System.Collections.ObjectModel.ReadOnlyCollection<int> _requestedData;
+    public override ICollection<int> RequestedData { get { return _requestedData; } }
+
+    private System.Collections.Generic.Dictionary<int, byte[]> _dataBuffer;
 
     public TCPServerMasterConnection(SynchronizationContext hostContext,
                                      IBinaryIO client,
                                      String clientId,
-                                     IEnumerable<int> requestedIds,
+                                     IList<int> requestedIds,
                                      TCPCommands commands)
       : base(clientId, ClientPriority.Master, hostContext, commands)
     {
       _requestedIds = requestedIds;
+      _requestedData = new System.Collections.ObjectModel.ReadOnlyCollection<int>(_requestedIds);
+      _dataBuffer = new System.Collections.Generic.Dictionary<int, byte[]>();
       InitializeClient(client);
     }
 
     public event Action<DataSet<byte[]>> DataSetReceived;
+
+    public bool TryGetBufferValue(int key, out byte[] value)
+    {
+       return _dataBuffer.TryGetValue(key, out value);
+    }
+
 
     private void OnDataSetReceived(DataSet<byte[]> args)
     {
@@ -31,6 +43,12 @@ namespace Zusi_Datenausgabe
       if (handler != null)
       {
         handler(args);
+      }
+      if (RequestedData.Contains(args.Id))
+      {
+        //var lst = new System.Collections.Generic.List<byte>(args.Value); //ToDo: Bad method to copy arrays.
+        //_dataBuffer[args.Id] = lst.ToArray();
+        _dataBuffer[args.Id] = args.Value;
       }
     }
 

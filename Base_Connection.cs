@@ -164,6 +164,7 @@ namespace Zusi_Datenausgabe
     public void InitializeClient(IBinaryIO clientConnection)
     {
       Debug.Assert(clientConnection.Connected);
+      if (ClientConnection != null) throw new System.InvalidOperationException(); //Already initialized.
       ClientConnection = clientConnection;
 
       try

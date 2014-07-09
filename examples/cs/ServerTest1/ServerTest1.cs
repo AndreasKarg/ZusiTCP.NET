@@ -4,7 +4,14 @@ class ServertTest1
 	public static void Main()
 	{
 		System.Console.WriteLine("TCP Server");
-		var server = new Zusi_Datenausgabe.TCPServer(Zusi_Datenausgabe.TCPCommands.LoadFromFile("commandset_server.xml"));
+		var commands = Zusi_Datenausgabe.TCPCommands.LoadFromFile("commandset_server.xml");
+		var server = new Zusi_Datenausgabe.TCPServer(commands);
+		var listIds = new System.Collections.Generic.List<int>();
+		foreach(var i in commands.CommandByID)
+		{
+			listIds.Add(i.Value.ID);
+		}
+		server.RepalceAnywayRequested(listIds);
 		System.Console.WriteLine("Set up Server successfull");
 		server.Start(1435);
 		while (!server.IsStarted) System.Threading.Thread.Sleep(100);

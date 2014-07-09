@@ -1,4 +1,4 @@
-ï»¿Imports Zusi_Datenausgabe
+Imports Zusi_Datenausgabe
 Public Class Form1
     ' We do want to have a ZusiTcpConn object, so here's the declaration
     ' With WithEvents we can handle events by marking the Subs with Handles MyTCPConnection.Exampleeventname
@@ -18,7 +18,7 @@ Public Class Form1
         MyTCPConnection.RequestData(2610) ' "Uhrzeit"  . . . . . . . . . . . . . . . .  => DateTimeReceived
         MyTCPConnection.RequestData(2637) ' "LM Block, bis zu dem die Strecke frei ist" => StringReceived
         MyTCPConnection.RequestData(2649) ' "PZB-System"   . . . . . . . . . . . . . .  => PZBReceived
-        MyTCPConnection.RequestData(2594) ' "LM LZB ï¿½-System"  . . . . . . . . . . . .  => BoolReceived
+        MyTCPConnection.RequestData(2594) ' "LM LZB Ü-System"  . . . . . . . . . . . .  => BoolReceived
     End Sub
 
     Private Sub BtnConnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnConnect.Click
@@ -39,7 +39,7 @@ Public Class Form1
                 System.Windows.Forms.MessageBox.Show(String.Format("An error occured when trying to connect: {0}", ex.Message))
 
                 ' ... reset the connection by explicitly calling Disconnect()
-                MyTCPConnection.Disconnect()
+                MyTCPConnection.Disconnnect()
 
                 ' ... and then change the button label to "Connect".
                 BtnConnect.Text = "Connect"
@@ -48,7 +48,7 @@ Public Class Form1
             ' If we're currently connected or the connection fell into an error state...
         Else
             ' ... reset the connection by explicitly calling Disconnect()
-            MyTCPConnection.Disconnect()
+            MyTCPConnection.Disconnnect()
 
             ' ... and then change the button label to "Connect".
             BtnConnect.Text = "Connect"
@@ -62,7 +62,7 @@ Public Class Form1
         System.Windows.Forms.MessageBox.Show(String.Format("An error occured when receiving data: {0}", ex.Message))
 
         ' ... reset the connection by explicitly calling Disconnect()
-        MyTCPConnection.Disconnect()
+        MyTCPConnection.Disconnnect()
 
         ' ... and then change the button label to "Connect".
         BtnConnect.Text = "Connect"
@@ -71,7 +71,7 @@ Public Class Form1
     Private Sub TCPConnection_BoolReceived(ByVal sender As Object, ByVal data As DataSet(Of Boolean)) _
         Handles MyTCPConnection.BoolReceived
         Select Case data.Id
-            Case 2594 ' "LM LZB ï¿½-System" => BoolReceived
+            Case 2594 ' "LM LZB Ü-System" => BoolReceived
                 lblPZB.Enabled = Not data.Value 'PZB off when LZB is on
                 lblLZB.Enabled = data.Value 'enable LZB when it's on
             Case Else

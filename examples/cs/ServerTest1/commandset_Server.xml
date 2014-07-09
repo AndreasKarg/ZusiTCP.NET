@@ -62,7 +62,7 @@
   <Command ID="2621" Name="Schalter Sifa" Type="4ByteCommand" />
   <Command ID="2622" Name="Schalter Hauptschalter" Type="4ByteCommand" />
   <Command ID="2623" Name="Schalter Motor ein/aus" Type="4ByteCommand" />
-  <Command ID="2624" Name="Schalter Fahrtrichtung" Type="IntAsSingle" />
+  <Command ID="2624" Name="Schalter Fahrtrichtung" Type="4ByteCommand" />
   <Command ID="2625" Name="Schalter Pfeife" Type="4ByteCommand" />
   <Command ID="2626" Name="Schalter Sanden" Type="4ByteCommand" />
   <Command ID="2627" Name="Schalter Türen" Type="4ByteCommand" />
@@ -100,7 +100,7 @@
   <Command ID="2661" Name="Aktuelle Zielgeschwindigkeit" Type="4ByteCommand" />
   <Command ID="2662" Name="Zielweg" Type="4ByteCommand" />
   <Command ID="2663" Name="Abstand nächster Reisezughalt" Type="4ByteCommand" />
-  <Command ID="2664" Name="Name nächster Reisezughalt" Type="4ByteCommand" />
+  <Command ID="2664" Name="Name nächster Reisezughalt" Type="LengthIn1ByteCommand" />
   <Command ID="2665" Name="Planzeit nächster Reisezughalt" Type="8ByteCommand" />
   <Command ID="2666" Name="PZB restriktiv" Type="4ByteCommand" />
   <Command ID="2667" Name="PZB-Zwansgbremsung" Type="4ByteCommand" />
