@@ -78,7 +78,7 @@ namespace Zusi_Datenausgabe
       _clientStream = _tcpClient.GetStream();
 
       //TODO: Cleanup
-      _clientReader = new BinaryReader(_clientStream, new ASCIIEncoding());
+      _clientReader = new BinaryReader(_clientStream, Encoding.Default);
     }
 
     private void ValidateConnection()
