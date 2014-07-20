@@ -213,7 +213,6 @@ namespace Zusi_Datenausgabe
     /// <summary>
     ///   Stops the Server and closes all connected clients.
     /// </summary>
-    [System.ObsoleteAttribute("Seems to be broken.")]
     public void Stop()
     {
       var clientsOld = new System.Collections.Generic.List<TCPServerSlaveConnection>(_clients);
@@ -223,7 +222,7 @@ namespace Zusi_Datenausgabe
       }
       if (_masterL != null)
         _masterL.Disconnect();
-      _accepterThread.Abort();
+      _accepterThread.Interrupt();
     }
 
     private void RunningLoop()
@@ -232,6 +231,7 @@ namespace Zusi_Datenausgabe
       {
         while (IsStarted)
         {
+          while(!_socketListener.Pending()) { Thread.Sleep(250); } // While noone wants to connect - sleep!
           TcpClient socketClient = _socketListener.AcceptTcpClient();
 
           //TODO: Cleanup Initializer class
@@ -244,10 +244,20 @@ namespace Zusi_Datenausgabe
       catch(System.Threading.ThreadAbortException)
       {
         _socketListener.Stop();
+        _socketListener = null;
+        _accepterThread = null;
+      }
+      catch(System.Threading.ThreadInterruptedException)
+      {
+        _socketListener.Stop();
+        _socketListener = null;
+        _accepterThread = null;
       }
       catch(System.Exception ex)
       {
         _socketListener.Stop();
+        _socketListener = null;
+        _accepterThread = null;
         InvokeOnError(new ZusiTcpException("An Error occured while trying to find new clients.", ex));
       }
     }
