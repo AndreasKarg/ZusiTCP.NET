@@ -73,4 +73,54 @@ namespace Zusi_Datenausgabe
     {
     }
   }
+
+  /// <summary>
+  ///   Is thrown when an object provides syncronized Events but no Syncronization Context was found.
+  ///   This execption is thrown in constructors and is caused by the programmer. To avoid this exception
+  ///   the constructor should be called later, when SynchronizationContext.Current is not null any more.
+  /// </summary>
+  [Serializable]
+  public class ObjectUnsyncronisizableException : Exception
+  {
+    /// <summary>
+    ///   Create a new ObjectUnsyncronisizableException using msg as message.
+    /// </summary>
+    /// <param name="msg">The exception message.</param>
+    public ObjectUnsyncronisizableException(string msg)
+      : base(msg)
+    {
+    }
+
+    /// <summary>
+    ///   Create a new ObjectUnsyncronisizableException.
+    /// </summary>
+    public ObjectUnsyncronisizableException()
+      : this("Cannot create TCP connection object: SynchronizationContext.Current is null. " +
+             "This happens when the object is created before the context is initialized in " +
+             "Application.Run() or equivalent. " +
+             "Possible solution: Create object later, e.g. when the user clicks the \"Connect\" button. " +
+             "If you do not need Syncrosisation use a constructor with explicit SynchronizationContext null.")
+    {
+    }
+
+    /// <summary>
+    ///   Create a new ObjectUnsyncronisizableException using msg as the message and e as the inner exception
+    /// </summary>
+    /// <param name="msg">The exception message.</param>
+    /// <param name="e">The inner exception.</param>
+    public ObjectUnsyncronisizableException(string msg, Exception e)
+      : base(msg, e)
+    {
+    }
+
+    /// <summary>
+    ///   Create a new ObjectUnsyncronisizableException with serialized data.
+    /// </summary>
+    /// <param name="serializationInfo">Serialization info</param>
+    /// <param name="streamingContext">Streaming context</param>
+    protected ObjectUnsyncronisizableException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+      : base(serializationInfo, streamingContext)
+    {
+    }
+  }
 }

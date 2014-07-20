@@ -59,6 +59,15 @@ namespace Zusi_Datenausgabe
     [XmlIgnore]
     public ZusiData<int, string> NameByID { get; private set; }
 
+    public bool ContainsID(int id)
+    {
+      foreach (var entry in commandField)
+      {
+        if (entry.ID == id) return true;
+      }
+      return false;
+    }
+
     /// <summary>
     ///   Identical to this.<see cref="CommandByID" />.
     /// </summary>

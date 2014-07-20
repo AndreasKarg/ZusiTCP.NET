@@ -13,8 +13,10 @@ namespace Zusi_Datenausgabe
     private readonly IList<int> _requestedIds;
     private System.Collections.ObjectModel.ReadOnlyCollection<int> _requestedData;
     public override ICollection<int> RequestedData { get { return _requestedData; } }
+    //public object RequestedDataLockObject { get { return _dataBufferLock; } }
 
     private System.Collections.Generic.Dictionary<int, byte[]> _dataBuffer;
+    //private object _dataBufferLock = new object();
 
     public TCPServerMasterConnection(SynchronizationContext hostContext,
                                      IBinaryIO client,
@@ -44,12 +46,17 @@ namespace Zusi_Datenausgabe
       {
         handler(args);
       }
+      //System.Threading.Monitor.Enter(RequestedDataLockObject);
       if (RequestedData.Contains(args.Id))
       {
-        //var lst = new System.Collections.Generic.List<byte>(args.Value); //ToDo: Bad method to copy arrays.
-        //_dataBuffer[args.Id] = lst.ToArray();
+        try {
+        System.Threading.Monitor.Enter(RequestedData);
         _dataBuffer[args.Id] = args.Value;
+        } finally {
+        System.Threading.Monitor.Exit(RequestedData);
+        }
       }
+      //System.Threading.Monitor.Exit(RequestedDataLockObject);
     }
 
     private void OnDataSetReceived(int id, byte[] payload)

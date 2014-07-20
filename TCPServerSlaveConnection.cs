@@ -80,9 +80,19 @@ namespace Zusi_Datenausgabe
           OnDataChecking(requestedValues.RequestedValues);
           _requestedData = reqDatOld;
         }
-        catch
+        catch(System.Collections.Generic.KeyNotFoundException)
+        {
+          SendPacket(Pack(0, 4, 2));
+          throw;
+        }
+        catch(NotSupportedException)
         {
           SendPacket(Pack(0, 4, 3));
+          throw;
+        }
+        catch
+        {
+          SendPacket(Pack(0, 4, 0xFE));
           throw;
         }
 

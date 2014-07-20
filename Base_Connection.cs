@@ -20,7 +20,7 @@ namespace Zusi_Datenausgabe
 
     protected readonly SynchronizationContext HostContext;
 
-    protected readonly ASCIIEncoding StringEncoder = new ASCIIEncoding();
+    protected readonly Encoding StringEncoder = Encoding.Default;
 
     protected IBinaryIO ClientConnection;
 
@@ -48,15 +48,13 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
     protected Base_Connection(string clientId, ClientPriority priority)
       : this(clientId, priority, SynchronizationContext.Current)
     {
       if (SynchronizationContext.Current == null)
       {
-        throw new ZusiTcpException("Cannot create TCP connection object: SynchronizationContext.Current is null. " +
-                                   "This happens when the object is created before the context is initialized in " +
-                                   "Application.Run() or equivalent. " +
-                                   "Possible solution: Create object later, e.g. when the user clicks the \"Connect\" button.");
+        throw new ObjectUnsyncronisizableException();
       }
     }
 
@@ -135,25 +133,37 @@ namespace Zusi_Datenausgabe
 
     protected void SendPacket(params byte[] message)
     {
-      ClientConnection.SendToPeer(BitConverter.GetBytes(message.Length));
-      ClientConnection.SendToPeer(message);
+      ClientConnection.SendToPeer(PackArrays(new byte[][] {BitConverter.GetBytes(message.Length), message}));
     }
 
     protected void SendLargePacket(params byte[][] message)
     {
       int iTempLength = message.Sum(item => item.Length);
 
-      ClientConnection.SendToPeer(BitConverter.GetBytes(iTempLength));
-
-      foreach (var item in message)
-      {
-        ClientConnection.SendToPeer(item);
-      }
+      ClientConnection.SendToPeer(PackArrays(BitConverter.GetBytes(iTempLength), message));
     }
 
     protected static byte[] Pack(params byte[] message)
     {
       return message;
+    }
+    protected static byte[] PackArrays(byte[] firstPacket, byte[][] otherPackets)
+    {
+      byte[][] partialPackets = new byte[otherPackets.Length + 1][];
+      partialPackets[0] = firstPacket;
+      Array.Copy(otherPackets, 0, partialPackets, 1, otherPackets.Length);
+      return PackArrays(partialPackets);
+    }
+    protected static byte[] PackArrays(byte[][] partialPackets)
+    {
+      byte[] value = new byte[partialPackets.Sum(item => item.Length)];
+      int curLoc = 0;
+      foreach(byte[] arr in partialPackets)
+      {
+        Array.Copy(arr, 0, value, curLoc, arr.Length);
+        curLoc += arr.Length;
+      }
+      return value;
     }
 
     protected static int GetInstruction(int byteA, int byteB)
@@ -185,10 +195,9 @@ namespace Zusi_Datenausgabe
 
     protected void HandleException(ZusiTcpException e)
     {
-      Disconnect();
-      ConnectionState = ConnectionState.Error;
-
       PostExToHost(e);
+
+      Disconnect(ConnectionState.Error);
     }
 
     protected abstract void HandleHandshake();
@@ -223,11 +232,15 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Disconnect()
     {
+      Disconnect(ConnectionState.Disconnected);
+    }
+    private void Disconnect(ConnectionState resond)
+    {
       if ((_streamReaderThread != null) && (_streamReaderThread != Thread.CurrentThread))
       {
         _streamReaderThread.Abort();
       }
-      ConnectionState = ConnectionState.Disconnected;
+      ConnectionState = resond;
       if (ClientConnection != null)
       {
         ClientConnection.Close();
@@ -348,7 +361,7 @@ namespace Zusi_Datenausgabe
             "of this application and/or the author(s) of the Zusi TCP interface for .NET.",
             e);
 
-        PostExToHost(newEx);
+        HandleException(newEx); //ToDo: Why was this only "PostEx"? This had caused Error While ConnectionState Connected!
       }
     }
 

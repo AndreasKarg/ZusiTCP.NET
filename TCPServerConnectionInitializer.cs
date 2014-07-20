@@ -58,16 +58,13 @@ namespace Zusi_Datenausgabe
 
     #endregion
 
-    public TCPServerSlaveConnection SlaveConnection
+    public TCPServerSlaveConnection GetSlaveConnection(SynchronizationContext hostContext)
     {
-      get
+      if (_slaveConnection == null)
       {
-        if (_slaveConnection == null)
-        {
-          InitializeSlaveConnection();
-        }
-        return _slaveConnection;
+        InitializeSlaveConnection(hostContext);
       }
+      return _slaveConnection;
     }
 
     public event EventHandler SlaveConnectionInitialized;
@@ -98,16 +95,16 @@ namespace Zusi_Datenausgabe
       Dispose();
     }
 
-    public TCPServerMasterConnection GetMasterConnection(IEnumerable<int> requestedData)
+    public TCPServerMasterConnection GetMasterConnection(SynchronizationContext hostContext, IEnumerable<int> requestedData)
     {
       if (_masterConnection == null)
       {
-        InitializeMasterConnection(requestedData);
+        InitializeMasterConnection(hostContext, requestedData);
       }
       return _masterConnection;
     }
 
-    private void InitializeSlaveConnection()
+    private void InitializeSlaveConnection(SynchronizationContext hostContext)
     {
       if (ClientPriority == ClientPriority.Undefined)
       {
@@ -119,10 +116,10 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Cannot create slave connection for master client.");
       }
 
-      _slaveConnection = new TCPServerSlaveConnection(HostContext, ClientConnection, ClientId, ClientPriority);
+      _slaveConnection = new TCPServerSlaveConnection(hostContext, ClientConnection, ClientId, ClientPriority);
     }
 
-    private void InitializeMasterConnection(IEnumerable<int> requestedData)
+    private void InitializeMasterConnection(SynchronizationContext hostContext, IEnumerable<int> requestedData)
     {
       if (ClientPriority == ClientPriority.Undefined)
       {
@@ -134,7 +131,7 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Cannot create master connection for slave client.");
       }
 
-      _masterConnection = new TCPServerMasterConnection(HostContext, ClientConnection, ClientId, new List<int>(requestedData), _commands);
+      _masterConnection = new TCPServerMasterConnection(hostContext, ClientConnection, ClientId, new List<int>(requestedData), _commands);
     }
 
     protected override void HandleHandshake()

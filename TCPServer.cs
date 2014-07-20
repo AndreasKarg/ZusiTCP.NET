@@ -31,6 +31,8 @@ namespace Zusi_Datenausgabe
     private TCPCommands _doc;
     private TcpListener _socketListener;
 
+    private readonly SynchronizationContext HostContext;
+
     #endregion
 
     private readonly ReferenceCounter<int> _requestedData = new ReferenceCounter<int>();
@@ -40,11 +42,27 @@ namespace Zusi_Datenausgabe
     ///   Initializes a new instance of the <see cref="Zusi_Datenausgabe.TCPServer" /> class.
     /// </summary>
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
-    public TCPServer(TCPCommands commandsetDocument)
+    /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
+    public TCPServer(TCPCommands commandsetDocument, SynchronizationContext hostContext)
     {
       _clientsExternReadonly = _clientsExtern.AsReadOnly();
       _doc = commandsetDocument;
       _anywayReqReadonly = new System.Collections.ObjectModel.ReadOnlyCollection<int>(_anywayReq);
+      HostContext = hostContext;
+    }
+
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="Zusi_Datenausgabe.TCPServer" /> class.
+    /// </summary>
+    /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
+    /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
+    public TCPServer(TCPCommands commandsetDocument)
+      : this(commandsetDocument, SynchronizationContext.Current)
+    {
+      if (SynchronizationContext.Current == null)
+      {
+        throw new ObjectUnsyncronisizableException();
+      }
     }
 
     /// <summary>
@@ -108,10 +126,48 @@ namespace Zusi_Datenausgabe
 
     protected void InvokeOnError(ZusiTcpException ex) //ToDo: Why on earth was this method Public?
     {
+      if (HostContext != null)
+      {
+        HostContext.Post(ErrorMarshal, ex);
+      }
+      else
+      {
+        ErrorMarshal(ex);
+      }
+    }
+    private void ErrorMarshal(object o)
+    {
+      ZusiTcpException ex = (ZusiTcpException) o;
       ErrorEvent handler = OnError;
       if (handler != null)
       {
         handler(this, ex);
+      }
+    }
+
+    /// <summary>
+    ///   Raised, when someone connected to the server.
+    /// </summary>
+    public event ClientConnectedEvent ClientConnected;
+
+    protected void InvokeClientConnected(Base_Connection con)
+    {
+      if (HostContext != null)
+      {
+        HostContext.Post(ClientConnectedMarshal, con);
+      }
+      else
+      {
+        ClientConnectedMarshal(con);
+      }
+    }
+    private void ClientConnectedMarshal(object o)
+    {
+      Base_Connection con = (Base_Connection) o;
+      ClientConnectedEvent handler = ClientConnected;
+      if (handler != null)
+      {
+        handler(this, con);
       }
     }
 
@@ -196,7 +252,7 @@ namespace Zusi_Datenausgabe
 
       //No Check if master is null any more due to the check if data is already requested.
 
-      TCPServerSlaveConnection slave = initializer.SlaveConnection;
+      TCPServerSlaveConnection slave = initializer.GetSlaveConnection(HostContext);
       slave.DataRequested += OnSlaveDataRequested;
       slave.DataChecking += OnSlaveDataChecking;
       slave.ConnectionState_Changed += SlaveConnectionStateChanged;
@@ -204,17 +260,18 @@ namespace Zusi_Datenausgabe
       _clients.Add(slave);
       _clientsExtern.Add(slave);
       slave.InitializeClient();
+      InvokeClientConnected(slave);
     }
 
     private void SlaveErrorReceived(object sender, ZusiTcpException zusiTcpException)
     {
       TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
 
-      KillClient(client);
+      //KillSlave(client); //Not needed. Disconnect when this causes an ConnectionState Error.
       InvokeOnError(new ZusiTcpException("A client generated an exception.", zusiTcpException));
     }
 
-    private void KillClient(TCPServerSlaveConnection client)
+    private void KillSlave(TCPServerSlaveConnection client)
     {
       Debug.Assert(_clients.Contains(client));
       Debug.Assert(client.RequestedData != null);
@@ -236,6 +293,7 @@ namespace Zusi_Datenausgabe
         case ConnectionState.Connected:
           if (_masterL != null)
           {
+            //System.Threading.Monitor.Enter(_masterL.RequestedDataLockObject); //Access from multiple Threads. Lock
             foreach(var val in client.RequestedData)
             {
               byte[] data;
@@ -244,14 +302,17 @@ namespace Zusi_Datenausgabe
                 client.SendByteCommand(data, val);
               }
             }
+            //System.Threading.Monitor.Exit(_masterL.RequestedDataLockObject);
           }
           break;
         case ConnectionState.Connecting:
           /* Nothing to do */
           break;
         case ConnectionState.Error:
+          client.Disconnect();
+          break;
         case ConnectionState.Disconnected:
-          KillClient(client);
+          KillSlave(client);
           break;
         default:
           throw new ArgumentOutOfRangeException();
@@ -261,7 +322,13 @@ namespace Zusi_Datenausgabe
     private void OnSlaveDataChecking(object sender, EventArgs eventArgs)
     {
       TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
-      if (_masterL != null)
+      foreach(var val in client.RequestedData) //Checks if all Data exist.
+      {
+        if (!_doc.ContainsID(val))
+          throw new System.Collections.Generic.KeyNotFoundException(string.Format("ID {0} is unknown. " +
+                                       "Cannot accept unknown data.", val));
+      }
+      if (_masterL != null) //Checks if all is requested from the master.
       {
         foreach(var val in client.RequestedData)
         {
@@ -298,10 +365,11 @@ namespace Zusi_Datenausgabe
         initializer.RefuseConnectionAndTerminate();
         throw new NotSupportedException("Master is already connected. Cannot accept more than one master.");
       }
-      _masterL = initializer.GetMasterConnection(_requestedData.ReferencedToIEnumerable());
+      _masterL = initializer.GetMasterConnection(HostContext, _requestedData.ReferencedToIEnumerable());
       _masterL.ConnectionState_Changed += MasterConnectionStateChanged;
       _masterL.ErrorReceived += MasterErrorReceived;
       _masterL.DataSetReceived += MasterDataSetReceived;
+      InvokeClientConnected(_masterL);
     }
 
     private void MasterDataSetReceived(DataSet<byte[]> dataSet)
