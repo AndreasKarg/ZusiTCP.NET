@@ -61,11 +61,7 @@ namespace Zusi_Datenausgabe
 
     public bool ContainsID(int id)
     {
-      foreach (var entry in commandField)
-      {
-        if (entry.ID == id) return true;
-      }
-      return false;
+      return commandField.Exists(e => e.ID == id);
     }
 
     /// <summary>

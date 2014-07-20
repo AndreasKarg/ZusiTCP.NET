@@ -55,13 +55,13 @@ namespace Zusi_Datenausgabe
     ///   Initializes a new instance of the <see cref="Zusi_Datenausgabe.TCPServer" /> class.
     /// </summary>
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
-    /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
+    /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
     public TCPServer(TCPCommands commandsetDocument)
       : this(commandsetDocument, SynchronizationContext.Current)
     {
       if (SynchronizationContext.Current == null)
       {
-        throw new ObjectUnsyncronisizableException();
+        throw new ObjectUnsynchronisableException();
       }
     }
 
@@ -79,7 +79,7 @@ namespace Zusi_Datenausgabe
     /// <summary>
     ///   Sets the given Ids to be requested from the master even if no client wants them.
     /// </summary>
-    public void RepalceAnywayRequested(IEnumerable<int> newAnywayReq)
+    public void ReplaceAnywayRequested(IEnumerable<int> newAnywayReq)
     {
       if (_masterL != null)
         throw new System.InvalidOperationException();
@@ -100,7 +100,7 @@ namespace Zusi_Datenausgabe
 
 
     /// <summary>
-    ///   Gets the Clients.
+    ///   Gets the Clients. Warning: Disconnecting a Client changes this List immediately!
     /// </summary>
     /// <value>A readonly List of all connected (or connecting) Clients.</value>
     public ReadOnlyCollection<Base_Connection> Clients
@@ -213,12 +213,16 @@ namespace Zusi_Datenausgabe
     /// <summary>
     ///   Stops the Server and closes all connected clients.
     /// </summary>
+    [System.ObsoleteAttribute("Seems to be broken.")]
     public void Stop()
     {
-      foreach (var cli in _clients)
+      var clientsOld = new System.Collections.Generic.List<TCPServerSlaveConnection>(_clients);
+      foreach (var cli in clientsOld)
       {
         cli.Disconnect();
       }
+      if (_masterL != null)
+        _masterL.Disconnect();
       _accepterThread.Abort();
     }
 
@@ -237,10 +241,14 @@ namespace Zusi_Datenausgabe
           initializer.InitializeClient(new BinaryIoTcpClient(socketClient, true));
         }
       }
-      catch
+      catch(System.Threading.ThreadAbortException)
       {
         _socketListener.Stop();
-        throw;
+      }
+      catch(System.Exception ex)
+      {
+        _socketListener.Stop();
+        InvokeOnError(new ZusiTcpException("An Error occured while trying to find new clients.", ex));
       }
     }
 

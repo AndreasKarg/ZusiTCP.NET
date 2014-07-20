@@ -48,13 +48,13 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
-    /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
+    /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
     protected Base_Connection(string clientId, ClientPriority priority)
       : this(clientId, priority, SynchronizationContext.Current)
     {
       if (SynchronizationContext.Current == null)
       {
-        throw new ObjectUnsyncronisizableException();
+        throw new ObjectUnsynchronisableException();
       }
     }
 
@@ -234,13 +234,13 @@ namespace Zusi_Datenausgabe
     {
       Disconnect(ConnectionState.Disconnected);
     }
-    private void Disconnect(ConnectionState resond)
+    private void Disconnect(ConnectionState reason)
     {
       if ((_streamReaderThread != null) && (_streamReaderThread != Thread.CurrentThread))
       {
         _streamReaderThread.Abort();
       }
-      ConnectionState = resond;
+      ConnectionState = reason;
       if (ClientConnection != null)
       {
         ClientConnection.Close();

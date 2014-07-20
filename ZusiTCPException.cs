@@ -80,21 +80,21 @@ namespace Zusi_Datenausgabe
   ///   the constructor should be called later, when SynchronizationContext.Current is not null any more.
   /// </summary>
   [Serializable]
-  public class ObjectUnsyncronisizableException : Exception
+  public class ObjectUnsynchronisableException : Exception
   {
     /// <summary>
-    ///   Create a new ObjectUnsyncronisizableException using msg as message.
+    ///   Create a new ObjectUnsynchronisableException using msg as message.
     /// </summary>
     /// <param name="msg">The exception message.</param>
-    public ObjectUnsyncronisizableException(string msg)
+    public ObjectUnsynchronisableException(string msg)
       : base(msg)
     {
     }
 
     /// <summary>
-    ///   Create a new ObjectUnsyncronisizableException.
+    ///   Create a new ObjectUnsynchronisableException.
     /// </summary>
-    public ObjectUnsyncronisizableException()
+    public ObjectUnsynchronisableException()
       : this("Cannot create TCP connection object: SynchronizationContext.Current is null. " +
              "This happens when the object is created before the context is initialized in " +
              "Application.Run() or equivalent. " +
@@ -104,21 +104,21 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Create a new ObjectUnsyncronisizableException using msg as the message and e as the inner exception
+    ///   Create a new ObjectUnsynchronisableException using msg as the message and e as the inner exception
     /// </summary>
     /// <param name="msg">The exception message.</param>
     /// <param name="e">The inner exception.</param>
-    public ObjectUnsyncronisizableException(string msg, Exception e)
+    public ObjectUnsynchronisableException(string msg, Exception e)
       : base(msg, e)
     {
     }
 
     /// <summary>
-    ///   Create a new ObjectUnsyncronisizableException with serialized data.
+    ///   Create a new ObjectUnsynchronisableException with serialized data.
     /// </summary>
     /// <param name="serializationInfo">Serialization info</param>
     /// <param name="streamingContext">Streaming context</param>
-    protected ObjectUnsyncronisizableException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+    protected ObjectUnsynchronisableException(SerializationInfo serializationInfo, StreamingContext streamingContext)
       : base(serializationInfo, streamingContext)
     {
     }

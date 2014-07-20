@@ -11,7 +11,7 @@ class ServertTest1
 		{
 			listIds.Add(i.Value.ID);
 		}
-		server.RepalceAnywayRequested(listIds);
+		server.ReplaceAnywayRequested(listIds);
 		System.Console.WriteLine("Set up Server successfull");
 		server.Start(1435);
 		while (!server.IsStarted) System.Threading.Thread.Sleep(100);
@@ -24,6 +24,25 @@ class ServertTest1
 				};
 		int numCon = 0;
 		bool masterConnected = false;
+		
+		bool firstCancel = true;
+		
+		System.ConsoleCancelEventHandler shutDownServer = null;
+		shutDownServer = delegate(object sender, System.ConsoleCancelEventArgs e)
+		{
+			if (server.IsStarted)
+			{
+				System.Console.Write("Shutting Down... ");
+				server.Stop();
+				if (firstCancel)
+					e.Cancel = true;
+				firstCancel = false;
+				System.Console.WriteLine("OK!");
+			}
+		};
+		
+		System.Console.CancelKeyPress += shutDownServer;
+		
 		while (server.IsStarted)
 		{
 			System.Threading.Thread.Sleep(100);
