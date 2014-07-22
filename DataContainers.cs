@@ -71,7 +71,13 @@ namespace Zusi_Datenausgabe
   /// <param name="sender">Contains the object triggering the event.</param>
   public delegate void ReceiveEvent<T>(object sender, DataSet<T> data);
 
-  public delegate void ClientConnectedEvent(object sender, Base_Connection data);
+  /// <summary>
+  ///   Represents the delegate type required for handling a new client connected to the server.
+  /// </summary>
+  /// <param name="data">Contains the new dataset.</param>
+  /// <param name="sender">Contains the new Client.</param>
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
+  public delegate void ClientConnectedEvent(object sender, ZusiTcpBaseConnection data);
 
   /// <summary>
   ///   Represents the delegate type required for error event handling. Used to handle exceptions that occur in the reception thread.

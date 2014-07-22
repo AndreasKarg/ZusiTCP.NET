@@ -14,12 +14,13 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  public abstract class ZusiTcpReceiver : Base_Connection
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
+  public abstract class ZusiTcpClientAbstract : ZusiTcpBaseConnection
   {
     private readonly CommandSet _commands;
     private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
 
-    protected ZusiTcpReceiver(string clientId,
+    protected ZusiTcpClientAbstract(string clientId,
                               ClientPriority priority,
                               SynchronizationContext hostContext,
                               CommandSet commands)
@@ -32,7 +33,7 @@ namespace Zusi_Datenausgabe
       _commands = commands;
     }
 
-    protected ZusiTcpReceiver(string clientId, ClientPriority priority, CommandSet commands) : base(clientId, priority)
+    protected ZusiTcpClientAbstract(string clientId, ClientPriority priority, CommandSet commands) : base(clientId, priority)
     {
       if (commands == null)
       {

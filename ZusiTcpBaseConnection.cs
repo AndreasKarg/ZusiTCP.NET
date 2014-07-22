@@ -14,7 +14,8 @@ namespace Zusi_Datenausgabe
   /// <summary>
   ///   Represents a baseclass for all TCPconnections based on the Zusi-protocol.
   /// </summary>
-  public abstract class Base_Connection : IDisposable
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
+  public abstract class ZusiTcpBaseConnection : IDisposable
   {
     #region Fields
 
@@ -35,7 +36,7 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-    protected Base_Connection(string clientId, ClientPriority priority, SynchronizationContext hostContext)
+    protected ZusiTcpBaseConnection(string clientId, ClientPriority priority, SynchronizationContext hostContext)
     {
       ClientId = clientId;
       ClientPriority = priority;
@@ -49,7 +50,7 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    protected Base_Connection(string clientId, ClientPriority priority)
+    protected ZusiTcpBaseConnection(string clientId, ClientPriority priority)
       : this(clientId, priority, SynchronizationContext.Current)
     {
       if (SynchronizationContext.Current == null)

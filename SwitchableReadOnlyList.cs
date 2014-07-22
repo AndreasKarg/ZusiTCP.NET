@@ -36,6 +36,7 @@ using System.Collections.Generic;
 
 namespace Zusi_Datenausgabe
 {
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public static class CollectionHelper
   {
     private static void AddRangeManual<T>(ICollection<T> target, IEnumerable<T> source)
@@ -61,6 +62,10 @@ namespace Zusi_Datenausgabe
     }
   }
 
+  /// <summary>
+  ///   Represents a collection that can be toogled to read-only-mode.
+  /// </summary>
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class SwitchableReadOnlyList<T> : ICollection<T>
   {
     private readonly List<T> _list;

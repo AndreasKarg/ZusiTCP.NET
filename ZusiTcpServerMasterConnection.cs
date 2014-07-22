@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  internal class TCPServerMasterConnection : ZusiTcpReceiver
+  internal class ZusiTcpServerMasterConnection : ZusiTcpClientAbstract
   {
     private readonly IList<int> _requestedIds;
     private System.Collections.ObjectModel.ReadOnlyCollection<int> _requestedData;
@@ -18,7 +18,7 @@ namespace Zusi_Datenausgabe
     private System.Collections.Generic.Dictionary<int, byte[]> _dataBuffer;
     //private object _dataBufferLock = new object();
 
-    public TCPServerMasterConnection(SynchronizationContext hostContext,
+    public ZusiTcpServerMasterConnection(SynchronizationContext hostContext,
                                      IBinaryIO client,
                                      String clientId,
                                      IList<int> requestedIds,

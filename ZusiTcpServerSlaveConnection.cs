@@ -9,12 +9,12 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  internal class TCPServerSlaveConnection : Base_Connection
+  internal class ZusiTcpServerSlaveConnection : ZusiTcpBaseConnection
   {
     private HashSet<int> _requestedData;
     private IBinaryIO _InitializerClient;
 
-    public TCPServerSlaveConnection(SynchronizationContext hostContext,
+    public ZusiTcpServerSlaveConnection(SynchronizationContext hostContext,
                                     IBinaryIO client,
                                     String clientId,
                                     ClientPriority priority)

@@ -19,13 +19,13 @@ namespace Zusi_Datenausgabe
   /// after the master when no new data is required. Otherwise the client will be denyed.</summary>
   ///<remarks>Warning: This class lacks documentation. But method names should do it.</remarks>
   [EditorBrowsable(EditorBrowsableState.Advanced)]
-  public class TCPServer
+  public class ZusiTcpServer
   {
     #region Fields
 
-    private readonly List<TCPServerSlaveConnection> _clients = new List<TCPServerSlaveConnection>();
-    private readonly List<Base_Connection> _clientsExtern = new List<Base_Connection>();
-    private readonly ReadOnlyCollection<Base_Connection> _clientsExternReadonly;
+    private readonly List<ZusiTcpServerSlaveConnection> _clients = new List<ZusiTcpServerSlaveConnection>();
+    private readonly List<ZusiTcpBaseConnection> _clientsExtern = new List<ZusiTcpBaseConnection>();
+    private readonly ReadOnlyCollection<ZusiTcpBaseConnection> _clientsExternReadonly;
 
     private Thread _accepterThread;
     private CommandSet _doc;
@@ -36,14 +36,14 @@ namespace Zusi_Datenausgabe
     #endregion
 
     private readonly ReferenceCounter<int> _requestedData = new ReferenceCounter<int>();
-    private TCPServerMasterConnection _masterL;
+    private ZusiTcpServerMasterConnection _masterL;
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Zusi_Datenausgabe.TCPServer" /> class.
+    ///   Initializes a new instance of the <see cref="Zusi_Datenausgabe.ZusiTcpServer" /> class.
     /// </summary>
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-    public TCPServer(CommandSet commandsetDocument, SynchronizationContext hostContext)
+    public ZusiTcpServer(CommandSet commandsetDocument, SynchronizationContext hostContext)
     {
       _clientsExternReadonly = _clientsExtern.AsReadOnly();
       _doc = commandsetDocument;
@@ -52,11 +52,11 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="Zusi_Datenausgabe.TCPServer" /> class.
+    ///   Initializes a new instance of the <see cref="Zusi_Datenausgabe.ZusiTcpServer" /> class.
     /// </summary>
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
     /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    public TCPServer(CommandSet commandsetDocument)
+    public ZusiTcpServer(CommandSet commandsetDocument)
       : this(commandsetDocument, SynchronizationContext.Current)
     {
       if (SynchronizationContext.Current == null)
@@ -69,7 +69,7 @@ namespace Zusi_Datenausgabe
     ///   Gets the master.
     /// </summary>
     /// <value>The master.</value>
-    public Base_Connection Master
+    public ZusiTcpBaseConnection Master
     {
       get { return _masterL; }
     }
@@ -103,7 +103,7 @@ namespace Zusi_Datenausgabe
     ///   Gets the Clients. Warning: Disconnecting a Client changes this List immediately!
     /// </summary>
     /// <value>A readonly List of all connected (or connecting) Clients.</value>
-    public ReadOnlyCollection<Base_Connection> Clients
+    public ReadOnlyCollection<ZusiTcpBaseConnection> Clients
     {
       get { return _clientsExternReadonly;}
     }
@@ -150,7 +150,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public event ClientConnectedEvent ClientConnected;
 
-    protected void InvokeClientConnected(Base_Connection con)
+    protected void InvokeClientConnected(ZusiTcpBaseConnection con)
     {
       if (HostContext != null)
       {
@@ -163,7 +163,7 @@ namespace Zusi_Datenausgabe
     }
     private void ClientConnectedMarshal(object o)
     {
-      Base_Connection con = (Base_Connection) o;
+      ZusiTcpBaseConnection con = (ZusiTcpBaseConnection) o;
       ClientConnectedEvent handler = ClientConnected;
       if (handler != null)
       {
@@ -215,7 +215,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     public void Stop()
     {
-      var clientsOld = new System.Collections.Generic.List<TCPServerSlaveConnection>(_clients);
+      var clientsOld = new System.Collections.Generic.List<ZusiTcpServerSlaveConnection>(_clients);
       foreach (var cli in clientsOld)
       {
         cli.Disconnect();
@@ -235,7 +235,7 @@ namespace Zusi_Datenausgabe
           TcpClient socketClient = _socketListener.AcceptTcpClient();
 
           //TODO: Cleanup Initializer class
-          TCPServerConnectionInitializer initializer = new TCPServerConnectionInitializer("", ClientPriority.Undefined, _doc, null); //Not Syncronized
+          ZusiTcpServerConnectionInitializer initializer = new ZusiTcpServerConnectionInitializer("", ClientPriority.Undefined, _doc, null); //Not Syncronized
           initializer.MasterConnectionInitialized += MasterConnectionInitialized;
           initializer.SlaveConnectionInitialized += SlaveConnectionInitialized;
           initializer.InitializeClient(new BinaryIoTcpClient(socketClient, true));
@@ -264,13 +264,13 @@ namespace Zusi_Datenausgabe
 
     private void SlaveConnectionInitialized(object sender, EventArgs eventArgs)
     {
-      TCPServerConnectionInitializer initializer = sender.AssertedCast<TCPServerConnectionInitializer>();
+      ZusiTcpServerConnectionInitializer initializer = sender.AssertedCast<ZusiTcpServerConnectionInitializer>();
 
       //TODO: Throw exception in client when ErrorReceived is not subscribed to.
 
       //No Check if master is null any more due to the check if data is already requested.
 
-      TCPServerSlaveConnection slave = initializer.GetSlaveConnection(HostContext);
+      ZusiTcpServerSlaveConnection slave = initializer.GetSlaveConnection(HostContext);
       slave.DataRequested += OnSlaveDataRequested;
       slave.DataChecking += OnSlaveDataChecking;
       slave.ConnectionState_Changed += SlaveConnectionStateChanged;
@@ -283,13 +283,13 @@ namespace Zusi_Datenausgabe
 
     private void SlaveErrorReceived(object sender, ZusiTcpException zusiTcpException)
     {
-      TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
+      ZusiTcpServerSlaveConnection client = sender.AssertedCast<ZusiTcpServerSlaveConnection>();
 
       //KillSlave(client); //Not needed. Disconnect when this causes an ConnectionState Error.
       InvokeOnError(new ZusiTcpException("A client generated an exception.", zusiTcpException));
     }
 
-    private void KillSlave(TCPServerSlaveConnection client)
+    private void KillSlave(ZusiTcpServerSlaveConnection client)
     {
       Debug.Assert(_clients.Contains(client));
       Debug.Assert(client.RequestedData != null);
@@ -303,7 +303,7 @@ namespace Zusi_Datenausgabe
 
     private void SlaveConnectionStateChanged(object sender, EventArgs eventArgs)
     {
-      TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
+      ZusiTcpServerSlaveConnection client = sender.AssertedCast<ZusiTcpServerSlaveConnection>();
       Debug.Assert(_clients.Contains(client));
 
       switch (client.ConnectionState)
@@ -339,7 +339,7 @@ namespace Zusi_Datenausgabe
 
     private void OnSlaveDataChecking(object sender, EventArgs eventArgs)
     {
-      TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
+      ZusiTcpServerSlaveConnection client = sender.AssertedCast<ZusiTcpServerSlaveConnection>();
       foreach(var val in client.RequestedData) //Checks if all Data exist.
       {
         if (!_doc.ContainsID(val))
@@ -359,7 +359,7 @@ namespace Zusi_Datenausgabe
 
     private void OnSlaveDataRequested(object sender, EventArgs eventArgs)
     {
-      TCPServerSlaveConnection client = sender.AssertedCast<TCPServerSlaveConnection>();
+      ZusiTcpServerSlaveConnection client = sender.AssertedCast<ZusiTcpServerSlaveConnection>();
       Debug.Assert(_clients.Contains(client));
 
       if (_masterL != null)
@@ -376,7 +376,7 @@ namespace Zusi_Datenausgabe
 
     private void MasterConnectionInitialized(object sender, EventArgs e)
     {
-      TCPServerConnectionInitializer initializer = sender.AssertedCast<TCPServerConnectionInitializer>();
+      ZusiTcpServerConnectionInitializer initializer = sender.AssertedCast<ZusiTcpServerConnectionInitializer>();
 
       if (_masterL != null)
       {

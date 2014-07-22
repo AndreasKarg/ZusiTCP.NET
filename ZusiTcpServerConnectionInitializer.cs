@@ -36,21 +36,21 @@ using System.Threading;
 
 namespace Zusi_Datenausgabe
 {
-  internal class TCPServerConnectionInitializer : Base_Connection
+  internal class ZusiTcpServerConnectionInitializer : ZusiTcpBaseConnection
   {
-    private TCPServerMasterConnection _masterConnection;
-    private TCPServerSlaveConnection _slaveConnection;
+    private ZusiTcpServerMasterConnection _masterConnection;
+    private ZusiTcpServerSlaveConnection _slaveConnection;
     private CommandSet _commands;
 
     #region Delegated Base Constructors
 
-    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, CommandSet commands, SynchronizationContext hostContext)
+    public ZusiTcpServerConnectionInitializer(string clientId, ClientPriority priority, CommandSet commands, SynchronizationContext hostContext)
       : base(clientId, priority, hostContext)
     {
       _commands = commands;
     }
 
-    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, CommandSet commands)
+    public ZusiTcpServerConnectionInitializer(string clientId, ClientPriority priority, CommandSet commands)
       : base(clientId, priority)
     {
       _commands = commands;
@@ -58,7 +58,7 @@ namespace Zusi_Datenausgabe
 
     #endregion
 
-    public TCPServerSlaveConnection GetSlaveConnection(SynchronizationContext hostContext)
+    public ZusiTcpServerSlaveConnection GetSlaveConnection(SynchronizationContext hostContext)
     {
       if (_slaveConnection == null)
       {
@@ -95,7 +95,7 @@ namespace Zusi_Datenausgabe
       Dispose();
     }
 
-    public TCPServerMasterConnection GetMasterConnection(SynchronizationContext hostContext, IEnumerable<int> requestedData)
+    public ZusiTcpServerMasterConnection GetMasterConnection(SynchronizationContext hostContext, IEnumerable<int> requestedData)
     {
       if (_masterConnection == null)
       {
@@ -116,7 +116,7 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Cannot create slave connection for master client.");
       }
 
-      _slaveConnection = new TCPServerSlaveConnection(hostContext, ClientConnection, ClientId, ClientPriority);
+      _slaveConnection = new ZusiTcpServerSlaveConnection(hostContext, ClientConnection, ClientId, ClientPriority);
     }
 
     private void InitializeMasterConnection(SynchronizationContext hostContext, IEnumerable<int> requestedData)
@@ -131,7 +131,7 @@ namespace Zusi_Datenausgabe
         throw new NotSupportedException("Cannot create master connection for slave client.");
       }
 
-      _masterConnection = new TCPServerMasterConnection(hostContext, ClientConnection, ClientId, new List<int>(requestedData), _commands);
+      _masterConnection = new ZusiTcpServerMasterConnection(hostContext, ClientConnection, ClientId, new List<int>(requestedData), _commands);
     }
 
     protected override void HandleHandshake()

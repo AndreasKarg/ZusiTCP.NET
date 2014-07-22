@@ -61,25 +61,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BinaryIoTcpClient.cs" />
+    <Compile Include="CommandSet.cs" />
+    <Compile Include="commandset_schema.designer.cs">
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="DataContainers.cs" />
     <Compile Include="IBinaryReader.cs" />
     <Compile Include="ObjectExtension.cs" />
     <Compile Include="ReferenceCounter.cs" />
     <Compile Include="SwitchableReadOnlyList.cs" />
-    <Compile Include="commandset_schema.designer.cs">
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="CommandSet.cs" />
-    <Compile Include="BinaryIoTcpClient.cs" />
-    <Compile Include="TCPServerConnectionInitializer.cs" />
-    <Compile Include="TCPServerMasterConnection.cs" />
-    <Compile Include="TCPServerSlaveConnection.cs" />
-    <Compile Include="Zusi-Datenausgabe.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ZusiTCPException.cs" />
-    <Compile Include="DataContainers.cs" />
-    <Compile Include="Base_Connection.cs" />
-    <Compile Include="TCPServer.cs" />
-    <Compile Include="ZusiTcpReceiver.cs" />
+    <Compile Include="ZusiTcpBaseConnection.cs" />
+    <Compile Include="ZusiTcpClientAbstract.cs" />
+    <Compile Include="ZusiTcpExceptions.cs" />
+    <Compile Include="ZusiTcpServer.cs" />
+    <Compile Include="ZusiTcpServerConnectionInitializer.cs" />
+    <Compile Include="ZusiTcpServerMasterConnection.cs" />
+    <Compile Include="ZusiTcpServerSlaveConnection.cs" />
+    <Compile Include="ZusiTcpTypedClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />

@@ -34,6 +34,7 @@ using System;
 
 namespace Zusi_Datenausgabe
 {
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public interface IBinaryReader : IDisposable
   {
     void Close();

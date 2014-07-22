@@ -35,6 +35,10 @@ using System.Diagnostics;
 
 namespace Zusi_Datenausgabe
 {
+  /// <summary>
+  ///   Represents a collection which elements are contained as long they are in use by at least one claimer.
+  /// </summary>
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class ReferenceCounter<T>
   {
     private readonly Dictionary<T, int> _referenceCounts = new Dictionary<T, int>();

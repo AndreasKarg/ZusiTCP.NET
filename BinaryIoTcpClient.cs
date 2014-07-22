@@ -11,12 +11,14 @@ using System.Text;
 
 namespace Zusi_Datenausgabe
 {
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public interface IBinaryIO : IBinaryReader
   {
     bool Connected { get; }
     void SendToPeer(byte[] message);
   }
 
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   internal class BinaryIoTcpClient : IBinaryIO
   {
     private readonly bool _haveOwnershipOfTcpClient;
