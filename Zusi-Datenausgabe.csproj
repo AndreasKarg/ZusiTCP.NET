@@ -79,7 +79,7 @@
     <Compile Include="ZusiTcpServerConnectionInitializer.cs" />
     <Compile Include="ZusiTcpServerMasterConnection.cs" />
     <Compile Include="ZusiTcpServerSlaveConnection.cs" />
-    <Compile Include="ZusiTcpTypedClient.cs" />
+    <Compile Include="ZusiTcpTypeClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />
