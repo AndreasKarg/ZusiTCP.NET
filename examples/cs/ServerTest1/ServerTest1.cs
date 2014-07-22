@@ -5,7 +5,7 @@ class ServertTest1
 	{
 		System.Console.WriteLine("TCP Server");
 		var commands = Zusi_Datenausgabe.CommandSet.LoadFromFile("commandset_server.xml");
-		var server = new Zusi_Datenausgabe.TCPServer(commands, null);
+		var server = new Zusi_Datenausgabe.ZusiTcpServer(commands, null);
 		var listIds = new System.Collections.Generic.List<int>();
 		foreach(var i in commands.CommandByID)
 		{

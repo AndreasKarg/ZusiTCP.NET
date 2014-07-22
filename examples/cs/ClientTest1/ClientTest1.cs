@@ -4,7 +4,7 @@ class ServertTest1
 	public static void Main()
 	{
 		System.Console.WriteLine("TCP Client");
-		var client = new Zusi_Datenausgabe.ZusiTcpConn("Beispielclient", Zusi_Datenausgabe.ClientPriority.High, 
+		var client = new Zusi_Datenausgabe.ZusiTcpTypeClient("Beispielclient", Zusi_Datenausgabe.ClientPriority.High, 
 										(System.Threading.SynchronizationContext) null);
 		System.Console.WriteLine("Set up Client successfull");
 		client.RequestData(2561);

@@ -2,14 +2,14 @@ Imports Zusi_Datenausgabe
 Public Class Form1
     ' We do want to have a ZusiTcpConn object, so here's the declaration
     ' With WithEvents we can handle events by marking the Subs with Handles MyTCPConnection.Exampleeventname
-    Private WithEvents MyTCPConnection As ZusiTcpConn
+    Private WithEvents MyTCPConnection As ZusiTcpTypeClient
 
     Public Sub New()
         InitializeComponent()
         RichTextBox1.Rtf = My.Resources.BlockFreiWarnung
 
         ' When the application window is created, we create our new connection class as well.
-        MyTCPConnection = New ZusiTcpConn("Zusi TCP Demo 1", ClientPriority.Low)
+        MyTCPConnection = New ZusiTcpTypeClient("Zusi TCP Demo 1", ClientPriority.Low)
 
         ' We need to tell our connection object what measures to request from Zusi. 
         ' You may either use Zusi's native ID code or plain text as listed in the server's commandset.xml

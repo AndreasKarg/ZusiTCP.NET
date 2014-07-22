@@ -19,7 +19,7 @@ namespace ZusiTCPDemoApp
   public partial class CMainWindow : Form
   {
     // We do want to have a ZusiTcpConn object, so here's the declaration
-    private ZusiTcpConn MyTCPConnection;
+    private ZusiTcpTypeClient MyTCPConnection;
 
     public CMainWindow()
     {
@@ -31,7 +31,7 @@ namespace ZusiTCPDemoApp
       catch { }
 
       // When the application window is created, we create our new connection class as well.
-      MyTCPConnection = new ZusiTcpConn("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
+      MyTCPConnection = new ZusiTcpTypeClient("Zusi TCP Demo 1", ClientPriority.Low, "commandset.xml");
 
       MyTCPConnection.StringReceived      += TCPConnection_StringReceived;
       MyTCPConnection.FloatReceived       += TCPConnection_FloatReceived;
