@@ -40,17 +40,17 @@ namespace Zusi_Datenausgabe
   {
     private TCPServerMasterConnection _masterConnection;
     private TCPServerSlaveConnection _slaveConnection;
-    private TCPCommands _commands;
+    private CommandSet _commands;
 
     #region Delegated Base Constructors
 
-    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, TCPCommands commands, SynchronizationContext hostContext)
+    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, CommandSet commands, SynchronizationContext hostContext)
       : base(clientId, priority, hostContext)
     {
       _commands = commands;
     }
 
-    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, TCPCommands commands)
+    public TCPServerConnectionInitializer(string clientId, ClientPriority priority, CommandSet commands)
       : base(clientId, priority)
     {
       _commands = commands;

@@ -22,7 +22,7 @@ namespace Zusi_Datenausgabe
                                      IBinaryIO client,
                                      String clientId,
                                      IList<int> requestedIds,
-                                     TCPCommands commands)
+                                     CommandSet commands)
       : base(clientId, ClientPriority.Master, hostContext, commands)
     {
       _requestedIds = requestedIds;

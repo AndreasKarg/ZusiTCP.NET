@@ -25,8 +25,8 @@ namespace Zusi_Datenausgabe
   [System.Diagnostics.DebuggerStepThroughAttribute()]
   [System.ComponentModel.DesignerCategoryAttribute("code")]
   [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://andik.g3th.net/commandset_schema.xsd")]
-  [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://andik.g3th.net/commandset_schema.xsd", IsNullable = false)]
-  public partial class TCPCommands
+  [System.Xml.Serialization.XmlRootAttribute("TCPCommands", Namespace = "http://andik.g3th.net/commandset_schema.xsd", IsNullable = false)]
+  public partial class CommandSet
   {
 
     private List<CommandEntry> commandField;
@@ -34,9 +34,9 @@ namespace Zusi_Datenausgabe
     private static System.Xml.Serialization.XmlSerializer serializer;
 
     /// <summary>
-    /// TCPCommands class constructor
+    /// CommandSet class constructor
     /// </summary>
-    public TCPCommands()
+    public CommandSet()
     {
       this.commandField = new List<CommandEntry>();
     }
@@ -60,7 +60,7 @@ namespace Zusi_Datenausgabe
       {
         if ((serializer == null))
         {
-          serializer = new System.Xml.Serialization.XmlSerializer(typeof(TCPCommands));
+          serializer = new System.Xml.Serialization.XmlSerializer(typeof(CommandSet));
         }
         return serializer;
       }
@@ -68,7 +68,7 @@ namespace Zusi_Datenausgabe
 
     #region Serialize/Deserialize
     /// <summary>
-    /// Serializes current TCPCommands object into an XML document
+    /// Serializes current CommandSet object into an XML document
     /// </summary>
     /// <returns>string XML value</returns>
     public virtual string Serialize(System.Text.Encoding encoding)
@@ -105,16 +105,16 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Deserializes workflow markup into an TCPCommands object
+    /// Deserializes workflow markup into an CommandSet object
     /// </summary>
     /// <param name="xml">string workflow markup to deserialize</param>
-    /// <param name="obj">Output TCPCommands object</param>
+    /// <param name="obj">Output CommandSet object</param>
     /// <param name="exception">output Exception value if deserialize failed</param>
     /// <returns>true if this XmlSerializer can deserialize the object; otherwise, false</returns>
-    public static bool Deserialize(string xml, out TCPCommands obj, out System.Exception exception)
+    public static bool Deserialize(string xml, out CommandSet obj, out System.Exception exception)
     {
       exception = null;
-      obj = default(TCPCommands);
+      obj = default(CommandSet);
       try
       {
         obj = Deserialize(xml);
@@ -127,19 +127,19 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    public static bool Deserialize(string xml, out TCPCommands obj)
+    public static bool Deserialize(string xml, out CommandSet obj)
     {
       System.Exception exception = null;
       return Deserialize(xml, out obj, out exception);
     }
 
-    public static TCPCommands Deserialize(string xml)
+    public static CommandSet Deserialize(string xml)
     {
       System.IO.StringReader stringReader = null;
       try
       {
         stringReader = new System.IO.StringReader(xml);
-        return ((TCPCommands)(Serializer.Deserialize(System.Xml.XmlReader.Create(stringReader))));
+        return ((CommandSet)(Serializer.Deserialize(System.Xml.XmlReader.Create(stringReader))));
       }
       finally
       {
@@ -151,7 +151,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Serializes current TCPCommands object into file
+    /// Serializes current CommandSet object into file
     /// </summary>
     /// <param name="fileName">full path of outupt xml file</param>
     /// <param name="exception">output Exception value if failed</param>
@@ -201,16 +201,16 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    /// Deserializes xml markup from file into an TCPCommands object
+    /// Deserializes xml markup from file into an CommandSet object
     /// </summary>
     /// <param name="fileName">string xml file to load and deserialize</param>
-    /// <param name="obj">Output TCPCommands object</param>
+    /// <param name="obj">Output CommandSet object</param>
     /// <param name="exception">output Exception value if deserialize failed</param>
     /// <returns>true if this XmlSerializer can deserialize the object; otherwise, false</returns>
-    public static bool LoadFromFileInternal(string fileName, System.Text.Encoding encoding, out TCPCommands obj, out System.Exception exception)
+    public static bool LoadFromFileInternal(string fileName, System.Text.Encoding encoding, out CommandSet obj, out System.Exception exception)
     {
       exception = null;
-      obj = default(TCPCommands);
+      obj = default(CommandSet);
       try
       {
         obj = LoadFromFileInternal(fileName, encoding);
@@ -223,23 +223,23 @@ namespace Zusi_Datenausgabe
       }
     }
 
-    public static bool LoadFromFileInternal(string fileName, out TCPCommands obj, out System.Exception exception)
+    public static bool LoadFromFileInternal(string fileName, out CommandSet obj, out System.Exception exception)
     {
       return LoadFromFileInternal(fileName, Encoding.UTF8, out obj, out exception);
     }
 
-    public static bool LoadFromFileInternal(string fileName, out TCPCommands obj)
+    public static bool LoadFromFileInternal(string fileName, out CommandSet obj)
     {
       System.Exception exception = null;
       return LoadFromFileInternal(fileName, out obj, out exception);
     }
 
-    public static TCPCommands LoadFromFileInternal(string fileName)
+    public static CommandSet LoadFromFileInternal(string fileName)
     {
       return LoadFromFileInternal(fileName, Encoding.UTF8);
     }
 
-    public static TCPCommands LoadFromFileInternal(string fileName, System.Text.Encoding encoding)
+    public static CommandSet LoadFromFileInternal(string fileName, System.Text.Encoding encoding)
     {
       System.IO.FileStream file = null;
       System.IO.StreamReader sr = null;

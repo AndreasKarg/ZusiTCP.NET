@@ -28,7 +28,7 @@ namespace Zusi_Datenausgabe
     private readonly ReadOnlyCollection<Base_Connection> _clientsExternReadonly;
 
     private Thread _accepterThread;
-    private TCPCommands _doc;
+    private CommandSet _doc;
     private TcpListener _socketListener;
 
     private readonly SynchronizationContext HostContext;
@@ -43,7 +43,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-    public TCPServer(TCPCommands commandsetDocument, SynchronizationContext hostContext)
+    public TCPServer(CommandSet commandsetDocument, SynchronizationContext hostContext)
     {
       _clientsExternReadonly = _clientsExtern.AsReadOnly();
       _doc = commandsetDocument;
@@ -56,7 +56,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="commandsetDocument">The commandset document. Valid entrys for the types are 4ByteCommand, 8ByteCommand and LengthIn1ByteCommand.</param>
     /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    public TCPServer(TCPCommands commandsetDocument)
+    public TCPServer(CommandSet commandsetDocument)
       : this(commandsetDocument, SynchronizationContext.Current)
     {
       if (SynchronizationContext.Current == null)

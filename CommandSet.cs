@@ -37,7 +37,7 @@ namespace Zusi_Datenausgabe
   ///   This class provides the XML file structure used to interpret Zusi data types.
   /// </summary>
   [EditorBrowsable(EditorBrowsableState.Advanced)]
-  public partial class TCPCommands
+  public partial class CommandSet
   {
     /// <summary>
     ///   Contains a list of Zusi commands accessible by their numeric id.
@@ -95,13 +95,13 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Load XML data from a file and create a TCPCommands instance from it.
+    ///   Load XML data from a file and create a CommandSet instance from it.
     /// </summary>
     /// <param name="filePath">Contains the path to the XML file</param>
-    /// <returns>A new TCPCommands instance with data.</returns>
-    public static TCPCommands LoadFromFile(String filePath)
+    /// <returns>A new CommandSet instance with data.</returns>
+    public static CommandSet LoadFromFile(String filePath)
     {
-      TCPCommands tempResult = LoadFromFileInternal(filePath);
+      CommandSet tempResult = LoadFromFileInternal(filePath);
 
       tempResult.InitializeDictionaries();
 

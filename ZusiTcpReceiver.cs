@@ -16,13 +16,13 @@ namespace Zusi_Datenausgabe
 {
   public abstract class ZusiTcpReceiver : Base_Connection
   {
-    private readonly TCPCommands _commands;
+    private readonly CommandSet _commands;
     private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
 
     protected ZusiTcpReceiver(string clientId,
                               ClientPriority priority,
                               SynchronizationContext hostContext,
-                              TCPCommands commands)
+                              CommandSet commands)
       : base(clientId, priority, hostContext)
     {
       if (commands == null)
@@ -32,7 +32,7 @@ namespace Zusi_Datenausgabe
       _commands = commands;
     }
 
-    protected ZusiTcpReceiver(string clientId, ClientPriority priority, TCPCommands commands) : base(clientId, priority)
+    protected ZusiTcpReceiver(string clientId, ClientPriority priority, CommandSet commands) : base(clientId, priority)
     {
       if (commands == null)
       {
@@ -227,27 +227,25 @@ namespace Zusi_Datenausgabe
     {
       var dataHandlers = new Dictionary<string, MethodInfo>();
 
-      int bytesReadBase = 2;
-
       try
       {
         while (ConnectionState == ConnectionState.Connected)
         {
           int packetLength = ClientConnection.ReadInt32();
 
+          int bytesRead = 0;
+
           int curInstr = GetInstruction(ClientConnection.ReadByte(), ClientConnection.ReadByte());
+          bytesRead += 2;
 
           if (curInstr < 10)
           {
             throw new ZusiTcpException("Unexpected Non-DATA instruction received.");
           }
 
-          int bytesRead = bytesReadBase; //0 oder 2??????
-
           while (bytesRead < packetLength)
           {
             int curID = ClientConnection.ReadByte() + 256*curInstr;
-
             bytesRead += 1;
 
             CommandEntry curCommand = _commands[curID];

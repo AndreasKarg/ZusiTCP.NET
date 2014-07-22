@@ -37,9 +37,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Zusi-Datenausgabe")]
 [assembly: AssemblyDescription("Schnittstelle zur Zusi 2.4-Datenausgabe per TCP")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Andreas Karg, Grafing")]
+[assembly: AssemblyCompany("Andreas Karg, München")]
 [assembly: AssemblyProduct("Zusi-Datenausgabe")]
-[assembly: AssemblyCopyright("Copyright © Andreas Karg 2009-2011")]
+[assembly: AssemblyCopyright("Copyright © Andreas Karg 2009-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -64,6 +64,6 @@ using System.Runtime.InteropServices;
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.1.9.2")]
-[assembly: AssemblyFileVersion("1.1.9.2")]
+[assembly: AssemblyVersion("1.1.9.3")]
+[assembly: AssemblyFileVersion("1.1.9.3")]
 [assembly: NeutralResourcesLanguage("de")]

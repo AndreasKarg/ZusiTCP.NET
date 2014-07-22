@@ -84,7 +84,7 @@ namespace Zusi_Datenausgabe
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
     public ZusiTcpConn(string clientId,
                        ClientPriority priority,
-                       TCPCommands commandsetDocument,
+                       CommandSet commandsetDocument,
                        SynchronizationContext hostContext)
       : base(clientId, priority, hostContext, commandsetDocument)
     {
@@ -97,7 +97,7 @@ namespace Zusi_Datenausgabe
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetDocument">The XML file containig the command set.</param>
     /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    public ZusiTcpConn(string clientId, ClientPriority priority, TCPCommands commandsetDocument)
+    public ZusiTcpConn(string clientId, ClientPriority priority, CommandSet commandsetDocument)
       : base(clientId, priority, commandsetDocument)
     {
     }
@@ -113,7 +113,7 @@ namespace Zusi_Datenausgabe
                        ClientPriority priority,
                        string commandsetPath,
                        SynchronizationContext hostContext)
-      : this(clientId, priority, TCPCommands.LoadFromFile(commandsetPath), hostContext)
+      : this(clientId, priority, CommandSet.LoadFromFile(commandsetPath), hostContext)
     {
     }
 
@@ -125,7 +125,7 @@ namespace Zusi_Datenausgabe
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
     public ZusiTcpConn(string clientId, ClientPriority priority, string commandsetPath)
-      : this(clientId, priority, TCPCommands.LoadFromFile(commandsetPath))
+      : this(clientId, priority, CommandSet.LoadFromFile(commandsetPath))
     {
     }
 
