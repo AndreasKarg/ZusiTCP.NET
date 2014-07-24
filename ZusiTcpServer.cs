@@ -185,6 +185,8 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="port">The port, the Server should use.</param>
     /// <exception cref="InvalidOperationException">Thrown, when the connection is already started.</exception>
+    /// <exception cref="System.Net.Sockets.SocketException">Forwarded from System.Net.Sockets.TcpListener.Start(). 
+    ///    Especially if another TCP-server is already started at this port.</exception>
     public void Start(int port)
     {
       if (IsStarted)
@@ -222,7 +224,8 @@ namespace Zusi_Datenausgabe
       }
       if (_masterL != null)
         _masterL.Disconnect();
-      _accepterThread.Interrupt();
+      if (_accepterThread != null) //ToDo: Think about how the server should responde in this case.
+        _accepterThread.Interrupt();
     }
 
     private void RunningLoop()
