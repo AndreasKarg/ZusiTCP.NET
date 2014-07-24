@@ -31,7 +31,7 @@ namespace Zusi_Datenausgabe
     #endregion
 
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpBaseConnection" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
@@ -45,7 +45,7 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpBaseConnection" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>

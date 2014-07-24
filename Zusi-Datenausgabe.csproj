@@ -75,11 +75,13 @@
     <Compile Include="ZusiTcpBaseConnection.cs" />
     <Compile Include="ZusiTcpClientAbstract.cs" />
     <Compile Include="ZusiTcpExceptions.cs" />
+    <Compile Include="ZusiTcpMasterAbstract.cs" />
     <Compile Include="ZusiTcpServer.cs" />
     <Compile Include="ZusiTcpServerConnectionInitializer.cs" />
     <Compile Include="ZusiTcpServerMasterConnection.cs" />
     <Compile Include="ZusiTcpServerSlaveConnection.cs" />
     <Compile Include="ZusiTcpTypeClient.cs" />
+    <Compile Include="ZusiTcpTypeMaster.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Commandset.dat" />
