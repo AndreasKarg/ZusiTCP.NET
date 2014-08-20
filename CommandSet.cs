@@ -112,5 +112,12 @@ namespace Zusi_Datenausgabe
   [EditorBrowsable(EditorBrowsableState.Advanced)]
   public partial class CommandEntry
   {
+    public CommandEntry() {}
+    public CommandEntry(int id, string name, string type) : this()
+    {
+      ID = id;
+      Name = name;
+      Type = type;
+    }
   }
 }

@@ -48,7 +48,7 @@ namespace Zusi_Datenausgabe
   ///       </item>
   ///       <item>
   ///         <description>
-  ///           Create an instance of <see cref="ZusiTcpConn" />, choosing a client priority. Recommended value for control desks is "High".
+  ///           Create an instance of <see cref="ZusiTcpTypeClient" />, choosing a client priority. Recommended value for control desks is "High".
   ///           Add your event handlers to the appropriate events.
   ///         </description>
   ///       </item>
@@ -60,7 +60,7 @@ namespace Zusi_Datenausgabe
   ///       </item>
   ///       <item>
   ///         <description>
-  ///           <see cref="ZusiTcpClientAbstract.Connect" /> or <seealso cref="ZusiTcpClientAbstract.Connect(System.Net.IPEndPoint)" /> to the TCP server.
+  ///           <see cref="ZusiTcpClientAbstract.Connect(string, int)" /> or <seealso cref="ZusiTcpClientAbstract.Connect(System.Net.IPEndPoint)" /> to the TCP server.
   ///         </description>
   ///       </item>
   ///       <item>
@@ -73,10 +73,10 @@ namespace Zusi_Datenausgabe
   ///   </para>
   ///   Notice that ZusiTcpConn implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
-  public class ZusiTcpTypeClient : ZusiTcpClientAbstract
+  public class ZusiTcpTypeClient : ZusiTcpTypeClientAbstract
   {
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
@@ -91,19 +91,19 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetDocument">The XML file containig the command set.</param>
-    /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
+    /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
     public ZusiTcpTypeClient(string clientId, ClientPriority priority, CommandSet commandsetDocument)
       : base(clientId, priority, commandsetDocument)
     {
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
@@ -118,19 +118,19 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
-    /// <exception cref="ObjectUnsyncronisizableException">Thrown, when SynchronizationContext.Current == null.</exception>
+    /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
     public ZusiTcpTypeClient(string clientId, ClientPriority priority, string commandsetPath)
       : this(clientId, priority, CommandSet.LoadFromFile(commandsetPath))
     {
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
@@ -141,10 +141,11 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Initializes a new <see cref="ZusiTcpConn" /> object that uses the specified event handlers to pass datasets to the client application.
+    ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
     /// </summary>
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
+    /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
     public ZusiTcpTypeClient(string clientId, ClientPriority priority)
       : this(clientId, priority, "commandset.xml")
     {
@@ -201,9 +202,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_Single(IBinaryReader input, int id)
     {
-      PostToHost(FloatReceived, id, input.ReadSingle());
-
-      return sizeof (Single);
+      var data = ReadSingle(input);
+      PostToHost(FloatReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -213,9 +214,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_Int(IBinaryReader input, int id)
     {
-      PostToHost(IntReceived, id, input.ReadInt32());
-
-      return sizeof (Int32);
+      var data = ReadInt(input);
+      PostToHost(IntReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -225,7 +226,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_String(IBinaryReader input, int id)
     {
-      return HandleDATA_ByteLengthString(input, id);
+      var data = ReadString(input);
+      PostToHost(StringReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -235,10 +238,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_ByteLengthString(IBinaryReader input, int id)
     {
-      string value = input.ReadString();
-      PostToHost(StringReceived, id, value);
-
-      return value.Length + 1;
+      var data = ReadByteLengthString(input);
+      PostToHost(StringReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -248,20 +250,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_NullString(IBinaryReader input, int id)
     {
-      StringBuilder stringBuilder = new StringBuilder();
-      int bytesRead = 0;
-      byte curByte;
-
-      do
-      {
-        curByte = input.ReadByte();
-        stringBuilder.Append(curByte);
-        bytesRead++;
-      } while (curByte != 0);
-
-      PostToHost(StringReceived, id, stringBuilder.ToString());
-
-      return bytesRead;
+      var data = ReadNullString(input);
+      PostToHost(StringReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -271,13 +262,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_DateTime(IBinaryReader input, int id)
     {
-      // Delphi uses the double-based OLE Automation date for its date format.
-      double temp = input.ReadDouble();
-      DateTime time = DateTime.FromOADate(temp);
-
-      PostToHost(DateTimeReceived, id, time);
-
-      return sizeof (Double);
+      var data = ReadDateTime(input);
+      PostToHost(DateTimeReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -287,14 +274,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BoolAsSingle(IBinaryReader input, int id)
     {
-      /* Data is delivered as Single values that are only either 0.0 or 1.0.
-       * For the sake of logic, convert these to actual booleans here.
-       */
-      Single temp = input.ReadSingle();
-      bool value = (temp >= 0.5f);
-      PostToHost(BoolReceived, id, value);
-
-      return sizeof (Single);
+      var data = ReadBoolAsSingle(input);
+      PostToHost(BoolReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -305,15 +287,10 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BoolAndSingle(IBinaryReader input, int id)
     {
-      /* Data is delivered as Single values that are usually only either 0.0 or 1.0.
-       * In some cases (PZ80!) the values are no Booleans at all, so we just post to both events.
-       */
-      Single temp = input.ReadSingle();
-      bool value = (temp >= 0.5f);
-      PostToHost(BoolReceived, id, value);
-      PostToHost(FloatReceived, id, temp);
-
-      return sizeof (Single);
+      var data = ReadBoolAndSingle(input);
+      PostToHost(BoolReceived, id, data.ReadedData);
+      PostToHost(FloatReceived, id, data.PZ80Data);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -323,14 +300,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_IntAsSingle(IBinaryReader input, int id)
     {
-      /* Data is delivered as Single values that are only either 0.0 or 1.0.
-       * For the sake of logic, convert these to actual booleans here.
-       */
-      Single temp = input.ReadSingle();
-      int value = (int) Math.Round(temp);
-      PostToHost(IntReceived, id, value);
-
-      return sizeof (Single);
+      var data = ReadIntAsSingle(input);
+      PostToHost(IntReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -340,14 +312,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BoolAsInt(IBinaryReader input, int id)
     {
-      /* Data is delivered as Int values that are only either 0 or 1.
-             * For the sake of logic, convert these to actual booleans here.
-             */
-      Int32 temp = input.ReadInt32();
-      bool value = (temp == 1);
-      PostToHost(BoolReceived, id, value);
-
-      return sizeof (Int32);
+      var data = ReadBoolAsInt(input);
+      PostToHost(BoolReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -357,13 +324,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_DoorsAsInt(IBinaryReader input, int id)
     {
-      /* Data is delivered as Int values that are only either 0 or 1.
-             * For the sake of logic, convert these to actual booleans here.
-             */
-      Int32 temp = input.ReadInt32();
-      PostToHost(DoorsReceived, id, (DoorState) temp);
-
-      return sizeof (Int32);
+      var data = ReadDoorsAsInt(input);
+      PostToHost(DoorsReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -373,13 +336,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_PZBAsInt(IBinaryReader input, int id)
     {
-      /* Data is delivered as Int values that are only either 0 or 1.
-             * For the sake of logic, convert these to actual booleans here.
-             */
-      Int32 temp = input.ReadInt32();
-      PostToHost(PZBReceived, id, (PZBSystem) temp);
-
-      return sizeof (Int32);
+      var data = ReadPZBAsInt(input);
+      PostToHost(PZBReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     /// <summary>
@@ -389,42 +348,9 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BrakesAsInt(IBinaryReader input, int id)
     {
-      /* Data is delivered as Int values that are only either 0 or 1.
-             * For the sake of logic, convert these to actual booleans here.
-             */
-      Int32 temp = input.ReadInt32();
-
-      BrakeConfiguration result;
-
-      switch (temp)
-      {
-        case 0:
-          result = new BrakeConfiguration {HasMgBrake = false, Pitch = BrakePitch.G};
-          break;
-
-        case 1:
-          result = new BrakeConfiguration {HasMgBrake = false, Pitch = BrakePitch.P};
-          break;
-
-        case 2:
-          result = new BrakeConfiguration {HasMgBrake = false, Pitch = BrakePitch.R};
-          break;
-
-        case 3:
-          result = new BrakeConfiguration {HasMgBrake = true, Pitch = BrakePitch.P};
-          break;
-
-        case 4:
-          result = new BrakeConfiguration {HasMgBrake = true, Pitch = BrakePitch.R};
-          break;
-
-        default:
-          throw new ZusiTcpException("Invalid value received for brake configuration.");
-      }
-
-      PostToHost(BrakeConfigReceived, id, result);
-
-      return sizeof (Int32);
+      var data = ReadBrakesAsInt(input);
+      PostToHost(BrakeConfigReceived, id, data.ReadedData);
+      return data.ReadedLength;
     }
 
     // ReSharper restore InconsistentNaming

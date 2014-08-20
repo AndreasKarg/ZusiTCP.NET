@@ -8,6 +8,25 @@ using System.Collections.Generic;
 
 namespace Zusi_Datenausgabe
 {
+  ///<summary>Represents data, that have been read form a Source.</summary>
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
+  public struct ReadedValue<T> //Note: I know that this word usually has no noticable past.
+  {
+    public ReadedValue(int lng, T retVal) : this()
+    {
+      ReadedLength = lng;
+      ReadedData = retVal;
+    }
+
+    ///<summary>The length, that was neccessary to extract the data.</summary>
+    [Zusi_Datenausgabe.Compyling.ReadedLengthAttribute()]
+    public int ReadedLength {private set; get;}
+
+    ///<summary>The data, that was extracted.</summary>
+    [Zusi_Datenausgabe.Compyling.ReadedDataAttribute()]
+    public T ReadedData {private set; get;}
+  }
+
   /// <summary>
   ///   Represents a dictionary class that translates names of Zusi measurements to their internal numbers.
   /// </summary>
@@ -261,6 +280,41 @@ namespace Zusi_Datenausgabe
     ///   Contains the brake pitch used on the train.
     /// </summary>
     public BrakePitch Pitch { get; set; }
+
+
+    /// <summary>
+    ///   Checks if this instance is equal to another.
+    /// </summary>
+    public override bool Equals(object other)
+    {
+      if ((other == null) || (other.GetType() != typeof(BrakeConfiguration))) return false; //ToDo: Have a look at examples and may correct the second condition.
+      BrakeConfiguration d = (BrakeConfiguration) other;
+      return this == d;
+    }
+
+    /// <summary>
+    ///   Gets a Hash-Code for this instance.
+    /// </summary>
+    public override int GetHashCode()
+    {
+      return (HasMgBrake.GetHashCode() >> 4) ^ Pitch.GetHashCode();
+    }
+
+    /// <summary>
+    ///   Checks if two configuarations are equal.
+    /// </summary>
+    public static bool operator == (BrakeConfiguration first, BrakeConfiguration second)
+    {
+      return first.HasMgBrake == second.HasMgBrake && first.Pitch == second.Pitch;
+    }
+
+    /// <summary>
+    ///   Checks if two configuarations are inequal.
+    /// </summary>
+    public static bool operator != (BrakeConfiguration first, BrakeConfiguration second)
+    {
+      return first.HasMgBrake != second.HasMgBrake || first.Pitch != second.Pitch;
+    }
   }
 
   /// <summary>

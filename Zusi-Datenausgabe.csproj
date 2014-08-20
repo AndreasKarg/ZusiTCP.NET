@@ -67,10 +67,12 @@
     <Compile Include="commandset_schema.designer.cs">
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Compyling.cs" />
     <Compile Include="DataContainers.cs" />
     <Compile Include="IBinaryReader.cs" />
     <Compile Include="ObjectExtension.cs" />
     <Compile Include="ReferenceCounter.cs" />
+    <Compile Include="SpecializedCodeCompyler.cs" />
     <Compile Include="SwitchableReadOnlyList.cs" />
     <Compile Include="ZusiTcpBaseConnection.cs" />
     <Compile Include="ZusiTcpClientAbstract.cs" />
@@ -80,7 +82,9 @@
     <Compile Include="ZusiTcpServerConnectionInitializer.cs" />
     <Compile Include="ZusiTcpServerMasterConnection.cs" />
     <Compile Include="ZusiTcpServerSlaveConnection.cs" />
+    <Compile Include="ZusiTcpSpecificClient.cs" />
     <Compile Include="ZusiTcpTypeClient.cs" />
+    <Compile Include="ZusiTcpTypeClientAbstract.cs" />
     <Compile Include="ZusiTcpTypeMaster.cs" />
   </ItemGroup>
   <ItemGroup>
