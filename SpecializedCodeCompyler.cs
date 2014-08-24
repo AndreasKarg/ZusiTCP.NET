@@ -1,3 +1,10 @@
+using System;
+using System.CodeDom;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+
 namespace Zusi_Datenausgabe.Compyling
 {
   ///<summary>Provieds Methods to create Code for specific CommandSets.</summary>
@@ -8,84 +15,98 @@ namespace Zusi_Datenausgabe.Compyling
     ///<throws ex="System.ArgumentException">Thrown, whenn type is no subclass of ZusiTcpClientAbstract.</throws>
     ///<throws ex="System.ArgumentException">Thrown, whenn at least one constructor of the base class does not 
     /// require exact one CommandSet.</throws>
-    public static System.CodeDom.CodeTypeDeclaration CreateZusiTcpSpecificClientByBaseClass(
-        Zusi_Datenausgabe.CommandSet commands, System.Type classBase)
+    public static CodeTypeDeclaration CreateZusiTcpSpecificClientByBaseClass(
+        CommandSet commands, Type classBase)
     {
-      if (classBase == null) throw new System.ArgumentException("classBase");
+      if (classBase == null) throw new ArgumentException("classBase");
       
       /******* class declaration *******/
-      var ctype = new System.CodeDom.CodeTypeDeclaration("ZusiTcpSpecificClient");
-      ctype.IsClass = true;
-      ctype.TypeAttributes |= System.Reflection.TypeAttributes.Sealed;
-      ctype.BaseTypes.Add(classBase);
+      // -> [public?] sealed class ZusiTcpSpecificClient : [classBase]
+      var classDeclaration = new CodeTypeDeclaration("ZusiTcpSpecificClient");
+      classDeclaration.IsClass = true;
+      classDeclaration.TypeAttributes |= TypeAttributes.Sealed;
+      classDeclaration.BaseTypes.Add(classBase);
       
       
       /******* CreateCommandSet *******/
-      System.CodeDom.CodeMethodReferenceExpression crdocmthr; //Referenct to the Constructor Method
-      System.CodeDom.CodeMemberMethod crdocmth; //The Constructor Method itself (to be able to add Code-Lines).
-      System.CodeDom.CodeMethodReferenceExpression crdoccma; //Reference to the Add-Method of the local document.
+      CodeMethodReferenceExpression createCommandSetMethodReference; //Referenct to the Constructor Method
+      CodeMemberMethod createCommandSetMethod; //The Constructor Method itself (to be able to add Code-Lines).
+      CodeMethodReferenceExpression addMethodReference; //Reference to the Add-Method of the local document.
       {
-        crdocmth = new System.CodeDom.CodeMemberMethod(); //Constructor Method
-        crdocmth.Name = "CreateCommandSet";
-        crdocmth.Attributes = System.CodeDom.MemberAttributes.Private | System.CodeDom.MemberAttributes.Static;
-        crdocmth.ReturnType = new System.CodeDom.CodeTypeReference(typeof(Zusi_Datenausgabe.CommandSet));
+        // -> private static CommandSet CreateCommandSet() {
+        createCommandSetMethod = new CodeMemberMethod(); //Constructor Method
+        createCommandSetMethod.Name = "CreateCommandSet";
+        createCommandSetMethod.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+        createCommandSetMethod.ReturnType = new CodeTypeReference(typeof(CommandSet));
         
-        crdocmthr = new System.CodeDom.CodeMethodReferenceExpression();
-        crdocmthr.MethodName = crdocmth.Name;
+        createCommandSetMethodReference = new CodeMethodReferenceExpression {MethodName = createCommandSetMethod.Name};
+
+        // -> CommandSet document;
+        var documentVarDeclaration = new CodeVariableDeclarationStatement();
+        documentVarDeclaration.Type = new CodeTypeReference(typeof(CommandSet));
+        documentVarDeclaration.Name = "document";
+        createCommandSetMethod.Statements.Add(documentVarDeclaration);
+        var documentVarReference = new CodeVariableReferenceExpression(documentVarDeclaration.Name);
+
+        addMethodReference = new CodeMethodReferenceExpression(
+            new CodePropertyReferenceExpression(documentVarReference, "Command"), "Add");
+
+        // -> document = new CommandSet();
+        var documentVarAssignment = new CodeAssignStatement(
+          documentVarReference,
+          new CodeObjectCreateExpression(
+            typeof(CommandSet), 
+            new CodeExpression[] {}));
+        createCommandSetMethod.Statements.Add(documentVarAssignment);
         
-        var crdocdoc = new System.CodeDom.CodeVariableDeclarationStatement();
-        crdocdoc.Type = new System.CodeDom.CodeTypeReference(typeof(Zusi_Datenausgabe.CommandSet));
-        crdocdoc.Name = "document";
-        crdocmth.Statements.Add(crdocdoc);
-        var crdocvar = new System.CodeDom.CodeVariableReferenceExpression(crdocdoc.Name);
-        crdoccma = new System.CodeDom.CodeMethodReferenceExpression(
-            new System.CodeDom.CodePropertyReferenceExpression(crdocvar, "Command"), "Add");
-        var crdocctr = new System.CodeDom.CodeAssignStatement(
-          crdocvar,
-          new System.CodeDom.CodeObjectCreateExpression(
-            typeof(Zusi_Datenausgabe.CommandSet), 
-            new System.CodeDom.CodeExpression[] {}));
-        crdocmth.Statements.Add(crdocctr);
-        
-        ctype.Members.Add(crdocmth);
+        classDeclaration.Members.Add(createCommandSetMethod);
       }
+
       /******* Constructors *******/
       {
-        foreach(var ctor in classBase.GetConstructors())
+        foreach(var baseCtor in classBase.GetConstructors())
         {
-          var ctor1 = CreateZusiTcpSpecificClientByBaseClassConstructor(ctor, crdocmthr);
-          ctype.Members.Add(ctor1);
+          var overloadedCtor = GenerateOverloadedConstructor(baseCtor, createCommandSetMethodReference);
+          classDeclaration.Members.Add(overloadedCtor);
         }
       }
+
       /******* DataTypes *******/
       {
-        System.Collections.Generic.Dictionary<string, BaseClassDecoderMethodInfo> validTypes =
+        Dictionary<string, BaseClassDecoderMethodInfo> definedReadMethods =
           BaseClassDecoderMethodInfo.GetDefinedReadMethods(classBase);
         
-        var HandleMethods = new System.Collections.Generic.Dictionary<string, 
-                System.CodeDom.CodeMemberMethod>();
+        var handlerMethods = new Dictionary<string,
+                CodeMemberMethod>();
         
-        var ReceivedMethods = new System.Collections.Generic.Dictionary<string, 
-                System.CodeDom.CodeMemberMethod>();
+        var receiverMethods = new Dictionary<string,
+                CodeMemberMethod>();
         
-        foreach(Zusi_Datenausgabe.CommandEntry entry in commands.Command)
+        foreach(CommandEntry entry in commands.Command)
         {
-          string[] descs = entry.Name.Split(new string[]{";"}, System.StringSplitOptions.None);
+          string[] descs = entry.Name.Split(new string[]{";"}, StringSplitOptions.None);
           string summary = descs[0];
           
-          BaseClassDecoderMethodInfo info = validTypes[entry.Type];
+          BaseClassDecoderMethodInfo readMethod = definedReadMethods[entry.Type];
           
           /******* Add Command to the CommandSet *******/
-          crdocmth.Statements.Add(
-            new System.CodeDom.CodeMethodInvokeExpression(
-            crdoccma, new System.CodeDom.CodeExpression[]
-            {new System.CodeDom.CodeObjectCreateExpression(
-            typeof(Zusi_Datenausgabe.CommandEntry), 
-            new System.CodeDom.CodeExpression[] {
-            new System.CodeDom.CodePrimitiveExpression(entry.ID),
-            new System.CodeDom.CodePrimitiveExpression(summary),
-            new System.CodeDom.CodePrimitiveExpression(entry.Type)
-            })}));
+          // -> document.Command.Add(new CommandEntry([entry.ID], [summary], [entry.Type]);
+          createCommandSetMethod.Statements.Add(
+            new CodeMethodInvokeExpression(
+              addMethodReference, new CodeExpression[]
+              {
+                new CodeObjectCreateExpression(
+                  typeof(CommandEntry), 
+                  new CodeExpression[]
+                  {
+                    new CodePrimitiveExpression(entry.ID),
+                    new CodePrimitiveExpression(summary),
+                    new CodePrimitiveExpression(entry.Type)
+                  }
+                )
+              }
+            )
+          );
           
           int i = -1;
           
@@ -96,32 +117,36 @@ namespace Zusi_Datenausgabe.Compyling
           // if-Abfragen die Entsprechenden Werte behandeln. Die If-Blöcke müssen dabei
           // bei jedem Datentyp einzeln gemacht werden, alles andere im Dictionary.
           
-          System.CodeDom.CodeConditionStatement whenMyType;
-          System.CodeDom.CodeMethodReferenceExpression refReceived = null;
-          var localData = new System.CodeDom.CodeVariableReferenceExpression("data");
+          CodeConditionStatement whenMyType;
+          CodeMethodReferenceExpression receiverMethodRef;
+          var localData = new CodeVariableReferenceExpression("data");
           
           /******* Finds or Creates Received-Methods *******/
           {
-            System.CodeDom.CodeMemberMethod mth = null;
-            if (ReceivedMethods.ContainsKey(entry.Type))
+            CodeMemberMethod receiverMethod;
+            if (receiverMethods.ContainsKey(entry.Type))
             {
-              mth = ReceivedMethods[entry.Type];
+              receiverMethod = receiverMethods[entry.Type];
             }
             else
             {
-              mth = new System.CodeDom.CodeMemberMethod();
-              mth.Name = "Recieved_" + entry.Type;
-              mth.Attributes = System.CodeDom.MemberAttributes.Private | System.CodeDom.MemberAttributes.Final;
-              mth.Parameters.Add(new System.CodeDom.CodeParameterDeclarationExpression(
+              // -> private final void Received_[entry.Type](object state, DataSet<[readMethod.TypeProcessingMethod.ReturnType]> data)
+              receiverMethod = new CodeMemberMethod
+              {
+                Name = "Recieved_" + entry.Type,
+                Attributes = MemberAttributes.Private | MemberAttributes.Final
+              };
+
+              receiverMethod.Parameters.Add(new CodeParameterDeclarationExpression(
                 typeof(object), "state"));
               
-              mth.Parameters.Add(new System.CodeDom.CodeParameterDeclarationExpression(
-                new System.CodeDom.CodeTypeReference(typeof(Zusi_Datenausgabe.DataSet<>)
-                .MakeGenericType(new System.Type[] {info.TypeProcessingMethod.ReturnType}))
+              receiverMethod.Parameters.Add(new CodeParameterDeclarationExpression(
+                new CodeTypeReference(typeof(DataSet<>)
+                .MakeGenericType(new[] {readMethod.TypeProcessingMethod.ReturnType}))
                 , "data"));
               
-              ctype.Members.Add(mth);
-              ReceivedMethods.Add(entry.Type, mth);
+              classDeclaration.Members.Add(receiverMethod);
+              receiverMethods.Add(entry.Type, receiverMethod);
               
               //var localVar = new System.CodeDom.CodeVariableDeclarationStatement();
               //localVar.Name = "data";
@@ -132,144 +157,168 @@ namespace Zusi_Datenausgabe.Compyling
               //  new System.CodeDom.CodeVariableReferenceExpression(localVar.Name));
               //mth.Statements.Add(localVar);
             }
-            refReceived = new System.CodeDom.CodeMethodReferenceExpression(
-              new System.CodeDom.CodeThisReferenceExpression(), mth.Name);
+
+            receiverMethodRef = new CodeMethodReferenceExpression(
+              new CodeThisReferenceExpression(), receiverMethod.Name);
             
-            whenMyType = new System.CodeDom.CodeConditionStatement();
-            whenMyType.Condition = 
-              new System.CodeDom.CodeBinaryOperatorExpression(
-                new System.CodeDom.CodePrimitiveExpression(entry.ID),
-                System.CodeDom.CodeBinaryOperatorType.IdentityEquality/*ValueEquality*/,
-                new System.CodeDom.CodePropertyReferenceExpression(
-                  new System.CodeDom.CodeVariableReferenceExpression("data"), "Id"));
-            mth.Statements.Add(whenMyType);
+            // -> if ([entry.ID] == data.Id)
+            whenMyType = new CodeConditionStatement
+            {
+              Condition = new CodeBinaryOperatorExpression(
+                new CodePrimitiveExpression(entry.ID),
+                CodeBinaryOperatorType.IdentityEquality /*ValueEquality*/,
+                new CodePropertyReferenceExpression(
+                  new CodeVariableReferenceExpression("data"), "Id"
+            ))};
+            receiverMethod.Statements.Add(whenMyType);
           }
+
           /******* Finds or Creates HandleDATA-Methods *******/
           {
-            System.CodeDom.CodeMemberMethod mth;
-            if (HandleMethods.ContainsKey(entry.Type))
+            CodeMemberMethod handlerMethod;
+            if (handlerMethods.ContainsKey(entry.Type))
             {
-              mth = HandleMethods[entry.Type];
+              handlerMethod = handlerMethods[entry.Type];
             }
             else
             {
-              mth = new System.CodeDom.CodeMemberMethod();
-              mth.Name = "HandleDATA_" + entry.Type;
-              mth.Attributes = System.CodeDom.MemberAttributes.Private | System.CodeDom.MemberAttributes.Final;
-              mth.Parameters.Add(new System.CodeDom.CodeParameterDeclarationExpression(
-                typeof(Zusi_Datenausgabe.IBinaryReader), "input"));
-              mth.Parameters.Add(new System.CodeDom.CodeParameterDeclarationExpression(
+              // -> private final int HandleDATA_[entry.Type](IBinaryReader input, int id)
+              handlerMethod = new CodeMemberMethod
+              {
+                Name = "HandleDATA_" + entry.Type,
+                Attributes = MemberAttributes.Private | MemberAttributes.Final
+              };
+
+              handlerMethod.Parameters.Add(new CodeParameterDeclarationExpression(
+                typeof(IBinaryReader), "input"));
+              handlerMethod.Parameters.Add(new CodeParameterDeclarationExpression(
                 typeof(int), "id"));
-              mth.ReturnType = new System.CodeDom.CodeTypeReference(typeof(int));
+              handlerMethod.ReturnType = new CodeTypeReference(typeof(int));
               
-              ctype.Members.Add(mth);
-              HandleMethods.Add(entry.Type, mth);
+              classDeclaration.Members.Add(handlerMethod);
+              handlerMethods.Add(entry.Type, handlerMethod);
               
               //Save the result of the reader to a local Variable.
-              var localVar = new System.CodeDom.CodeVariableDeclarationStatement();
-              localVar.Name = "data";
-              localVar.Type = 
-                new System.CodeDom.CodeTypeReference(info.TypeProcessingMethod.ReturnType);
-              localVar.InitExpression = 
-                  new System.CodeDom.CodeMethodInvokeExpression(
-                    new System.CodeDom.CodeMethodReferenceExpression(
-                      new System.CodeDom.CodeThisReferenceExpression(), info.TypeProcessingMethod.Name),
-                  new System.CodeDom.CodeExpression[] {
-                    new System.CodeDom.CodeVariableReferenceExpression("input")/*,
+              // -> [readMethod.TypeProcessingMethod.ReturnType] data = this.[readMethod.TypeProcessingMethod.Name](input);
+              var dataVar = new CodeVariableDeclarationStatement
+              {
+                Name = "data",
+                Type = new CodeTypeReference(readMethod.TypeProcessingMethod.ReturnType),
+                InitExpression = new CodeMethodInvokeExpression(
+                  new CodeMethodReferenceExpression(
+                    new CodeThisReferenceExpression(), readMethod.TypeProcessingMethod.Name),
+                  new CodeExpression[]
+                  {
+                    new CodeVariableReferenceExpression("input") /*,
                     new System.CodeDom.CodeVariableReferenceExpression("id")*/
-                  });
-              mth.Statements.Add(localVar);
-              mth.Statements.Add(new System.CodeDom.CodeMethodInvokeExpression(
-                    new System.CodeDom.CodeMethodReferenceExpression(
-                      new System.CodeDom.CodeThisReferenceExpression(), "PostToHost",
-                      new System.CodeDom.CodeTypeReference[] {localVar.Type}),
-                    new System.CodeDom.CodeExpression[] {
-                      new System.CodeDom.CodeDelegateCreateExpression(
-                        new System.CodeDom.CodeTypeReference(typeof(Zusi_Datenausgabe.ReceiveEvent<>)
-                        .MakeGenericType(new System.Type[] {info.TypeProcessingMethod.ReturnType})),
-                        new System.CodeDom.CodeThisReferenceExpression(),
-                        refReceived.MethodName),
-                      new System.CodeDom.CodeVariableReferenceExpression("id"),
-                      new System.CodeDom.CodeVariableReferenceExpression("data")
+                  })
+              };
+              handlerMethod.Statements.Add(dataVar);
+
+              // -> this.PostToHost<[dataVar.Type]>(new ReceiveEvent<[readMethod.TypeProcessingMethod.ReturnType]>(this.[receiverMethodRef.MethodName]), id, data);
+              handlerMethod.Statements.Add(new CodeMethodInvokeExpression(
+                    new CodeMethodReferenceExpression(
+                      new CodeThisReferenceExpression(), "PostToHost",
+                      new[] {dataVar.Type}),
+                    new CodeExpression[] {
+                      new CodeDelegateCreateExpression(
+                        new CodeTypeReference(typeof(ReceiveEvent<>)
+                        .MakeGenericType(new[] {readMethod.TypeProcessingMethod.ReturnType})),
+                        new CodeThisReferenceExpression(),
+                        receiverMethodRef.MethodName),
+                      new CodeVariableReferenceExpression("id"),
+                      new CodeVariableReferenceExpression("data")
                     }));
               
-              
-              mth.Statements.Add(new System.CodeDom.CodeMethodReturnStatement(
-                new System.CodeDom.CodePropertyReferenceExpression(localData, 
-                info.ReturnTypeInfo.ReadLengthMethodName)));
+              // -> return data.[readMethod.ReturnTypeInfo.ReadLengthMethodName]
+              handlerMethod.Statements.Add(new CodeMethodReturnStatement(
+                new CodePropertyReferenceExpression(localData, 
+                readMethod.ReturnTypeInfo.ReadLengthMethodName)));
             }
           }
           
-          
-          
-          foreach(SmallPropertyInfo prop in info.ReturnTypeInfo.ValueRepresentatives)
+          foreach(SmallPropertyInfo prop in readMethod.ReturnTypeInfo.ValueRepresentatives)
           {
             i++;
-            string name = CreateMethodName(descs[System.Math.Min(descs.Length-1, i)]);
-            if ((System.Math.Max(descs.Length - 1, 1) < info.ReturnTypeInfo.ValueRepresentatives.Length) // If less descriptions than needed
-                && (i + 1 >= System.Math.Max(descs.Length - 1, 1))) // And this Item is the last that has one (or no longer has one)
+            string name = CreateMethodName(descs[Math.Min(descs.Length-1, i)]);
+
+            // TODO: Reformat
+            if ((Math.Max(descs.Length - 1, 1) < readMethod.ReturnTypeInfo.ValueRepresentatives.Length) // If less descriptions than needed
+                && (i + 1 >= Math.Max(descs.Length - 1, 1))) // And this Item is the last that has one (or no longer has one)
               name = string.Format("{0}_{1}", name, prop.PropertyType.Name);
             
-            
             /******* Add private Field and public getter Property *******/
-            var varl = new System.CodeDom.CodeMemberField();
-            varl.Name = name + "_";
-            varl.Type = new System.CodeDom.CodeTypeReference(prop.PropertyType);
+            // -> private [prop.PropertyType] [name]_;
+            var commandField = new CodeMemberField
+            {
+              Name = name + "_",
+              Type = new CodeTypeReference(prop.PropertyType)
+            };
+
+            // -> public final [prop.PropertyType] [name] {
+            var commandProperty = new CodeMemberProperty
+            {
+              Name = name,
+              HasGet = true,
+              HasSet = false,
+              Type = new CodeTypeReference(prop.PropertyType),
+              Attributes = MemberAttributes.Public | MemberAttributes.Final
+            };
             
-            var propy = new System.CodeDom.CodeMemberProperty();
-            propy.Name = name;
-            propy.HasGet = true;
-            propy.HasSet = false;
-            propy.Type = new System.CodeDom.CodeTypeReference(prop.PropertyType);
-            propy.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Final;
-            propy.GetStatements.Add(new System.CodeDom.CodeMethodReturnStatement(
-              new System.CodeDom.CodeFieldReferenceExpression(
-              new System.CodeDom.CodeThisReferenceExpression(), varl.Name)));
-            propy.Comments.Add(new System.CodeDom.CodeCommentStatement("<summary>", true));
-            propy.Comments.Add(new System.CodeDom.CodeCommentStatement(
+            // -> get { return this.[commandField.Name]; }
+            commandProperty.GetStatements.Add(new CodeMethodReturnStatement(
+              new CodeFieldReferenceExpression(
+              new CodeThisReferenceExpression(), commandField.Name)));
+
+            // -> /// <summary>Returns the current state of [entry.Name]</summary>
+            commandProperty.Comments.Add(new CodeCommentStatement("<summary>", true));
+            commandProperty.Comments.Add(new CodeCommentStatement(
               string.Format("Returns the current state of {0}.", entry.Name) , true));
-            propy.Comments.Add(new System.CodeDom.CodeCommentStatement("</summary>", true));
-            
-            var evnt = new System.CodeDom.CodeMemberEvent();
-            evnt.Name = name + "_Changed";
-            evnt.Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.Final;
-            evnt.Type = new System.CodeDom.CodeTypeReference(typeof(System.EventHandler));
-            
-            ctype.Members.Add(varl);
-            ctype.Members.Add(propy);
-            ctype.Members.Add(evnt);
-            
-            var pref = new System.CodeDom.CodePropertyReferenceExpression(
-                new System.CodeDom.CodePropertyReferenceExpression(
+            commandProperty.Comments.Add(new CodeCommentStatement("</summary>", true));
+
+            // -> public final event EventHandler [name]_Changed;
+            var commandChangedEvent = new CodeMemberEvent
+            {
+              Name = name + "_Changed",
+              Attributes = MemberAttributes.Public | MemberAttributes.Final,
+              Type = new CodeTypeReference(typeof (EventHandler))
+            };
+
+            classDeclaration.Members.Add(commandField);
+            classDeclaration.Members.Add(commandProperty);
+            classDeclaration.Members.Add(commandChangedEvent);
+
+            var commandPropertyReference = new CodePropertyReferenceExpression(
+                new CodePropertyReferenceExpression(
                 localData, "Value"),
                 prop.Name);
             
             //if (true) //if EXIST OPERATOR ==(prop.PropertyType, prop.PropertyType)
             {
-              var whenValueChanged = new System.CodeDom.CodeConditionStatement();
+              var whenValueChanged = new CodeConditionStatement();
               
               //Condition: Not Equals.
               whenValueChanged.Condition =
-              new System.CodeDom.CodeBinaryOperatorExpression(pref,
-                System.CodeDom.CodeBinaryOperatorType.IdentityInequality/*ValueEquality*/,
-                new System.CodeDom.CodeFieldReferenceExpression(
-                  new System.CodeDom.CodeThisReferenceExpression(), varl.Name));
+              new CodeBinaryOperatorExpression(commandPropertyReference,
+                CodeBinaryOperatorType.IdentityInequality/*ValueEquality*/,
+                new CodeFieldReferenceExpression(
+                  new CodeThisReferenceExpression(), commandField.Name));
               
               //Asign Value
               whenValueChanged.TrueStatements.Add(
-                new System.CodeDom.CodeAssignStatement(
-                new System.CodeDom.CodeFieldReferenceExpression(
-                new System.CodeDom.CodeThisReferenceExpression(), varl.Name),
-                pref));
+                new CodeAssignStatement(
+                new CodeFieldReferenceExpression(
+                new CodeThisReferenceExpression(), commandField.Name),
+                commandPropertyReference));
                 
               //Raise Event
               whenValueChanged.TrueStatements.Add(
-                new System.CodeDom.CodeDelegateInvokeExpression( 
-                new System.CodeDom.CodeEventReferenceExpression(
-                new System.CodeDom.CodeThisReferenceExpression(), evnt.Name),
-                new System.CodeDom.CodeExpression[] {
-                new System.CodeDom.CodeThisReferenceExpression(),
-                new System.CodeDom.CodeObjectCreateExpression(typeof (System.EventArgs))}
+                new CodeDelegateInvokeExpression(
+                new CodeEventReferenceExpression(
+                new CodeThisReferenceExpression(), commandChangedEvent.Name),
+                new CodeExpression[] {
+                new CodeThisReferenceExpression(),
+                new CodeObjectCreateExpression(typeof (EventArgs))}
                 ));
               
               whenMyType.TrueStatements.Add(whenValueChanged);
@@ -297,43 +346,49 @@ namespace Zusi_Datenausgabe.Compyling
         }
       }
       
-      crdocmth.Statements.Add(new System.CodeDom.CodeMethodReturnStatement(
-        new System.CodeDom.CodeVariableReferenceExpression("document")));
+      createCommandSetMethod.Statements.Add(new CodeMethodReturnStatement(
+        new CodeVariableReferenceExpression("document")));
     
-      return ctype;
+      return classDeclaration;
     }
-    private static System.CodeDom.CodeConstructor CreateZusiTcpSpecificClientByBaseClassConstructor(
-            System.Reflection.ConstructorInfo originCtor,
-            System.CodeDom.CodeMethodReferenceExpression createDocument)
+
+    private static CodeConstructor GenerateOverloadedConstructor(
+            ConstructorInfo baseConstructor,
+            CodeMethodReferenceExpression createCommandSetMethodReference)
     {
-      var ctorN = new System.CodeDom.CodeConstructor();
-      if (originCtor.IsPublic)
-        ctorN.Attributes = System.CodeDom.MemberAttributes.Public;
-      else
-        ctorN.Attributes = System.CodeDom.MemberAttributes.Private;
-      //ctorN.IsPublic = originCtor.IsPublic;
-      bool hasCmdSet = false;
-      foreach(System.Reflection.ParameterInfo param in originCtor.GetParameters())
+      var codeConstructor = new CodeConstructor
       {
-        if (param.ParameterType == typeof(Zusi_Datenausgabe.CommandSet))
+        Attributes = baseConstructor.IsPublic ? MemberAttributes.Public : MemberAttributes.Private
+      };
+
+      //ctorN.IsPublic = originCtor.IsPublic;
+
+      bool hasCmdSet = false;
+
+      foreach(ParameterInfo param in baseConstructor.GetParameters())
+      {
+        if (param.ParameterType == typeof(CommandSet))
         {
-          if (hasCmdSet) throw new System.ArgumentException();
-          ctorN.BaseConstructorArgs.Add(new System.CodeDom.CodeMethodInvokeExpression(
-            createDocument));
+          if (hasCmdSet) throw new ArgumentException();
+
+          codeConstructor.BaseConstructorArgs.Add(new CodeMethodInvokeExpression(
+            createCommandSetMethodReference));
           hasCmdSet = true;
         }
         else
         {
-          ctorN.Parameters.Add(new System.CodeDom.CodeParameterDeclarationExpression(param.ParameterType, param.Name));
-          ctorN.BaseConstructorArgs.Add(new System.CodeDom.CodeVariableReferenceExpression(param.Name));
+          codeConstructor.Parameters.Add(new CodeParameterDeclarationExpression(param.ParameterType, param.Name));
+          codeConstructor.BaseConstructorArgs.Add(new CodeVariableReferenceExpression(param.Name));
         }
       }
-      if (!hasCmdSet) throw new System.ArgumentException();
-      return ctorN;
+
+      if (!hasCmdSet) throw new ArgumentException();
+      return codeConstructor;
     }
+
     private static string CreateMethodName(string desc)
     {
-      System.Globalization.TextInfo nfo = System.Globalization.CultureInfo.InvariantCulture.TextInfo;
+      TextInfo nfo = CultureInfo.InvariantCulture.TextInfo;
       
       return nfo.ToTitleCase(desc)
         .Replace(" ", "").Replace("-", "").Replace("ß","ss")
