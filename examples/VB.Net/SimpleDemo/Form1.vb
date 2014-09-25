@@ -19,6 +19,11 @@ Public Class Form1
         MyTCPConnection.RequestData(2637) ' "LM Block, bis zu dem die Strecke frei ist" => StringReceived
         MyTCPConnection.RequestData(2649) ' "PZB-System"   . . . . . . . . . . . . . .  => PZBReceived
         MyTCPConnection.RequestData(2594) ' "LM LZB Ü-System"  . . . . . . . . . . . .  => BoolReceived
+
+
+        MyTCPConnection.RequestData(2660) ' Aktuelle Höchstgeschwindigkeit
+        MyTCPConnection.RequestData(2661) ' Aktuelle Zielgeschwindigkeit
+        MyTCPConnection.RequestData(2662) ' Zielweg
     End Sub
 
     Private Sub BtnConnect_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnConnect.Click
@@ -39,7 +44,7 @@ Public Class Form1
                 System.Windows.Forms.MessageBox.Show(String.Format("An error occured when trying to connect: {0}", ex.Message))
 
                 ' ... reset the connection by explicitly calling Disconnect()
-                MyTCPConnection.Disconnnect()
+                MyTCPConnection.Disconnect()
 
                 ' ... and then change the button label to "Connect".
                 BtnConnect.Text = "Connect"
@@ -48,7 +53,7 @@ Public Class Form1
             ' If we're currently connected or the connection fell into an error state...
         Else
             ' ... reset the connection by explicitly calling Disconnect()
-            MyTCPConnection.Disconnnect()
+            MyTCPConnection.Disconnect()
 
             ' ... and then change the button label to "Connect".
             BtnConnect.Text = "Connect"
@@ -62,7 +67,7 @@ Public Class Form1
         System.Windows.Forms.MessageBox.Show(String.Format("An error occured when receiving data: {0}", ex.Message))
 
         ' ... reset the connection by explicitly calling Disconnect()
-        MyTCPConnection.Disconnnect()
+        MyTCPConnection.Disconnect()
 
         ' ... and then change the button label to "Connect".
         BtnConnect.Text = "Connect"
@@ -79,8 +84,7 @@ Public Class Form1
         End Select
     End Sub
 
-    Private Sub TCPConnection_BrakeConfigReceived(ByVal sender As Object,
-                                                  ByVal data As DataSet(Of BrakeConfiguration)) _
+    Private Sub TCPConnection_BrakeConfigReceived(ByVal sender As Object, ByVal data As DataSet(Of BrakeConfiguration)) _
         Handles MyTCPConnection.BrakeConfigReceived
         Select Case data.Id
             Case Else
@@ -98,8 +102,7 @@ Public Class Form1
         End Select
     End Sub
 
-    Private Sub TCPConnection_DoorsReceived(ByVal sender As Object,
-                                            ByVal data As DataSet(Of DoorState)) _
+    Private Sub TCPConnection_DoorsReceived(ByVal sender As Object, ByVal data As DataSet(Of DoorState)) _
         Handles MyTCPConnection.DoorsReceived
         Select Case data.Id
             Case Else
@@ -114,6 +117,13 @@ Public Class Form1
                 lblGeschw.Text = String.Format("Geschwindigkeit: {0} km/h ", data.Value.ToString("0.00")) 'two decimals
             Case 2576 ' "Fahrstufe" => FloatReceived
                 lblFahrstufe.Text = "Fahrstufe: " & data.Value.ToString("0") 'no decimals
+
+            Case 2660
+                Label3.Text = data.Value
+            Case 2661
+                Label4.Text = data.Value
+            Case 2662
+                Label5.Text = data.Value
             Case Else
                 'For unknown IDs...
         End Select
@@ -127,8 +137,7 @@ Public Class Form1
         End Select
     End Sub
 
-    Private Sub TCPConnection_PZBReceived(ByVal sender As Object,
-                                          ByVal data As DataSet(Of PZBSystem)) _
+    Private Sub TCPConnection_PZBReceived(ByVal sender As Object, ByVal data As DataSet(Of PZBSystem)) _
         Handles MyTCPConnection.PZBReceived
         Select Case data.Id
             Case 2649 ' "PZB-System" => PZBReceived

@@ -35,6 +35,9 @@ Partial Class Form1
         Me.lblFreiBis = New System.Windows.Forms.Label
         Me.lblLZB = New System.Windows.Forms.Label
         Me.RichTextBox1 = New System.Windows.Forms.RichTextBox
+        Me.Label3 = New System.Windows.Forms.Label
+        Me.Label4 = New System.Windows.Forms.Label
+        Me.Label5 = New System.Windows.Forms.Label
         Me.groupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -163,11 +166,41 @@ Partial Class Form1
         Me.RichTextBox1.Text = ""
         Me.RichTextBox1.ZoomFactor = 0.75!
         '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(438, 60)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(39, 13)
+        Me.Label3.TabIndex = 9
+        Me.Label3.Text = "Label3"
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Location = New System.Drawing.Point(438, 73)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(39, 13)
+        Me.Label4.TabIndex = 10
+        Me.Label4.Text = "Label4"
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(438, 86)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(39, 13)
+        Me.Label5.TabIndex = 11
+        Me.Label5.Text = "Label5"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(493, 448)
+        Me.Controls.Add(Me.Label5)
+        Me.Controls.Add(Me.Label4)
+        Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.RichTextBox1)
         Me.Controls.Add(Me.lblLZB)
         Me.Controls.Add(Me.lblFreiBis)
@@ -197,5 +230,8 @@ Partial Class Form1
     Friend WithEvents lblFreiBis As System.Windows.Forms.Label
     Friend WithEvents lblLZB As System.Windows.Forms.Label
     Friend WithEvents RichTextBox1 As System.Windows.Forms.RichTextBox
+    Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents Label4 As System.Windows.Forms.Label
+    Friend WithEvents Label5 As System.Windows.Forms.Label
 
 End Class
