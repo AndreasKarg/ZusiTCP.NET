@@ -34,9 +34,10 @@ namespace Zusi_Datenausgabe
       ExpectRequestData();
     }
 
-    public new void SendByteCommand(byte[] array, int id)
+    public void DataUpdate(byte[] array, int id) //ToDo: Improve method name.
     {
-      base.SendByteCommand(array, id);
+      if (RequestedData.Contains(id))
+        base.SendByteCommand(array, id);
     }
 
   }

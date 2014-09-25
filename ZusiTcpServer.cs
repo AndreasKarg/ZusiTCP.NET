@@ -278,8 +278,24 @@ namespace Zusi_Datenausgabe
       slave.DataChecking += OnSlaveDataChecking;
       slave.ConnectionState_Changed += SlaveConnectionStateChanged;
       slave.ErrorReceived += SlaveErrorReceived;
-      _clients.Add(slave);
-      _clientsExtern.Add(slave);
+      try
+      {
+        System.Threading.Monitor.Enter(_clients);
+        _clients.Add(slave);
+      }
+      finally
+      {
+        System.Threading.Monitor.Exit(_clients);
+      }
+      try
+      {
+        System.Threading.Monitor.Enter(_clientsExtern);
+        _clientsExtern.Add(slave);
+      }
+      finally
+      {
+        System.Threading.Monitor.Exit(_clientsExtern);
+      }
       slave.InitializeClient();
       InvokeClientConnected(slave);
     }
@@ -299,8 +315,24 @@ namespace Zusi_Datenausgabe
 
       if (!_clients.Contains(client)) return;
       _requestedData.ReleaseRange(client.RequestedData);
-      _clients.Remove(client);
-      _clientsExtern.Remove(client);
+      try
+      {
+        System.Threading.Monitor.Enter(_clients);
+        _clients.Remove(client);
+      }
+      finally
+      {
+        System.Threading.Monitor.Exit(_clients);
+      }
+      try
+      {
+        System.Threading.Monitor.Enter(_clientsExtern);
+        _clientsExtern.Remove(client);
+      }
+      finally
+      {
+        System.Threading.Monitor.Exit(_clientsExtern);
+      }
       client.Dispose();
     }
 
@@ -320,7 +352,7 @@ namespace Zusi_Datenausgabe
               byte[] data;
               if (_masterL.TryGetBufferValue(val, out data))
               {
-                client.SendByteCommand(data, val);
+                client.DataUpdate(data, val);
               }
             }
             //System.Threading.Monitor.Exit(_masterL.RequestedDataLockObject);
@@ -399,7 +431,7 @@ namespace Zusi_Datenausgabe
 
       foreach (var client in _clients)
       {
-        client.SendByteCommand(dataSet.Value, dataSet.Id);
+        client.DataUpdate(dataSet.Value, dataSet.Id);
       }
     }
 
