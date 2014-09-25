@@ -10,21 +10,21 @@ namespace Zusi_Datenausgabe
 {
   ///<summary>Represents data, that have been read form a Source.</summary>
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public struct ReadedValue<T> //Note: I know that this word usually has no noticable past.
+  public struct ExtractedValue<T>
   {
-    public ReadedValue(int lng, T retVal) : this()
+    public ExtractedValue(int lng, T retVal) : this()
     {
-      ReadedLength = lng;
-      ReadedData = retVal;
+      ExtractedLength = lng;
+      ExtractedData = retVal;
     }
 
     ///<summary>The length, that was neccessary to extract the data.</summary>
-    [Zusi_Datenausgabe.Compyling.ReadedLengthAttribute()]
-    public int ReadedLength {private set; get;}
+    [Zusi_Datenausgabe.Compyling.ExtractedLengthAttribute()]
+    public int ExtractedLength {private set; get;}
 
     ///<summary>The data, that was extracted.</summary>
-    [Zusi_Datenausgabe.Compyling.ReadedDataAttribute()]
-    public T ReadedData {private set; get;}
+    [Zusi_Datenausgabe.Compyling.ExtractedDataAttribute()]
+    public T ExtractedData {private set; get;}
   }
 
   /// <summary>

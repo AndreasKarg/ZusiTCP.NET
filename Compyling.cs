@@ -3,12 +3,12 @@ namespace Zusi_Datenausgabe.Compyling
 {
   ///<summary>Marks a Property to return the length, that was neccessary to extract the data of this class.</summary>
   [System.AttributeUsageAttribute(System.AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-  public class ReadedLengthAttribute : System.Attribute
+  public class ExtractedLengthAttribute : System.Attribute
   {
   }
   ///<summary>Marks a Property to return data, that was extracted.</summary>
   [System.AttributeUsageAttribute(System.AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-  public class ReadedDataAttribute : System.Attribute
+  public class ExtractedDataAttribute : System.Attribute
   {
   }
   
@@ -35,7 +35,7 @@ namespace Zusi_Datenausgabe.Compyling
     ///<summary>Tryes to extract all Methods, reading Data from a IBinaryDataReader.
     /// Methods have to start with "Read" and are sorted by Method Name (minus "Read").
     /// Methods have to take (only) an IBinaryReader and can return any type, that contains one Property
-    /// Marked with ReadedLengthAttribute and at least one Property Marked with ReadedDataAttribute.</summary>
+    /// Marked with ExtractedLengthAttribute and at least one Property Marked with ExtractedDataAttribute.</summary>
     public static System.Collections.Generic.Dictionary<string, BaseClassDecoderMethodInfo> GetDefinedReadMethods(System.Type type)
     {
       var value = new System.Collections.Generic.Dictionary<string, BaseClassDecoderMethodInfo>();
@@ -89,7 +89,7 @@ namespace Zusi_Datenausgabe.Compyling
     ///<summary>Tryes to extract all Methods, reading Data from a IBinaryDataReader.
     /// Methods have to start with "Read" and are sorted by Method Name (minus "Read").
     /// Methods have to take (only) an IBinaryReader and can return any type, that contains one Property
-    /// Marked with ReadedLengthAttribute and at least one Property Marked with ReadedDataAttribute.
+    /// Marked with ExtractedLengthAttribute and at least one Property Marked with ExtractedDataAttribute.
     /// Warning: This Methods will be Dissassebled(!).</summary>
     public static System.Collections.Generic.Dictionary<string, BinaryDataReadMethodInfo> GetDefinedReadMethods(System.Type type)
     {
@@ -139,7 +139,7 @@ namespace Zusi_Datenausgabe.Compyling
     public string ReadLengthMethodName {set; get;}
     
     ///<summary>Analyses a data Type and tries to find all valueRepresentives and the readLengthPropertyName according to 
-    /// ReadedLengthAttribute and ReadedDataAttribute.</summary>
+    /// ExtractedLengthAttribute and ExtractedDataAttribute.</summary>
     public static bool TryParse(System.Type origin, out ReadDataTypeInfo retVal)
     {
       retVal = new ReadDataTypeInfo();
@@ -152,7 +152,7 @@ namespace Zusi_Datenausgabe.Compyling
         System.Reflection.BindingFlags.Public |
         System.Reflection.BindingFlags.Instance))
       {
-        if (System.Attribute.IsDefined(mbr, typeof(ReadedLengthAttribute), true))
+        if (System.Attribute.IsDefined(mbr, typeof(ExtractedLengthAttribute), true))
         {
           if (mbr.PropertyType != typeof(int))
             return false;
@@ -162,7 +162,7 @@ namespace Zusi_Datenausgabe.Compyling
             return false;
           lngName = mbr.Name;
         }
-        if (System.Attribute.IsDefined(mbr, typeof(ReadedDataAttribute), true))
+        if (System.Attribute.IsDefined(mbr, typeof(ExtractedDataAttribute), true))
         {
           RetProp.Add(new SmallPropertyInfo(mbr));
         }

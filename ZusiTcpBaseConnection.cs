@@ -263,14 +263,14 @@ namespace Zusi_Datenausgabe
       if (
         !((iPacketLength == 3) || ((expResponse == ResponseType.Hello) && (iPacketLength >= 5)) ||
           ((expResponse == ResponseType.NeededData) && (iPacketLength >= 4)) ||
-          ((expResponse == ResponseType.NeededData) && (iPacketLength == 2)) )) //Qurirx-Mode for old TCP-Server.
+          ((expResponse == ResponseType.NeededData) && (iPacketLength == 2)) )) //Qurirks-Mode for old TCP-Server.
       {
         throw new ZusiTcpException("Invalid packet length: " + iPacketLength);
       }
 
       int iReadInstr = GetInstruction(ClientConnection.ReadByte(), ClientConnection.ReadByte());
       if ((iReadInstr == 0) && (expResponse == ResponseType.NeededData) && (iPacketLength == 2)) 
-        return new ExpectResponseAnswer(new int[] {}, 0); //Qurirx-Mode for old TCP-Server.
+        return new ExpectResponseAnswer(new int[] {}, 0); //Qurirks-Mode for old TCP-Server.
       if (iReadInstr != (int) expResponse)
       {
         throw new ZusiTcpException("Invalid command from server: " + iReadInstr);

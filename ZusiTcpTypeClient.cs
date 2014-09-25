@@ -203,8 +203,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_Single(IBinaryReader input, int id)
     {
       var data = ReadSingle(input);
-      PostToHost(FloatReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(FloatReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -215,8 +215,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_Int(IBinaryReader input, int id)
     {
       var data = ReadInt(input);
-      PostToHost(IntReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(IntReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -227,8 +227,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_String(IBinaryReader input, int id)
     {
       var data = ReadString(input);
-      PostToHost(StringReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(StringReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -239,8 +239,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_ByteLengthString(IBinaryReader input, int id)
     {
       var data = ReadByteLengthString(input);
-      PostToHost(StringReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(StringReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -251,8 +251,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_NullString(IBinaryReader input, int id)
     {
       var data = ReadNullString(input);
-      PostToHost(StringReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(StringReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -263,8 +263,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_DateTime(IBinaryReader input, int id)
     {
       var data = ReadDateTime(input);
-      PostToHost(DateTimeReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(DateTimeReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -275,8 +275,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_BoolAsSingle(IBinaryReader input, int id)
     {
       var data = ReadBoolAsSingle(input);
-      PostToHost(BoolReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(BoolReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -288,9 +288,9 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_BoolAndSingle(IBinaryReader input, int id)
     {
       var data = ReadBoolAndSingle(input);
-      PostToHost(BoolReceived, id, data.ReadedData);
+      PostToHost(BoolReceived, id, data.ExtractedData);
       PostToHost(FloatReceived, id, data.PZ80Data);
-      return data.ReadedLength;
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -301,8 +301,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_IntAsSingle(IBinaryReader input, int id)
     {
       var data = ReadIntAsSingle(input);
-      PostToHost(IntReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(IntReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -313,8 +313,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_BoolAsInt(IBinaryReader input, int id)
     {
       var data = ReadBoolAsInt(input);
-      PostToHost(BoolReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(BoolReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -325,8 +325,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_DoorsAsInt(IBinaryReader input, int id)
     {
       var data = ReadDoorsAsInt(input);
-      PostToHost(DoorsReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(DoorsReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -337,8 +337,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_PZBAsInt(IBinaryReader input, int id)
     {
       var data = ReadPZBAsInt(input);
-      PostToHost(PZBReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(PZBReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     /// <summary>
@@ -349,8 +349,8 @@ namespace Zusi_Datenausgabe
     protected int HandleDATA_BrakesAsInt(IBinaryReader input, int id)
     {
       var data = ReadBrakesAsInt(input);
-      PostToHost(BrakeConfigReceived, id, data.ReadedData);
-      return data.ReadedLength;
+      PostToHost(BrakeConfigReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
     }
 
     // ReSharper restore InconsistentNaming

@@ -71,25 +71,25 @@ namespace Zusi_Datenausgabe
     ///   Reads incoming data of type Single.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<Single> ReadSingle(IBinaryReader input)
+    protected ExtractedValue<Single> ReadSingle(IBinaryReader input)
     {
-      return new ReadedValue<Single>(sizeof (Single), input.ReadSingle());
+      return new ExtractedValue<Single>(sizeof (Single), input.ReadSingle());
     }
 
     /// <summary>
     ///   Reads incoming data of type Int.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<int> ReadInt(IBinaryReader input)
+    protected ExtractedValue<int> ReadInt(IBinaryReader input)
     {
-      return new ReadedValue<int>(sizeof (Int32), input.ReadInt32());
+      return new ExtractedValue<int>(sizeof (Int32), input.ReadInt32());
     }
 
     /// <summary>
     ///   Reads incoming data of type String. This impentation forwards it to HandleDATA_ByteLengthString.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<string> ReadString(IBinaryReader input)
+    protected ExtractedValue<string> ReadString(IBinaryReader input)
     {
       return ReadByteLengthString(input);
     }
@@ -98,17 +98,17 @@ namespace Zusi_Datenausgabe
     ///   Reads incoming data of Strings with given Length.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<string> ReadByteLengthString(IBinaryReader input)
+    protected ExtractedValue<string> ReadByteLengthString(IBinaryReader input)
     {
       string value = input.ReadString();
-      return new ReadedValue<string>(value.Length + 1, value);
+      return new ExtractedValue<string>(value.Length + 1, value);
     }
 
     /// <summary>
     ///   Reads incoming data of Null-Terminated String.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<string> ReadNullString(IBinaryReader input)
+    protected ExtractedValue<string> ReadNullString(IBinaryReader input)
     {
       StringBuilder stringBuilder = new StringBuilder();
       int bytesRead = 0;
@@ -121,27 +121,27 @@ namespace Zusi_Datenausgabe
         bytesRead++;
       } while (curByte != 0);
 
-      return new ReadedValue<string> (bytesRead, stringBuilder.ToString());
+      return new ExtractedValue<string> (bytesRead, stringBuilder.ToString());
     }
 
     /// <summary>
     ///   Reads incoming data of type DateTime.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<DateTime> ReadDateTime(IBinaryReader input)
+    protected ExtractedValue<DateTime> ReadDateTime(IBinaryReader input)
     {
       // Delphi uses the double-based OLE Automation date for its date format.
       double temp = input.ReadDouble();
       DateTime time = DateTime.FromOADate(temp);
 
-      return new ReadedValue<DateTime> (sizeof (Double), time);
+      return new ExtractedValue<DateTime> (sizeof (Double), time);
     }
 
     /// <summary>
     ///   Reads incoming data of type Bool that are sent as Single values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<bool> ReadBoolAsSingle(IBinaryReader input)
+    protected ExtractedValue<bool> ReadBoolAsSingle(IBinaryReader input)
     {
       /* Data is delivered as Single values that are only either 0.0 or 1.0.
        * For the sake of logic, convert these to actual booleans here.
@@ -149,7 +149,7 @@ namespace Zusi_Datenausgabe
       Single temp = input.ReadSingle();
       bool value = (temp >= 0.5f);
 
-      return new ReadedValue<bool> (sizeof (Single), value);
+      return new ExtractedValue<bool> (sizeof (Single), value);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ namespace Zusi_Datenausgabe
     ///   Handle incoming data of type Int that are sent as Single values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<int> ReadIntAsSingle(IBinaryReader input)
+    protected ExtractedValue<int> ReadIntAsSingle(IBinaryReader input)
     {
       /* Data is delivered as Single values that are only either 0.0 or 1.0.
        * For the sake of logic, convert these to actual booleans here.
@@ -179,14 +179,14 @@ namespace Zusi_Datenausgabe
       Single temp = input.ReadSingle();
       int value = (int) Math.Round(temp);
 
-      return new ReadedValue<int>(sizeof (Single), value);
+      return new ExtractedValue<int>(sizeof (Single), value);
     }
 
     /// <summary>
     ///   Reads incoming data of type Bool that are sent as Int values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<bool> ReadBoolAsInt(IBinaryReader input)
+    protected ExtractedValue<bool> ReadBoolAsInt(IBinaryReader input)
     {
       /* Data is delivered as Int values that are only either 0 or 1.
              * For the sake of logic, convert these to actual booleans here.
@@ -194,34 +194,34 @@ namespace Zusi_Datenausgabe
       Int32 temp = input.ReadInt32();
       bool value = (temp == 1);
 
-      return new ReadedValue<bool> (sizeof (Int32), value);
+      return new ExtractedValue<bool> (sizeof (Int32), value);
     }
 
     /// <summary>
     ///   Reads incoming door state data that is sent as an Int value by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<DoorState> ReadDoorsAsInt(IBinaryReader input)
+    protected ExtractedValue<DoorState> ReadDoorsAsInt(IBinaryReader input)
     {
       Int32 temp = input.ReadInt32();
-      return new ReadedValue<DoorState> (sizeof (Int32), (DoorState) temp);
+      return new ExtractedValue<DoorState> (sizeof (Int32), (DoorState) temp);
     }
 
     /// <summary>
     ///   Reads incoming PZB status information that is sent as Int values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<PZBSystem> ReadPZBAsInt(IBinaryReader input)
+    protected ExtractedValue<PZBSystem> ReadPZBAsInt(IBinaryReader input)
     {
       Int32 temp = input.ReadInt32();
-      return new ReadedValue<PZBSystem> (sizeof (Int32), (PZBSystem) temp);
+      return new ExtractedValue<PZBSystem> (sizeof (Int32), (PZBSystem) temp);
     }
 
     /// <summary>
     ///   Reads incoming brake information that is sent as Int values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ReadedValue<BrakeConfiguration> ReadBrakesAsInt(IBinaryReader input)
+    protected ExtractedValue<BrakeConfiguration> ReadBrakesAsInt(IBinaryReader input)
     {
       Int32 temp = input.ReadInt32();
 
@@ -253,7 +253,7 @@ namespace Zusi_Datenausgabe
           throw new ZusiTcpException("Invalid value received for brake configuration.");
       }
 
-      return new ReadedValue<BrakeConfiguration> (sizeof (Int32), result);
+      return new ExtractedValue<BrakeConfiguration> (sizeof (Int32), result);
     }
   }
 
@@ -262,21 +262,21 @@ namespace Zusi_Datenausgabe
   {
     public BoolAndSingleStruct(int lng, bool retVal, float pz80Val) : this()
     {
-      ReadedLength = lng;
-      ReadedData = retVal;
+      ExtractedLength = lng;
+      ExtractedData = retVal;
       PZ80Data = pz80Val;
     }
 
     ///<summary>The length, that was neccessary to extract the data.</summary>
-    [Zusi_Datenausgabe.Compyling.ReadedLengthAttribute()]
-    public int ReadedLength {private set; get;}
+    [Zusi_Datenausgabe.Compyling.ExtractedLengthAttribute()]
+    public int ExtractedLength {private set; get;}
 
     ///<summary>The data, that was extracted.</summary>
-    [Zusi_Datenausgabe.Compyling.ReadedDataAttribute()]
-    public bool ReadedData {private set; get;}
+    [Zusi_Datenausgabe.Compyling.ExtractedDataAttribute()]
+    public bool ExtractedData {private set; get;}
 
     ///<summary>The data, that was extracted.</summary>
-    [Zusi_Datenausgabe.Compyling.ReadedDataAttribute()]
+    [Zusi_Datenausgabe.Compyling.ExtractedDataAttribute()]
     public float PZ80Data {private set; get;}
   }
 }

@@ -1,4 +1,4 @@
-namespace Zusi_Datenausgabe.Compyling
+﻿namespace Zusi_Datenausgabe.Compyling
 {
   ///<summary>Provieds Methods to create Code for specific CommandSets.</summary>
   public static class SpecializedCodeCompyler
@@ -110,7 +110,7 @@ namespace Zusi_Datenausgabe.Compyling
             else
             {
               mth = new System.CodeDom.CodeMemberMethod();
-              mth.Name = "Recieved_" + entry.Type;
+              mth.Name = "Received_" + entry.Type;
               mth.Attributes = System.CodeDom.MemberAttributes.Private | System.CodeDom.MemberAttributes.Final;
               mth.Parameters.Add(new System.CodeDom.CodeParameterDeclarationExpression(
                 typeof(object), "state"));

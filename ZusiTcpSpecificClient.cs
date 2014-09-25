@@ -1509,544 +1509,544 @@ namespace Zusi_Datenausgabe {
             return document;
         }
         
-        private void Recieved_Single(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<float>> data) {
+        private void Recieved_Single(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<float>> data) {
             if ((2561 == data.Id)) {
-                if ((data.Value.ReadedData != this.Geschwindigkeit_)) {
-                    this.Geschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Geschwindigkeit_)) {
+                    this.Geschwindigkeit_ = data.Value.ExtractedData;
                     this.Geschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2562 == data.Id)) {
-                if ((data.Value.ReadedData != this.DruckHauptluftleitung_)) {
-                    this.DruckHauptluftleitung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.DruckHauptluftleitung_)) {
+                    this.DruckHauptluftleitung_ = data.Value.ExtractedData;
                     this.DruckHauptluftleitung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2563 == data.Id)) {
-                if ((data.Value.ReadedData != this.DruckBremszylinder_)) {
-                    this.DruckBremszylinder_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.DruckBremszylinder_)) {
+                    this.DruckBremszylinder_ = data.Value.ExtractedData;
                     this.DruckBremszylinder_Changed(this, new System.EventArgs());
                 }
             }
             if ((2564 == data.Id)) {
-                if ((data.Value.ReadedData != this.DruckHauptluftbehaelter_)) {
-                    this.DruckHauptluftbehaelter_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.DruckHauptluftbehaelter_)) {
+                    this.DruckHauptluftbehaelter_ = data.Value.ExtractedData;
                     this.DruckHauptluftbehaelter_Changed(this, new System.EventArgs());
                 }
             }
             if ((2565 == data.Id)) {
-                if ((data.Value.ReadedData != this.ZugkraftGesamt_)) {
-                    this.ZugkraftGesamt_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.ZugkraftGesamt_)) {
+                    this.ZugkraftGesamt_ = data.Value.ExtractedData;
                     this.ZugkraftGesamt_Changed(this, new System.EventArgs());
                 }
             }
             if ((2566 == data.Id)) {
-                if ((data.Value.ReadedData != this.ZugkraftProAchse_)) {
-                    this.ZugkraftProAchse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.ZugkraftProAchse_)) {
+                    this.ZugkraftProAchse_ = data.Value.ExtractedData;
                     this.ZugkraftProAchse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2567 == data.Id)) {
-                if ((data.Value.ReadedData != this.Strom_)) {
-                    this.Strom_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Strom_)) {
+                    this.Strom_ = data.Value.ExtractedData;
                     this.Strom_Changed(this, new System.EventArgs());
                 }
             }
             if ((2568 == data.Id)) {
-                if ((data.Value.ReadedData != this.Spannung_)) {
-                    this.Spannung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Spannung_)) {
+                    this.Spannung_ = data.Value.ExtractedData;
                     this.Spannung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2569 == data.Id)) {
-                if ((data.Value.ReadedData != this.Motordrehzahl_)) {
-                    this.Motordrehzahl_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Motordrehzahl_)) {
+                    this.Motordrehzahl_ = data.Value.ExtractedData;
                     this.Motordrehzahl_Changed(this, new System.EventArgs());
                 }
             }
             if ((2570 == data.Id)) {
-                if ((data.Value.ReadedData != this.UhrzeitStunde_)) {
-                    this.UhrzeitStunde_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.UhrzeitStunde_)) {
+                    this.UhrzeitStunde_ = data.Value.ExtractedData;
                     this.UhrzeitStunde_Changed(this, new System.EventArgs());
                 }
             }
             if ((2571 == data.Id)) {
-                if ((data.Value.ReadedData != this.UhrzeitMinute_)) {
-                    this.UhrzeitMinute_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.UhrzeitMinute_)) {
+                    this.UhrzeitMinute_ = data.Value.ExtractedData;
                     this.UhrzeitMinute_Changed(this, new System.EventArgs());
                 }
             }
             if ((2572 == data.Id)) {
-                if ((data.Value.ReadedData != this.UhrzeitSekunde_)) {
-                    this.UhrzeitSekunde_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.UhrzeitSekunde_)) {
+                    this.UhrzeitSekunde_ = data.Value.ExtractedData;
                     this.UhrzeitSekunde_Changed(this, new System.EventArgs());
                 }
             }
             if ((2573 == data.Id)) {
-                if ((data.Value.ReadedData != this.LZBZielGeschwindigkeit_)) {
-                    this.LZBZielGeschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LZBZielGeschwindigkeit_)) {
+                    this.LZBZielGeschwindigkeit_ = data.Value.ExtractedData;
                     this.LZBZielGeschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2574 == data.Id)) {
-                if ((data.Value.ReadedData != this.LZBAFBSollGeschwindigkeit_)) {
-                    this.LZBAFBSollGeschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LZBAFBSollGeschwindigkeit_)) {
+                    this.LZBAFBSollGeschwindigkeit_ = data.Value.ExtractedData;
                     this.LZBAFBSollGeschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2575 == data.Id)) {
-                if ((data.Value.ReadedData != this.LZBZielweg_)) {
-                    this.LZBZielweg_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LZBZielweg_)) {
+                    this.LZBZielweg_ = data.Value.ExtractedData;
                     this.LZBZielweg_Changed(this, new System.EventArgs());
                 }
             }
             if ((2576 == data.Id)) {
-                if ((data.Value.ReadedData != this.Fahrstufe_)) {
-                    this.Fahrstufe_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Fahrstufe_)) {
+                    this.Fahrstufe_ = data.Value.ExtractedData;
                     this.Fahrstufe_Changed(this, new System.EventArgs());
                 }
             }
             if ((2578 == data.Id)) {
-                if ((data.Value.ReadedData != this.AFBSollGeschwindigkeit_)) {
-                    this.AFBSollGeschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.AFBSollGeschwindigkeit_)) {
+                    this.AFBSollGeschwindigkeit_ = data.Value.ExtractedData;
                     this.AFBSollGeschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2579 == data.Id)) {
-                if ((data.Value.ReadedData != this.DruckHilfsluftbehaelter_)) {
-                    this.DruckHilfsluftbehaelter_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.DruckHilfsluftbehaelter_)) {
+                    this.DruckHilfsluftbehaelter_ = data.Value.ExtractedData;
                     this.DruckHilfsluftbehaelter_Changed(this, new System.EventArgs());
                 }
             }
             if ((2607 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMTueren_)) {
-                    this.LMTueren_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMTueren_)) {
+                    this.LMTueren_ = data.Value.ExtractedData;
                     this.LMTueren_Changed(this, new System.EventArgs());
                 }
             }
             if ((2608 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMTfzNummer_)) {
-                    this.LMTfzNummer_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMTfzNummer_)) {
+                    this.LMTfzNummer_ = data.Value.ExtractedData;
                     this.LMTfzNummer_Changed(this, new System.EventArgs());
                 }
             }
             if ((2609 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMMaxTfzGeschwindidigkeit_)) {
-                    this.LMMaxTfzGeschwindidigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMMaxTfzGeschwindidigkeit_)) {
+                    this.LMMaxTfzGeschwindidigkeit_ = data.Value.ExtractedData;
                     this.LMMaxTfzGeschwindidigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2611 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterFahrstufen_)) {
-                    this.SchalterFahrstufen_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterFahrstufen_)) {
+                    this.SchalterFahrstufen_ = data.Value.ExtractedData;
                     this.SchalterFahrstufen_Changed(this, new System.EventArgs());
                 }
             }
             if ((2612 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterFuehrerbremsventil_)) {
-                    this.SchalterFuehrerbremsventil_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterFuehrerbremsventil_)) {
+                    this.SchalterFuehrerbremsventil_ = data.Value.ExtractedData;
                     this.SchalterFuehrerbremsventil_Changed(this, new System.EventArgs());
                 }
             }
             if ((2613 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterDynBremse_)) {
-                    this.SchalterDynBremse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterDynBremse_)) {
+                    this.SchalterDynBremse_ = data.Value.ExtractedData;
                     this.SchalterDynBremse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2614 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterZusatzbremse_)) {
-                    this.SchalterZusatzbremse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterZusatzbremse_)) {
+                    this.SchalterZusatzbremse_ = data.Value.ExtractedData;
                     this.SchalterZusatzbremse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2615 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterAFBGeschwindigkeit_)) {
-                    this.SchalterAFBGeschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterAFBGeschwindigkeit_)) {
+                    this.SchalterAFBGeschwindigkeit_ = data.Value.ExtractedData;
                     this.SchalterAFBGeschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2635 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBZielwegAb0_)) {
-                    this.LMLZBZielwegAb0_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBZielwegAb0_)) {
+                    this.LMLZBZielwegAb0_ = data.Value.ExtractedData;
                     this.LMLZBZielwegAb0_Changed(this, new System.EventArgs());
                 }
             }
             if ((2636 == data.Id)) {
-                if ((data.Value.ReadedData != this.LZBSollGeschwindigkeit_)) {
-                    this.LZBSollGeschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LZBSollGeschwindigkeit_)) {
+                    this.LZBSollGeschwindigkeit_ = data.Value.ExtractedData;
                     this.LZBSollGeschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2645 == data.Id)) {
-                if ((data.Value.ReadedData != this.StreckenKm_)) {
-                    this.StreckenKm_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.StreckenKm_)) {
+                    this.StreckenKm_ = data.Value.ExtractedData;
                     this.StreckenKm_Changed(this, new System.EventArgs());
                 }
             }
             if ((2650 == data.Id)) {
-                if ((data.Value.ReadedData != this.FramesPerSecond_)) {
-                    this.FramesPerSecond_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.FramesPerSecond_)) {
+                    this.FramesPerSecond_ = data.Value.ExtractedData;
                     this.FramesPerSecond_Changed(this, new System.EventArgs());
                 }
             }
             if ((2654 == data.Id)) {
-                if ((data.Value.ReadedData != this.Bremshundertstel_)) {
-                    this.Bremshundertstel_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Bremshundertstel_)) {
+                    this.Bremshundertstel_ = data.Value.ExtractedData;
                     this.Bremshundertstel_Changed(this, new System.EventArgs());
                 }
             }
             if ((2657 == data.Id)) {
-                if ((data.Value.ReadedData != this.Laengsbeschleunigung_)) {
-                    this.Laengsbeschleunigung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Laengsbeschleunigung_)) {
+                    this.Laengsbeschleunigung_ = data.Value.ExtractedData;
                     this.Laengsbeschleunigung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2658 == data.Id)) {
-                if ((data.Value.ReadedData != this.Querbeschleunigung_)) {
-                    this.Querbeschleunigung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Querbeschleunigung_)) {
+                    this.Querbeschleunigung_ = data.Value.ExtractedData;
                     this.Querbeschleunigung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2659 == data.Id)) {
-                if ((data.Value.ReadedData != this.Querneigung_)) {
-                    this.Querneigung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Querneigung_)) {
+                    this.Querneigung_ = data.Value.ExtractedData;
                     this.Querneigung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2660 == data.Id)) {
-                if ((data.Value.ReadedData != this.AktuelleHoechstgeschwindigkeit_)) {
-                    this.AktuelleHoechstgeschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.AktuelleHoechstgeschwindigkeit_)) {
+                    this.AktuelleHoechstgeschwindigkeit_ = data.Value.ExtractedData;
                     this.AktuelleHoechstgeschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2661 == data.Id)) {
-                if ((data.Value.ReadedData != this.AktuelleZielgeschwindigkeit_)) {
-                    this.AktuelleZielgeschwindigkeit_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.AktuelleZielgeschwindigkeit_)) {
+                    this.AktuelleZielgeschwindigkeit_ = data.Value.ExtractedData;
                     this.AktuelleZielgeschwindigkeit_Changed(this, new System.EventArgs());
                 }
             }
             if ((2662 == data.Id)) {
-                if ((data.Value.ReadedData != this.Zielweg_)) {
-                    this.Zielweg_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Zielweg_)) {
+                    this.Zielweg_ = data.Value.ExtractedData;
                     this.Zielweg_Changed(this, new System.EventArgs());
                 }
             }
             if ((2663 == data.Id)) {
-                if ((data.Value.ReadedData != this.AbstandNaechsterReisezughalt_)) {
-                    this.AbstandNaechsterReisezughalt_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.AbstandNaechsterReisezughalt_)) {
+                    this.AbstandNaechsterReisezughalt_ = data.Value.ExtractedData;
                     this.AbstandNaechsterReisezughalt_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_Single(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<float> data = this.ReadSingle(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<float>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<float>>(this.Recieved_Single), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<float> data = this.ReadSingle(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<float>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<float>>(this.Recieved_Single), id, data);
+            return data.ExtractedLength;
         }
         
-        private void Recieved_BoolAsSingle(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<bool>> data) {
+        private void Recieved_BoolAsSingle(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<bool>> data) {
             if ((2580 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMPZB1000Hz_)) {
-                    this.LMPZB1000Hz_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMPZB1000Hz_)) {
+                    this.LMPZB1000Hz_ = data.Value.ExtractedData;
                     this.LMPZB1000Hz_Changed(this, new System.EventArgs());
                 }
             }
             if ((2581 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMPZB500Hz_)) {
-                    this.LMPZB500Hz_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMPZB500Hz_)) {
+                    this.LMPZB500Hz_ = data.Value.ExtractedData;
                     this.LMPZB500Hz_Changed(this, new System.EventArgs());
                 }
             }
             if ((2582 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMPZBBefehl_)) {
-                    this.LMPZBBefehl_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMPZBBefehl_)) {
+                    this.LMPZBBefehl_ = data.Value.ExtractedData;
                     this.LMPZBBefehl_Changed(this, new System.EventArgs());
                 }
             }
             if ((2585 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMPZBZugartO_)) {
-                    this.LMPZBZugartO_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMPZBZugartO_)) {
+                    this.LMPZBZugartO_ = data.Value.ExtractedData;
                     this.LMPZBZugartO_Changed(this, new System.EventArgs());
                 }
             }
             if ((2586 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBH_)) {
-                    this.LMLZBH_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBH_)) {
+                    this.LMLZBH_ = data.Value.ExtractedData;
                     this.LMLZBH_Changed(this, new System.EventArgs());
                 }
             }
             if ((2587 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBG_)) {
-                    this.LMLZBG_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBG_)) {
+                    this.LMLZBG_ = data.Value.ExtractedData;
                     this.LMLZBG_Changed(this, new System.EventArgs());
                 }
             }
             if ((2588 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBE40_)) {
-                    this.LMLZBE40_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBE40_)) {
+                    this.LMLZBE40_ = data.Value.ExtractedData;
                     this.LMLZBE40_Changed(this, new System.EventArgs());
                 }
             }
             if ((2589 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBEL_)) {
-                    this.LMLZBEL_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBEL_)) {
+                    this.LMLZBEL_ = data.Value.ExtractedData;
                     this.LMLZBEL_Changed(this, new System.EventArgs());
                 }
             }
             if ((2590 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBEnde_)) {
-                    this.LMLZBEnde_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBEnde_)) {
+                    this.LMLZBEnde_ = data.Value.ExtractedData;
                     this.LMLZBEnde_Changed(this, new System.EventArgs());
                 }
             }
             if ((2591 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBV40_)) {
-                    this.LMLZBV40_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBV40_)) {
+                    this.LMLZBV40_ = data.Value.ExtractedData;
                     this.LMLZBV40_Changed(this, new System.EventArgs());
                 }
             }
             if ((2592 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBB_)) {
-                    this.LMLZBB_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBB_)) {
+                    this.LMLZBB_ = data.Value.ExtractedData;
                     this.LMLZBB_Changed(this, new System.EventArgs());
                 }
             }
             if ((2593 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBS_)) {
-                    this.LMLZBS_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBS_)) {
+                    this.LMLZBS_ = data.Value.ExtractedData;
                     this.LMLZBS_Changed(this, new System.EventArgs());
                 }
             }
             if ((2594 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBUe_)) {
-                    this.LMLZBUe_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBUe_)) {
+                    this.LMLZBUe_ = data.Value.ExtractedData;
                     this.LMLZBUe_Changed(this, new System.EventArgs());
                 }
             }
             if ((2595 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMLZBPruefen_)) {
-                    this.LMLZBPruefen_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMLZBPruefen_)) {
+                    this.LMLZBPruefen_ = data.Value.ExtractedData;
                     this.LMLZBPruefen_Changed(this, new System.EventArgs());
                 }
             }
             if ((2596 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMSifa_)) {
-                    this.LMSifa_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMSifa_)) {
+                    this.LMSifa_ = data.Value.ExtractedData;
                     this.LMSifa_Changed(this, new System.EventArgs());
                 }
             }
             if ((2597 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMHauptschalter_)) {
-                    this.LMHauptschalter_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMHauptschalter_)) {
+                    this.LMHauptschalter_ = data.Value.ExtractedData;
                     this.LMHauptschalter_Changed(this, new System.EventArgs());
                 }
             }
             if ((2598 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMGetriebe_)) {
-                    this.LMGetriebe_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMGetriebe_)) {
+                    this.LMGetriebe_ = data.Value.ExtractedData;
                     this.LMGetriebe_Changed(this, new System.EventArgs());
                 }
             }
             if ((2599 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMSchleudern_)) {
-                    this.LMSchleudern_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMSchleudern_)) {
+                    this.LMSchleudern_ = data.Value.ExtractedData;
                     this.LMSchleudern_Changed(this, new System.EventArgs());
                 }
             }
             if ((2600 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMGleiten_)) {
-                    this.LMGleiten_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMGleiten_)) {
+                    this.LMGleiten_ = data.Value.ExtractedData;
                     this.LMGleiten_Changed(this, new System.EventArgs());
                 }
             }
             if ((2601 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMMgBremse_)) {
-                    this.LMMgBremse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMMgBremse_)) {
+                    this.LMMgBremse_ = data.Value.ExtractedData;
                     this.LMMgBremse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2602 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMHBremse_)) {
-                    this.LMHBremse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMHBremse_)) {
+                    this.LMHBremse_ = data.Value.ExtractedData;
                     this.LMHBremse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2603 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMRBremse_)) {
-                    this.LMRBremse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMRBremse_)) {
+                    this.LMRBremse_ = data.Value.ExtractedData;
                     this.LMRBremse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2604 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMHochabbremsung_)) {
-                    this.LMHochabbremsung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMHochabbremsung_)) {
+                    this.LMHochabbremsung_ = data.Value.ExtractedData;
                     this.LMHochabbremsung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2605 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMSchnellbremsung_)) {
-                    this.LMSchnellbremsung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMSchnellbremsung_)) {
+                    this.LMSchnellbremsung_ = data.Value.ExtractedData;
                     this.LMSchnellbremsung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2606 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMNotbremsung_)) {
-                    this.LMNotbremsung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMNotbremsung_)) {
+                    this.LMNotbremsung_ = data.Value.ExtractedData;
                     this.LMNotbremsung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2616 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterAFBEinAus_)) {
-                    this.SchalterAFBEinAus_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterAFBEinAus_)) {
+                    this.SchalterAFBEinAus_ = data.Value.ExtractedData;
                     this.SchalterAFBEinAus_Changed(this, new System.EventArgs());
                 }
             }
             if ((2617 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterMgBremse_)) {
-                    this.SchalterMgBremse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterMgBremse_)) {
+                    this.SchalterMgBremse_ = data.Value.ExtractedData;
                     this.SchalterMgBremse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2618 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterPZBWachsam_)) {
-                    this.SchalterPZBWachsam_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterPZBWachsam_)) {
+                    this.SchalterPZBWachsam_ = data.Value.ExtractedData;
                     this.SchalterPZBWachsam_Changed(this, new System.EventArgs());
                 }
             }
             if ((2619 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterPZBFrei_)) {
-                    this.SchalterPZBFrei_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterPZBFrei_)) {
+                    this.SchalterPZBFrei_ = data.Value.ExtractedData;
                     this.SchalterPZBFrei_Changed(this, new System.EventArgs());
                 }
             }
             if ((2620 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterPZBBefehl_)) {
-                    this.SchalterPZBBefehl_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterPZBBefehl_)) {
+                    this.SchalterPZBBefehl_ = data.Value.ExtractedData;
                     this.SchalterPZBBefehl_Changed(this, new System.EventArgs());
                 }
             }
             if ((2621 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterSifa_)) {
-                    this.SchalterSifa_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterSifa_)) {
+                    this.SchalterSifa_ = data.Value.ExtractedData;
                     this.SchalterSifa_Changed(this, new System.EventArgs());
                 }
             }
             if ((2622 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterHauptschalter_)) {
-                    this.SchalterHauptschalter_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterHauptschalter_)) {
+                    this.SchalterHauptschalter_ = data.Value.ExtractedData;
                     this.SchalterHauptschalter_Changed(this, new System.EventArgs());
                 }
             }
             if ((2623 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterMotorEinAus_)) {
-                    this.SchalterMotorEinAus_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterMotorEinAus_)) {
+                    this.SchalterMotorEinAus_ = data.Value.ExtractedData;
                     this.SchalterMotorEinAus_Changed(this, new System.EventArgs());
                 }
             }
             if ((2625 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterPfeife_)) {
-                    this.SchalterPfeife_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterPfeife_)) {
+                    this.SchalterPfeife_ = data.Value.ExtractedData;
                     this.SchalterPfeife_Changed(this, new System.EventArgs());
                 }
             }
             if ((2626 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterSanden_)) {
-                    this.SchalterSanden_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterSanden_)) {
+                    this.SchalterSanden_ = data.Value.ExtractedData;
                     this.SchalterSanden_Changed(this, new System.EventArgs());
                 }
             }
             if ((2627 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterTueren_)) {
-                    this.SchalterTueren_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterTueren_)) {
+                    this.SchalterTueren_ = data.Value.ExtractedData;
                     this.SchalterTueren_Changed(this, new System.EventArgs());
                 }
             }
             if ((2628 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterGlocke_)) {
-                    this.SchalterGlocke_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterGlocke_)) {
+                    this.SchalterGlocke_ = data.Value.ExtractedData;
                     this.SchalterGlocke_Changed(this, new System.EventArgs());
                 }
             }
             if ((2629 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterLokbremseEntlueften_)) {
-                    this.SchalterLokbremseEntlueften_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterLokbremseEntlueften_)) {
+                    this.SchalterLokbremseEntlueften_ = data.Value.ExtractedData;
                     this.SchalterLokbremseEntlueften_Changed(this, new System.EventArgs());
                 }
             }
             if ((2630 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterSchleuderschutzbremse_)) {
-                    this.SchalterSchleuderschutzbremse_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterSchleuderschutzbremse_)) {
+                    this.SchalterSchleuderschutzbremse_ = data.Value.ExtractedData;
                     this.SchalterSchleuderschutzbremse_Changed(this, new System.EventArgs());
                 }
             }
             if ((2631 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMDrehzahlverstellung_)) {
-                    this.LMDrehzahlverstellung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMDrehzahlverstellung_)) {
+                    this.LMDrehzahlverstellung_ = data.Value.ExtractedData;
                     this.LMDrehzahlverstellung_Changed(this, new System.EventArgs());
                 }
             }
             if ((2632 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMFahrtrichtungVor_)) {
-                    this.LMFahrtrichtungVor_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMFahrtrichtungVor_)) {
+                    this.LMFahrtrichtungVor_ = data.Value.ExtractedData;
                     this.LMFahrtrichtungVor_Changed(this, new System.EventArgs());
                 }
             }
             if ((2633 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMFahrtrichtungZurueck_)) {
-                    this.LMFahrtrichtungZurueck_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMFahrtrichtungZurueck_)) {
+                    this.LMFahrtrichtungZurueck_ = data.Value.ExtractedData;
                     this.LMFahrtrichtungZurueck_Changed(this, new System.EventArgs());
                 }
             }
             if ((2634 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterSignum_)) {
-                    this.SchalterSignum_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterSignum_)) {
+                    this.SchalterSignum_ = data.Value.ExtractedData;
                     this.SchalterSignum_Changed(this, new System.EventArgs());
                 }
             }
             if ((2638 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterLuefter_)) {
-                    this.SchalterLuefter_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterLuefter_)) {
+                    this.SchalterLuefter_ = data.Value.ExtractedData;
                     this.SchalterLuefter_Changed(this, new System.EventArgs());
                 }
             }
             if ((2639 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMGNTG_)) {
-                    this.LMGNTG_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMGNTG_)) {
+                    this.LMGNTG_ = data.Value.ExtractedData;
                     this.LMGNTG_Changed(this, new System.EventArgs());
                 }
             }
             if ((2640 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMGNTUe_)) {
-                    this.LMGNTUe_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMGNTUe_)) {
+                    this.LMGNTUe_ = data.Value.ExtractedData;
                     this.LMGNTUe_Changed(this, new System.EventArgs());
                 }
             }
             if ((2641 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMGNTB_)) {
-                    this.LMGNTB_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMGNTB_)) {
+                    this.LMGNTB_ = data.Value.ExtractedData;
                     this.LMGNTB_Changed(this, new System.EventArgs());
                 }
             }
             if ((2642 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMGNTS_)) {
-                    this.LMGNTS_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMGNTS_)) {
+                    this.LMGNTS_ = data.Value.ExtractedData;
                     this.LMGNTS_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_BoolAsSingle(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<bool> data = this.ReadBoolAsSingle(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<bool>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<bool>>(this.Recieved_BoolAsSingle), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<bool> data = this.ReadBoolAsSingle(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<bool>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<bool>>(this.Recieved_BoolAsSingle), id, data);
+            return data.ExtractedLength;
         }
         
         private void Recieved_BoolAndSingle(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.BoolAndSingleStruct> data) {
             if ((2583 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMPZBZugartU_Boolean_)) {
-                    this.LMPZBZugartU_Boolean_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMPZBZugartU_Boolean_)) {
+                    this.LMPZBZugartU_Boolean_ = data.Value.ExtractedData;
                     this.LMPZBZugartU_Boolean_Changed(this, new System.EventArgs());
                 }
                 if ((data.Value.PZ80Data != this.LMPZBZugartU_Single_)) {
@@ -2055,8 +2055,8 @@ namespace Zusi_Datenausgabe {
                 }
             }
             if ((2584 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMPZBZugartM_Boolean_)) {
-                    this.LMPZBZugartM_Boolean_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMPZBZugartM_Boolean_)) {
+                    this.LMPZBZugartM_Boolean_ = data.Value.ExtractedData;
                     this.LMPZBZugartM_Boolean_Changed(this, new System.EventArgs());
                 }
                 if ((data.Value.PZ80Data != this.LMPZBZugartM_Single_)) {
@@ -2069,166 +2069,166 @@ namespace Zusi_Datenausgabe {
         private int HandleDATA_BoolAndSingle(Zusi_Datenausgabe.IBinaryReader input, int id) {
             Zusi_Datenausgabe.BoolAndSingleStruct data = this.ReadBoolAndSingle(input);
             this.PostToHost<Zusi_Datenausgabe.BoolAndSingleStruct>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.BoolAndSingleStruct>(this.Recieved_BoolAndSingle), id, data);
-            return data.ReadedLength;
+            return data.ExtractedLength;
         }
         
-        private void Recieved_DateTime(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<System.DateTime>> data) {
+        private void Recieved_DateTime(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<System.DateTime>> data) {
             if ((2610 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMUhrzeitDigital_)) {
-                    this.LMUhrzeitDigital_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMUhrzeitDigital_)) {
+                    this.LMUhrzeitDigital_ = data.Value.ExtractedData;
                     this.LMUhrzeitDigital_Changed(this, new System.EventArgs());
                 }
             }
             if ((2665 == data.Id)) {
-                if ((data.Value.ReadedData != this.PlanzeitNaechsterReisezughalt_)) {
-                    this.PlanzeitNaechsterReisezughalt_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.PlanzeitNaechsterReisezughalt_)) {
+                    this.PlanzeitNaechsterReisezughalt_ = data.Value.ExtractedData;
                     this.PlanzeitNaechsterReisezughalt_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_DateTime(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<System.DateTime> data = this.ReadDateTime(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<System.DateTime>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<System.DateTime>>(this.Recieved_DateTime), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<System.DateTime> data = this.ReadDateTime(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<System.DateTime>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<System.DateTime>>(this.Recieved_DateTime), id, data);
+            return data.ExtractedLength;
         }
         
-        private void Recieved_IntAsSingle(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<int>> data) {
+        private void Recieved_IntAsSingle(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<int>> data) {
             if ((2624 == data.Id)) {
-                if ((data.Value.ReadedData != this.SchalterFahrtrichtung_)) {
-                    this.SchalterFahrtrichtung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.SchalterFahrtrichtung_)) {
+                    this.SchalterFahrtrichtung_ = data.Value.ExtractedData;
                     this.SchalterFahrtrichtung_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_IntAsSingle(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<int> data = this.ReadIntAsSingle(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<int>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<int>>(this.Recieved_IntAsSingle), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<int> data = this.ReadIntAsSingle(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<int>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<int>>(this.Recieved_IntAsSingle), id, data);
+            return data.ExtractedLength;
         }
         
-        private void Recieved_String(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<string>> data) {
+        private void Recieved_String(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<string>> data) {
             if ((2637 == data.Id)) {
-                if ((data.Value.ReadedData != this.LMBlockBisZuDemDieStreckeFreiIst_)) {
-                    this.LMBlockBisZuDemDieStreckeFreiIst_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.LMBlockBisZuDemDieStreckeFreiIst_)) {
+                    this.LMBlockBisZuDemDieStreckeFreiIst_ = data.Value.ExtractedData;
                     this.LMBlockBisZuDemDieStreckeFreiIst_Changed(this, new System.EventArgs());
                 }
             }
             if ((2652 == data.Id)) {
-                if ((data.Value.ReadedData != this.NaechsterBlockname_)) {
-                    this.NaechsterBlockname_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.NaechsterBlockname_)) {
+                    this.NaechsterBlockname_ = data.Value.ExtractedData;
                     this.NaechsterBlockname_Changed(this, new System.EventArgs());
                 }
             }
             if ((2653 == data.Id)) {
-                if ((data.Value.ReadedData != this.NaechstesGleis_)) {
-                    this.NaechstesGleis_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.NaechstesGleis_)) {
+                    this.NaechstesGleis_ = data.Value.ExtractedData;
                     this.NaechstesGleis_Changed(this, new System.EventArgs());
                 }
             }
             if ((2656 == data.Id)) {
-                if ((data.Value.ReadedData != this.Zugdatei_)) {
-                    this.Zugdatei_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Zugdatei_)) {
+                    this.Zugdatei_ = data.Value.ExtractedData;
                     this.Zugdatei_Changed(this, new System.EventArgs());
                 }
             }
             if ((2664 == data.Id)) {
-                if ((data.Value.ReadedData != this.NameNaechsterReisezughalt_)) {
-                    this.NameNaechsterReisezughalt_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.NameNaechsterReisezughalt_)) {
+                    this.NameNaechsterReisezughalt_ = data.Value.ExtractedData;
                     this.NameNaechsterReisezughalt_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_String(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<string> data = this.ReadString(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<string>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<string>>(this.Recieved_String), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<string> data = this.ReadString(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<string>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<string>>(this.Recieved_String), id, data);
+            return data.ExtractedLength;
         }
         
-        private void Recieved_DoorsAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.DoorState>> data) {
+        private void Recieved_DoorsAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState>> data) {
             if ((2646 == data.Id)) {
-                if ((data.Value.ReadedData != this.Tueren_)) {
-                    this.Tueren_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Tueren_)) {
+                    this.Tueren_ = data.Value.ExtractedData;
                     this.Tueren_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_DoorsAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.DoorState> data = this.ReadDoorsAsInt(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.DoorState>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.DoorState>>(this.Recieved_DoorsAsInt), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState> data = this.ReadDoorsAsInt(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState>>(this.Recieved_DoorsAsInt), id, data);
+            return data.ExtractedLength;
         }
         
-        private void Recieved_BoolAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<bool>> data) {
+        private void Recieved_BoolAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<bool>> data) {
             if ((2647 == data.Id)) {
-                if ((data.Value.ReadedData != this.Autopilot_)) {
-                    this.Autopilot_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Autopilot_)) {
+                    this.Autopilot_ = data.Value.ExtractedData;
                     this.Autopilot_Changed(this, new System.EventArgs());
                 }
             }
             if ((2648 == data.Id)) {
-                if ((data.Value.ReadedData != this.Reisezug_)) {
-                    this.Reisezug_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Reisezug_)) {
+                    this.Reisezug_ = data.Value.ExtractedData;
                     this.Reisezug_Changed(this, new System.EventArgs());
                 }
             }
             if ((2651 == data.Id)) {
-                if ((data.Value.ReadedData != this.FuehrerstandSichtbar_)) {
-                    this.FuehrerstandSichtbar_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.FuehrerstandSichtbar_)) {
+                    this.FuehrerstandSichtbar_ = data.Value.ExtractedData;
                     this.FuehrerstandSichtbar_Changed(this, new System.EventArgs());
                 }
             }
             if ((2666 == data.Id)) {
-                if ((data.Value.ReadedData != this.PZBRestriktiv_)) {
-                    this.PZBRestriktiv_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.PZBRestriktiv_)) {
+                    this.PZBRestriktiv_ = data.Value.ExtractedData;
                     this.PZBRestriktiv_Changed(this, new System.EventArgs());
                 }
             }
             if ((2667 == data.Id)) {
-                if ((data.Value.ReadedData != this.PZBZwansgbremsung_)) {
-                    this.PZBZwansgbremsung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.PZBZwansgbremsung_)) {
+                    this.PZBZwansgbremsung_ = data.Value.ExtractedData;
                     this.PZBZwansgbremsung_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_BoolAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<bool> data = this.ReadBoolAsInt(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<bool>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<bool>>(this.Recieved_BoolAsInt), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<bool> data = this.ReadBoolAsInt(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<bool>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<bool>>(this.Recieved_BoolAsInt), id, data);
+            return data.ExtractedLength;
         }
         
-        private void Recieved_PZBAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.PZBSystem>> data) {
+        private void Recieved_PZBAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem>> data) {
             if ((2649 == data.Id)) {
-                if ((data.Value.ReadedData != this.PZBSystem_)) {
-                    this.PZBSystem_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.PZBSystem_)) {
+                    this.PZBSystem_ = data.Value.ExtractedData;
                     this.PZBSystem_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_PZBAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.PZBSystem> data = this.ReadPZBAsInt(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.PZBSystem>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.PZBSystem>>(this.Recieved_PZBAsInt), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem> data = this.ReadPZBAsInt(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem>>(this.Recieved_PZBAsInt), id, data);
+            return data.ExtractedLength;
         }
         
-        private void Recieved_BrakesAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.BrakeConfiguration>> data) {
+        private void Recieved_BrakesAsInt(object state, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration>> data) {
             if ((2655 == data.Id)) {
-                if ((data.Value.ReadedData != this.Bremsstellung_)) {
-                    this.Bremsstellung_ = data.Value.ReadedData;
+                if ((data.Value.ExtractedData != this.Bremsstellung_)) {
+                    this.Bremsstellung_ = data.Value.ExtractedData;
                     this.Bremsstellung_Changed(this, new System.EventArgs());
                 }
             }
         }
         
         private int HandleDATA_BrakesAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.BrakeConfiguration> data = this.ReadBrakesAsInt(input);
-            this.PostToHost<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.BrakeConfiguration>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ReadedValue<Zusi_Datenausgabe.BrakeConfiguration>>(this.Recieved_BrakesAsInt), id, data);
-            return data.ReadedLength;
+            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration> data = this.ReadBrakesAsInt(input);
+            this.PostToHost<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration>>(this.Recieved_BrakesAsInt), id, data);
+            return data.ExtractedLength;
         }
     }
 }
