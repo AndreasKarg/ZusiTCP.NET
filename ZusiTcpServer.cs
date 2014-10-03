@@ -26,6 +26,7 @@ namespace Zusi_Datenausgabe
     private readonly List<ZusiTcpServerSlaveConnection> _clients = new List<ZusiTcpServerSlaveConnection>();
     private readonly List<ZusiTcpBaseConnection> _clientsExtern = new List<ZusiTcpBaseConnection>();
     private readonly ReadOnlyCollection<ZusiTcpBaseConnection> _clientsExternReadonly;
+    private readonly System.Threading.ReaderWriterLockSlim _clientLock = new System.Threading.ReaderWriterLockSlim();
 
     private Thread _accepterThread;
     private CommandSet _doc;
@@ -100,13 +101,51 @@ namespace Zusi_Datenausgabe
 
 
     /// <summary>
-    ///   Gets the Clients. Warning: Disconnecting a Client changes this List immediately!
+    ///   Gets the Clients. Warning: Disconnecting a Client changes this List immediately! 
+    ///   List may also change if a client connects! Be aware of itterator-Exceptions, or enter the lock.
     /// </summary>
     /// <value>A readonly List of all connected (or connecting) Clients.</value>
     public ReadOnlyCollection<ZusiTcpBaseConnection> Clients
     {
       get { return _clientsExternReadonly;}
     }
+
+    /// <summary>
+    ///   Enters the lock for the Clients-List. List will not change while calling this. You have to exit this mode again.
+    ///   Warning: Do not Disconnect a Client in this Mode!!! This will cause Deadlocks and Exceptions and can cause inconsistent states!!!
+    /// </summary>
+    public void EnterClientsLock()
+    {
+      _clientLock.EnterReadLock();
+    }
+
+    /// <summary>
+    ///   Releases the Lock for the Clients-List.
+    /// </summary>
+    public void ExitClientsLock()
+    {
+      _clientLock.ExitReadLock();
+    }
+
+    /// <summary>
+    ///   Tries to enter the lock for the Clients-List in the specifyed Time. List will not change while calling this. You have to exit this mode again.
+    ///   Warning: Do not Disconnect a Client in this Mode!!! This will cause Deadlocks and Exceptions and can cause inconsistent states!!!
+    /// </summary>
+    /// <value>true if the calling thread entered the </value>
+    public bool TryEnterClientsLock(int millisecondsTimeout)
+    {
+      return _clientLock.TryEnterReadLock(millisecondsTimeout);
+    }
+
+    /// <summary>
+    ///   Tries to enter the lock for the Clients-List in the specifyed Time. List will not change while calling this. You have to exit this mode again.
+    ///   Warning: Do not Disconnect a Client in this Mode!!! This will cause Deadlocks and Exceptions and can cause inconsistent states!!!
+    /// </summary>
+    public bool TryEnterClientsLock(TimeSpan timeout)
+    {
+      return _clientLock.TryEnterReadLock(timeout);
+    }
+
 
     /// <summary>
     ///   Gets if the server is started.
@@ -280,21 +319,13 @@ namespace Zusi_Datenausgabe
       slave.ErrorReceived += SlaveErrorReceived;
       try
       {
-        System.Threading.Monitor.Enter(_clients);
+        _clientLock.EnterWriteLock();
         _clients.Add(slave);
-      }
-      finally
-      {
-        System.Threading.Monitor.Exit(_clients);
-      }
-      try
-      {
-        System.Threading.Monitor.Enter(_clientsExtern);
         _clientsExtern.Add(slave);
       }
       finally
       {
-        System.Threading.Monitor.Exit(_clientsExtern);
+        _clientLock.ExitWriteLock();
       }
       slave.InitializeClient();
       InvokeClientConnected(slave);
@@ -310,28 +341,20 @@ namespace Zusi_Datenausgabe
 
     private void KillSlave(ZusiTcpServerSlaveConnection client)
     {
-      Debug.Assert(_clients.Contains(client));
+      //Debug.Assert(_clients.Contains(client));
       Debug.Assert(client.RequestedData != null);
 
       if (!_clients.Contains(client)) return;
       _requestedData.ReleaseRange(client.RequestedData);
       try
       {
-        System.Threading.Monitor.Enter(_clients);
+        _clientLock.EnterWriteLock();
         _clients.Remove(client);
-      }
-      finally
-      {
-        System.Threading.Monitor.Exit(_clients);
-      }
-      try
-      {
-        System.Threading.Monitor.Enter(_clientsExtern);
         _clientsExtern.Remove(client);
       }
       finally
       {
-        System.Threading.Monitor.Exit(_clientsExtern);
+        _clientLock.ExitWriteLock();
       }
       client.Dispose();
     }
@@ -339,7 +362,7 @@ namespace Zusi_Datenausgabe
     private void SlaveConnectionStateChanged(object sender, EventArgs eventArgs)
     {
       ZusiTcpServerSlaveConnection client = sender.AssertedCast<ZusiTcpServerSlaveConnection>();
-      Debug.Assert(_clients.Contains(client));
+      //Debug.Assert(_clients.Contains(client));
 
       switch (client.ConnectionState)
       {
@@ -395,7 +418,7 @@ namespace Zusi_Datenausgabe
     private void OnSlaveDataRequested(object sender, EventArgs eventArgs)
     {
       ZusiTcpServerSlaveConnection client = sender.AssertedCast<ZusiTcpServerSlaveConnection>();
-      Debug.Assert(_clients.Contains(client));
+      //Debug.Assert(_clients.Contains(client));
 
       if (_masterL != null)
       {
@@ -429,9 +452,17 @@ namespace Zusi_Datenausgabe
     {
       HandleServerRelatedRequest(dataSet.Value, dataSet.Id);
 
-      foreach (var client in _clients)
+      try
       {
-        client.DataUpdate(dataSet.Value, dataSet.Id);
+        _clientLock.EnterReadLock();
+        foreach (var client in _clients)
+        {
+          client.DataUpdate(dataSet.Value, dataSet.Id);
+        }
+      }
+      finally
+      {
+        _clientLock.ExitReadLock();
       }
     }
 
