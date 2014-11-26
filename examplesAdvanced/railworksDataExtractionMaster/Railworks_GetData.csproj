@@ -62,6 +62,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Zusi-Datenausgabe.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="frmMain.cs">

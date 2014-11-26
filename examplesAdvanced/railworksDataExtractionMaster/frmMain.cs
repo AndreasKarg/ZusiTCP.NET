@@ -56,6 +56,9 @@
  * Good Luck
  * 
  * Chris Gamble chrisgamble1955@gmail.com
+ *
+ *
+ * Note: This tutorial had been modifyed to be able to send Datas to a Zusi TCP Server
 */
 
 using System;
@@ -63,6 +66,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.IO;
 using System.IO.Ports;
+using Zusi_Datenausgabe;
 
 namespace Railworks_GetData
 
@@ -76,11 +80,11 @@ namespace Railworks_GetData
 
         private StreamReader sr;//File reading
         private FileStream fs;  //File Reading
-        private SerialPort port; //Serail Port
+        private ZusiTcpTypeMaster tcp;
         private string railworksPath = ""; //Stores path to Railworks
         private string appPath = Application.StartupPath;//Location of this program
         private bool running = false; //Used to start / stop sending data to com port
-        private bool SendToPort = false; //Do we want to send data to the com port
+        private bool SendToTcp = false; //Do we want to send data to the com port
         private bool SendToScreen = true;// Do we want to send data to the screen
         private string s = string.Empty; //Temp store for data
         private string comPort = string.Empty;//Name of com port selected
@@ -100,7 +104,7 @@ namespace Railworks_GetData
             btnStop.Enabled = false; //Disable stop button as program not running yet
             chkSendToPort.Enabled = false;//Disable sending to com port untill com port selected
             //Check to see if any com ports attached to machine
-            foreach (string sp in System.IO.Ports.SerialPort.GetPortNames())
+            foreach (string sp in new string[] {"192.168.178.", "192.168.1.", "localhost"})
             {
                 //If so add them to the com port selection box
                 cboComPort.Items.Add(sp);
@@ -114,41 +118,27 @@ namespace Railworks_GetData
             btnStop.Enabled = true;//Program now runnig enable stop button
             btnStart.Enabled = false;//Disable start button
             cboComPort.Enabled = false;//Don't allow changing of com port while running
-            string msg = "", msg1 = "", tmp = "";
-            string CurrentSpeedLimit = "0", NextSpeedLimit = "0", NextSpeedLimitDistance = "0.0";
+            string msg1 = "", tmp = "";
             string[] splitter;// Array of string to hold data read from GetData.txt
             running = true; //We are running
             bool bplaysound = false;//Don't play alerter sound yet.
             bool bplaying = false; //Is the alerter sound playing
-            int padding = 16;//Spaces used to align LCD display
+//            int padding = 16;//Spaces used to align LCD display
             string ThrottleType = "";
-            string BrakeType = "";
+//            string BrakeType = "";
 
-            //Check if we want the data to be sent to the com port and a port has been selected
-            if (SendToPort == true && comPort != "")
-            {
-                //We do so setup and open the selected com port
-                port = new SerialPort(comPort, 9600, Parity.None, 8, StopBits.One);
-                if (!port.IsOpen) port.Open();
-            }
-            //We want to send data to com port but no port has been selected yet
-            else if (SendToPort == true && comPort == "")
-            {
-                //Inforn user of error
-                MessageBox.Show("Please select the serial port to use from the dropdown box", "No Serial Port selected");
-                running = false; //Stop the program
-                btnStop.PerformClick();//Reset controls
-            }
+            tcp = new ZusiTcpTypeMaster("Railworks");
+            tcp.Connect(cboComPort.Text, 1435); //ToDo: Modify the UI to give the user the chance to modify the Port.
             
             //Start continous loop until stop is clicked
             while (running)
-	        {
+            {
 
-                //*****************************************************************
-                int lines = 0;
-                //Added so we can count the number of lines to send to the 
-                //serial port so we don't get duplicates on the glcd.
-                //*****************************************************************
+//                //*****************************************************************
+//                int lines = 0;
+//                //Added so we can count the number of lines to send to the
+//                //serial port so we don't get duplicates on the glcd.
+//                //*****************************************************************
                 
                 //Check if we want to play alerter and that it isn't playing yet
                 if (bplaysound == true && bplaying == false)
@@ -169,7 +159,7 @@ namespace Railworks_GetData
                     //The file does exist so open it for reading but with read & write access so Railworks can still write to it while we have it open.
                     fs = new FileStream(railworksPath + "\\plugins\\GetData.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     sr = new StreamReader(fs);
-                    msg = "";  msg1 = "";
+                    msg1 = "";
                     
                     label1.Text = "Status: Running";
                     
@@ -185,7 +175,7 @@ namespace Railworks_GetData
                         if (splitter.Length == 2)
                         {
                             //Do we want to send data to the com port
-                            if (SendToPort)
+                            if (SendToTcp)
                             {
                                 //Get speedo type (MPH or KPH)
                                 if (splitter[0] == "Speedo type" && splitter[1] != "None")
@@ -202,11 +192,11 @@ namespace Railworks_GetData
                                         case "Current Speed":
                                             if(ItemToDisplay.ToString() == "Speed (Speed)")
                                             {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++; 
-                                                //Format the text to send to the serial port in the format "SPEED", Value obtain following the colon from the getdata.txt
-                                                //plus MPH or KPH and enough spaces to make the text length 16 plus a colon
-                                                msg = ("SPEED " + splitter[1] + " " + s).PadRight(padding) + ":";
+                                                float speed;
+                                                if (!float.TryParse(splitter[1], out speed))
+                                                    continue;
+
+                                                tcp.SendSingle(speed, 2561);
                                             }
                                             break;
                                          //Check throttle type VirtualThrottle, ThrottleAndBrake or Regulator
@@ -216,91 +206,84 @@ namespace Railworks_GetData
                                         case "VirtualThrottle":
                                         case "ThrottleAndBrake":
                                         case "Regulator":
-                                            if(ItemToDisplay.ToString() == "Throttle (TH)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "TH ", Value obtain following the colon from the getdata.txt
-                                                //plus % sign and enough spaces to make the text length 16 plus a colon
-                                                msg = ("TH " + splitter[1] + "%").PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Throttle (TH)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "TH ", Value obtain following the colon from the getdata.txt
+//                                                //plus % sign and enough spaces to make the text length 16 plus a colon
+//                                                msg = ("TH " + splitter[1] + "%").PadRight(padding) + ":";
+//                                            }
+//                                            break;
                                         //Reverser
                                         case "Reverser":
-                                            if (ItemToDisplay.ToString() == "Reverser (REV)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "REV ", Value obtain following the colon from the getdata.txt
-                                                //plus % sign and enough spaces to make the text length 16 plus a colon
-                                                msg = ("REV " + splitter[1] + "%").PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if (ItemToDisplay.ToString() == "Reverser (REV)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "REV ", Value obtain following the colon from the getdata.txt
+//                                                //plus % sign and enough spaces to make the text length 16 plus a colon
+//                                                msg = ("REV " + splitter[1] + "%").PadRight(padding) + ":";
+//                                            }
+//                                            break;
                                         //Check Train brake type
                                         case "VirtualBrake":
-                                            if(ItemToDisplay.ToString() == "Train Brake (TB)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "TB ", Value obtain following the colon from the getdata.txt
-                                                //plus % sign and enough spaces to make the text length 16 plus a colon
-                                                msg = ("TB " + splitter[1] + "%").PadRight(padding) + ":";
-                                                BrakeType = "VirtualBrake";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Train Brake (TB)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "TB ", Value obtain following the colon from the getdata.txt
+//                                                //plus % sign and enough spaces to make the text length 16 plus a colon
+//                                                msg = ("TB " + splitter[1] + "%").PadRight(padding) + ":";
+//                                                BrakeType = "VirtualBrake";
+//                                            }
+//                                            break;
                                         case "TrainBrakeControl":
-                                            //Because a lot of engines have a VirtualBrake and a Train Brake we need to check we haven't used the virtualbrake or we will get 2 entries for the train brake
-                                            if(BrakeType != "VirtualBrake" && ItemToDisplay.ToString() == "Train Brake (TB)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "TB ", Value obtain following the colon from the getdata.txt
-                                                //plus % sign and enough spaces to make the text length 16 plus a colon
-                                                msg = ("TB " + splitter[1] + "%").PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            //Because a lot of engines have a VirtualBrake and a Train Brake we need to check we haven't used the virtualbrake or we will get 2 entries for the train brake
+//                                            if(BrakeType != "VirtualBrake" && ItemToDisplay.ToString() == "Train Brake (TB)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "TB ", Value obtain following the colon from the getdata.txt
+//                                                //plus % sign and enough spaces to make the text length 16 plus a colon
+//                                                msg = ("TB " + splitter[1] + "%").PadRight(padding) + ":";
+//                                            }
+//                                            break;
                                         //Loco Brake
                                         case "EngineBrakeControl":
-                                            if(ItemToDisplay.ToString() == "Loco Brake (LB)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "LB ", Value obtain following the colon from the getdata.txt
-                                                //plus % sign and enough spaces to make the text length 16 plus a colon
-                                                msg = ("LB " + splitter[1] + "%").PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Loco Brake (LB)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "LB ", Value obtain following the colon from the getdata.txt
+//                                                //plus % sign and enough spaces to make the text length 16 plus a colon
+//                                                msg = ("LB " + splitter[1] + "%").PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         //Dynamic Brake
                                         case "DynamicBrake":
-                                            if(ItemToDisplay.ToString() == "Dynamic Brake (DB)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "DB ", Value obtain following the colon from the getdata.txt
-                                                //plus % sign and enough spaces to make the text length 16 plus a colon
-                                                msg = ("DB " + splitter[1] + "%").PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Dynamic Brake (DB)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "DB ", Value obtain following the colon from the getdata.txt
+//                                                //plus % sign and enough spaces to make the text length 16 plus a colon
+//                                                msg = ("DB " + splitter[1] + "%").PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         //Emergency Brake
                                         case "EmergencyBrake":
                                             if(ItemToDisplay.ToString() == "Emergency Brake (EB)")
                                             {
-                                                if (splitter[1] == "0")
-                                                {
-                                                    //Update lines variable, we can only display 4 lines on GLCD
-                                                    lines++;
-                                                    //Format the text to send to the serial port in the format "EB OFF" and enough spaces to make the text length 16 plus a colon
-                                                    msg = ("EB OFF").PadRight(padding) + ":";
-                                                }
-                                                else
-                                                {
-                                                    //Update lines variable, we can only display 4 lines on GLCD
-                                                    lines++;
-                                                    //Format the text to send to the serial port in the format "EB ON" and enough spaces to make the text length 16 plus a colon
-                                                    msg = ("EB ON").PadRight(padding) + ":";
-                                                }
+                                                tcp.SendBoolAsInt((splitter[1] != "0"), 2667);
                                             }
                                             break;
 
@@ -308,136 +291,133 @@ namespace Railworks_GetData
                                         case "Ammeter":
                                             if(ItemToDisplay.ToString() == "Ammeter (Amp)")
                                             {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "Amps ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("Amps " + splitter[1]).PadRight(padding) + ":";
+                                                float value;
+                                                if (!float.TryParse(splitter[1], out value))
+                                                    continue;
+                                                tcp.SendSingle(value, 2567);
                                             }
                                             break;
 
                                         //RPM
                                         case "RPM":
-                                            if(ItemToDisplay.ToString() == "RPM (RPM)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "RPM ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("RPM  " + splitter[1]).PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "RPM (RPM)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "RPM ", Value obtain following the colon from the getdata.txt
+//                                                //plus enough spaces to make the text length 16 plus a colon
+//                                                msg = ("RPM  " + splitter[1]).PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         //AWS
                                         case "AWS":
-                                            if(ItemToDisplay.ToString() == "AWS (AWS)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "AWS ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("AWS " + splitter[1]).PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "AWS (AWS)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "AWS ", Value obtain following the colon from the getdata.txt
+//                                                //plus enough spaces to make the text length 16 plus a colon
+//                                                msg = ("AWS " + splitter[1]).PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         //AWS Count
                                         case "AWSWarnCount":
-                                            if(ItemToDisplay.ToString() == "AWS Count (AWC")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "AWC ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("AWC " + splitter[1]).PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "AWS Count (AWC")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "AWC ", Value obtain following the colon from the getdata.txt
+//                                                //plus enough spaces to make the text length 16 plus a colon
+//                                                msg = ("AWC " + splitter[1]).PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         //Current & next speed limits
                                         case "Current Speed Limit":
                                             if(ItemToDisplay.ToString() == "Current Speed Limit (CSL)")
                                             {
-                                                CurrentSpeedLimit = "CSL " + splitter[1];
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "CSL ", Value obtain following the colon from the getdata.txt
-                                                //plus MPH or KPH and enough spaces to make the text length 16 plus a colon
-                                                msg = ("CSL " + splitter[1] + " " + s).PadRight(padding) + ":";
+                                                float value;
+                                                if (!float.TryParse(splitter[1], out value))
+                                                    continue;
+                                                tcp.SendSingle(value, 2660);
                                             }
                                             break;
                                         case "Next Speed Limit":
                                             if(ItemToDisplay.ToString() == "Next Speed Limit (NSL)")
                                             {
-                                                NextSpeedLimit = "NSL " + splitter[1];
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "NSL ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = NextSpeedLimit.PadRight(padding) + ":";
+                                                float value;
+                                                if (!float.TryParse(splitter[1], out value))
+                                                    continue;
+                                                tcp.SendSingle(value, 2661);
                                             }
                                             break;
                                         case "Next Speed Limit Distance":
                                             if(ItemToDisplay.ToString() == "Next Speed Limit Distance (NSLD)")
                                             {
-                                                NextSpeedLimitDistance = "NSLD " + splitter[1];
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "NSLD ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = NextSpeedLimitDistance.PadRight(padding) + ":";
+                                                float value;
+                                                if (!float.TryParse(splitter[1], out value))
+                                                    continue;
+                                                tcp.SendSingle(value, 2662);
                                             }
                                             break;
 
                                         //Signals
                                         case "Signal Type":
-                                            if(ItemToDisplay.ToString() == "Next Signal Type (NST)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "NST ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("NST " + splitter[1]).PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Next Signal Type (NST)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "NST ", Value obtain following the colon from the getdata.txt
+//                                                //plus enough spaces to make the text length 16 plus a colon
+//                                                msg = ("NST " + splitter[1]).PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         case "Signal State":
-                                            if(ItemToDisplay.ToString() == "Next Signal State (NSS)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "NSS ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("NSS " + splitter[1]).PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Next Signal State (NSS)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "NSS ", Value obtain following the colon from the getdata.txt
+//                                                //plus enough spaces to make the text length 16 plus a colon
+//                                                msg = ("NSS " + splitter[1]).PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         case "Signal Distance":
-                                            if(ItemToDisplay.ToString() == "Next Signal Distance (NSD)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "NSD ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("NSD " + splitter[1]).PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Next Signal Distance (NSD)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "NSD ", Value obtain following the colon from the getdata.txt
+//                                                //plus enough spaces to make the text length 16 plus a colon
+//                                                msg = ("NSD " + splitter[1]).PadRight(padding) + ":";
+//                                            }
+//                                            break;
 
                                         case "Signal Aspect":
-                                            if(ItemToDisplay.ToString() == "Next Signal Aspect (NSA)")
-                                            {
-                                                //Update lines variable, we can only display 4 lines on GLCD
-                                                lines++;
-                                                //Format the text to send to the serial port in the format "NSA ", Value obtain following the colon from the getdata.txt
-                                                //plus enough spaces to make the text length 16 plus a colon
-                                                msg = ("NSA " + splitter[1]).PadRight(padding) + ":";
-                                            }
-                                            break;
+                                            throw new NotImplementedException();
+//                                            if(ItemToDisplay.ToString() == "Next Signal Aspect (NSA)")
+//                                            {
+//                                                //Update lines variable, we can only display 4 lines on GLCD
+//                                                lines++;
+//                                                //Format the text to send to the serial port in the format "NSA ", Value obtain following the colon from the getdata.txt
+//                                                //plus enough spaces to make the text length 16 plus a colon
+//                                                msg = ("NSA " + splitter[1]).PadRight(padding) + ":";
+//                                            }
+//                                            break;
                                     }
                                 }
-                                //Send the data to the com port
-                                port.Write(msg);
 
                                 Thread.Sleep(10);//Sleep for 10 ms
-                                msg = ""; //Clear msg variable
                                 Application.DoEvents(); //Allow the computer to perform pending messages in queue
                             }
                             //If we want to send the data to the textbox on the form
@@ -459,20 +439,9 @@ namespace Railworks_GetData
                                 bplaysound = false;
                             }
                         }
-                    }
+                    } //while
 
-                    //If we have selected to send data to com port and we have not selected 4 items to send we need to send blank lines for the number of lines not selected or you will get duplicate data
-                    if (SendToPort && lines < 4)
-                    {
-                        int j = (4 - lines); //J = 4 - the number of items selected in items to display on GLCD checklistbox
-                        string s = " ".PadRight(padding) + ":"; //s contains 16 spaces and a colon
-                        for (int i = 0; i < j; i++)
-                        {
-                            port.Write(s); //send the blank lines to the com port
-                            Thread.Sleep(10); //pause for 10ms
-                        }
-                    }
-                    lines = 0; //Reset lines to 0
+//                    lines = 0; //Reset lines to 0
                     richTextBox1.Text = msg1; //Update textbox on form with data
                     msg1 = "";
                     Application.DoEvents(); //Allow the computer to perform pending messages in queue
@@ -485,12 +454,6 @@ namespace Railworks_GetData
                     label1.Text = "Waiting for Railworks";
                     Application.DoEvents(); //Update textbox on form with data 
                 }
-	        }
-            //if We have selected a com port
-            if (port != null)
-            {
-                //Close it
-                if (port.IsOpen) port.Close();
             }
         }
 
@@ -516,11 +479,11 @@ namespace Railworks_GetData
             //Update variable based on check state of sentoport checkbox
             if (chkSendToPort.Checked)
             {
-                SendToPort = true;
+                SendToTcp = true;
             }
             else
             {
-                SendToPort = false;
+                SendToTcp = false;
             }
         }
 

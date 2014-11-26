@@ -85,7 +85,7 @@
             this.chkSendToPort.Name = "chkSendToPort";
             this.chkSendToPort.Size = new System.Drawing.Size(149, 17);
             this.chkSendToPort.TabIndex = 4;
-            this.chkSendToPort.Text = "Send output to Comm port";
+            this.chkSendToPort.Text = "Send output to TCP Server";
             this.chkSendToPort.UseVisualStyleBackColor = true;
             this.chkSendToPort.CheckedChanged += new System.EventHandler(this.chkSendToPort_CheckedChanged);
             // 
@@ -119,7 +119,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(50, 13);
             this.label2.TabIndex = 7;
-            this.label2.Text = "Com Port";
+            this.label2.Text = "Dest-IP";
             // 
             // clbItemsToDisplay
             // 
