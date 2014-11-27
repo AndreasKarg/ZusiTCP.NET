@@ -127,6 +127,10 @@ namespace Railworks_GetData
             string ThrottleType = "";
 //            string BrakeType = "";
 
+            System.Globalization.NumberStyles floatStyle = System.Globalization.NumberStyles.Float |
+                                System.Globalization.NumberStyles.AllowThousands;
+            System.IFormatProvider floatCulture = System.Globalization.CultureInfo.InvariantCulture;
+
             tcp = new ZusiTcpTypeMaster("Railworks");
             tcp.Connect(cboComPort.Text, 1435); //ToDo: Modify the UI to give the user the chance to modify the Port.
             
@@ -193,7 +197,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Speed (Speed)")
                                             {
                                                 float speed;
-                                                if (!float.TryParse(splitter[1], out speed, System.Globalization.CultureInfo.InvariantCulture))
+                                                if (!float.TryParse(splitter[1], out speed, floatStyle, floatCulture))
                                                     continue;
 
                                                 tcp.SendSingle(speed, 2561);
@@ -292,7 +296,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Ammeter (Amp)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
+                                                if (!float.TryParse(splitter[1], out value, floatStyle, floatCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2567);
                                             }
@@ -342,7 +346,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Current Speed Limit (CSL)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
+                                                if (!float.TryParse(splitter[1], out value, floatStyle, floatCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2660);
                                             }
@@ -351,7 +355,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Next Speed Limit (NSL)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
+                                                if (!float.TryParse(splitter[1], out value, floatStyle, floatCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2661);
                                             }
@@ -360,7 +364,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Next Speed Limit Distance (NSLD)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
+                                                if (!float.TryParse(splitter[1], out value, floatStyle, floatCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2662);
                                             }
@@ -439,7 +443,7 @@ namespace Railworks_GetData
                                 bplaysound = false;
                             }
                         }
-                    } //while
+                    } //while !EndOfStream
 
 //                    lines = 0; //Reset lines to 0
                     richTextBox1.Text = msg1; //Update textbox on form with data
@@ -454,7 +458,7 @@ namespace Railworks_GetData
                     label1.Text = "Waiting for Railworks";
                     Application.DoEvents(); //Update textbox on form with data 
                 }
-            }
+            } //while Running
         }
 
         private void btnStop_Click(object sender, EventArgs e)
