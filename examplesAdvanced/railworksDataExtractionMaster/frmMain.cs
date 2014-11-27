@@ -193,7 +193,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Speed (Speed)")
                                             {
                                                 float speed;
-                                                if (!float.TryParse(splitter[1], out speed))
+                                                if (!float.TryParse(splitter[1], out speed, System.Globalization.CultureInfo.InvariantCulture))
                                                     continue;
 
                                                 tcp.SendSingle(speed, 2561);
@@ -292,7 +292,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Ammeter (Amp)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value))
+                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2567);
                                             }
@@ -342,7 +342,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Current Speed Limit (CSL)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value))
+                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2660);
                                             }
@@ -351,7 +351,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Next Speed Limit (NSL)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value))
+                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2661);
                                             }
@@ -360,7 +360,7 @@ namespace Railworks_GetData
                                             if(ItemToDisplay.ToString() == "Next Speed Limit Distance (NSLD)")
                                             {
                                                 float value;
-                                                if (!float.TryParse(splitter[1], out value))
+                                                if (!float.TryParse(splitter[1], out value, System.Globalization.CultureInfo.InvariantCulture))
                                                     continue;
                                                 tcp.SendSingle(value, 2662);
                                             }

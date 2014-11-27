@@ -104,4 +104,5 @@
   <Command ID="2665" Name="Planzeit nächster Reisezughalt" Type="8ByteCommand" />
   <Command ID="2666" Name="PZB restriktiv" Type="4ByteCommand" />
   <Command ID="2667" Name="PZB-Zwansgbremsung" Type="4ByteCommand" />
+  <!--<Command ID="2680" Name="Oberstrom (nicht unter Zusi 2)" Type="4ByteCommand" /> <!--ToDo: Abfangen, wenn Zusi 2 verbunden ist.-->
 </TCPCommands>
