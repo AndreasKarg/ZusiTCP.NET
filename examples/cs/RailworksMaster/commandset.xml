@@ -104,4 +104,5 @@
   <Command ID="2665" Name="Planzeit nächster Reisezughalt" Type="DateTime" />
   <Command ID="2666" Name="PZB restriktiv" Type="BoolAsInt" />
   <Command ID="2667" Name="PZB-Zwangsbremsung" Type="BoolAsInt" />
+  <Command ID="2680" Name="Oberstrom (nicht unter Zusi 2)" Type="Single" />
 </TCPCommands>
