@@ -114,10 +114,10 @@ namespace Railworks_GetData
                     Dictionary<string, int> intValsN = new Dictionary<string, int>();
                     Dictionary<string, float> floatValsN = new Dictionary<string, float>();
                     Dictionary<string, bool> boolValsN = new Dictionary<string, bool>();
-                    if (readRailsimData(out stringValsN, out intValsN, out floatValsN, out boolValsN))
+                    /*if (*/readRailsimData(out stringValsN, out intValsN, out floatValsN, out boolValsN)/*)
                         System.Console.Write(".");
                     else
-                        System.Console.Write("-");
+                        System.Console.Write("-")*/;
 
                     //Calculate Differences
                     Dictionary<string, string> stringVals = GetChanged<string>(stringValsOld, stringValsN);

@@ -5,9 +5,11 @@ class ServertTest1
 	{
 		System.Console.WriteLine("Railworks <-> Zusi Master");
 		var master = new Railworks_GetData.RwZusiConverter();
-		System.Console.WriteLine(master.RailworksPath);
 		master.ErrorReceived += TCPConnection_ErrorReceived;
-		master.RailworksPath = "dat"; //uncomment this line to run the application in it's sandbox.
+		 //if no Railworks is installed run the application in it's sandbox.
+		if (master.RailworksPath == null) //comment this line to run it always it's sandbox.
+				master.RailworksPath = "dat";
+		System.Console.WriteLine("Path: " + master.RailworksPath);
 		master.SingleItems.Add("Current Speed", 2561); //seems to be in km/h
 		master.SingleItems.Add("Speed", 2561);
 		master.SingleTransformation.Add("Speed", 3.6f); //seems to be in m/s, transform to km/h
