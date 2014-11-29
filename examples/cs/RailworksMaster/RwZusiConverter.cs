@@ -247,7 +247,7 @@ namespace Railworks_GetData
             float val;
             if (SingleTransformation != null && SingleTransformation.TryGetValue(id, out val))
                 return val;
-            return 1.0;
+            return 1.0f;
         }
         public event ErrorEvent ErrorReceived;
         public string RailworksPath {get; set;}
