@@ -66,6 +66,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.IO;
 using System.IO.Ports;
+using System.Collections.Generic;
 using Zusi_Datenausgabe;
 
 namespace Railworks_GetData
@@ -112,6 +113,78 @@ namespace Railworks_GetData
             //Load configuration data
             LoadConfiguration();
         }
+
+
+
+        private bool readRailsimData(out Dictionary<string, string> stringVals,
+                                     out Dictionary<string, int> intVals,
+                                     out Dictionary<string, float> floatVals,
+                                     out Dictionary<string, bool> boolVals)
+        {
+            Dictionary<string, string> stringValsX = new Dictionary<string, string>();
+            Dictionary<string, int> intValsX = new Dictionary<string, int>();
+            Dictionary<string, float> floatValsX = new Dictionary<string, float>();
+            Dictionary<string, bool> boolValsX = new Dictionary<string, bool>();
+            stringVals = stringValsX;
+            intVals = intValsX;
+            floatVals = floatValsX;
+            boolVals = boolValsX;
+
+            if (File.Exists(railworksPath + "\\plugins\\GetData.txt"))
+            {
+                //The file does exist so open it for reading but with read & write access so Railworks can still write to it while we have it open.
+                fs = new FileStream(railworksPath + "\\plugins\\GetData.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                sr = new StreamReader(fs);
+
+                System.Globalization.NumberStyles floatStyle = System.Globalization.NumberStyles.Float |
+                                    System.Globalization.NumberStyles.AllowThousands;
+                System.IFormatProvider floatCulture = System.Globalization.CultureInfo.InvariantCulture;
+
+                //Read each line in turn until end of file is reached
+                while (!sr.EndOfStream)
+                {
+                    string tmp = sr.ReadLine();//Store the read line into tmp variable
+
+                    //Each line read from the getdata.txt file will be in the form of control name followed by a colon followed by its setting as in Throttle:80
+                    //The split function searches for the colon : and seperates the 2 strings and stores them in the splitter array.
+                    string[] splitter = tmp.Split(':');
+                    //Check we have 2 pieces of data IE a control and value
+                    if (splitter.Length == 2)
+                    {
+                        string name = splitter[0];
+                        string stringVal = splitter[1];
+                        int intVal = 0;
+                        float floatVal = 0.0f;
+                        bool boolVal = false;
+                        if (int.TryParse(stringVal, floatStyle, floatCulture, out intVal))
+                        {
+                            intVals.Add(name, intVal);
+                        }
+                        else if (float.TryParse(stringVal, floatStyle, floatCulture, out floatVal))
+                        {
+                            floatVals.Add(name, floatVal);
+                        }
+                        else if (bool.TryParse(stringVal, out boolVal))
+                        {
+                            boolVals.Add(name, boolVal);
+                        }
+                        else
+                        {
+                            stringVals.Add(name, stringVal);
+                        }
+                    }
+                }
+                return true;
+            }
+            else
+                return false;
+        }
+
+
+
+
+
+
 
         private void btnStart_Click(object sender, EventArgs e)
         {
