@@ -9,7 +9,23 @@ namespace Railworks_GetData
     {
         public RwZusiConverter()
         {
-            RailworksPath = (string)Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\railsimulator.com\\railworks\\", "Install_Path", "");
+            RailworksFile = (string)Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\railsimulator.com\\railworks\\", "Install_Path", "");
+            if ((RailworksFile == null)||(RailworksFile.Trim() == "")) //I don't know, if it helps...
+                RailworksFile = (string)Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\railsimulator.com\\railworks\\", "Install_Path", "");
+            if (File.Exists(RailworksFile + "\\plugins\\GetData.txt") && File.Exists(RailworksFile + "\\plugins\\trainsim-helper-overlay.txt"))
+            {
+                if (File.GetLastWriteTime(RailworksFile + "\\plugins\\GetData.txt") > File.GetLastWriteTime(RailworksFile + "\\plugins\\trainsim-helper-overlay.txt"))
+                    RailworksFile = RailworksFile + "\\plugins\\GetData.txt";
+                else
+                    RailworksFile = RailworksFile + "\\plugins\\trainsim-helper-overlay.txt";
+            }
+            else if (File.Exists(RailworksFile + "\\plugins\\GetData.txt"))
+                RailworksFile = RailworksFile + "\\plugins\\GetData.txt";
+            else if (File.Exists(RailworksFile + "\\plugins\\trainsim-helper-overlay.txt"))
+                RailworksFile = RailworksFile + "\\plugins\\trainsim-helper-overlay.txt";
+            else
+                RailworksFile = "";
+
             Started = false;
             StringItems = new Dictionary<string, int>();
             SingleItems = new Dictionary<string, int>();
@@ -17,25 +33,30 @@ namespace Railworks_GetData
             IntItems = new Dictionary<string, int>();
             IntAsSingleItems = new Dictionary<string, int>();
             BoolItems = new Dictionary<string, int>();
+            DateTimeItems = new Dictionary<string, int>();
+            DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.FFFFFFF";
         }
         private bool readRailsimData(out Dictionary<string, string> stringVals,
                                      out Dictionary<string, int> intVals,
                                      out Dictionary<string, float> floatVals,
-                                     out Dictionary<string, bool> boolVals)
+                                     out Dictionary<string, bool> boolVals,
+                                     out Dictionary<string, System.DateTime> dateVals)
         {
             Dictionary<string, string> stringValsX = new Dictionary<string, string>();
             Dictionary<string, int> intValsX = new Dictionary<string, int>();
             Dictionary<string, float> floatValsX = new Dictionary<string, float>();
             Dictionary<string, bool> boolValsX = new Dictionary<string, bool>();
+            Dictionary<string, System.DateTime> dateValsX = new Dictionary<string, System.DateTime>();
             stringVals = stringValsX;
             intVals = intValsX;
             floatVals = floatValsX;
             boolVals = boolValsX;
+            dateVals = dateValsX;
 
-            if (File.Exists(RailworksPath + "\\plugins\\GetData.txt"))
+            if (File.Exists(RailworksFile))
             {
                 //The file does exist so open it for reading but with read & write access so Railworks can still write to it while we have it open.
-                var fs = new FileStream(RailworksPath + "\\plugins\\GetData.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                var fs = new FileStream(RailworksFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 var sr = new StreamReader(fs);
 
                 System.Globalization.NumberStyles floatStyle = System.Globalization.NumberStyles.Float |
@@ -58,6 +79,7 @@ namespace Railworks_GetData
                         int intVal = 0;
                         float floatVal = 0.0f;
                         bool boolVal = false;
+                        System.DateTime dateVal;
                         if (int.TryParse(stringVal, floatStyle, floatCulture, out intVal))
                         {
                             if (!intVals.ContainsKey(name))
@@ -77,6 +99,11 @@ namespace Railworks_GetData
                         {
                             if (!stringVals.ContainsKey(name))
                                 stringVals.Add(name, stringVal);
+                        }
+                        if (System.DateTime.TryParseExact(stringVal, DateTimeFormat, floatCulture, System.Globalization.DateTimeStyles.None, out dateVal))
+                        {
+                            if (!stringVals.ContainsKey(name))
+                                dateVals.Add(name, dateVal);
                         }
                     }
                 }
@@ -107,6 +134,7 @@ namespace Railworks_GetData
                 Dictionary<string, int> intValsOld = new Dictionary<string, int>();
                 Dictionary<string, float> floatValsOld = new Dictionary<string, float>();
                 Dictionary<string, bool> boolValsOld = new Dictionary<string, bool>();
+                Dictionary<string, System.DateTime> dateValsOld = new Dictionary<string, System.DateTime>();
 
                 while (Started)
                 {
@@ -114,7 +142,8 @@ namespace Railworks_GetData
                     Dictionary<string, int> intValsN = new Dictionary<string, int>();
                     Dictionary<string, float> floatValsN = new Dictionary<string, float>();
                     Dictionary<string, bool> boolValsN = new Dictionary<string, bool>();
-                    /*if (*/readRailsimData(out stringValsN, out intValsN, out floatValsN, out boolValsN)/*)
+                    Dictionary<string, System.DateTime> dateValsN = new Dictionary<string, System.DateTime>();
+                    /*if (*/readRailsimData(out stringValsN, out intValsN, out floatValsN, out boolValsN, out dateValsN)/*)
                         System.Console.Write(".");
                     else
                         System.Console.Write("-")*/;
@@ -124,6 +153,7 @@ namespace Railworks_GetData
                     Dictionary<string, int> intVals = GetChanged<int>(intValsOld, intValsN);
                     Dictionary<string, float> floatVals = GetChanged<float>(floatValsOld, floatValsN);
                     Dictionary<string, bool> boolVals = GetChanged<bool>(boolValsOld, boolValsN);
+                    Dictionary<string, System.DateTime> dateVals = GetChanged<System.DateTime>(dateValsOld, dateValsN);
 
 
 
@@ -201,6 +231,18 @@ namespace Railworks_GetData
                         }
                     }
 
+                    //Send Bools
+                    foreach(KeyValuePair<string, System.DateTime> itm1 in dateVals)
+                    {
+                    System.Console.WriteLine("?d " + itm1.Key + " -> " + itm1.Value.ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFF"));
+                        int id;
+                        if (DateTimeItems != null && DateTimeItems.TryGetValue(itm1.Key, out id))
+                        {
+                        System.Console.WriteLine("d0 " + itm1.Key + " -> " + itm1.Value + " -> " + id);
+                            zusiMaster.SendDateTime(itm1.Value, id);
+                        }
+                    }
+
                     stringValsOld = stringValsN;
                     intValsOld = intValsN;
                     floatValsOld = floatValsN;
@@ -250,13 +292,15 @@ namespace Railworks_GetData
             return 1.0f;
         }
         public event ErrorEvent ErrorReceived;
-        public string RailworksPath {get; set;}
+        public string RailworksFile {get; set;}
         public Dictionary<string, int> StringItems {get; set;}
         public Dictionary<string, int> SingleItems {get; set;}
         public Dictionary<string, float> SingleTransformation {get; set;}
         public Dictionary<string, int> IntItems {get; set;}
         public Dictionary<string, int> IntAsSingleItems {get; set;}
         public Dictionary<string, int> BoolItems {get; set;}
+        public Dictionary<string, int> DateTimeItems {get; set;}
+        public string DateTimeFormat {get; set;}
 
         public void Start()
         {

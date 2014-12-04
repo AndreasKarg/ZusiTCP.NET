@@ -33,3 +33,4 @@ Signal Aspect:-1
 DoorsOpenCloseRight:0
 DoorsOpenCloseLeft:0
 Current Time = :52.430736541748
+Clock:2014-12-04T20:51:14.6970377
