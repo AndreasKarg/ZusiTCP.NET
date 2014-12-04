@@ -34,7 +34,7 @@ namespace Railworks_GetData
             IntAsSingleItems = new Dictionary<string, int>();
             BoolItems = new Dictionary<string, int>();
             DateTimeItems = new Dictionary<string, int>();
-            DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.FFFFFFF";
+            DateTimeFormat = "yyyy-MM-ddTHH.mm.ss.FFFFFFF";
         }
         private bool readRailsimData(out Dictionary<string, string> stringVals,
                                      out Dictionary<string, int> intVals,
@@ -102,7 +102,7 @@ namespace Railworks_GetData
                         }
                         if (System.DateTime.TryParseExact(stringVal, DateTimeFormat, floatCulture, System.Globalization.DateTimeStyles.None, out dateVal))
                         {
-                            if (!stringVals.ContainsKey(name))
+                            if (!dateVals.ContainsKey(name))
                                 dateVals.Add(name, dateVal);
                         }
                     }
@@ -231,7 +231,7 @@ namespace Railworks_GetData
                         }
                     }
 
-                    //Send Bools
+                    //Send DateTimes
                     foreach(KeyValuePair<string, System.DateTime> itm1 in dateVals)
                     {
                     System.Console.WriteLine("?d " + itm1.Key + " -> " + itm1.Value.ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFF"));
