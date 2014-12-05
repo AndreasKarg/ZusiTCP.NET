@@ -27,9 +27,10 @@ class ServertTest1
 		master.SingleItems.Add("Acceleration", 2657);
 
 		master.SingleItems.Add("Zugkraft gesamt", 2565); //traction gauge
-		master.SingleItems.Add("Druck Hauptluftleitung", 2562); //main pipe pressure
-		master.SingleItems.Add("Druck Hauptluftbehalter", 2564); //reservoir pressure
-		master.SingleItems.Add("Druck Bremszylinder", 2563); //brake cylinder pressure
+		master.SingleItems.Add("AirBrakePipePressure", 2562); //main pipe pressure
+		master.SingleItems.Add("MainReservoirPressure", 2564); //reservoir pressure
+		master.SingleItems.Add("TrainBrakeCylinderPressure", 2563); //brake cylinder pressure
+		master.SingleItems.Add("EqReservoirPressure", 2579); //brake cylinder pressure
 		master.SingleItems.Add("Strom", 2567); //Current
 		master.SingleItems.Add("Spannung", 2568); //Voltage
 		master.BoolItems.Add("LM Turen", 2607); //Doors locked
