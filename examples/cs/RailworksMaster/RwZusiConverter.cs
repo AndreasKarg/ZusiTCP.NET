@@ -80,7 +80,12 @@ namespace Railworks_GetData
                         float floatVal = 0.0f;
                         bool boolVal = false;
                         System.DateTime dateVal;
-                        if (int.TryParse(stringVal, floatStyle, floatCulture, out intVal))
+                        if (System.DateTime.TryParseExact(stringVal, DateTimeFormat, floatCulture, System.Globalization.DateTimeStyles.None, out dateVal))
+                        {
+                            if (!dateVals.ContainsKey(name))
+                                dateVals.Add(name, dateVal);
+                        }
+                        else if (int.TryParse(stringVal, floatStyle, floatCulture, out intVal))
                         {
                             if (!intVals.ContainsKey(name))
                                 intVals.Add(name, intVal);
@@ -99,11 +104,6 @@ namespace Railworks_GetData
                         {
                             if (!stringVals.ContainsKey(name))
                                 stringVals.Add(name, stringVal);
-                        }
-                        if (System.DateTime.TryParseExact(stringVal, DateTimeFormat, floatCulture, System.Globalization.DateTimeStyles.None, out dateVal))
-                        {
-                            if (!dateVals.ContainsKey(name))
-                                dateVals.Add(name, dateVal);
                         }
                     }
                 }
@@ -180,6 +180,12 @@ namespace Railworks_GetData
                             System.Console.WriteLine("f0 " + itm1.Key + " -> " + itm1.Value + " -> " + id);
                             zusiMaster.SendSingle(itm1.Value * GetSingleTransformation(itm1.Key), id);
                         }
+                        if (DateTimeItems != null && DateTimeItems.TryGetValue(itm1.Key, out id)) //DateTime: Seconds since Midnight.
+                        {
+                            System.DateTime date = System.DateTime.Now.Date.AddSeconds(itm1.Value);
+                        System.Console.WriteLine("f5 " + itm1.Key + " -> " + date.ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFF") + " -> " + id);
+                            zusiMaster.SendDateTime(date, id);
+                        }
                     }
 
                     //Send Ints
@@ -211,6 +217,12 @@ namespace Railworks_GetData
                         {
                         System.Console.WriteLine("i4 " + itm1.Key + " -> " + itm1.Value + " -> " + id);
                             zusiMaster.SendBoolAsSingle(itm1.Value == 0, id);
+                        }
+                        if (DateTimeItems != null && DateTimeItems.TryGetValue(itm1.Key, out id)) //DateTime: Seconds since Midnight.
+                        {
+                            System.DateTime date = System.DateTime.Now.Date.AddSeconds(itm1.Value);
+                        System.Console.WriteLine("i5 " + itm1.Key + " -> " + date.ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFF") + " -> " + id);
+                            zusiMaster.SendDateTime(date, id);
                         }
                     }
 

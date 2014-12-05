@@ -34,6 +34,15 @@ class ServertTest1
 		master.SingleItems.Add("Spannung", 2568); //Voltage
 		master.BoolItems.Add("LM Turen", 2607); //Doors locked
 		master.BoolItems.Add("LM Sifa", 2596); //Sifa light
+		master.BoolItems.Add("VigilAlarm", 2596); //Sifa light
+
+		master.BoolItems.Add("LM PZB 1000hz", 2580); //PZB 1000 Hz
+		master.BoolItems.Add("AWS", 2580); //PZB 1000 Hz
+		master.BoolItems.Add("LM PZB 500hz", 2581); //PZB 500 Hz
+		master.BoolItems.Add("LM PZB Befehl", 2582);
+		master.BoolItems.Add("LM PZB 55", 2583); //PZB U / 55 / 65
+		master.BoolItems.Add("LM PZB 70", 2584); //PZB M / 70 / 75
+		master.BoolItems.Add("LM PZB 85", 2585); //PZB O / 85 / 95
 
 		//masterDateTimeFormat = masterDateTimeFormat;
 		master.DateTimeItems.Add("Clock", 2610); //clock
