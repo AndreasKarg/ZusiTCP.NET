@@ -74,6 +74,11 @@
     <Compile Include="ReferenceCounter.cs" />
     <Compile Include="SpecializedCodeCompyler.cs" />
     <Compile Include="SwitchableReadOnlyList.cs" />
+    <Compile Include="ZusiTcp3ClientAbstract.cs" />
+    <Compile Include="ZusiTcp3Knode.cs" />
+    <Compile Include="ZusiTcp3Socket.cs" />
+    <Compile Include="ZusiTcp3TypeClient.cs" />
+    <Compile Include="ZusiTcp3TypeClientAbstract.cs" />
     <Compile Include="ZusiTcpBaseConnection.cs" />
     <Compile Include="ZusiTcpClientAbstract.cs" />
     <Compile Include="ZusiTcpExceptions.cs" />
@@ -95,6 +100,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="commandset.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="commandset3.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>

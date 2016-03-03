@@ -284,7 +284,20 @@ namespace Zusi_Datenausgabe
 
     private static System.Xml.Serialization.XmlSerializer serializer;
 
-    [System.Xml.Serialization.XmlAttributeAttribute()]
+    [System.Xml.Serialization.XmlAttributeAttribute("ID")]
+    public string ID_Str
+    {
+      get
+      {
+        return ID.ToString();
+      }
+      set
+      {
+        ID = int.Parse(value, System.Globalization.NumberStyles.AllowHexSpecifier | System.Globalization.NumberStyles.AllowTrailingWhite );
+      }
+    }
+
+    [System.Xml.Serialization.XmlIgnoreAttribute()]
     public int ID
     {
       get
