@@ -378,4 +378,97 @@ namespace Zusi_Datenausgabe
     /// </summary>
     RealTime = 05
   }
+
+  /// <summary>
+  ///   Represents a action performed to a swich.
+  /// </summary>
+  public enum SwitchAction
+  {
+    /// <summary>
+    ///   Undefined priority.
+    /// </summary>
+    Off = 0,
+
+    /// <summary>
+    ///   Reserved for Zusi.
+    /// </summary>
+    On = 1,
+
+    /// <summary>
+    ///   High priority for control desks and display applications.
+    /// </summary>
+    Toogle = -1
+  }
+
+  public struct Zugsicherung
+  {
+    public struct IndusiConfig
+    {
+      public struct ConfigData
+      {
+        public System.Int16 BRH {get; set;}
+        public System.Int16 BRA {get; set;}
+        public System.Int16 ZL {get; set;}
+        public System.Int16 VMZ {get; set;}
+        //Zugart Undefined = 1, U, M, O //5
+        //Mode Grunddaten=4 Ersatzdaten=5 Normal=6
+      }
+      //Zugart Undefined = 1, U, M, O //1
+      public string DriverID {get; set;} //2
+      public string TrainID {get; set;} //3
+      public ConfigData Grunddaten {get; set;} //4
+      public ConfigData Ersatzdaten {get; set;} //5
+      public ConfigData CurrentData {get; set;} //6
+      public bool Hauptschalter {get; set;} //7
+      public bool StoerschalterPZB {get; set;} //8
+      public bool StoerschalterLZB {get; set;} //9
+      public bool AbsperrhahnOffen{get; set;} //A
+    }
+    public struct IndusiState
+    {
+      //An, ab, LowPressure, ZD-Eingabe, Normal, Pruef //2
+      //ZB-Resond //3
+      public string ZBResondAsString {get; set;} //4
+      public bool LM_1000Hz {get; set;} //5
+      public bool LM_U {get; set;} //6
+      public bool LM_M {get; set;} //7
+      public bool LM_O {get; set;} //8
+      //Hupe-Status
+      public bool LM_0500Hz {get; set;} //A
+      public bool LM_2000Hz {get; set;} //B
+      //MelderbildDecoded //C
+      //Zustand LZB
+      //LZB-Ende
+      //E40
+      //FfGT
+      //V40
+      //B40
+      //Ü-Ausfall
+      //Nothalt
+      //Rechnerausfall
+      //LZB-EL
+      public bool LM_H {get; set;} //17
+      public bool LM_E40 {get; set;} //18
+      public bool LM_Ende {get; set;} //19
+      public bool LM_B {get; set;} //1A
+      public bool LM_Ue {get; set;} //1B
+      public bool LM_G {get; set;} //1C
+      public bool LM_EL {get; set;} //1D
+      public bool LM_V40 {get; set;} //1E
+      public bool LM_S {get; set;} //1F
+      public bool LM_PruefStoer {get; set;} //20
+      public float vSoll {get; set;} //21
+      public float vZiel {get; set;} //22
+      public float Zielweg {get; set;} //23
+      //G-Blinkbar
+      //PruefStoer-Blinkbar
+      //CIR-ELKE
+      //Anzeige-Spezial
+      //Funktionspruefung
+    }
+    public string ZugsicherungName {get; set;}
+    public IndusiConfig ConfigIndusi {get; set;}
+    public IndusiState StateIndusi {get; set;}
+  }
+
 }

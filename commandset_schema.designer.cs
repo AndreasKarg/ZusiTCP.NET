@@ -293,7 +293,10 @@ namespace Zusi_Datenausgabe
       }
       set
       {
-        ID = int.Parse(value, System.Globalization.NumberStyles.AllowHexSpecifier | System.Globalization.NumberStyles.AllowTrailingWhite );
+        if (value.StartsWith("0x"))
+          ID = int.Parse(value.Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier | System.Globalization.NumberStyles.AllowTrailingWhite );
+        else
+          ID = int.Parse(value);
       }
     }
 

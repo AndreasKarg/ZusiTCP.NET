@@ -34,7 +34,7 @@
   <Command ID="0x0020" Name="LM Hochabbremsung" Type="BoolAsSingle" />
   <Command ID="0x0021" Name="LM Schnellbremsung" Type="BoolAsSingle" />
   <!--<Command ID="0x0022" Name="LM Notbremsung" Type="BoolAsSingle" /> => Spezialstruktur-->
-Uhrzeit Digital (Leider ohne Datum)
+  <Command ID="0x0023" Name="Uhrzeit Digital" Type="TimeAsSingle" /> <!--Wird mit dem Datum zusammengefasst-->
   <Command ID="0x0024" Name="LM Drehzahlverstellung" Type="BoolAsSingle" />
   <Command ID="0x0025" Name="LM Fahrtrichtung vor" Type="BoolAsSingle" />
   <Command ID="0x0026" Name="LM Fahrtrichtung zurück" Type="BoolAsSingle" />
@@ -55,7 +55,7 @@ y
   <Command ID="0x0035" Name="UTM-Zone2" Type="IntAsSingle" /> <!--ToDo: Wirklich?-->
   <Command ID="0x0036" Name="Schalter AFB ein/aus" Type="BoolAsSingle" />
   <!--Individuell 01 ...20-->
-Datum => Ebenfalls zusammenfassen
+  <Command ID="0x004B" Name="Datum" Type="DateAsSingle" /> <!--Wird mit der Uhrzeit zusammengefasst, und unter der Uhrzeit-ID gesendet-->
   <Command ID="0x004C" Name="Gleiskrümmung" Type="Single" />
   <Command ID="0x004D" Name="Strecken-Vmax" Type="Single" />
   <Command ID="0x004E" Name="Zugkraftvorschlag AP" Type="Single" />
@@ -67,7 +67,7 @@ x
 y
 z
 Stromabhnehmer => Spezial!
-LM Federspeicherbremse => b
+  <Command ID="0x0056" Name="LM Federspeicherbremse" Type="BoolAsSingle" />
 Zustand F " => Spezial-Enum
 Steuerwagen 1...6
 
@@ -75,10 +75,11 @@ Druck Zeitbehälter
 Geschwindigkeit (absolut)
 Zug ist entgleist
   <Command ID="0x0061" Name="Strecken-Km" Type="Single" />
-  <Command ID="0x0062" Name="Strom" Type="Single" /> Motorstrom
-Motorspannung
+  <Command ID="0x0062" Name="Motorstrom" Type="Single" />
+  <Command ID="0x0063" Name="Motorspannung" Type="Single" />
 
 Spezial: Sifa, Zugsicherung, Türen
+  <Command ID="0x0065" Name="Zugsicherung" Type="Zugsicherung" />
 
 Individuell 21...40
 

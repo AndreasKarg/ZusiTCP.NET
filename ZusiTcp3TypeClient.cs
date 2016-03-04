@@ -194,6 +194,11 @@ namespace Zusi_Datenausgabe
     public event ReceiveEvent<BrakeConfiguration> BrakeConfigReceived;
 
     /// <summary>
+    ///   Event used to handle incoming Zugsicherung configuration data.
+    /// </summary>
+    public event ReceiveEvent<Zugsicherung> ZugsicherungReceived;
+
+    /// <summary>
     ///   Handle incoming data of type Single.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
@@ -239,6 +244,43 @@ namespace Zusi_Datenausgabe
       var data = ReadDateTime(input);
       PostToHost(DateTimeReceived, id, data.ExtractedData);
       return data.ExtractedLength;
+    }
+
+    private System.DateTime BufferedDateOrTime;
+    private int DateOrTimeLowestId = int.MaxValue;
+    private bool DateOrTimeChanged = false;
+    /// <summary>
+    ///   Handle incoming data of type DateTime that are sent as Single values by Zusi.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_DateAsSingle(ZusiTcp3AttributeAbstract input, int id)
+    {
+      var data = ReadBufferedDateAsSingle(input);
+      BufferedDateOrTime = data.ExtractedData;
+      DateOrTimeLowestId = System.Math.Min(DateOrTimeLowestId, id);
+      DateOrTimeChanged = true;
+      return data.ExtractedLength;
+    }
+    /// <summary>
+    ///   Handle incoming data of type DateTime that are sent as Single values by Zusi.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_TimeAsSingle(ZusiTcp3AttributeAbstract input, int id)
+    {
+      var data = ReadBufferedTimeAsSingle(input);
+      BufferedDateOrTime = data.ExtractedData;
+      DateOrTimeLowestId = System.Math.Min(DateOrTimeLowestId, id);
+      DateOrTimeChanged = true;
+      return data.ExtractedLength;
+    }
+    protected override void EndHANDLE_Datas()
+    {
+      if (DateOrTimeChanged)
+        PostToHost(DateTimeReceived, DateOrTimeLowestId, BufferedDateOrTime);
+      DateOrTimeChanged = false;
+      base.EndHANDLE_Datas();
     }
 
     /// <summary>
@@ -324,6 +366,18 @@ namespace Zusi_Datenausgabe
     {
       var data = ReadBrakesAsInt(input);
       PostToHost(BrakeConfigReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
+    }
+
+    /// <summary>
+    ///   Handle incoming brake information that is sent as Int values by Zusi.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_Zugsicherung(ZusiTcp3Node input, int id)
+    {
+      var data = ReadZugsicherung(input);
+      PostToHost(ZugsicherungReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
 

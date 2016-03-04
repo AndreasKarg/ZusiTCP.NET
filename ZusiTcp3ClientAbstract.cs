@@ -224,17 +224,17 @@ namespace Zusi_Datenausgabe
       dataHandlers = new Dictionary<string, MethodInfo>();
       socket = new ZusiTcp3Socket();
       socket.ReadException += PostExToHost;
-      socket.ProcessKnoten += KnodeReceived;
+      socket.ProcessKnoten += NodeReceived;
       socket.Stream = client.GetStream();
 
-      var communicationKnode = new ZusiTcp3Knode();
-      communicationKnode.ID = 1;
-      ZusiTcp3Knode helloKnode = communicationKnode.AddSubKnode(1);
-      helloKnode.AddSubAttribute(1).DataAsInt16 = 2; //Protocol-Version: 2
-      helloKnode.AddSubAttribute(2).DataAsInt16 = 2; //Client-Type: Fahrpult
-      helloKnode.AddSubAttribute(3).DataAsString = ClientId;
-      helloKnode.AddSubAttribute(4).DataAsString = ClientVersion;
-      socket.SendKnoten(communicationKnode);
+      var communicationNode = new ZusiTcp3Node();
+      communicationNode.ID = 1;
+      ZusiTcp3Node helloNode = communicationNode.AddSubNode(1);
+      helloNode.AddSubAttribute(1).DataAsInt16 = 2; //Protocol-Version: 2
+      helloNode.AddSubAttribute(2).DataAsInt16 = 2; //Client-Type: Fahrpult
+      helloNode.AddSubAttribute(3).DataAsString = ClientId;
+      helloNode.AddSubAttribute(4).DataAsString = ClientVersion;
+      socket.SendKnoten(communicationNode);
     }
     /// <summary>
     ///   Disconnect from the TCP server.
@@ -388,14 +388,19 @@ namespace Zusi_Datenausgabe
     }
 
 
+    virtual protected void BeginHANDLE_Datas()
+    {
+    }
+    virtual protected void EndHANDLE_Datas()
+    {
+    }
 
 
-
-    private void KnodeReceived(object sender, ZusiTcp3Knode data)
+    private void NodeReceived(object sender, ZusiTcp3Node data)
     {
       if (data.ID == 1) //Connecting
       {
-        ZusiTcp3Knode knodeAck = data.TryGetSubKnode(0x2);
+        ZusiTcp3Node knodeAck = data.TryGetSubNode(0x2);
         if (knodeAck != null)
         {
           ZusiTcp3AttributeAbstract attrServerVersion = knodeAck.TryGetSubAttribute(0x1);
@@ -411,10 +416,10 @@ namespace Zusi_Datenausgabe
             if (accept == 0)
             {
               //If Accepted send the requested data:
-              var pultData = new ZusiTcp3Knode();
+              var pultData = new ZusiTcp3Node();
               pultData.ID = 2;
-              ZusiTcp3Knode needData = pultData.AddSubKnode(0x3);
-              ZusiTcp3Knode fstData = needData.AddSubKnode(0xA); //At the moment only 0xA supported.
+              ZusiTcp3Node needData = pultData.AddSubNode(0x3);
+              ZusiTcp3Node fstData = needData.AddSubNode(0xA); //At the moment only 0xA supported.
               foreach(int dataID in _requestedData)
               {
                 fstData.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) dataID;
@@ -430,8 +435,8 @@ namespace Zusi_Datenausgabe
       }
       else if (data.ID == 2) //Client Data
       {
-        ZusiTcp3Knode knodeAck = data.TryGetSubKnode(0x4);
-        ZusiTcp3Knode knodeFst = data.TryGetSubKnode(0xA);
+        ZusiTcp3Node knodeAck = data.TryGetSubNode(0x4);
+        ZusiTcp3Node knodeFst = data.TryGetSubNode(0xA);
         if (knodeAck != null)
         {
           ZusiTcp3AttributeAbstract attrDataAccepted = knodeAck.TryGetSubAttribute(0x1);
@@ -448,6 +453,7 @@ namespace Zusi_Datenausgabe
         }
         if (knodeFst != null)
         {
+          BeginHANDLE_Datas();
           foreach(ZusiTcp3AttributeAbstract cur in knodeFst.Attributes)
           {
             CommandEntry curCommand = _commands[cur.ID];
@@ -488,6 +494,47 @@ namespace Zusi_Datenausgabe
               //Even a failed processing data is no longer a problem.
             }
           }
+          foreach(ZusiTcp3Node cur in knodeFst.Nodes)
+          {
+            CommandEntry curCommand = _commands[cur.ID];
+
+            MethodInfo handlerMethod;
+
+            if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
+            {
+              handlerMethod = GetType().GetMethod(
+                String.Format("HandleDATA_{0}", curCommand.Type),
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new[] {typeof (ZusiTcp3Node), typeof (int)},
+                null);
+
+              if (handlerMethod == null)
+              {
+              //Unknown Data Type - but this is no longer a problem
+              /*
+                throw new ZusiTcpException(
+                  String.Format(
+                    "Unknown type {0} for DATA ID {1} (\"{2}\") occured.", curCommand.Type, cur.ID, curCommand.Name));
+                    */
+              }
+
+//            Return-Type is no longer required.
+//              /* Make sure the handler method returns an int. */
+//              Debug.Assert(handlerMethod.ReturnType == typeof (int));
+
+              dataHandlers.Add(curCommand.Type, handlerMethod);
+            }
+            try
+            {
+              handlerMethod.Invoke(this, new object[] {cur, cur.ID});
+            }
+            catch
+            {
+              //Even a failed processing data is no longer a problem.
+            }
+          }
+          EndHANDLE_Datas();
         }
 
 
