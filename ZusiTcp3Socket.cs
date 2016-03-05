@@ -86,7 +86,7 @@ namespace Zusi_Datenausgabe
         int length = Stream.EndRead(ar) + OldStartPosition;
         int currentPosition = 0;
         bool needsMore = (length == Buffer.Length);
-        ZusiTcp3Node oldcurrentknode = CurrentNode;
+        ZusiTcp3Node oldcurrentnode = CurrentNode;
         if (length < 0)
             throw new System.Exception();
 
@@ -104,7 +104,7 @@ namespace Zusi_Datenausgabe
         if (length < 0)
           throw new System.Exception();
 
-        needsMore = needsMore && (CurrentNode != null) && (CurrentNode == oldcurrentknode);
+        needsMore = needsMore && (CurrentNode != null) && (CurrentNode == oldcurrentnode);
 
         if ((length > 0) || needsMore)
         {

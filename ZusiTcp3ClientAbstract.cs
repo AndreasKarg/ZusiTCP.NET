@@ -400,12 +400,12 @@ namespace Zusi_Datenausgabe
     {
       if (data.ID == 1) //Connecting
       {
-        ZusiTcp3Node knodeAck = data.TryGetSubNode(0x2);
-        if (knodeAck != null)
+        ZusiTcp3Node nodeAck = data.TryGetSubNode(0x2);
+        if (nodeAck != null)
         {
-          ZusiTcp3AttributeAbstract attrServerVersion = knodeAck.TryGetSubAttribute(0x1);
-          ZusiTcp3AttributeAbstract attrServerInfo = knodeAck.TryGetSubAttribute(0x2);
-          ZusiTcp3AttributeAbstract attrServerAccepted = knodeAck.TryGetSubAttribute(0x3);
+          ZusiTcp3AttributeAbstract attrServerVersion = nodeAck.TryGetSubAttribute(0x1);
+          ZusiTcp3AttributeAbstract attrServerInfo = nodeAck.TryGetSubAttribute(0x2);
+          ZusiTcp3AttributeAbstract attrServerAccepted = nodeAck.TryGetSubAttribute(0x3);
           if (attrServerVersion != null)
             ServerVersion = attrServerVersion.DataAsString;
           if (attrServerInfo != null)
@@ -435,11 +435,11 @@ namespace Zusi_Datenausgabe
       }
       else if (data.ID == 2) //Client Data
       {
-        ZusiTcp3Node knodeAck = data.TryGetSubNode(0x4);
-        ZusiTcp3Node knodeFst = data.TryGetSubNode(0xA);
-        if (knodeAck != null)
+        ZusiTcp3Node nodeAck = data.TryGetSubNode(0x4);
+        ZusiTcp3Node nodeFst = data.TryGetSubNode(0xA);
+        if (nodeAck != null)
         {
-          ZusiTcp3AttributeAbstract attrDataAccepted = knodeAck.TryGetSubAttribute(0x1);
+          ZusiTcp3AttributeAbstract attrDataAccepted = nodeAck.TryGetSubAttribute(0x1);
           if (attrDataAccepted != null)
           {
             byte accept = attrDataAccepted.DataAsByte;
@@ -451,10 +451,10 @@ namespace Zusi_Datenausgabe
             }
           }
         }
-        if (knodeFst != null)
+        if (nodeFst != null)
         {
           BeginHANDLE_Datas();
-          foreach(ZusiTcp3AttributeAbstract cur in knodeFst.Attributes)
+          foreach(ZusiTcp3AttributeAbstract cur in nodeFst.Attributes)
           {
             CommandEntry curCommand = _commands[cur.ID];
 
@@ -494,7 +494,7 @@ namespace Zusi_Datenausgabe
               //Even a failed processing data is no longer a problem.
             }
           }
-          foreach(ZusiTcp3Node cur in knodeFst.Nodes)
+          foreach(ZusiTcp3Node cur in nodeFst.Nodes)
           {
             CommandEntry curCommand = _commands[cur.ID];
 

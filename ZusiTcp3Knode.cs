@@ -1,7 +1,7 @@
 namespace Zusi_Datenausgabe
 {
   /// <summary>
-  ///   Represents a knode for all TCPconnections based on the Zusi-protocol.
+  ///   Represents a node for all TCPconnections based on the Zusi-protocol.
   /// </summary>
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class ZusiTcp3Node
@@ -16,7 +16,7 @@ namespace Zusi_Datenausgabe
     public System.Int16 ID {set; get;}
     /// <summary>Contains all child attributes</summary>
     public System.Collections.Generic.List<ZusiTcp3AttributeAbstract> Attributes {private set; get;}
-    /// <summary>Contains all child knodes</summary>
+    /// <summary>Contains all child nodes</summary>
     public System.Collections.Generic.List<ZusiTcp3Node> Nodes {private set; get;}
     /// <summary>true if the last <see cref="Read" /> did not finish.</summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
