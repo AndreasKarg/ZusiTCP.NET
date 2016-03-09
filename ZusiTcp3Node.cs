@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Zusi_Datenausgabe
 {
   /// <summary>
@@ -28,24 +30,15 @@ namespace Zusi_Datenausgabe
 
     public ZusiTcp3Node TryGetSubNode(System.Int16 id)
     {
-      foreach(ZusiTcp3Node k1 in Nodes)
-      {
-        if (k1.ID == id)
-          return k1;
-      }
-      return null;
-    }
-    public ZusiTcp3AttributeAbstract TryGetSubAttribute(System.Int16 id)
-    {
-      foreach(ZusiTcp3AttributeAbstract a1 in Attributes)
-      {
-        if (a1.ID == id)
-          return a1;
-      }
-      return null;
+        return Nodes.FirstOrDefault(k1 => k1.ID == id);
     }
 
-    public ZusiTcp3Node AddSubNode(System.Int16 id)
+      public ZusiTcp3AttributeAbstract TryGetSubAttribute(System.Int16 id)
+      {
+          return Attributes.FirstOrDefault(a1 => a1.ID == id);
+      }
+
+      public ZusiTcp3Node AddSubNode(System.Int16 id)
     {
       var value = new ZusiTcp3Node();
       value.ID = id;
@@ -62,20 +55,19 @@ namespace Zusi_Datenausgabe
 
     public bool ReadTopNode(byte[] Buffer, ref int Offset, ref int BufferLength)
     {
-      if (!IsReading)
-      {
+        if (IsReading) return Read(Buffer, ref Offset, ref BufferLength);
+
         if (BufferLength < 4)
-          return false;
+            return false;
         System.Int64 currentLength2 = Buffer[Offset] + 0x100 * Buffer[Offset + 1] + 0x10000 * Buffer[Offset + 2] + ((System.Int64) 0x1000000) * Buffer[Offset + 3];
         if (currentLength2 > System.Int32.MaxValue)
-          currentLength2 -= 0x100000000;
+            currentLength2 -= 0x100000000;
         System.Int32 currentLength = (System.Int32) currentLength2;
         if (currentLength != 0)
-          throw new System.IO.InvalidDataException();
+            throw new System.IO.InvalidDataException();
         Offset += 4;
         BufferLength -= 4;
-      }
-      return Read(Buffer, ref Offset, ref BufferLength);
+        return Read(Buffer, ref Offset, ref BufferLength);
     }
 
     public bool Read(byte[] Buffer, ref int Offset, ref int BufferLength)

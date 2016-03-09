@@ -2,8 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -398,147 +396,130 @@ namespace Zusi_Datenausgabe
 
     private void NodeReceived(object sender, ZusiTcp3Node data)
     {
-      if (data.ID == 1) //Connecting
-      {
-        ZusiTcp3Node nodeAck = data.TryGetSubNode(0x2);
-        if (nodeAck != null)
+        switch (data.ID)
         {
-          ZusiTcp3AttributeAbstract attrServerVersion = nodeAck.TryGetSubAttribute(0x1);
-          ZusiTcp3AttributeAbstract attrServerInfo = nodeAck.TryGetSubAttribute(0x2);
-          ZusiTcp3AttributeAbstract attrServerAccepted = nodeAck.TryGetSubAttribute(0x3);
-          if (attrServerVersion != null)
-            ServerVersion = attrServerVersion.DataAsString;
-          if (attrServerInfo != null)
-            ServerVerbindungsinfo = attrServerInfo.DataAsString;
-          if (attrServerAccepted != null)
-          {
-            byte accept = attrServerAccepted.DataAsByte;
-            if (accept == 0)
+            case 1:
             {
-              //If Accepted send the requested data:
-              var pultData = new ZusiTcp3Node();
-              pultData.ID = 2;
-              ZusiTcp3Node needData = pultData.AddSubNode(0x3);
-              ZusiTcp3Node fstData = needData.AddSubNode(0xA); //At the moment only 0xA supported.
-              foreach(int dataID in _requestedData)
-              {
-                fstData.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) dataID;
-              }
-              socket.SendKnoten(pultData);
+                ZusiTcp3Node nodeAck = data.TryGetSubNode(0x2);
+                if (nodeAck == null)
+                {
+                    break;
+                }
+
+                ZusiTcp3AttributeAbstract attrServerVersion = nodeAck.TryGetSubAttribute(0x1);
+                ZusiTcp3AttributeAbstract attrServerInfo = nodeAck.TryGetSubAttribute(0x2);
+                ZusiTcp3AttributeAbstract attrServerAccepted = nodeAck.TryGetSubAttribute(0x3);
+
+                if (attrServerVersion != null)
+                    ServerVersion = attrServerVersion.DataAsString;
+                if (attrServerInfo != null)
+                    ServerVerbindungsinfo = attrServerInfo.DataAsString;
+                if (attrServerAccepted == null)
+                {
+                    break;
+                }
+                byte accept = attrServerAccepted.DataAsByte;
+
+                if (accept != 0)
+                {
+                    PostExToHost(this,
+                        new ZusiTcpException(string.Format("Connection not Accepted, error code {0}.", accept)));
+                    break;
+                }
+                
+                //If Accepted send the requested data:
+                var pultData = new ZusiTcp3Node();
+                pultData.ID = 2;
+                ZusiTcp3Node needData = pultData.AddSubNode(0x3);
+                ZusiTcp3Node fstData = needData.AddSubNode(0xA); //At the moment only 0xA supported.
+                foreach (int dataID in _requestedData)
+                {
+                    fstData.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) dataID;
+                }
+                socket.SendKnoten(pultData);
             }
-            else
+                break;
+            case 2:
             {
-              PostExToHost(this, new ZusiTcpException(string.Format("Connection not Accepted, error code %1.", accept)));
+                ZusiTcp3Node nodeAck = data.TryGetSubNode(0x4);
+                ZusiTcp3Node nodeFst = data.TryGetSubNode(0xA);
+                if (nodeAck != null)
+                {
+                    ZusiTcp3AttributeAbstract attrDataAccepted = nodeAck.TryGetSubAttribute(0x1);
+                    if (attrDataAccepted != null)
+                    {
+                        byte accept = attrDataAccepted.DataAsByte;
+                        if (accept == 0)
+                            ConnectionState = ConnectionState.Connected;
+                        else
+                        {
+                            PostExToHost(this, new ZusiTcpException(string.Format("Data not Accepted, error code {0}.", accept)));
+                        }
+                    }
+                }
+
+                if (nodeFst != null)
+                {
+                    BeginHANDLE_Datas();
+                    foreach(ZusiTcp3AttributeAbstract cur in nodeFst.Attributes)
+                    {
+                        CommandEntry curCommand = _commands[cur.ID];
+
+                        MethodInfo handlerMethod;
+
+                        if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
+                        {
+                            handlerMethod = GetType().GetMethod(
+                                String.Format("HandleDATA_{0}", curCommand.Type),
+                                BindingFlags.Instance | BindingFlags.NonPublic,
+                                null,
+                                new[] {typeof (ZusiTcp3AttributeAbstract), typeof (int)},
+                                null);
+
+                            dataHandlers.Add(curCommand.Type, handlerMethod);
+                        }
+                        try
+                        {
+                            handlerMethod.Invoke(this, new object[] {cur, cur.ID});
+                        }
+                        catch
+                        {
+                            //Even a failed processing data is no longer a problem.
+                        }
+                    }
+                    foreach(ZusiTcp3Node cur in nodeFst.Nodes)
+                    {
+                        CommandEntry curCommand = _commands[cur.ID];
+
+                        MethodInfo handlerMethod;
+
+                        if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
+                        {
+                            handlerMethod = GetType().GetMethod(
+                                String.Format("HandleDATA_{0}", curCommand.Type),
+                                BindingFlags.Instance | BindingFlags.NonPublic,
+                                null,
+                                new[] {typeof (ZusiTcp3Node), typeof (int)},
+                                null);
+
+                            dataHandlers.Add(curCommand.Type, handlerMethod);
+                        }
+                        try
+                        {
+                            handlerMethod.Invoke(this, new object[] {cur, cur.ID});
+                        }
+                        catch
+                        {
+                            //Even a failed processing data is no longer a problem.
+                        }
+                    }
+                    EndHANDLE_Datas();
+                }
+
+
             }
-          }
+                break;
         }
-      }
-      else if (data.ID == 2) //Client Data
-      {
-        ZusiTcp3Node nodeAck = data.TryGetSubNode(0x4);
-        ZusiTcp3Node nodeFst = data.TryGetSubNode(0xA);
-        if (nodeAck != null)
-        {
-          ZusiTcp3AttributeAbstract attrDataAccepted = nodeAck.TryGetSubAttribute(0x1);
-          if (attrDataAccepted != null)
-          {
-            byte accept = attrDataAccepted.DataAsByte;
-            if (accept == 0)
-              ConnectionState = ConnectionState.Connected;
-            else
-            {
-              PostExToHost(this, new ZusiTcpException(string.Format("Data not Accepted, error code %1.", accept)));
-            }
-          }
-        }
-        if (nodeFst != null)
-        {
-          BeginHANDLE_Datas();
-          foreach(ZusiTcp3AttributeAbstract cur in nodeFst.Attributes)
-          {
-            CommandEntry curCommand = _commands[cur.ID];
-
-            MethodInfo handlerMethod;
-
-            if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
-            {
-              handlerMethod = GetType().GetMethod(
-                String.Format("HandleDATA_{0}", curCommand.Type),
-                BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
-                new[] {typeof (ZusiTcp3AttributeAbstract), typeof (int)},
-                null);
-
-              if (handlerMethod == null)
-              {
-              //Unknown Data Type - but this is no longer a problem
-              /*
-                throw new ZusiTcpException(
-                  String.Format(
-                    "Unknown type {0} for DATA ID {1} (\"{2}\") occured.", curCommand.Type, cur.ID, curCommand.Name));
-                    */
-              }
-
-//            Return-Type is no longer required.
-//              /* Make sure the handler method returns an int. */
-//              Debug.Assert(handlerMethod.ReturnType == typeof (int));
-
-              dataHandlers.Add(curCommand.Type, handlerMethod);
-            }
-            try
-            {
-              handlerMethod.Invoke(this, new object[] {cur, cur.ID});
-            }
-            catch
-            {
-              //Even a failed processing data is no longer a problem.
-            }
-          }
-          foreach(ZusiTcp3Node cur in nodeFst.Nodes)
-          {
-            CommandEntry curCommand = _commands[cur.ID];
-
-            MethodInfo handlerMethod;
-
-            if (!dataHandlers.TryGetValue(curCommand.Type, out handlerMethod))
-            {
-              handlerMethod = GetType().GetMethod(
-                String.Format("HandleDATA_{0}", curCommand.Type),
-                BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
-                new[] {typeof (ZusiTcp3Node), typeof (int)},
-                null);
-
-              if (handlerMethod == null)
-              {
-              //Unknown Data Type - but this is no longer a problem
-              /*
-                throw new ZusiTcpException(
-                  String.Format(
-                    "Unknown type {0} for DATA ID {1} (\"{2}\") occured.", curCommand.Type, cur.ID, curCommand.Name));
-                    */
-              }
-
-//            Return-Type is no longer required.
-//              /* Make sure the handler method returns an int. */
-//              Debug.Assert(handlerMethod.ReturnType == typeof (int));
-
-              dataHandlers.Add(curCommand.Type, handlerMethod);
-            }
-            try
-            {
-              handlerMethod.Invoke(this, new object[] {cur, cur.ID});
-            }
-            catch
-            {
-              //Even a failed processing data is no longer a problem.
-            }
-          }
-          EndHANDLE_Datas();
-        }
-
-
-      }
     }
   }
 }
