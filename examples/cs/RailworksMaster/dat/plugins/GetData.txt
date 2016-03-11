@@ -1,0 +1,36 @@
+Speedo type:KPH
+Current Speed:66.1
+ThrottleType:ThrottleAndBrake
+ThrottleMin:0
+ThrottleMax:1
+ThrottleType:ThrottleAndBrake
+ThrottleMin:0
+ThrottleMax:1
+Throttle:78
+TrainBrakeControl:0
+TrainBrakeControlMin:0
+TrainBrakeControlMax:1
+DynamicBrake :0
+DynamicBrakeMin:0
+DynamicBrakeMax:1
+EmergencyBrake:0
+Reverser:100
+ReverserMin:-1
+ReverserMax:1
+Ammeter:319
+RPM:0
+AWS:0
+AWSWarnCount:0
+BrakePipePressureBAR:5.0
+MainReservoirPressureBAR:9.7
+Current Speed Limit:80
+Next Speed Limit:80
+Next Speed Limit Distance:0.73
+Signal Type:1
+Signal State:1
+Signal Distance:1.80
+Signal Aspect:-1
+DoorsOpenCloseRight:0
+DoorsOpenCloseLeft:0
+Current Time = :52.430736541748
+Clock:2014-12-04T20.51.14.6970377

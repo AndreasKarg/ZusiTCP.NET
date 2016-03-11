@@ -22,28 +22,35 @@
  * 
  *************************************************************************/
 
+#region Using
+
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Resources;
+using System.Runtime.InteropServices;
+
+#endregion
 
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
+
 [assembly: AssemblyTitle("Zusi-Datenausgabe")]
 [assembly: AssemblyDescription("Schnittstelle zur Zusi 2.4-Datenausgabe per TCP")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Andreas Karg, München")]
 [assembly: AssemblyProduct("Zusi-Datenausgabe")]
-[assembly: AssemblyCopyright("Copyright © Andreas Karg 2009-2013")]
+[assembly: AssemblyCopyright("Copyright © Andreas Karg 2009-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Durch Festlegen von ComVisible auf "false" werden die Typen in dieser Assembly unsichtbar 
 // für COM-Komponenten. Wenn Sie auf einen Typ in dieser Assembly von 
 // COM zugreifen müssen, legen Sie das ComVisible-Attribut für diesen Typ auf "true" fest.
+
 [assembly: ComVisible(false)]
 
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
+
 [assembly: Guid("76d6b84f-1a2f-4b53-ae8e-d1d3c98f651e")]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
@@ -56,6 +63,7 @@ using System.Resources;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2")]
-[assembly: AssemblyFileVersion("1.2")]
-[assembly: NeutralResourcesLanguageAttribute("de")]
+
+[assembly: AssemblyVersion("1.2.0.1")]
+[assembly: AssemblyFileVersion("1.2.0.1")]
+[assembly: NeutralResourcesLanguage("de")]

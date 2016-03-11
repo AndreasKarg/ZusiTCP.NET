@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <TCPCommands xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://andik.g3th.net/commandset_schema.xsd">
   <Command ID="2561" Name="Geschwindigkeit" Type="Single" />
   <Command ID="2562" Name="Druck Hauptluftleitung" Type="Single" />
@@ -21,8 +21,8 @@
   <Command ID="2580" Name="LM PZB 1000Hz" Type="BoolAsSingle" />
   <Command ID="2581" Name="LM PZB 500Hz" Type="BoolAsSingle" />
   <Command ID="2582" Name="LM PZB Befehl" Type="BoolAsSingle" />
-  <Command ID="2583" Name="LM PZB Zugart U" Type="BoolAsSingle" />
-  <Command ID="2584" Name="LM PZB Zugart M" Type="BoolAsSingle" />
+  <Command ID="2583" Name="LM PZB Zugart U" Type="BoolAndSingle" />
+  <Command ID="2584" Name="LM PZB Zugart M" Type="BoolAndSingle" />
   <Command ID="2585" Name="LM PZB Zugart O" Type="BoolAsSingle" />
   <Command ID="2586" Name="LM LZB H" Type="BoolAsSingle" />
   <Command ID="2587" Name="LM LZB G" Type="BoolAsSingle" />
@@ -100,8 +100,9 @@
   <Command ID="2661" Name="Aktuelle Zielgeschwindigkeit" Type="Single" />
   <Command ID="2662" Name="Zielweg" Type="Single" />
   <Command ID="2663" Name="Abstand nächster Reisezughalt" Type="Single" />
-  <Command ID="2664" Name="Name nächster Reisezughalt" Type="Single" />
+  <Command ID="2664" Name="Name nächster Reisezughalt" Type="String" />
   <Command ID="2665" Name="Planzeit nächster Reisezughalt" Type="DateTime" />
   <Command ID="2666" Name="PZB restriktiv" Type="BoolAsInt" />
-  <Command ID="2667" Name="PZB-Zwansgbremsung" Type="BoolAsInt" />
+  <Command ID="2667" Name="PZB-Zwangsbremsung" Type="BoolAsInt" />
+  <Command ID="2680" Name="Oberstrom (nicht unter Zusi 2)" Type="Single" />
 </TCPCommands>

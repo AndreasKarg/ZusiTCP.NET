@@ -31,7 +31,7 @@ Public Class Form1
                 System.Windows.Forms.MessageBox.Show(String.Format("An error occured when trying to connect: {0}", ex.Message))
 
                 ' ... reset the connection by explicitly calling Disconnect()
-                MyTCPConnection.Disconnnect()
+                MyTCPConnection.Disconnect()
 
                 ' ... and then change the button label to "Connect".
                 BtnConnect.Text = "Connect"
@@ -40,7 +40,7 @@ Public Class Form1
             ' If we're currently connected or the connection fell into an error state...
         Else
             ' ... reset the connection by explicitly calling Disconnect()
-            MyTCPConnection.Disconnnect()
+            MyTCPConnection.Disconnect()
 
             ' ... and then change the button label to "Connect".
             BtnConnect.Text = "Connect"
