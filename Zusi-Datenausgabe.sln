@@ -4,7 +4,7 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zusi-Datenausgabe", "Zusi-Datenausgabe.csproj", "{F99B982E-EB0C-44A8-A9E1-C8103795AF41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterfaceTests", "..\ZusiTcpInterfaceTests\ZusiTcpInterfaceTests.csproj", "{3A42EE34-D274-4AB7-8E5C-4EFBDFE40CFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterfaceTests", "ZusiTcpInterfaceTests\ZusiTcpInterfaceTests.csproj", "{3A42EE34-D274-4AB7-8E5C-4EFBDFE40CFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterface", "ZusiTcpInterface\ZusiTcpInterface.csproj", "{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}"
 EndProject

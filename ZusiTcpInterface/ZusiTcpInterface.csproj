@@ -46,7 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientType.cs" />
+    <Compile Include="HandShaker.cs" />
     <Compile Include="HelloPacket.cs" />
+    <Compile Include="IReadableStream.cs" />
+    <Compile Include="IWritableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

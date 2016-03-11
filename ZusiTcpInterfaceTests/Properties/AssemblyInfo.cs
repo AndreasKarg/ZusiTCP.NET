@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ZusiTcpInterface")]
+[assembly: AssemblyTitle("ZusiTcpInterfaceTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ZusiTcpInterface")]
+[assembly: AssemblyProduct("ZusiTcpInterfaceTests")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e5654fa2-de12-447c-a25d-bc5a181f83ec")]
+[assembly: Guid("4d596eb1-0acb-49f7-91e5-4f89f98d9413")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,7 +34,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-// Make internal classes testable
-[assembly: InternalsVisibleTo("ZusiTcpInterfaceTests")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
