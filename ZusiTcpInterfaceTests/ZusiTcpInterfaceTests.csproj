@@ -59,7 +59,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AckHelloPacketTests.cs" />
     <Compile Include="HelloPacketTests.cs" />
+    <Compile Include="MockReadableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HandShakerTests.cs" />
   </ItemGroup>

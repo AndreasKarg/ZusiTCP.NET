@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AckHelloPacket.cs" />
     <Compile Include="ClientType.cs" />
     <Compile Include="HandShaker.cs" />
     <Compile Include="HelloPacket.cs" />

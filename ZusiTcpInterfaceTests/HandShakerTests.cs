@@ -13,20 +13,13 @@ namespace ZusiTcpInterfaceTests
     private readonly HandShaker _handShaker;
 
     private IEnumerable<byte> _writtenData = Enumerable.Empty<byte>();
+    private readonly MockReadableStream _mockReadableStream = new MockReadableStream();
 
     public HandShakerTests()
     {
-      var readableStream = SetupMockReadableStream();
       var writableStream = SetupMockWritableStream();
 
-      _handShaker = new HandShaker(readableStream, writableStream);
-    }
-
-    private static IReadableStream SetupMockReadableStream()
-    {
-      var mockReadableStream = new Mock<IReadableStream>();
-
-      return mockReadableStream.Object;
+      _handShaker = new HandShaker(_mockReadableStream.Stream, writableStream);
     }
 
     private IWritableStream SetupMockWritableStream()
@@ -60,7 +53,7 @@ namespace ZusiTcpInterfaceTests
     public void Throws_exception_when_connection_is_refused()
     {
       // Given
-       
+      Assert.Inconclusive("Lacking AckHello packet");
 
       // When
       
