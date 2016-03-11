@@ -143,7 +143,7 @@ namespace Zusi_Datenausgabe
   public enum DoorState
   {
     /// <summary>
-    ///   Doors are released and can be opened when the train stops.
+    ///   Doors are released and can be opened when the train stops. (Not in Zusi 3, equal value to Opening)
     /// </summary>
     Released = 0,
 
@@ -153,7 +153,7 @@ namespace Zusi_Datenausgabe
     Open = 1,
 
     /// <summary>
-    ///   The conductor/PA system is announcing the imminent departure of the train.
+    ///   The conductor/PA system is announcing the imminent departure of the train. (Not in Zusi 3)
     /// </summary>
     Announcement = 2,
 
@@ -169,12 +169,12 @@ namespace Zusi_Datenausgabe
     Closing = 4,
 
     /// <summary>
-    ///   The doors are closed but the train is not yet allowed to depart.
+    ///   The doors are closed but the train is not yet allowed to depart. (In Zusi 3: The doors are closed only.)
     /// </summary>
     Closed = 5,
 
     /// <summary>
-    ///   The train is allowed to depart.
+    ///   The train is allowed to depart. (Not in Zusi 3)
     /// </summary>
     Depart = 6,
 
@@ -182,6 +182,17 @@ namespace Zusi_Datenausgabe
     ///   The doors are closed and locked.
     /// </summary>
     Locked = 7,
+
+    /// <summary>
+    ///   Doors are in the process of opening. (Not in Zusi 2, equal value to Released)
+    /// </summary>
+    Opening = 0,
+
+    /// <summary>
+    ///   Door system has detected malfunction. (Not in Zusi 2)
+    /// </summary>
+    Error = -2,
+
   }
 
   /// <summary>
@@ -399,6 +410,31 @@ namespace Zusi_Datenausgabe
     /// </summary>
     Toogle = -1
   }
+  
+  public struct Notbremssystem
+  {
+    public string NotbremssystemName {get; set;} //01
+    //Status (Complex)
+    public bool Ready {get; set;} //03
+    public bool Notbremsung {get; set;} //04
+    public bool IsTesting {get; set;} //05
+  }
+
+  public struct Sifa
+  {
+    public enum SifaHornStatus
+    {
+      None = 0,
+      Reminder = 1,
+      Emergency = 2,
+    }
+    public string SifaName {get; set;} //01
+    public bool OpticalReminderOn {get; set;} //02
+    public SifaHornStatus HornStatus {get; set;} //03
+    public bool HauptschalterSifa {get; set;} //04
+    public bool StoerschalterSifa {get; set;} //05
+    public bool AbsperrhahnOffen {get; set;} //06
+  }
 
   public struct Zugsicherung
   {
@@ -471,4 +507,82 @@ namespace Zusi_Datenausgabe
     public IndusiState StateIndusi {get; set;}
   }
 
+  public struct DoorSystem
+  {
+    public static byte DoorStateToByte(DoorState value)
+    {
+      switch (value)
+      {
+      case DoorState.Closed:
+        return 0;
+      case DoorState.Opening:
+        return 1;
+      case DoorState.Open:
+        return 2;
+      case DoorState.ReadyToClose:
+        return 3;
+      case DoorState.Closing:
+        return 4;
+      case DoorState.Error:
+        return 5;
+      case DoorState.Locked: //ToDo: Same meaning as Locked?
+        return 6;
+      default:
+        throw new System.ArgumentOutOfRangeException();
+      }
+    }
+    public static DoorState DoorStateFromByte(byte value)
+    {
+      switch (value)
+      {
+      case 0:
+        return DoorState.Closed;
+      case 1:
+        return DoorState.Opening;
+      case 2:
+        return DoorState.Open;
+      case 3:
+        return DoorState.ReadyToClose;
+      case 4:
+        return DoorState.Closing;
+      case 5:
+        return DoorState.Error;
+      case 6:
+        return DoorState.Locked; //ToDo: Same meaning as Locked?
+      default:
+        throw new System.ArgumentOutOfRangeException();
+      }
+    }
+    public string DoorSystemName {get; set;} //01
+    public DoorState StatusLeft {get; set;} //02
+    public DoorState StatusRight {get; set;} //03
+    public bool MotorLocked {get; set;} //04
+    public bool Schalter_UnlockDoorsLeft {get; set;} //05, 1,2
+    public bool Schalter_UnlockDoorsRight {get; set;} //05, 2,3
+    public bool LM_DoorsLeft {get; set;} //06
+    public bool LM_DoorsRight {get; set;} //07
+    //Status => Komplex
+    public bool LM_DoorsForce {get; set;} //0B
+    //Status => Komplex
+    public bool LM_DoorsBoth {get; set;} //0C
+    
+    public DoorState Zusi2State
+    {
+      get
+      {
+        DoorState state1 = DoorStateFromByte(System.Math.Max(
+            DoorStateToByte(StatusLeft), DoorStateToByte(StatusRight)));
+        if (state1 == DoorState.Opening)
+          state1 = DoorState.Open;
+        if (state1 == DoorState.Error)
+          state1 = DoorState.Open;
+        if ((state1 == DoorState.Closed) && Schalter_UnlockDoorsLeft && Schalter_UnlockDoorsRight)
+          state1 = DoorState.Released;
+        return state1;
+      }
+    }
+  }
+
+
 }
+

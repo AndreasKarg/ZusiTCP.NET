@@ -33,7 +33,7 @@
   <Command ID="0x001F" Name="LM R-Bremse" Type="BoolAsSingle" />
   <Command ID="0x0020" Name="LM Hochabbremsung" Type="BoolAsSingle" />
   <Command ID="0x0021" Name="LM Schnellbremsung" Type="BoolAsSingle" />
-  <!--<Command ID="0x0022" Name="LM Notbremsung" Type="BoolAsSingle" /> => Spezialstruktur-->
+  <Command ID="0x0022" Name="Notbremssystem" Type="Notbremssystem" />
   <Command ID="0x0023" Name="Uhrzeit Digital" Type="TimeAsSingle" /> <!--Wird mit dem Datum zusammengefasst-->
   <Command ID="0x0024" Name="LM Drehzahlverstellung" Type="BoolAsSingle" />
   <Command ID="0x0025" Name="LM Fahrtrichtung vor" Type="BoolAsSingle" />
@@ -77,10 +77,10 @@ Zug ist entgleist
   <Command ID="0x0061" Name="Strecken-Km" Type="Single" />
   <Command ID="0x0062" Name="Motorstrom" Type="Single" />
   <Command ID="0x0063" Name="Motorspannung" Type="Single" />
-
-Spezial: Sifa, Zugsicherung, Türen
+  <Command ID="0x0064" Name="Sifa" Type="Sifa" />
   <Command ID="0x0065" Name="Zugsicherung" Type="Zugsicherung" />
-
+  <Command ID="0x0066" Name="Türen" Type="DoorSystem" />
+  
 Individuell 21...40
 
 Stueruwagen7..22

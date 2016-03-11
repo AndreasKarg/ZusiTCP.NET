@@ -34,7 +34,7 @@ using System.Threading;
 namespace Zusi_Datenausgabe
 {
   /// <summary>
-  ///   Represents a ZusiTcpClientAbstract with predefined DataTypes Single, Int, String, ByteLengthString, 
+  ///   Represents a ZusiTcpClientAbstract with predefined DataTypes Single, Int, String, ByteLengthString,
   ///   NullString, DateTime, BoolAsSingle, BoolAndSingle, IntAsSingle, BoolAsInt, DoorsAsInt, PZBAsInt and BrakeAsInt.
   /// </summary>
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -200,26 +200,6 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Reads incoming door state data that is sent as an Int value by Zusi.
-    /// </summary>
-    /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ExtractedValue<DoorState> ReadDoorsAsInt(ZusiTcp3AttributeAbstract input)
-    {
-      ExtractedValue<Int32> temp = ReadInt(input);
-      return new ExtractedValue<DoorState> (temp.ExtractedLength, (DoorState) temp.ExtractedData);
-    }
-
-    /// <summary>
-    ///   Reads incoming PZB status information that is sent as Int values by Zusi.
-    /// </summary>
-    /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ExtractedValue<PZBSystem> ReadPZBAsInt(ZusiTcp3AttributeAbstract input)
-    {
-      ExtractedValue<Int32> temp = ReadInt(input);
-      return new ExtractedValue<PZBSystem> (temp.ExtractedLength, (PZBSystem) temp.ExtractedData);
-    }
-
-    /// <summary>
     ///   Reads incoming brake information that is sent as Int values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
@@ -258,11 +238,66 @@ namespace Zusi_Datenausgabe
       return new ExtractedValue<BrakeConfiguration> (temp.ExtractedLength, result);
     }
 
+    Notbremssystem bufferNotbremssystem;
+    /// <summary>
+    ///   Reads incoming Notbremssystem status information.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    protected ExtractedValue<Notbremssystem> ReadNotbremssystem(ZusiTcp3Node input)
+    {
+      ZusiTcp3AttributeAbstract attrNotbremssystemName = input.TryGetSubAttribute(0x1);
+      //Status
+      ZusiTcp3AttributeAbstract attrReady = input.TryGetSubAttribute(0x3);
+      ZusiTcp3AttributeAbstract attrNotbremsung = input.TryGetSubAttribute(0x4);
+      ZusiTcp3AttributeAbstract attrIsTesting = input.TryGetSubAttribute(0x5);
+
+      if (attrNotbremssystemName != null)
+        bufferNotbremssystem.NotbremssystemName = attrNotbremssystemName.DataAsString;
+      if (attrReady != null)
+        bufferNotbremssystem.Ready = (attrReady.DataAsByte > 1);
+      if (attrNotbremsung != null)
+        bufferNotbremssystem.Notbremsung = (attrNotbremsung.DataAsByte > 1);
+      if (attrIsTesting != null)
+        bufferNotbremssystem.IsTesting = (attrIsTesting.DataAsByte > 1);
+
+      return new ExtractedValue<Notbremssystem> (0, bufferNotbremssystem);
+    }
+
+    Sifa bufferSifa;
+    /// <summary>
+    ///   Reads incoming Sifa status information.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    protected ExtractedValue<Sifa> ReadSifa(ZusiTcp3Node input)
+    {
+      ZusiTcp3AttributeAbstract attrSifaName = input.TryGetSubAttribute(0x1);
+      ZusiTcp3AttributeAbstract attrOpticalReminderOn = input.TryGetSubAttribute(0x2);
+      ZusiTcp3AttributeAbstract attrHornStatus = input.TryGetSubAttribute(0x3);
+      ZusiTcp3AttributeAbstract attrHauptschalterSifa = input.TryGetSubAttribute(0x4);
+      ZusiTcp3AttributeAbstract attrStoerschalterSifa = input.TryGetSubAttribute(0x5);
+      ZusiTcp3AttributeAbstract attrAbsperrhahnOffen = input.TryGetSubAttribute(0x6);
+      if (attrSifaName != null)
+        bufferSifa.SifaName = attrSifaName.DataAsString;
+      if (attrOpticalReminderOn != null)
+        bufferSifa.OpticalReminderOn = (attrOpticalReminderOn.DataAsByte > 0);
+      if (attrHornStatus != null)
+        bufferSifa.HornStatus = (Sifa.SifaHornStatus) attrHornStatus.DataAsByte;
+      if (attrStoerschalterSifa != null)
+        bufferSifa.HauptschalterSifa = (attrHauptschalterSifa.DataAsByte > 1);
+      if (attrStoerschalterSifa != null)
+        bufferSifa.StoerschalterSifa = (attrStoerschalterSifa.DataAsByte > 1);
+      if (attrAbsperrhahnOffen != null)
+        bufferSifa.AbsperrhahnOffen = (attrAbsperrhahnOffen.DataAsByte > 1);
+
+      return new ExtractedValue<Sifa> (0, bufferSifa);
+    }
+
+
     Zugsicherung bufferZugsicherung;
     Zugsicherung.IndusiConfig bufferIndusiConfig;
     Zugsicherung.IndusiState bufferIndusiState;
     /// <summary>
-    ///   Reads incoming PZB status information that is sent as Int values by Zusi.
+    ///   Reads incoming PZB status information.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     protected ExtractedValue<Zugsicherung> ReadZugsicherung(ZusiTcp3Node input)
@@ -408,6 +443,47 @@ namespace Zusi_Datenausgabe
       return d;
     }
 
+    DoorSystem bufferDoorSystem;
+    /// <summary>
+    ///   Reads incoming DoorSystem status information.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    protected ExtractedValue<DoorSystem> ReadDoorSystem(ZusiTcp3Node input)
+    {
+      ZusiTcp3AttributeAbstract attrDoorSystemName = input.TryGetSubAttribute(0x1);
+      ZusiTcp3AttributeAbstract attrStatusLeft = input.TryGetSubAttribute(0x2);
+      ZusiTcp3AttributeAbstract attrStatusRight = input.TryGetSubAttribute(0x3);
+      ZusiTcp3AttributeAbstract attrMotorLocked = input.TryGetSubAttribute(0x4);
+      ZusiTcp3AttributeAbstract attrSchalterUnlockDoors = input.TryGetSubAttribute(0x5);
+      ZusiTcp3AttributeAbstract attrLMDoorsLeft = input.TryGetSubAttribute(0x6);
+      ZusiTcp3AttributeAbstract attrLMDoorsRight = input.TryGetSubAttribute(0x7);
+      ZusiTcp3AttributeAbstract attrLMDoorsForce = input.TryGetSubAttribute(0xB);
+      ZusiTcp3AttributeAbstract attrLMDoorsBoth = input.TryGetSubAttribute(0xC);
+
+      if (attrDoorSystemName != null)
+        bufferDoorSystem.DoorSystemName = attrDoorSystemName.DataAsString;
+      if (attrStatusLeft != null)
+        bufferDoorSystem.StatusLeft = DoorSystem.DoorStateFromByte(attrStatusLeft.DataAsByte);
+      if (attrStatusRight != null)
+        bufferDoorSystem.StatusRight = DoorSystem.DoorStateFromByte(attrStatusRight.DataAsByte);
+      if (attrMotorLocked != null)
+        bufferDoorSystem.MotorLocked = (attrMotorLocked.DataAsByte > 0);
+      if (attrSchalterUnlockDoors != null)
+        bufferDoorSystem.Schalter_UnlockDoorsLeft = ((attrSchalterUnlockDoors.DataAsByte % 2) > 0);
+      if (attrSchalterUnlockDoors != null)
+        bufferDoorSystem.Schalter_UnlockDoorsRight = (((attrSchalterUnlockDoors.DataAsByte / 2) % 2) > 0);
+      if (attrLMDoorsLeft != null)
+        bufferDoorSystem.LM_DoorsLeft = (attrLMDoorsLeft.DataAsByte > 0);
+      if (attrLMDoorsRight != null)
+        bufferDoorSystem.LM_DoorsRight = (attrLMDoorsRight.DataAsByte > 0);
+      if (attrLMDoorsForce != null)
+        bufferDoorSystem.LM_DoorsForce = (attrLMDoorsForce.DataAsByte > 0);
+      if (attrLMDoorsBoth != null)
+        bufferDoorSystem.LM_DoorsBoth = (attrLMDoorsBoth.DataAsByte > 0);
+
+      return new ExtractedValue<DoorSystem> (0, bufferDoorSystem);
+    }
+
     /// <summary>
     ///   Sends a texture to the simulator.
     /// </summary>
@@ -537,7 +613,7 @@ namespace Zusi_Datenausgabe
       var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
       ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
-      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0x9);
+      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0xA);
       zeitrafferNode.AddSubAttribute(0x1).DataAsSingle = value;
       socket.SendKnoten(pultData);
     }
@@ -550,7 +626,7 @@ namespace Zusi_Datenausgabe
       var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
       ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
-      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0xA);
+      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0x9);
       zeitrafferNode.AddSubAttribute(0x1).DataAsSingle = value;
       socket.SendKnoten(pultData);
     }
