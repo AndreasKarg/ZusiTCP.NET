@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using MiscUtil.Conversion;
 
-namespace ZusiTcpInterface
+namespace ZusiTcpInterface.Zusi2
 {
   internal struct AckHelloPacket
   {

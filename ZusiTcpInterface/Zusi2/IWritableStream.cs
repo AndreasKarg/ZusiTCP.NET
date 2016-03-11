@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ZusiTcpInterface
+namespace ZusiTcpInterface.Zusi2
 {
   internal interface IWritableStream
   {

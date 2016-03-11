@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZusiTcpInterface
+namespace ZusiTcpInterface.Zusi2
 {
   internal class HandShaker
   {

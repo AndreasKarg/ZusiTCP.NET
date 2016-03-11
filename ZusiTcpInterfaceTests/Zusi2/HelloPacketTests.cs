@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZusiTcpInterface;
+using ZusiTcpInterface.Zusi2;
 
-namespace ZusiTcpInterfaceTests
+namespace ZusiTcpInterfaceTests.Zusi2
 {
   [TestClass]
   public class HelloPacketTests

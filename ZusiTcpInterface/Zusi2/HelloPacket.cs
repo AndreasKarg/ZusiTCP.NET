@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using MiscUtil.Conversion;
 
-namespace ZusiTcpInterface
+namespace ZusiTcpInterface.Zusi2
 {
   public struct HelloPacket
   {

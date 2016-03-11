@@ -1,4 +1,4 @@
-namespace ZusiTcpInterface
+namespace ZusiTcpInterface.Zusi2
 {
   internal interface IReadableStream
   {

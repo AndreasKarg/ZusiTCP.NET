@@ -1,4 +1,4 @@
-﻿namespace ZusiTcpInterface
+﻿namespace ZusiTcpInterface.Zusi2
 {
   public enum ClientType
   {

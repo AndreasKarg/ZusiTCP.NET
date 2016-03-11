@@ -45,12 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AckHelloPacket.cs" />
-    <Compile Include="ClientType.cs" />
-    <Compile Include="HandShaker.cs" />
-    <Compile Include="HelloPacket.cs" />
-    <Compile Include="IReadableStream.cs" />
-    <Compile Include="IWritableStream.cs" />
+    <Compile Include="Zusi2\AckHelloPacket.cs" />
+    <Compile Include="Zusi2\ClientType.cs" />
+    <Compile Include="Zusi2\HandShaker.cs" />
+    <Compile Include="Zusi2\HelloPacket.cs" />
+    <Compile Include="Zusi2\IReadableStream.cs" />
+    <Compile Include="Zusi2\IWritableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

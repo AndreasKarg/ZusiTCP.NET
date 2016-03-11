@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Moq;
-using ZusiTcpInterface;
+using ZusiTcpInterface.Zusi2;
 
-namespace ZusiTcpInterfaceTests
+namespace ZusiTcpInterfaceTests.Zusi2
 {
   internal class MockReadableStream
   {
