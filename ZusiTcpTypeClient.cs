@@ -73,7 +73,7 @@ namespace Zusi_Datenausgabe
   ///   </para>
   ///   Notice that ZusiTcpConn implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
-  public class ZusiTcpTypeClient : ZusiTcpTypeClientAbstract
+  public class ZusiTcpTypeClient : ZusiTcpClientAbstract
   {
     /// <summary>
     ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
@@ -202,7 +202,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_Single(IBinaryReader input, int id)
     {
-      var data = ReadSingle(input);
+      var data = PacketDeserialiser.ReadSingle(input);
       PostToHost(FloatReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -214,7 +214,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_Int(IBinaryReader input, int id)
     {
-      var data = ReadInt(input);
+      var data = PacketDeserialiser.ReadInt(input);
       PostToHost(IntReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -226,7 +226,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_String(IBinaryReader input, int id)
     {
-      var data = ReadString(input);
+      var data = PacketDeserialiser.ReadString(input);
       PostToHost(StringReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -238,7 +238,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_ByteLengthString(IBinaryReader input, int id)
     {
-      var data = ReadByteLengthString(input);
+      var data = PacketDeserialiser.ReadByteLengthString(input);
       PostToHost(StringReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -250,7 +250,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_NullString(IBinaryReader input, int id)
     {
-      var data = ReadNullString(input);
+      var data = PacketDeserialiser.ReadNullString(input);
       PostToHost(StringReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -262,7 +262,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_DateTime(IBinaryReader input, int id)
     {
-      var data = ReadDateTime(input);
+      var data = PacketDeserialiser.ReadDateTime(input);
       PostToHost(DateTimeReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -274,7 +274,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BoolAsSingle(IBinaryReader input, int id)
     {
-      var data = ReadBoolAsSingle(input);
+      var data = PacketDeserialiser.ReadBoolAsSingle(input);
       PostToHost(BoolReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -287,7 +287,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BoolAndSingle(IBinaryReader input, int id)
     {
-      var data = ReadBoolAndSingle(input);
+      var data = PacketDeserialiser.ReadBoolAndSingle(input);
       PostToHost(BoolReceived, id, data.ExtractedData);
       PostToHost(FloatReceived, id, data.PZ80Data);
       return data.ExtractedLength;
@@ -300,7 +300,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_IntAsSingle(IBinaryReader input, int id)
     {
-      var data = ReadIntAsSingle(input);
+      var data = PacketDeserialiser.ReadIntAsSingle(input);
       PostToHost(IntReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -312,7 +312,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BoolAsInt(IBinaryReader input, int id)
     {
-      var data = ReadBoolAsInt(input);
+      var data = PacketDeserialiser.ReadBoolAsInt(input);
       PostToHost(BoolReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -324,7 +324,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_DoorsAsInt(IBinaryReader input, int id)
     {
-      var data = ReadDoorsAsInt(input);
+      var data = PacketDeserialiser.ReadDoorsAsInt(input);
       PostToHost(DoorsReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -336,7 +336,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_PZBAsInt(IBinaryReader input, int id)
     {
-      var data = ReadPZBAsInt(input);
+      var data = PacketDeserialiser.ReadPZBAsInt(input);
       PostToHost(PZBReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
@@ -348,7 +348,7 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     protected int HandleDATA_BrakesAsInt(IBinaryReader input, int id)
     {
-      var data = ReadBrakesAsInt(input);
+      var data = PacketDeserialiser.ReadBrakesAsInt(input);
       PostToHost(BrakeConfigReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }

@@ -1,17 +1,17 @@
 using System.Linq;
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.Zusi3
 {
   /// <summary>
   ///   Represents a node for all TCPconnections based on the Zusi-protocol.
   /// </summary>
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public class ZusiTcp3Node
+  public class Node
   {
-    public ZusiTcp3Node()
+    public Node()
     {
       Attributes = new System.Collections.Generic.List<ZusiTcp3AttributeAbstract>();
-      Nodes = new System.Collections.Generic.List<ZusiTcp3Node>();
+      Nodes = new System.Collections.Generic.List<Node>();
       IsReading = false;
     }
     /// <summary>Specifys the purpose of all subelements</summary>
@@ -19,7 +19,7 @@ namespace Zusi_Datenausgabe
     /// <summary>Contains all child attributes</summary>
     public System.Collections.Generic.List<ZusiTcp3AttributeAbstract> Attributes {private set; get;}
     /// <summary>Contains all child nodes</summary>
-    public System.Collections.Generic.List<ZusiTcp3Node> Nodes {private set; get;}
+    public System.Collections.Generic.List<Node> Nodes {private set; get;}
     /// <summary>true if the last <see cref="Read" /> did not finish.</summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
     public bool IsReading {private set; get;}
@@ -28,19 +28,19 @@ namespace Zusi_Datenausgabe
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
     private System.Int32 CurrentAttributeLength {set; get;}
 
-    public ZusiTcp3Node TryGetSubNode(System.Int16 id)
+    public Node TryGetSubNode(System.Int16 id)
     {
-        return Nodes.FirstOrDefault(k1 => k1.ID == id);
+      return Nodes.FirstOrDefault(k1 => k1.ID == id);
     }
 
-      public ZusiTcp3AttributeAbstract TryGetSubAttribute(System.Int16 id)
-      {
-          return Attributes.FirstOrDefault(a1 => a1.ID == id);
-      }
-
-      public ZusiTcp3Node AddSubNode(System.Int16 id)
+    public ZusiTcp3AttributeAbstract TryGetSubAttribute(System.Int16 id)
     {
-      var value = new ZusiTcp3Node();
+      return Attributes.FirstOrDefault(a1 => a1.ID == id);
+    }
+
+    public Node AddSubNode(System.Int16 id)
+    {
+      var value = new Node();
       value.ID = id;
       Nodes.Add(value);
       return value;
@@ -55,19 +55,19 @@ namespace Zusi_Datenausgabe
 
     public bool ReadTopNode(byte[] Buffer, ref int Offset, ref int BufferLength)
     {
-        if (IsReading) return Read(Buffer, ref Offset, ref BufferLength);
+      if (IsReading) return Read(Buffer, ref Offset, ref BufferLength);
 
-        if (BufferLength < 4)
-            return false;
-        System.Int64 currentLength2 = Buffer[Offset] + 0x100 * Buffer[Offset + 1] + 0x10000 * Buffer[Offset + 2] + ((System.Int64) 0x1000000) * Buffer[Offset + 3];
-        if (currentLength2 > System.Int32.MaxValue)
-            currentLength2 -= 0x100000000;
-        System.Int32 currentLength = (System.Int32) currentLength2;
-        if (currentLength != 0)
-            throw new System.IO.InvalidDataException();
-        Offset += 4;
-        BufferLength -= 4;
-        return Read(Buffer, ref Offset, ref BufferLength);
+      if (BufferLength < 4)
+        return false;
+      System.Int64 currentLength2 = Buffer[Offset] + 0x100 * Buffer[Offset + 1] + 0x10000 * Buffer[Offset + 2] + ((System.Int64) 0x1000000) * Buffer[Offset + 3];
+      if (currentLength2 > System.Int32.MaxValue)
+        currentLength2 -= 0x100000000;
+      System.Int32 currentLength = (System.Int32) currentLength2;
+      if (currentLength != 0)
+        throw new System.IO.InvalidDataException();
+      Offset += 4;
+      BufferLength -= 4;
+      return Read(Buffer, ref Offset, ref BufferLength);
     }
 
     public bool Read(byte[] Buffer, ref int Offset, ref int BufferLength)
@@ -88,7 +88,7 @@ namespace Zusi_Datenausgabe
         Offset += 2;
         BufferLength -= 2;
       }
-      foreach (ZusiTcp3Node k1 in Nodes)
+      foreach (Node k1 in Nodes)
       {
         if (k1.IsReading)
         {
@@ -116,10 +116,10 @@ namespace Zusi_Datenausgabe
         BufferLength -= 4;
         if (currentLength == 0)
         {
-          var knoten1 = new ZusiTcp3Node();
+          var knoten1 = new Node();
           Nodes.Add(knoten1);
           if (!knoten1.Read(Buffer, ref Offset, ref BufferLength))
-             return false;
+            return false;
         }
         else if (currentLength == -1)
         {
@@ -141,29 +141,32 @@ namespace Zusi_Datenausgabe
     }
     public void Write(System.IO.Stream Output)
     {
-        byte[] outp = System.BitConverter.GetBytes((System.Int32) 0);
-        Output.Write(outp, 0, 4);
-        outp = System.BitConverter.GetBytes((System.Int16) ID);
-        if (!System.BitConverter.IsLittleEndian)
-        {
-            byte b0 = outp[1];
-            outp[1] = outp[0];
-            outp[0] = b0;
-        }
-        Output.Write(outp, 0, 2);
-        foreach (ZusiTcp3Node k1 in Nodes)
-        {
-            k1.Write(Output);
-        }
-        foreach (ZusiTcp3AttributeAbstract a1 in Attributes)
-        {
-            a1.Write(Output);
-        }
-        outp = System.BitConverter.GetBytes((System.Int32) (-1));
-        Output.Write(outp, 0, 4);
+      byte[] outp = System.BitConverter.GetBytes((System.Int32) 0);
+      Output.Write(outp, 0, 4);
+      outp = System.BitConverter.GetBytes((System.Int16) ID);
+      if (!System.BitConverter.IsLittleEndian)
+      {
+        byte b0 = outp[1];
+        outp[1] = outp[0];
+        outp[0] = b0;
+      }
+      Output.Write(outp, 0, 2);
+      foreach (Node k1 in Nodes)
+      {
+        k1.Write(Output);
+      }
+      foreach (ZusiTcp3AttributeAbstract a1 in Attributes)
+      {
+        a1.Write(Output);
+      }
+      outp = System.BitConverter.GetBytes((System.Int32) (-1));
+      Output.Write(outp, 0, 4);
     }
   }
+}
 
+namespace Zusi_Datenausgabe
+{
   /// <summary>
   ///   Represents a attribute for all TCPconnections based on the Zusi-protocol.
   /// </summary>

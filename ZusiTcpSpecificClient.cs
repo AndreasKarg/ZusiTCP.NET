@@ -11,7 +11,7 @@
 namespace Zusi_Datenausgabe {
     
     
-    public sealed class ZusiTcpSpecificClient : Zusi_Datenausgabe.ZusiTcpTypeClientAbstract {
+    public sealed class ZusiTcpSpecificClient : Zusi_Datenausgabe.ZusiTcpClientAbstract {
         
         private float Geschwindigkeit_;
         
@@ -1741,7 +1741,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_Single(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<float> data = this.ReadSingle(input);
+          Zusi_Datenausgabe.ExtractedValue<float> data = PacketDeserialiser.ReadSingle(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<float>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<float>>(this.Recieved_Single), id, data);
             return data.ExtractedLength;
         }
@@ -2038,7 +2038,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_BoolAsSingle(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<bool> data = this.ReadBoolAsSingle(input);
+            Zusi_Datenausgabe.ExtractedValue<bool> data = PacketDeserialiser.ReadBoolAsSingle(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<bool>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<bool>>(this.Recieved_BoolAsSingle), id, data);
             return data.ExtractedLength;
         }
@@ -2067,7 +2067,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_BoolAndSingle(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.BoolAndSingleStruct data = this.ReadBoolAndSingle(input);
+            Zusi_Datenausgabe.BoolAndSingleStruct data = PacketDeserialiser.ReadBoolAndSingle(input);
             this.PostToHost<Zusi_Datenausgabe.BoolAndSingleStruct>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.BoolAndSingleStruct>(this.Recieved_BoolAndSingle), id, data);
             return data.ExtractedLength;
         }
@@ -2088,7 +2088,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_DateTime(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<System.DateTime> data = this.ReadDateTime(input);
+            Zusi_Datenausgabe.ExtractedValue<System.DateTime> data = PacketDeserialiser.ReadDateTime(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<System.DateTime>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<System.DateTime>>(this.Recieved_DateTime), id, data);
             return data.ExtractedLength;
         }
@@ -2103,7 +2103,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_IntAsSingle(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<int> data = this.ReadIntAsSingle(input);
+            Zusi_Datenausgabe.ExtractedValue<int> data = PacketDeserialiser.ReadIntAsSingle(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<int>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<int>>(this.Recieved_IntAsSingle), id, data);
             return data.ExtractedLength;
         }
@@ -2142,7 +2142,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_String(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<string> data = this.ReadString(input);
+            Zusi_Datenausgabe.ExtractedValue<string> data = PacketDeserialiser.ReadString(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<string>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<string>>(this.Recieved_String), id, data);
             return data.ExtractedLength;
         }
@@ -2157,7 +2157,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_DoorsAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState> data = this.ReadDoorsAsInt(input);
+            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState> data = PacketDeserialiser.ReadDoorsAsInt(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.DoorState>>(this.Recieved_DoorsAsInt), id, data);
             return data.ExtractedLength;
         }
@@ -2196,7 +2196,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_BoolAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<bool> data = this.ReadBoolAsInt(input);
+            Zusi_Datenausgabe.ExtractedValue<bool> data = PacketDeserialiser.ReadBoolAsInt(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<bool>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<bool>>(this.Recieved_BoolAsInt), id, data);
             return data.ExtractedLength;
         }
@@ -2211,7 +2211,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_PZBAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem> data = this.ReadPZBAsInt(input);
+            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem> data = PacketDeserialiser.ReadPZBAsInt(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.PZBSystem>>(this.Recieved_PZBAsInt), id, data);
             return data.ExtractedLength;
         }
@@ -2226,7 +2226,7 @@ namespace Zusi_Datenausgabe {
         }
         
         private int HandleDATA_BrakesAsInt(Zusi_Datenausgabe.IBinaryReader input, int id) {
-            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration> data = this.ReadBrakesAsInt(input);
+            Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration> data = PacketDeserialiser.ReadBrakesAsInt(input);
             this.PostToHost<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration>>(new Zusi_Datenausgabe.ReceiveEvent<Zusi_Datenausgabe.ExtractedValue<Zusi_Datenausgabe.BrakeConfiguration>>(this.Recieved_BrakesAsInt), id, data);
             return data.ExtractedLength;
         }

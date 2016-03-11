@@ -25,12 +25,11 @@
 #region Using
 
 using System;
-using System.Text;
 using System.Threading;
 
 #endregion
 
-namespace Zusi_Datenausgabe
+namespace Zusi_Datenausgabe.Zusi3
 {
   /// <summary>
   ///   Represents the centerpiece of the Zusi TCP interface.
@@ -71,7 +70,7 @@ namespace Zusi_Datenausgabe
   ///   </para>
   ///   Notice that ZusiTcpConn implements IDisposable, so remember to dispose of it properly when you are finished.
   /// </summary>
-  public class ZusiTcp3TypeClient : ZusiTcp3TypeClientAbstract
+  public class TcpTypeClient : TcpTypeClientAbstract
   {
     /// <summary>
     ///   Initializes a new <see cref="ZusiTcpTypeClient" /> object that uses the specified event handlers to pass datasets to the client application.
@@ -80,7 +79,7 @@ namespace Zusi_Datenausgabe
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetDocument">The XML file containig the command set.</param>
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-    public ZusiTcp3TypeClient(string clientId,
+    public TcpTypeClient(string clientId,
                               string clientVersion,
                              CommandSet commandsetDocument,
                              SynchronizationContext hostContext)
@@ -95,7 +94,7 @@ namespace Zusi_Datenausgabe
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetDocument">The XML file containig the command set.</param>
     /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    public ZusiTcp3TypeClient(string clientId, string clientVersion, CommandSet commandsetDocument)
+    public TcpTypeClient(string clientId, string clientVersion, CommandSet commandsetDocument)
       : base(clientId, clientVersion, commandsetDocument)
     {
     }
@@ -107,7 +106,7 @@ namespace Zusi_Datenausgabe
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-    public ZusiTcp3TypeClient(string clientId,
+    public TcpTypeClient(string clientId,
                              string clientVersion,
                              string commandsetPath,
                              SynchronizationContext hostContext)
@@ -122,7 +121,7 @@ namespace Zusi_Datenausgabe
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetPath">Path to the XML file containing the command set.</param>
     /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    public ZusiTcp3TypeClient(string clientId, string clientVersion, string commandsetPath)
+    public TcpTypeClient(string clientId, string clientVersion, string commandsetPath)
       : this(clientId, clientVersion, CommandSet.LoadFromFile(commandsetPath))
     {
     }
@@ -133,7 +132,7 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-    public ZusiTcp3TypeClient(string clientId, string clientVersion, SynchronizationContext hostContext)
+    public TcpTypeClient(string clientId, string clientVersion, SynchronizationContext hostContext)
       : this(clientId, clientVersion, "commandset3.xml", hostContext)
     {
     }
@@ -144,7 +143,7 @@ namespace Zusi_Datenausgabe
     /// <param name="clientId">Identifies the client to the server. Use your application's name for this.</param>
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    public ZusiTcp3TypeClient(string clientId, string clientVersion)
+    public TcpTypeClient(string clientId, string clientVersion)
       : this(clientId, clientVersion, "commandset3.xml")
     {
     }
@@ -374,7 +373,7 @@ namespace Zusi_Datenausgabe
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_Zugsicherung(ZusiTcp3Node input, int id)
+    protected int HandleDATA_Zugsicherung(Node input, int id)
     {
       var data = ReadZugsicherung(input);
       PostToHost(ZugsicherungReceived, id, data.ExtractedData);
