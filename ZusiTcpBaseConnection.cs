@@ -28,6 +28,8 @@ namespace Zusi_Datenausgabe
     private ConnectionState _connectionState = ConnectionState.Disconnected;
     private Thread _streamReaderThread;
 
+    protected readonly PacketSender PacketSender;
+
     #endregion
 
     /// <summary>
@@ -38,6 +40,7 @@ namespace Zusi_Datenausgabe
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
     protected ZusiTcpBaseConnection(string clientId, ClientPriority priority, SynchronizationContext hostContext)
     {
+      PacketSender = new PacketSender();
       ClientId = clientId;
       ClientPriority = priority;
 
@@ -53,6 +56,7 @@ namespace Zusi_Datenausgabe
     protected ZusiTcpBaseConnection(string clientId, ClientPriority priority)
       : this(clientId, priority, SynchronizationContext.Current)
     {
+      PacketSender = new PacketSender();
       if (SynchronizationContext.Current == null)
       {
         throw new ObjectUnsynchronisableException();
@@ -132,41 +136,6 @@ namespace Zusi_Datenausgabe
       ConnectionState_Changed.Invoke(this, (EventArgs) o);
     }
 
-    protected void SendPacket(params byte[] message)
-    {
-      ClientConnection.SendToPeer(PackArrays(new byte[][] {BitConverter.GetBytes(message.Length), message}));
-    }
-
-    protected void SendLargePacket(params byte[][] message)
-    {
-      int iTempLength = message.Sum(item => item.Length);
-
-      ClientConnection.SendToPeer(PackArrays(BitConverter.GetBytes(iTempLength), message));
-    }
-
-    protected static byte[] Pack(params byte[] message)
-    {
-      return message;
-    }
-    protected static byte[] PackArrays(byte[] firstPacket, byte[][] otherPackets)
-    {
-      byte[][] partialPackets = new byte[otherPackets.Length + 1][];
-      partialPackets[0] = firstPacket;
-      Array.Copy(otherPackets, 0, partialPackets, 1, otherPackets.Length);
-      return PackArrays(partialPackets);
-    }
-    protected static byte[] PackArrays(byte[][] partialPackets)
-    {
-      byte[] value = new byte[partialPackets.Sum(item => item.Length)];
-      int curLoc = 0;
-      foreach(byte[] arr in partialPackets)
-      {
-        Array.Copy(arr, 0, value, curLoc, arr.Length);
-        curLoc += arr.Length;
-      }
-      return value;
-    }
-
     protected static int GetInstruction(int byteA, int byteB)
     {
       return byteA*256 + byteB;
@@ -177,6 +146,7 @@ namespace Zusi_Datenausgabe
       Debug.Assert(clientConnection.Connected);
       if (ClientConnection != null) throw new System.InvalidOperationException(); //Already initialized.
       ClientConnection = clientConnection;
+      PacketSender.ClientConnection = clientConnection;
 
       try
       {
@@ -213,19 +183,19 @@ namespace Zusi_Datenausgabe
       foreach (var aDataGroup in aGetData)
       {
         reqDataBuffer.Clear();
-        reqDataBuffer.Add(Pack(0, 3));
+        reqDataBuffer.Add(PacketSender.Pack(0, 3));
 
         var tempDataGroup = BitConverter.GetBytes(Convert.ToInt16(aDataGroup.Key));
-        reqDataBuffer.Add(Pack(tempDataGroup[1], tempDataGroup[0]));
+        reqDataBuffer.Add(PacketSender.Pack(tempDataGroup[1], tempDataGroup[0]));
 
-        reqDataBuffer.AddRange(aDataGroup.Select(iID => Pack(Convert.ToByte(iID%256))));
+        reqDataBuffer.AddRange(aDataGroup.Select(iID => PacketSender.Pack(Convert.ToByte(iID % 256))));
 
-        SendLargePacket(reqDataBuffer.ToArray());
+        PacketSender.SendLargePacket(reqDataBuffer.ToArray());
 
         ExpectResponse(ResponseType.AckNeededData, aDataGroup.Key);
       }
 
-      SendPacket(0, 3, 0, 0);
+      PacketSender.SendPacket(0, 3, 0, 0);
     }
 
     /// <summary>
@@ -235,6 +205,7 @@ namespace Zusi_Datenausgabe
     {
       Disconnect(ConnectionState.Disconnected);
     }
+
     private void Disconnect(ConnectionState reason)
     {
       if ((_streamReaderThread != null) && (_streamReaderThread != Thread.CurrentThread))
@@ -247,6 +218,7 @@ namespace Zusi_Datenausgabe
         ClientConnection.Close();
       }
       ClientConnection = null;
+      PacketSender.ClientConnection = null;
     }
 
     /// <summary>
@@ -257,7 +229,7 @@ namespace Zusi_Datenausgabe
     /// <exception cref="ArgumentOutOfRangeException">expResponse-Type not supported</exception>
     /// <exception cref="ZusiTcpException">Can't continue connection, reasond: see message.</exception>
     /// <returns>An array with the requested Types for ResponseType.NeededData, null for other values.</returns>
-    protected ExpectResponseAnswer ExpectResponse(ResponseType expResponse, int dataGroup)
+    protected ZusiTcpBaseConnection.ExpectResponseAnswer ExpectResponse(ResponseType expResponse, int dataGroup)
     {
       int iPacketLength = ClientConnection.ReadInt32();
       if (
@@ -270,7 +242,7 @@ namespace Zusi_Datenausgabe
 
       int iReadInstr = GetInstruction(ClientConnection.ReadByte(), ClientConnection.ReadByte());
       if ((iReadInstr == 0) && (expResponse == ResponseType.NeededData) && (iPacketLength == 2)) 
-        return new ExpectResponseAnswer(new int[] {}, 0); //Qurirks-Mode for old TCP-Server.
+        return new ZusiTcpBaseConnection.ExpectResponseAnswer(new int[] {}, 0); //Qurirks-Mode for old TCP-Server.
       if (iReadInstr != (int) expResponse)
       {
         throw new ZusiTcpException("Invalid command from server: " + iReadInstr);
@@ -339,7 +311,7 @@ namespace Zusi_Datenausgabe
           {
             requestedTypes.Add(GetInstruction(instructionGroup, ClientConnection.ReadByte()));
           }
-          return new ExpectResponseAnswer(requestedTypes.ToArray(), instructionGroup);
+          return new ZusiTcpBaseConnection.ExpectResponseAnswer(requestedTypes.ToArray(), instructionGroup);
         default:
           throw new ArgumentOutOfRangeException("expResponse");
       }
@@ -373,7 +345,7 @@ namespace Zusi_Datenausgabe
 
     private void EventMarshal<T>(object o)
     {
-      var margs = (MarshalArgs<T>) o;
+      var margs = (ZusiTcpBaseConnection.MarshalArgs<T>) o;
       margs.Event.Invoke(this, margs.Data);
     }
 
@@ -398,11 +370,11 @@ namespace Zusi_Datenausgabe
 
       if (HostContext != null)
       {
-        HostContext.Post(EventMarshal<T>, new MarshalArgs<T>(Event, id, value));
+        HostContext.Post(EventMarshal<T>, new ZusiTcpBaseConnection.MarshalArgs<T>(Event, id, value));
       }
       else
       {
-        EventMarshal<T>(new MarshalArgs<T>(Event, id, value));
+        EventMarshal<T>(new ZusiTcpBaseConnection.MarshalArgs<T>(Event, id, value));
       }
     }
 

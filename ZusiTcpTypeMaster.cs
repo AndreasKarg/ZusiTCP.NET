@@ -97,9 +97,8 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     public void SendByteLengthString(string value, int id)
     {
-      SendByteCommand(PackArrays(
-                      new byte[][] {new byte[] {(byte) value.Length}, 
-                                    System.Text.Encoding.Default.GetBytes(value)}), 
+      SendByteCommand(PacketSender.PackArrays(new byte[][] {new byte[] {(byte) value.Length}, 
+        System.Text.Encoding.Default.GetBytes(value)}), 
                       id);
     }
 
@@ -110,9 +109,8 @@ namespace Zusi_Datenausgabe
     /// <param name="id">Contains the Zusi command id for this packet.</param>
     public void SendNullString(string value, int id)
     {
-      SendByteCommand(PackArrays(
-                      new byte[][] {System.Text.Encoding.Default.GetBytes(value), 
-                                    new byte[] {0}}), 
+      SendByteCommand(PacketSender.PackArrays(new byte[][] {System.Text.Encoding.Default.GetBytes(value), 
+        new byte[] {0}}), 
                       id);
     }
 

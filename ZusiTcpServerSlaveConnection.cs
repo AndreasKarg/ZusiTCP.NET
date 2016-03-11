@@ -30,7 +30,7 @@ namespace Zusi_Datenausgabe
 
     protected override void HandleHandshake()
     {
-      SendPacket(Pack(0, 2, 0));
+      PacketSender.SendPacket(PacketSender.Pack(0, 2, 0));
       ExpectRequestData();
     }
 

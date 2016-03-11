@@ -208,8 +208,8 @@ namespace Zusi_Datenausgabe
 
     protected override void HandleHandshake()
     {
-      SendLargePacket(
-        Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
+      PacketSender.SendLargePacket(
+        PacketSender.Pack(0, 1, 2, (byte) ClientPriority, Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
         StringEncoder.GetBytes(ClientId));
 
       ExpectResponse(ResponseType.AckHello, 0);
