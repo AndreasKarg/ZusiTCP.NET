@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -57,9 +58,9 @@ namespace ZusiTcpInterface.Zusi3
     }
 
     [Pure]
-    public static Attribute Deserialise(IReadableStream rxStream)
+    public static Attribute Deserialise(IReadableStream rxStream, int length)
     {
-      var length = BitConverter.ToInt32(rxStream.Read(4), 0);
+      //var length = BitConverter.ToInt32(rxStream.Read(4), 0);
       var id = BitConverter.ToInt16(rxStream.Read(2), 0);
 
       var payload = rxStream.Read(length - 2);

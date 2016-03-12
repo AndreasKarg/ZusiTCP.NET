@@ -18,11 +18,6 @@ namespace ZusiTcpInterfaceTests.Doubles
           stream.Read(It.IsAny<int>()))
         .Returns((int length) => Read(length));
 
-      mockReadableStream.Setup(
-        stream =>
-          stream.Peek(It.IsAny<int>()))
-        .Returns((int length) => Peek(length));
-
       _stream = mockReadableStream.Object;
     }
 
@@ -30,15 +25,6 @@ namespace ZusiTcpInterfaceTests.Doubles
     {
       byte[] data = new byte[length];
       _dataToRead.Read(data, 0, length);
-
-      return data;
-    }
-
-    private byte[] Peek(int length)
-    {
-      var data = Read(length);
-
-      _dataToRead.Seek(-length, SeekOrigin.Current);
 
       return data;
     }

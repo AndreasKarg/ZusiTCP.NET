@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\EncapsulatedNetworkStream.cs" />
     <Compile Include="Zusi2\AckHelloPacket.cs" />
     <Compile Include="Zusi2\ClientType.cs" />
     <Compile Include="Zusi2\HandShaker.cs" />

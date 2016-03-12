@@ -1,5 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Net.Sockets;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
+using ZusiTcpInterface.Common;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterfaceTests.Doubles;
 
@@ -95,6 +97,19 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // When - Throws
       Assert.Throws<ConnectionRefusedException>(_handshaker.ShakeHands);
+    }
+
+    [TestMethod, Ignore]
+    public void Connects_to_real_Zusi()
+    {
+      // Use this test while debugging to play around
+
+      using (var tcpClient = new TcpClient("localhost", 1436))
+      {
+        var networkStream = new EncapsulatedNetworkStream(tcpClient.GetStream());
+        var handshaker = new Handshaker(networkStream, networkStream, ClientType.ControlDesk, "Andi", "1.2.3");
+        handshaker.ShakeHands();
+      }
     }
   }
 }
