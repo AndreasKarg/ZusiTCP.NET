@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public struct HelloPacket
+  internal struct HelloPacket
   {
     private const NodeCategory NodeCategory = Zusi3.NodeCategory.Handshake;
     private const short HelloNodeId = 0x01;
