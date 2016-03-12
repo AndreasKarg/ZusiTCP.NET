@@ -52,6 +52,12 @@
     <Compile Include="Zusi2\IReadableStream.cs" />
     <Compile Include="Zusi2\IWritableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Zusi3\Attribute.cs" />
+    <Compile Include="Zusi3\ClientType.cs" />
+    <Compile Include="Zusi3\HelloPacket.cs" />
+    <Compile Include="Zusi3\IProtocolElement.cs" />
+    <Compile Include="Zusi3\Node.cs" />
+    <Compile Include="Zusi3\NodeCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

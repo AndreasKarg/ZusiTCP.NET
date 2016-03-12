@@ -64,6 +64,8 @@
     <Compile Include="Zusi2\MockReadableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Zusi2\HandShakerTests.cs" />
+    <Compile Include="Zusi3\HelloPacketTests.cs" />
+    <Compile Include="Zusi3\NodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZusiTcpInterface\ZusiTcpInterface.csproj">
@@ -74,6 +76,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
