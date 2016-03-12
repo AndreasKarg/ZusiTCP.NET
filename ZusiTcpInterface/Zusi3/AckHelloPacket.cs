@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Text;
 using ZusiTcpInterface.Common;
 
@@ -34,6 +35,7 @@ namespace ZusiTcpInterface.Zusi3
       get { return _connectionAccepted; }
     }
 
+    [Pure]
     public static AckHelloPacket Deserialise(IReadableStream rxStream)
     {
       var topLevelNode = Node.Deserialise(rxStream);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using MiscUtil.Conversion;
@@ -44,6 +45,7 @@ namespace ZusiTcpInterface.Zusi3
     {
     }
 
+    [Pure]
     public IEnumerable<byte> Serialise()
     {
       var content = BitConverter.GetBytes(_id)
@@ -54,6 +56,7 @@ namespace ZusiTcpInterface.Zusi3
             .Concat(content);
     }
 
+    [Pure]
     public static Attribute Deserialise(IReadableStream rxStream)
     {
       var length = BitConverter.ToInt32(rxStream.Read(4), 0);
