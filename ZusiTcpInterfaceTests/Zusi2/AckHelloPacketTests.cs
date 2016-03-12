@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZusiTcpInterface.Zusi2;
+using ZusiTcpInterfaceTests.Doubles;
 
 namespace ZusiTcpInterfaceTests.Zusi2
 {

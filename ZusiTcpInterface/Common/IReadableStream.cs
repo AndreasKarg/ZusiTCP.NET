@@ -1,7 +1,8 @@
-namespace ZusiTcpInterface.Zusi2
+namespace ZusiTcpInterface.Common
 {
   internal interface IReadableStream
   {
     byte[] Read(int i);
+    byte[] Peek(int i);
   }
 }

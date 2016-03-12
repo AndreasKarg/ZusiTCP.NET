@@ -1,4 +1,5 @@
 ﻿using System;
+using ZusiTcpInterface.Common;
 
 namespace ZusiTcpInterface.Zusi2
 {

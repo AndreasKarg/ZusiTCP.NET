@@ -2,7 +2,9 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using ZusiTcpInterface.Common;
 using ZusiTcpInterface.Zusi2;
+using ZusiTcpInterfaceTests.Doubles;
 
 namespace ZusiTcpInterfaceTests.Zusi2
 {

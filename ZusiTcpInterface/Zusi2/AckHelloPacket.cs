@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using MiscUtil.Conversion;
+using ZusiTcpInterface.Common;
 
 namespace ZusiTcpInterface.Zusi2
 {

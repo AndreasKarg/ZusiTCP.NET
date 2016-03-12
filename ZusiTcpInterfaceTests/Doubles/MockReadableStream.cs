@@ -1,8 +1,10 @@
 ﻿using System.IO;
+using System.Security.AccessControl;
 using Moq;
+using ZusiTcpInterface.Common;
 using ZusiTcpInterface.Zusi2;
 
-namespace ZusiTcpInterfaceTests.Zusi2
+namespace ZusiTcpInterfaceTests.Doubles
 {
   internal class MockReadableStream
   {
@@ -16,15 +18,29 @@ namespace ZusiTcpInterfaceTests.Zusi2
       mockReadableStream.Setup(
         stream =>
           stream.Read(It.IsAny<int>()))
-        .Returns((int length) => DequeueData(length));
+        .Returns((int length) => Read(length));
+
+      mockReadableStream.Setup(
+        stream =>
+          stream.Peek(It.IsAny<int>()))
+        .Returns((int length) => Peek(length));
 
       _stream = mockReadableStream.Object;
     }
 
-    private byte[] DequeueData(int length)
+    private byte[] Read(int length)
     {
       byte[] data = new byte[length];
       _dataToRead.Read(data, 0, length);
+
+      return data;
+    }
+
+    private byte[] Peek(int length)
+    {
+      var data = Read(length);
+
+      _dataToRead.Seek(-length, SeekOrigin.Current);
 
       return data;
     }

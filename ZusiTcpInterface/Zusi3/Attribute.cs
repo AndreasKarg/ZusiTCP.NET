@@ -2,41 +2,66 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MiscUtil.Conversion;
+using ZusiTcpInterface.Common;
 
 namespace ZusiTcpInterface.Zusi3
 {
   internal class Attribute : IProtocolElement
   {
-    private readonly byte[] _content;
+    private readonly byte[] _payload;
+    private readonly short _id;
+
     private static readonly LittleEndianBitConverter BitConverter = EndianBitConverter.Little;
 
-    public Attribute(short attributeId, byte[] payload)
+    public short Id
     {
-      _content = BitConverter.GetBytes(attributeId)
-                .Concat(payload).ToArray();
+      get { return _id; }
     }
 
-    public Attribute(short attributeId, byte payload)
-      : this(attributeId, BitConverter.GetBytes(payload))
+    public byte[] Payload
+    {
+      get { return _payload; }
+    }
+
+    public Attribute(short id, byte[] payload)
+    {
+      _id = id;
+      _payload = payload;
+    }
+
+    public Attribute(short id, byte payload)
+      : this(id, BitConverter.GetBytes(payload))
     {
     }
 
-    public Attribute(short attributeId, short payload)
-      : this(attributeId, BitConverter.GetBytes(payload))
+    public Attribute(short id, short payload)
+      : this(id, BitConverter.GetBytes(payload))
     {
     }
 
-    public Attribute(short attributeId, string payload)
-      : this(attributeId, Encoding.ASCII.GetBytes(payload))
+    public Attribute(short id, string payload)
+      : this(id, Encoding.ASCII.GetBytes(payload))
     {
     }
 
     public IEnumerable<byte> Serialise()
     {
-      var lengthPrefix = BitConverter.GetBytes(_content.Length);
+      var content = BitConverter.GetBytes(_id)
+                   .Concat(_payload).ToArray();
+      var lengthPrefix = BitConverter.GetBytes(content.Length);
 
       return lengthPrefix
-            .Concat(_content);
+            .Concat(content);
+    }
+
+    public static Attribute Deserialise(IReadableStream rxStream)
+    {
+      var length = BitConverter.ToInt32(rxStream.Read(4), 0);
+      var id = BitConverter.ToInt16(rxStream.Read(2), 0);
+
+      var payload = rxStream.Read(length - 2);
+
+      return new Attribute(id, payload);
     }
   }
 }

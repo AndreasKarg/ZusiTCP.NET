@@ -38,17 +38,17 @@ namespace ZusiTcpInterface.Zusi3
     [Pure]
     public IEnumerable<byte> Serialise()
     {
-      var attributes = new List<Attribute>()
+      var attributes = new Dictionary<short, Attribute>
       {
-        new Attribute(0x01, ProtocolVersion),
-        new Attribute(0x02, (short) _clientType),
-        new Attribute(0x03, _clientName), 
-        new Attribute(0x04, _clientVersion)
+        { 0x01, new Attribute(0x01, ProtocolVersion)},
+        { 0x02, new Attribute(0x02, (short) _clientType)},
+        { 0x03, new Attribute(0x03, _clientName)}, 
+        { 0x04, new Attribute(0x04, _clientVersion)}
       };
 
-      var helloNode = new Node<Attribute>(HelloNodeId, attributes);
+      var helloNode = new Node(HelloNodeId, attributes);
 
-      var topLevelNode = new Node<Node<Attribute>>((short)NodeCategory, helloNode);
+      var topLevelNode = new Node((short)NodeCategory, helloNode);
 
       return topLevelNode.Serialise();
     }
