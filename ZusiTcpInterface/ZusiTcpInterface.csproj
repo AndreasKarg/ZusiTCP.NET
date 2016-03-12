@@ -55,6 +55,7 @@
     <Compile Include="Zusi3\AckHelloPacket.cs" />
     <Compile Include="Zusi3\Attribute.cs" />
     <Compile Include="Zusi3\ClientType.cs" />
+    <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />
     <Compile Include="Zusi3\IProtocolElement.cs" />
     <Compile Include="Zusi3\Node.cs" />

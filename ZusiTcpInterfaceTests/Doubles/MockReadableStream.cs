@@ -1,8 +1,6 @@
 ﻿using System.IO;
-using System.Security.AccessControl;
 using Moq;
 using ZusiTcpInterface.Common;
-using ZusiTcpInterface.Zusi2;
 
 namespace ZusiTcpInterfaceTests.Doubles
 {

@@ -59,6 +59,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Doubles\MockWritableStream.cs" />
     <Compile Include="Zusi2\AckHelloPacketTests.cs" />
     <Compile Include="Zusi2\HelloPacketTests.cs" />
     <Compile Include="Doubles\MockReadableStream.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Zusi3\HelloPacketTests.cs" />
     <Compile Include="Zusi3\NodeTests.cs" />
     <Compile Include="Zusi3\AckHelloPacketTests.cs" />
+    <Compile Include="Zusi3\HandshakerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZusiTcpInterface\ZusiTcpInterface.csproj">
