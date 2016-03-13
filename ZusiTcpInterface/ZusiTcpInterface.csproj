@@ -53,15 +53,20 @@
     <Compile Include="Common\IReadableStream.cs" />
     <Compile Include="Common\IWritableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Zusi3\AckHelloConverter.cs" />
     <Compile Include="Zusi3\AckHelloPacket.cs" />
     <Compile Include="Zusi3\Attribute.cs" />
     <Compile Include="Zusi3\ClientType.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />
+    <Compile Include="Zusi3\INodeConverter.cs" />
     <Compile Include="Zusi3\IProtocolElement.cs" />
     <Compile Include="Zusi3\Node.cs" />
     <Compile Include="Zusi3\NodeCategory.cs" />
+    <Compile Include="Zusi3\BranchingNodeConverter.cs" />
+    <Compile Include="Zusi3\ProtocolChunk.cs" />
+    <Compile Include="Zusi3\TopLevelNodeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

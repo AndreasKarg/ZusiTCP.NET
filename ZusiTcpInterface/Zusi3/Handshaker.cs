@@ -1,4 +1,6 @@
-﻿using ZusiTcpInterface.Common;
+﻿using System.ComponentModel;
+using System.Linq;
+using ZusiTcpInterface.Common;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -26,7 +28,15 @@ namespace ZusiTcpInterface.Zusi3
 
       _txStream.Write(hello.Serialise());
 
-      var ackHello = AckHelloPacket.Deserialise(_rxStream);
+      var handshakeConverter = new BranchingNodeConverter();
+      handshakeConverter[0x02] = new AckHelloConverter();
+      
+      var rootNodeConverter = new TopLevelNodeConverter();
+      rootNodeConverter[0x01] = handshakeConverter;
+
+      var message = Node.Deserialise(_rxStream);
+
+      var ackHello = (AckHelloPacket)rootNodeConverter.Convert(message).Single();
 
       if(!ackHello.ConnectionAccepted)
         throw new ConnectionRefusedException("Connection refused by Zusi.");

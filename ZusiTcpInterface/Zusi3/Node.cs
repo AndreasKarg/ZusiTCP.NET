@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using MiscUtil.Conversion;
 using ZusiTcpInterface.Common;
-using ZusiTcpInterface.Zusi3;
-using Attribute = System.Attribute;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -65,6 +63,7 @@ namespace ZusiTcpInterface.Zusi3
             .Concat(BitConverter.GetBytes(NodeTerminator));
     }
 
+    [Pure]
     public static Node Deserialise(IReadableStream rxStream, bool nodeStarterHasAlreadyBeenConsumed = false)
     {
       var subNodes = new Dictionary<short, Node>();
