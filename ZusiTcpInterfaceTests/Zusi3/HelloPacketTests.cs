@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZusiTcpInterface.Zusi3;
 
@@ -33,9 +34,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var helloPacket = new HelloPacket(ClientType.ControlDesk, "Fahrpult", "2.0");
 
       // When
-      var serialised = helloPacket.Serialise().ToArray();
+      var serialised = new MemoryStream();
+      var binaryWriter = new BinaryWriter(serialised);
+        
+      helloPacket.Serialise(binaryWriter);
 
-      CollectionAssert.AreEqual(expected, serialised);
+      CollectionAssert.AreEqual(expected, serialised.ToArray());
     }
   }
 }

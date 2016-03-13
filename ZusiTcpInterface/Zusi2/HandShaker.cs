@@ -1,24 +1,24 @@
 ﻿using System;
-using ZusiTcpInterface.Common;
+using System.IO;
 
 namespace ZusiTcpInterface.Zusi2
 {
   internal class HandShaker
   {
-    private readonly IReadableStream _rxStream;
-    private readonly IWritableStream _txStream;
+    private readonly BinaryReader _binaryReader;
+    private readonly BinaryWriter _binaryWriter;
 
-    public HandShaker(IReadableStream rxStream, IWritableStream txStream)
+    public HandShaker(BinaryReader binaryReader, BinaryWriter binaryWriter)
     {
-      _rxStream = rxStream;
-      _txStream = txStream;
+      _binaryReader = binaryReader;
+      _binaryWriter = binaryWriter;
     }
 
     public void ShakeHands(ClientType clientType, String clientName)
     {
       var hello = new HelloPacket(clientType, clientName);
 
-      _txStream.Write(hello.Serialise());
+      hello.Serialise(_binaryWriter);
     }
   }
 }

@@ -1,15 +1,14 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZusiTcpInterface.Zusi3;
-using ZusiTcpInterfaceTests.Doubles;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {
   [TestClass]
-  public class AckHelloPacketTests
+  public class AckHelloConverterTests
   {
-    readonly MockReadableStream _mockReadableStream = new MockReadableStream();
-
     readonly AckHelloConverter _ackHelloConverter = new AckHelloConverter();
 
     [TestMethod]
@@ -31,11 +30,11 @@ namespace ZusiTcpInterfaceTests.Zusi3
             0x00,
         0xFF, 0xFF, 0xFF, 0xFF,
       };
-
-      _mockReadableStream.SetDataToRead(packet);
+      var rxStream = new MemoryStream(packet);
+      var binaryReader = new BinaryReader(rxStream, Encoding.ASCII);
 
       // When
-      var deserialised = Node.Deserialise(_mockReadableStream.Stream);
+      var deserialised = Node.Deserialise(binaryReader);
       var converted = (AckHelloPacket)_ackHelloConverter.Convert(deserialised).Single();
 
       // Then

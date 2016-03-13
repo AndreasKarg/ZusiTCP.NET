@@ -45,13 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\EncapsulatedNetworkStream.cs" />
     <Compile Include="Zusi2\AckHelloPacket.cs" />
     <Compile Include="Zusi2\ClientType.cs" />
     <Compile Include="Zusi2\HandShaker.cs" />
     <Compile Include="Zusi2\HelloPacket.cs" />
-    <Compile Include="Common\IReadableStream.cs" />
-    <Compile Include="Common\IWritableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Zusi3\AckHelloConverter.cs" />
     <Compile Include="Zusi3\AckHelloPacket.cs" />

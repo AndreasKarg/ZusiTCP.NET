@@ -59,15 +59,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Doubles\MockWritableStream.cs" />
+    <Compile Include="Helpers\MemoryStreamHelper.cs" />
     <Compile Include="Zusi2\AckHelloPacketTests.cs" />
     <Compile Include="Zusi2\HelloPacketTests.cs" />
-    <Compile Include="Doubles\MockReadableStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Zusi2\HandShakerTests.cs" />
     <Compile Include="Zusi3\HelloPacketTests.cs" />
     <Compile Include="Zusi3\NodeTests.cs" />
-    <Compile Include="Zusi3\AckHelloPacketTests.cs" />
+    <Compile Include="Zusi3\AckHelloConverterTests.cs" />
     <Compile Include="Zusi3\HandshakerTests.cs" />
   </ItemGroup>
   <ItemGroup>

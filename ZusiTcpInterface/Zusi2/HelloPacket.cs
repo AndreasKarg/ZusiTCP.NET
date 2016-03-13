@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
+using System.IO;
 using System.Text;
-using MiscUtil.Conversion;
 
 namespace ZusiTcpInterface.Zusi2
 {
@@ -33,11 +32,8 @@ namespace ZusiTcpInterface.Zusi2
       get { return _clientName; }
     }
 
-    [Pure]
-    public IEnumerable<byte> Serialise()
+    public void Serialise(BinaryWriter binaryWriter)
     {
-      var bitConverter = EndianBitConverter.Little;
-
       var payload = new List<byte>();
       payload.AddRange(HelloInstruction);
       payload.Add(ProtocolVersion);
@@ -45,8 +41,7 @@ namespace ZusiTcpInterface.Zusi2
       payload.Add((byte)_clientName.Length);
       payload.AddRange(Encoding.ASCII.GetBytes(_clientName));
 
-      var serialisedPacketLength = bitConverter.GetBytes(payload.Count);
-      return serialisedPacketLength.Concat(payload);
+      binaryWriter.Write(payload.ToArray());
     }
   }
 }

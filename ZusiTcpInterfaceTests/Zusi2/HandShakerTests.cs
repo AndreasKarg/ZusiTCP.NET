@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using ZusiTcpInterface.Common;
 using ZusiTcpInterface.Zusi2;
-using ZusiTcpInterfaceTests.Doubles;
 
 namespace ZusiTcpInterfaceTests.Zusi2
 {
@@ -13,24 +9,15 @@ namespace ZusiTcpInterfaceTests.Zusi2
   {
     private readonly HandShaker _handShaker;
 
-    private IEnumerable<byte> _writtenData = Enumerable.Empty<byte>();
-    private readonly MockReadableStream _mockReadableStream = new MockReadableStream();
+    private readonly MemoryStream _rxStream = new MemoryStream();
+    private readonly MemoryStream _txStream = new MemoryStream();
 
     public HandShakerTests()
     {
-      var writableStream = SetupMockWritableStream();
+      var binaryReader = new BinaryReader(_rxStream);
+      var binaryWriter = new BinaryWriter(_txStream);
 
-      _handShaker = new HandShaker(_mockReadableStream.Stream, writableStream);
-    }
-
-    private IWritableStream SetupMockWritableStream()
-    {
-      var mockWritableStream = new Mock<IWritableStream>();
-
-      mockWritableStream.Setup(stream => stream.Write(It.IsNotNull<IEnumerable<byte>>()))
-        .Callback<IEnumerable<byte>>(data => _writtenData = _writtenData.Concat(data));
-
-      return mockWritableStream.Object;
+      _handShaker = new HandShaker(binaryReader, binaryWriter);
     }
 
     [TestMethod]
@@ -41,13 +28,15 @@ namespace ZusiTcpInterfaceTests.Zusi2
       var clientName = "Handschäke!";
 
       var expectedPacket = new HelloPacket(clientType, clientName);
-      var serialisedExpectedPacket = expectedPacket.Serialise().ToArray();
+
+      var serialisedExpectedPacket = new MemoryStream();       
+      expectedPacket.Serialise(new BinaryWriter(serialisedExpectedPacket));
 
       // When
       _handShaker.ShakeHands(clientType, clientName);
 
       // Then
-      CollectionAssert.AreEqual(serialisedExpectedPacket, _writtenData.ToArray());
+      CollectionAssert.AreEqual(serialisedExpectedPacket.ToArray(), _txStream.ToArray());
     }
 
     [TestMethod]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -35,8 +36,7 @@ namespace ZusiTcpInterface.Zusi3
       get { return _clientName; }
     }
 
-    [Pure]
-    public IEnumerable<byte> Serialise()
+    public void Serialise(BinaryWriter binaryWriter)
     {
       var attributes = new Dictionary<short, Attribute>
       {
@@ -50,7 +50,7 @@ namespace ZusiTcpInterface.Zusi3
 
       var topLevelNode = new Node((short)NodeCategory, helloNode);
 
-      return topLevelNode.Serialise();
+      topLevelNode.Serialise(binaryWriter);
     }
   }
 }

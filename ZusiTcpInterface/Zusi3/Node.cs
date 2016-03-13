@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using MiscUtil.Conversion;
-using ZusiTcpInterface.Common;
+using System.IO;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -11,8 +9,6 @@ namespace ZusiTcpInterface.Zusi3
     private readonly Dictionary<short, Node> _subNodes;
     private readonly Dictionary<short, Attribute> _attributes;
     private readonly short _id;
-
-    private static readonly LittleEndianBitConverter BitConverter = EndianBitConverter.Little;
 
     private const uint NodeStarter = 0x00000000;
     private const uint NodeTerminator = 0xFFFFFFFF;
@@ -51,47 +47,51 @@ namespace ZusiTcpInterface.Zusi3
       _subNodes.Add(subNode.Id, subNode);
     }
 
-    public IEnumerable<byte> Serialise()
+    public void Serialise(BinaryWriter binaryWriter)
     {
-      var serialisedSubNodes = _subNodes.SelectMany(child => child.Value.Serialise());
-      var serialisedAttributes = _attributes.SelectMany(child => child.Value.Serialise());
+      binaryWriter.Write(NodeStarter);
+      binaryWriter.Write(Id);
+      foreach (var subNode in _subNodes.Values)
+      {
+        subNode.Serialise(binaryWriter);
+      }
 
-      return BitConverter.GetBytes(NodeStarter)
-            .Concat(BitConverter.GetBytes(Id))
-            .Concat(serialisedSubNodes)
-            .Concat(serialisedAttributes)
-            .Concat(BitConverter.GetBytes(NodeTerminator));
+      foreach (var attribute in _attributes.Values)
+      {
+        attribute.Serialise(binaryWriter);
+      }
+      binaryWriter.Write(NodeTerminator);
     }
 
     [Pure]
-    public static Node Deserialise(IReadableStream rxStream, bool nodeStarterHasAlreadyBeenConsumed = false)
+    public static Node Deserialise(BinaryReader binaryReader, bool nodeStarterHasAlreadyBeenConsumed = false)
     {
       var subNodes = new Dictionary<short, Node>();
       var attributes = new Dictionary<short, Attribute>();
 
       if (!nodeStarterHasAlreadyBeenConsumed)
       {
-        var nodeStarter = rxStream.Read(4); // Todo: Introduce rainy day scenario that tests this when malformed
+        var nodeStarter = binaryReader.ReadInt32(); // Todo: Introduce rainy day scenario that tests this when malformed
       }
 
-      short id = BitConverter.ToInt16(rxStream.Read(2), 0);
+      short id = binaryReader.ReadInt16();
 
-      var nextTag = BitConverter.ToUInt32(rxStream.Read(4), 0);
+      var nextTag = binaryReader.ReadUInt32();
 
       while (nextTag != NodeTerminator)
       {
         if (nextTag == NodeStarter)
         {
-          var newNode = Node.Deserialise(rxStream, true);
+          var newNode = Node.Deserialise(binaryReader, true);
           subNodes.Add(newNode.Id, newNode);
         }
         else
         {
-          var newAttribute = Attribute.Deserialise(rxStream, (int)nextTag);
+          var newAttribute = Attribute.Deserialise(binaryReader, (int)nextTag);
           attributes.Add(newAttribute.Id, newAttribute);
         }
 
-        nextTag = BitConverter.ToUInt32(rxStream.Read(4), 0);
+        nextTag = binaryReader.ReadUInt32();
       }
 
       return new Node(id, subNodes, attributes);

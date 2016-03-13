@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 
 namespace ZusiTcpInterface.Zusi3
 {
   internal interface IProtocolElement
   {
-    IEnumerable<byte> Serialise();
+    void Serialise(BinaryWriter binaryWriter);
   }
 }

@@ -1,9 +1,9 @@
-﻿using System.Net.Sockets;
+﻿using System.IO;
+using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
-using ZusiTcpInterface.Common;
 using ZusiTcpInterface.Zusi3;
-using ZusiTcpInterfaceTests.Doubles;
+using ZusiTcpInterfaceTests.Helpers;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {
@@ -29,15 +29,18 @@ namespace ZusiTcpInterfaceTests.Zusi3
       0xFF, 0xFF, 0xFF, 0xFF
     };
 
-    private readonly MockWritableStream _mockWritableStream = new MockWritableStream();
-    private readonly MockReadableStream _mockReadableStream = new MockReadableStream();
-
     private readonly Handshaker _handshaker;
+    private readonly MemoryStream _rxStream;
+    private readonly MemoryStream _txStream = new MemoryStream();
 
     public HandshakerTests()
     {
-      _mockReadableStream.SetDataToRead(_positiveAckHello);
-      _handshaker = new Handshaker(_mockReadableStream.Stream, _mockWritableStream.Stream, ClientType.ControlDesk, "Fahrpult", "2.0");
+      _rxStream = new MemoryStream(_positiveAckHello);
+      var binaryReader = new BinaryReader(_rxStream);
+
+      var binaryWriter = new BinaryWriter(_txStream);
+
+      _handshaker = new Handshaker(binaryReader, binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0");
     }
 
     [TestMethod]
@@ -68,7 +71,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       _handshaker.ShakeHands();
 
       // Then
-      CollectionAssert.AreEqual(expectedTxData, _mockWritableStream.WrittenData);
+      CollectionAssert.AreEqual(expectedTxData, _txStream.ToArray());
     }
 
     [TestMethod]
@@ -93,7 +96,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
           0xFF, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF
       };
-      _mockReadableStream.SetDataToRead(ackHelloThatRefusesConnection);
+
+      _rxStream.ReinitialiseWith(ackHelloThatRefusesConnection);
 
       // When - Throws
       Assert.Throws<ConnectionRefusedException>(_handshaker.ShakeHands);
@@ -106,8 +110,11 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       using (var tcpClient = new TcpClient("localhost", 1436))
       {
-        var networkStream = new EncapsulatedNetworkStream(tcpClient.GetStream());
-        var handshaker = new Handshaker(networkStream, networkStream, ClientType.ControlDesk, "Andi", "1.2.3");
+        //var networkStream = new EncapsulatedNetworkStream(tcpClient.GetStream());
+        var binaryReader = new BinaryReader(tcpClient.GetStream());
+        var binaryWriter = new BinaryWriter(tcpClient.GetStream());
+
+        var handshaker = new Handshaker(binaryReader, binaryWriter, ClientType.ControlDesk, "Andi", "1.2.3");
         handshaker.ShakeHands();
       }
     }

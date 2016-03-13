@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using MiscUtil.Conversion;
-using ZusiTcpInterface.Common;
+﻿using System.IO;
 
 namespace ZusiTcpInterface.Zusi2
 {
@@ -22,12 +20,11 @@ namespace ZusiTcpInterface.Zusi2
       get { return _acknowledged; }
     }
 
-    public static AckHelloPacket Deserialise(IReadableStream rxStream)
+    public static AckHelloPacket Deserialise(BinaryReader binaryReader)
     {
-      var bitConverter = EndianBitConverter.Little;
-      var packetLength = bitConverter.ToInt32(rxStream.Read(HeaderLength), 0);
-      var instruction = bitConverter.ToInt16(rxStream.Read(InstructionLength), 0);
-      var ack = rxStream.Read(AckLength).Single();
+      var packetLength = binaryReader.ReadInt32();
+      var instruction = binaryReader.ReadInt16();
+      var ack = binaryReader.ReadByte();
 
       return new AckHelloPacket(ack == 0);
     }

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Text;
 using MiscUtil.Conversion;
-using ZusiTcpInterface.Common;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -46,24 +46,22 @@ namespace ZusiTcpInterface.Zusi3
     {
     }
 
-    [Pure]
-    public IEnumerable<byte> Serialise()
+    public void Serialise(BinaryWriter binaryWriter)
     {
-      var content = BitConverter.GetBytes(_id)
-                   .Concat(_payload).ToArray();
-      var lengthPrefix = BitConverter.GetBytes(content.Length);
-
-      return lengthPrefix
-            .Concat(content);
+      int length = _payload.Length + 2;
+      binaryWriter.Write(length);
+      binaryWriter.Write(_id);
+      binaryWriter.Write(_payload);
     }
 
     [Pure]
-    public static Attribute Deserialise(IReadableStream rxStream, int length)
+    public static Attribute Deserialise(BinaryReader rxStream, int length)
     {
       //var length = BitConverter.ToInt32(rxStream.Read(4), 0);
-      var id = BitConverter.ToInt16(rxStream.Read(2), 0);
+      var id = rxStream.ReadInt16();
 
-      var payload = rxStream.Read(length - 2);
+      var payload = new byte[length - 2];
+      rxStream.Read(payload, 0, payload.Length);
 
       return new Attribute(id, payload);
     }

@@ -1,23 +1,30 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZusiTcpInterface.Zusi2;
-using ZusiTcpInterfaceTests.Doubles;
+using ZusiTcpInterfaceTests.Helpers;
 
 namespace ZusiTcpInterfaceTests.Zusi2
 {
   [TestClass]
   public class AckHelloPacketTests
   {
-    readonly MockReadableStream _mockReadableStream = new MockReadableStream();
+    private readonly MemoryStream _rxStream = new MemoryStream();
+    private readonly BinaryReader _binaryReader;
+
+    public AckHelloPacketTests()
+    {
+      _binaryReader = new BinaryReader(_rxStream);
+    }
 
     [TestMethod]
     public void Deserialises_correctly_formatted_packet()
     {
       // Given
       byte[] serialisedAckHello = {0x03, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00};
-      _mockReadableStream.SetDataToRead(serialisedAckHello);
+      _rxStream.ReinitialiseWith(serialisedAckHello);
       
       // When
-      var ackHello = AckHelloPacket.Deserialise(_mockReadableStream.Stream);
+      var ackHello = AckHelloPacket.Deserialise(_binaryReader);
 
       // Then
       Assert.IsTrue(ackHello.Acknowledged);
