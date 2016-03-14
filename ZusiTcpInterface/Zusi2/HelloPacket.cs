@@ -41,6 +41,7 @@ namespace ZusiTcpInterface.Zusi2
       payload.Add((byte)_clientName.Length);
       payload.AddRange(Encoding.ASCII.GetBytes(_clientName));
 
+      binaryWriter.Write(payload.Count);
       binaryWriter.Write(payload.ToArray());
     }
   }

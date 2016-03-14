@@ -21,7 +21,8 @@ namespace ZusiTcpInterfaceTests.Zusi2
       // When
       helloPacket.Serialise(new BinaryWriter(serialised));
 
-      CollectionAssert.AreEqual(expected, serialised.ToArray());
+        var collection = serialised.ToArray();
+        CollectionAssert.AreEqual(expected, collection);
     }
   }
 }
