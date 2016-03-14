@@ -53,6 +53,8 @@
     <Compile Include="Zusi3\AckHelloConverter.cs" />
     <Compile Include="Zusi3\AckHelloPacket.cs" />
     <Compile Include="Zusi3\Attribute.cs" />
+    <Compile Include="Zusi3\BlockingCollectionWrapper.cs" />
+    <Compile Include="Zusi3\CancellableBlockingStream.cs" />
     <Compile Include="Zusi3\ClientType.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />

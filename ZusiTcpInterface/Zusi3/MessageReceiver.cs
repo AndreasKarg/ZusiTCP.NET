@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ZusiTcpInterface.Zusi3
@@ -9,32 +11,52 @@ namespace ZusiTcpInterface.Zusi3
   {
     private readonly BinaryReader _binaryReader;
     private readonly TopLevelNodeConverter _rootNodeConverter;
-    private readonly BlockingCollection<IProtocolChunk> _blockingChunkQueue;
+    private readonly IBlockingCollection<IProtocolChunk> _blockingChunkQueue;
 
-    public MessageReceiver(BinaryReader binaryReader, TopLevelNodeConverter rootNodeConverter, BlockingCollection<IProtocolChunk> blockingChunkQueue)
+    public MessageReceiver(BinaryReader binaryReader, TopLevelNodeConverter rootNodeConverter, IBlockingCollection<IProtocolChunk> blockingChunkQueue)
     {
       _binaryReader = binaryReader;
       _rootNodeConverter = rootNodeConverter;
       _blockingChunkQueue = blockingChunkQueue;
     }
 
-    public void StartReceptionLoop()
+    public Task StartReceptionLoop()
     {
-      Task.Run((Action)ReceptionLoop);
+      return Task.Run(() =>
+      {
+        while (true)
+        {
+          ProcessNextPacket();
+        }
+
+      });
     }
 
-    private void ReceptionLoop()
+    public void ProcessNextPacket()
     {
-      // ToDo: Add cancellation token
-      while (true)
+      try
       {
-        var message = Node.Deserialise(_binaryReader);
-        var chunks = _rootNodeConverter.Convert(message);
-
-        foreach (var chunk in chunks)
+        while (true)
         {
-          _blockingChunkQueue.Add(chunk);   
+          var message = Node.Deserialise(_binaryReader);
+          var chunks = _rootNodeConverter.Convert(message);
+
+          foreach (var chunk in chunks)
+          {
+            _blockingChunkQueue.Add(chunk);
+          }
         }
+      }
+      catch (AggregateException ex)
+      {
+        if (ex.InnerExceptions.Single() is TaskCanceledException)
+          return;
+
+        throw;
+      }
+      catch (TaskCanceledException)
+      {
+        // a-ok, nothing to do.
       }
     }
   }

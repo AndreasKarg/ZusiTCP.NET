@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Net.Sockets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MSTestExtensions;
