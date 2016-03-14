@@ -57,12 +57,14 @@
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />
+    <Compile Include="Zusi3\IBlockingCollection.cs" />
     <Compile Include="Zusi3\INodeConverter.cs" />
     <Compile Include="Zusi3\IProtocolElement.cs" />
+    <Compile Include="Zusi3\MessageReceiver.cs" />
     <Compile Include="Zusi3\Node.cs" />
     <Compile Include="Zusi3\NodeCategory.cs" />
     <Compile Include="Zusi3\BranchingNodeConverter.cs" />
-    <Compile Include="Zusi3\ProtocolChunk.cs" />
+    <Compile Include="Zusi3\IProtocolChunk.cs" />
     <Compile Include="Zusi3\TopLevelNodeConverter.cs" />
   </ItemGroup>
   <ItemGroup>

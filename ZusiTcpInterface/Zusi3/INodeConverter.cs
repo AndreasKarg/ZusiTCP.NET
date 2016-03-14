@@ -6,6 +6,6 @@ namespace ZusiTcpInterface.Zusi3
   internal interface INodeConverter
   {
     [Pure]
-    IEnumerable<ProtocolChunk> Convert(Node node);
+    IEnumerable<IProtocolChunk> Convert(Node node);
   }
 }

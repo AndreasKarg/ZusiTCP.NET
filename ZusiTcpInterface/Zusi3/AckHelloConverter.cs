@@ -12,7 +12,7 @@ namespace ZusiTcpInterface.Zusi3
                 ConnectionAcceptedId = 0x03;
 
     [Pure]
-    public IEnumerable<ProtocolChunk> Convert(Node ackHelloNode)
+    public IEnumerable<IProtocolChunk> Convert(Node ackHelloNode)
     {
       var attributes = ackHelloNode.Attributes;
 

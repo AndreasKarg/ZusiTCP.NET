@@ -23,11 +23,11 @@ namespace ZusiTcpInterface.Zusi3
       set { _topLevelNodeConverters[i] = value; }
     }
 
-    public IEnumerable<ProtocolChunk> Convert(Node node)
+    public IEnumerable<IProtocolChunk> Convert(Node node)
     {
       return (_topLevelNodeConverters.ContainsKey(node.Id))
         ? _topLevelNodeConverters[node.Id].Convert(node)
-        : Enumerable.Empty<ProtocolChunk>();
+        : Enumerable.Empty<IProtocolChunk>();
     }
   }
 }

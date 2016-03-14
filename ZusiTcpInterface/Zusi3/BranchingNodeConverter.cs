@@ -18,7 +18,7 @@ namespace ZusiTcpInterface.Zusi3
       set { _subNodeConverters[i] = value; }
     }
 
-    public IEnumerable<ProtocolChunk> Convert(Node node)
+    public IEnumerable<IProtocolChunk> Convert(Node node)
     {
       return node.SubNodes
         .Where(subNode => _subNodeConverters.ContainsKey(subNode.Key))

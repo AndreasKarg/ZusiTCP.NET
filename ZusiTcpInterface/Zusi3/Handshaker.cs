@@ -1,24 +1,24 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Collections.Concurrent;
+using System.IO;
 
 namespace ZusiTcpInterface.Zusi3
 {
   internal class Handshaker
   {
     private readonly BinaryWriter _binaryWriter;
-    private readonly BinaryReader _binaryReader;
 
     private readonly ClientType _clientType;
     private readonly string _clientName;
     private readonly string _clientVersion;
+    private readonly IBlockingCollection<IProtocolChunk> _rxQueue;
 
-    public Handshaker(BinaryReader binaryReader, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion)
+    public Handshaker(IBlockingCollection<IProtocolChunk> rxQueue, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion)
     {
       _binaryWriter = binaryWriter;
       _clientType = clientType;
       _clientName = clientName;
       _clientVersion = clientVersion;
-      _binaryReader = binaryReader;
+      _rxQueue = rxQueue;
     }
 
     public void ShakeHands()
@@ -32,10 +32,8 @@ namespace ZusiTcpInterface.Zusi3
       
       var rootNodeConverter = new TopLevelNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;
-
-      var message = Node.Deserialise(_binaryReader);
-
-      var ackHello = (AckHelloPacket)rootNodeConverter.Convert(message).Single();
+      
+      var ackHello = (AckHelloPacket)_rxQueue.Take();
 
       if(!ackHello.ConnectionAccepted)
         throw new ConnectionRefusedException("Connection refused by Zusi.");

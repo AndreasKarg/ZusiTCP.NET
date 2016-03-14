@@ -1,6 +1,6 @@
 ﻿namespace ZusiTcpInterface.Zusi3
 {
-  internal class AckHelloPacket : ProtocolChunk
+  internal class AckHelloPacket : IProtocolChunk
   {
     private readonly string _zusiVersion;
     private readonly string _connectionInfo;
