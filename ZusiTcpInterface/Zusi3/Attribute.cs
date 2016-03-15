@@ -1,10 +1,10 @@
+using MiscUtil.Conversion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MiscUtil.Conversion;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -43,6 +43,11 @@ namespace ZusiTcpInterface.Zusi3
 
     public Attribute(short id, string payload)
       : this(id, Encoding.ASCII.GetBytes(payload))
+    {
+    }
+
+    public Attribute(short id, float payload)
+      : this(id, BitConverter.GetBytes(payload))
     {
     }
 

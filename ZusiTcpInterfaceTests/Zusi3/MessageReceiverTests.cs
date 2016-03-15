@@ -1,7 +1,8 @@
-﻿using System.IO;
-using System.IO.Pipes;
-using System.Threading;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using ZusiTcpInterface.Zusi3;
 
 namespace ZusiTcpInterfaceTests.Zusi3
@@ -29,17 +30,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
            0xFF, 0xFF, 0xFF, 0xFF
          };
 
-    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-    private readonly BlockingCollectionWrapper<IProtocolChunk> _blockingChunkQueue = new BlockingCollectionWrapper<IProtocolChunk>();
+    private readonly List<IProtocolChunk> _protocolChunks = new List<IProtocolChunk>();
 
     public MessageReceiverTests()
     {
-      var serverStream = new AnonymousPipeServerStream(PipeDirection.Out);
-      var clientStream = new AnonymousPipeClientStream(PipeDirection.In, serverStream.ClientSafePipeHandle);
-      var cancellableStream = new CancellableBlockingStream(clientStream, _cancellationTokenSource.Token);
-      var binaryReader = new BinaryReader(cancellableStream);
-
-      serverStream.Write(_samplePacket, 0, _samplePacket.Length);
+      var serverStream = new MemoryStream(_samplePacket);
+      var binaryReader = new BinaryReader(serverStream);
 
       var handshakeConverter = new BranchingNodeConverter();
       handshakeConverter[0x02] = new AckHelloConverter();
@@ -47,36 +43,24 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var rootNodeConverter = new TopLevelNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;
 
-      _messageReceiver = new MessageReceiver(binaryReader, rootNodeConverter, _blockingChunkQueue);
-    }
+      var mockQueue = new Mock<IBlockingCollection<IProtocolChunk>>();
+      mockQueue.Setup(queue => queue.Add(It.IsNotNull<IProtocolChunk>()))
+        .Callback<IProtocolChunk>(chunk => _protocolChunks.Add(chunk));
 
-    [TestMethod]
-    public void Reacts_to_cancellation_token_within_time_limit()
-    {
-      // Given
-      var task = _messageReceiver.StartReceptionLoop();
-
-      // When
-      _cancellationTokenSource.Cancel(false);
-
-      // Then
-      Assert.IsTrue(task.Wait(500));
+      _messageReceiver = new MessageReceiver(binaryReader, rootNodeConverter, mockQueue.Object);
     }
 
     [TestMethod]
     public void Puts_deserialised_message_onto_queue()
     {
       // Given
-      _messageReceiver.ProcessNextPacket();
+      // Message receiver as above
 
       // When
-      IProtocolChunk item;
-      var itemTaken = _blockingChunkQueue.TryTake(out item, 500);
+      _messageReceiver.ProcessNextPacket();
 
       // Then
-      Assert.IsTrue(itemTaken);
-      var ackHello = item as AckHelloPacket;
-      Assert.IsNotNull(ackHello);
+      var ackHello = (AckHelloPacket)_protocolChunks.Single();
 
       Assert.AreEqual("3.0.1.0", ackHello.ZusiVersion);
       Assert.AreEqual("0", ackHello.ConnectionInfo);

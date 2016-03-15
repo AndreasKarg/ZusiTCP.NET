@@ -20,43 +20,14 @@ namespace ZusiTcpInterface.Zusi3
       _blockingChunkQueue = blockingChunkQueue;
     }
 
-    public Task StartReceptionLoop()
-    {
-      return Task.Run(() =>
-      {
-        while (true)
-        {
-          ProcessNextPacket();
-        }
-
-      });
-    }
-
     public void ProcessNextPacket()
     {
-      try
-      {
-        while (true)
-        {
-          var message = Node.Deserialise(_binaryReader);
-          var chunks = _rootNodeConverter.Convert(message);
+      var message = Node.Deserialise(_binaryReader);
+      var chunks = _rootNodeConverter.Convert(message);
 
-          foreach (var chunk in chunks)
-          {
-            _blockingChunkQueue.Add(chunk);
-          }
-        }
-      }
-      catch (AggregateException ex)
+      foreach (var chunk in chunks)
       {
-        if (ex.InnerExceptions.Single() is TaskCanceledException)
-          return;
-
-        throw;
-      }
-      catch (TaskCanceledException)
-      {
-        // a-ok, nothing to do.
+        _blockingChunkQueue.Add(chunk);
       }
     }
   }

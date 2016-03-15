@@ -54,6 +54,9 @@
     <Compile Include="Zusi3\AckHelloPacket.cs" />
     <Compile Include="Zusi3\Attribute.cs" />
     <Compile Include="Zusi3\BlockingCollectionWrapper.cs" />
+    <Compile Include="Zusi3\CabDataAttributeConverters.cs" />
+    <Compile Include="Zusi3\CabDataChunk.cs" />
+    <Compile Include="Zusi3\CabDataConverter.cs" />
     <Compile Include="Zusi3\CancellableBlockingStream.cs" />
     <Compile Include="Zusi3\ClientType.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
