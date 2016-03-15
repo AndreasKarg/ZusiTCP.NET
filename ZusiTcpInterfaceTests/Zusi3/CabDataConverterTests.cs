@@ -14,26 +14,26 @@ namespace ZusiTcpInterfaceTests.Zusi3
     {
       // Given
       var expectedVelocity = 11.83f;
-      var expectedPilotLightState = 0f;
+      var expectedPilotLightState = false;
 
       var attributes = new Dictionary<short, Attribute>()
       {
         { 0x01, new Attribute(0x01, expectedVelocity) },
-        { 0x1B, new Attribute(0x1B, expectedPilotLightState) }
+        { 0x1B, new Attribute(0x1B, 0f) }
       };
 
       var cabDataNode = new Node(0x0A, attributes);
       var converter = new CabDataConverter();
 
       converter.ConversionFunctions[0x01] = CabDataAttributeConverters.ConvertSingle;
-      converter.ConversionFunctions[0x1B] = CabDataAttributeConverters.ConvertSingle;
+      converter.ConversionFunctions[0x1B] = CabDataAttributeConverters.ConvertBoolAsSingle;
 
       // When
-      var chunks = converter.Convert(cabDataNode).Cast<CabDataChunk<float>>().ToList();
+      var chunks = converter.Convert(cabDataNode).Cast<CabDataChunkBase>().ToList();
 
       // Then
-      var velocity = chunks.Single(chunk => chunk.Id == 0x01).Payload;
-      var pilotLightState = chunks.Single(chunk => chunk.Id == 0x1B).Payload;
+      var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Id == 0x01)).Payload;
+      var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == 0x1B)).Payload;
 
       Assert.AreEqual(expectedVelocity, velocity);
       Assert.AreEqual(expectedPilotLightState, pilotLightState);
