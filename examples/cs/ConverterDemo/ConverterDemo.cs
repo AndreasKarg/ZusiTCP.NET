@@ -171,7 +171,7 @@ class ConverterDemo
 		int idNew;
 		if (BoolIdClientToMaster.TryGetValue(data.Id, out idNew))
 		{
-			master.SendBoolAsSingle(data.Value, idNew);
+			master.SendBoolAsInt(data.Value, idNew);
 		}
 	}
 	private static void On_DateTimeReceived(object sender, Zusi_Datenausgabe.DataSet<System.DateTime> data)
@@ -180,22 +180,22 @@ class ConverterDemo
 	}
 	private static void On_ZugsicherungReceived(object sender, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.Zugsicherung> data)
 	{
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_0500Hz, 2581);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_1000Hz, 2580);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_2000Hz, 2582);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_U, 2583);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_M, 2584);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_O, 2585);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_H, 2586);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_G, 2587);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_E40, 2588);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_EL, 2589);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_Ende, 2590);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_V40, 2591);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_B, 2592);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_S, 2593);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_Ue, 2594);
-		master.SendBoolAsSingle(data.Value.StateIndusi.LM_PruefStoer, 2595);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_0500Hz, 2581);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_1000Hz, 2580);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_2000Hz, 2582);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_U, 2583);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_M, 2584);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_O, 2585);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_H, 2586);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_G, 2587);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_E40, 2588);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_EL, 2589);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_Ende, 2590);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_V40, 2591);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_B, 2592);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_S, 2593);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_Ue, 2594);
+		master.SendBoolAsInt(data.Value.StateIndusi.LM_PruefStoer, 2595);
 		master.SendSingle(data.Value.StateIndusi.vZiel * 3.6f, 2573);
 		master.SendSingle(data.Value.StateIndusi.vSoll * 3.6f, 2574); //ToDo: LZB-Soll != LZB/AFB-Soll
 		master.SendSingle(data.Value.StateIndusi.Zielweg, 2635); //Zielweg 2575 macht keinen Sinn...
@@ -214,17 +214,17 @@ class ConverterDemo
 	}
 	private static void On_SifaReceived(object sender, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.Sifa> data)
 	{
-		master.SendBoolAsSingle(data.Value.OpticalReminderOn, 2596);
+		master.SendBoolAsInt(data.Value.OpticalReminderOn, 2596);
 	}
 	private static void On_NotbremssystemReceived(object sender, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.Notbremssystem> data)
 	{
-		master.SendBoolAsSingle(data.Value.Notbremsung, 2606);
+		master.SendBoolAsInt(data.Value.Notbremsung, 2606);
 	}
 	private static void On_DoorSystemReceived(object sender, Zusi_Datenausgabe.DataSet<Zusi_Datenausgabe.DoorSystem> data)
 	{
     master.SendDoorsAsInt(data.Value.Zusi2State, 2646);
-    master.SendBoolAsSingle(data.Value.Schalter_UnlockDoorsLeft || data.Value.Schalter_UnlockDoorsRight, 2607);
-    master.SendBoolAsSingle(data.Value.Schalter_UnlockDoorsLeft || data.Value.Schalter_UnlockDoorsRight, 2627);
-    master.SendBoolAsSingle(data.Value.DoorSystemName != "", 2648);
+    master.SendBoolAsInt(data.Value.Schalter_UnlockDoorsLeft || data.Value.Schalter_UnlockDoorsRight, 2607);
+    master.SendBoolAsInt(data.Value.Schalter_UnlockDoorsLeft || data.Value.Schalter_UnlockDoorsRight, 2627);
+    master.SendBoolAsInt(data.Value.DoorSystemName != "", 2648);
 	}
 }
