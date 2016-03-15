@@ -47,7 +47,7 @@ class ConverterDemo
 			if (master.RequestedData.Contains(v1.Value))
 				client.RequestData(v1.Key);
 		}
-		if (master.RequestedData.Contains(2610))
+		if (master.RequestedData.Contains(2610)) //Date and Year
 		{
 				client.RequestData(0x0023);
 				client.RequestData(0x004B);
@@ -139,10 +139,17 @@ class ConverterDemo
 		PZBVars.Add(2635); //Zielweg 2575 macht keinen Sinn...
 		PZBVars.Add(2649); //PZB-System.
 		
+		PZBTypes.Add("Indusi I54", Zusi_Datenausgabe.PZBSystem.IndusiI54);
 		PZBTypes.Add("Indusi I60", Zusi_Datenausgabe.PZBSystem.IndusiI60);
+		PZBTypes.Add("Indusi I60M", Zusi_Datenausgabe.PZBSystem.IndusiI60); //ToDo: Ungenaue Konvertierung
+		PZBTypes.Add("Indusi I60R", Zusi_Datenausgabe.PZBSystem.IndusiI60R);
+		PZBTypes.Add("Indusi I60DR", Zusi_Datenausgabe.PZBSystem.PZ80R);
 		PZBTypes.Add("LZB80/I80 PZB90 V2.0", Zusi_Datenausgabe.PZBSystem.PZB90V16);
 		LZBTypes.Add("LZB80/I80 PZB90 V2.0");
-		PZBTypes.Add("PZB90 V2.0", Zusi_Datenausgabe.PZBSystem.PZB90V16);
+		PZBTypes.Add("LZB80/I80", Zusi_Datenausgabe.PZBSystem.LZB80I80);
+		LZBTypes.Add("LZB80/I80");
+		PZBTypes.Add("PZB90 V2.0", Zusi_Datenausgabe.PZBSystem.PZB90V16); //ToDo: Ungenaue Konvertierung
+		PZBTypes.Add("PZB90 V1.5", Zusi_Datenausgabe.PZBSystem.PZB90V15);
 	}
 	
 	private static void TCPConnection_ErrorReceived(object sender, Zusi_Datenausgabe.ZusiTcpException ex)

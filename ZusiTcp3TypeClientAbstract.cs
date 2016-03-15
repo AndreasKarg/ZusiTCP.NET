@@ -121,7 +121,9 @@ namespace Zusi_Datenausgabe
       DateBuffer = temp.ExtractedData;
 
       return new ExtractedValue<System.DateTime> (temp.ExtractedLength,
-                  new System.DateTime((System.Int64) ((System.Int64) 24 * 60 * 60 * 1000 * 1000 * 10 * ((double) DateBuffer + (double) TimeBuffer))));
+                  new System.DateTime((System.Int64) (
+                  ((System.Int64) 24 * 60 * 60 * 1000 * 1000 * 10 * ((double) DateBuffer + (double) TimeBuffer))
+                  + (new System.DateTime(1899,12,30)).Ticks)));
     }
 
     private Single TimeBuffer;
@@ -136,7 +138,9 @@ namespace Zusi_Datenausgabe
       TimeBuffer = temp.ExtractedData;
 
       return new ExtractedValue<System.DateTime> (temp.ExtractedLength,
-                  new System.DateTime((System.Int64) ((System.Int64) 24 * 60 * 60 * 1000 * 1000 * 10 * ((double) DateBuffer + (double) TimeBuffer))));
+                  new System.DateTime((System.Int64) (
+                  ((System.Int64) 24 * 60 * 60 * 1000 * 1000 * 10 * ((double) DateBuffer + (double) TimeBuffer))
+                  + (new System.DateTime(1899,12,30)).Ticks)));
     }
 
     /// <summary>
