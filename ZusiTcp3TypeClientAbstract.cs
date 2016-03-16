@@ -25,19 +25,20 @@
 #region Using
 
 using System;
+using System.Text;
 using System.Threading;
 
 #endregion
 
 
-namespace Zusi_Datenausgabe.Zusi3
+namespace Zusi_Datenausgabe
 {
   /// <summary>
   ///   Represents a ZusiTcpClientAbstract with predefined DataTypes Single, Int, String, ByteLengthString, 
   ///   NullString, DateTime, BoolAsSingle, BoolAndSingle, IntAsSingle, BoolAsInt, DoorsAsInt, PZBAsInt and BrakeAsInt.
   /// </summary>
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public class TcpTypeClientAbstract : TcpClientAbstract
+  public class ZusiTcp3TypeClientAbstract : ZusiTcp3ClientAbstract
   {
     /// <summary>
     ///   Initializes a new <see cref="ZusiTcpTypeClientAbstract" /> object that uses the specified event handlers to pass datasets to the client application.
@@ -46,7 +47,7 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetDocument">The XML file containig the command set.</param>
     /// <param name="hostContext">A Context bring the Datas to the current Thread. Can be null for avoid syncronisation.</param>
-    public TcpTypeClientAbstract(string clientId,
+    public ZusiTcp3TypeClientAbstract(string clientId,
                              string clientVersion,
                              SynchronizationContext hostContext,
                              CommandSet commandsetDocument)
@@ -61,7 +62,7 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="priority">Client priority. Determines measurement update frequency. Recommended value for control desks: "High"</param>
     /// <param name="commandsetDocument">The XML file containig the command set.</param>
     /// <exception cref="ObjectUnsynchronisableException">Thrown, when SynchronizationContext.Current == null.</exception>
-    public TcpTypeClientAbstract(string clientId, string clientVersion, CommandSet commandsetDocument)
+    public ZusiTcp3TypeClientAbstract(string clientId, string clientVersion, CommandSet commandsetDocument)
       : base(clientId, clientVersion, commandsetDocument)
     {
     }
@@ -264,11 +265,11 @@ namespace Zusi_Datenausgabe.Zusi3
     ///   Reads incoming PZB status information that is sent as Int values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
-    protected ExtractedValue<Zugsicherung> ReadZugsicherung(Node input)
+    protected ExtractedValue<Zugsicherung> ReadZugsicherung(ZusiTcp3Node input)
     {
       ZusiTcp3AttributeAbstract attrSicherungName = input.TryGetSubAttribute(0x1);
-      Node nodeIndusiConfig = input.TryGetSubNode(0x2);
-      Node nodeIndusiState = input.TryGetSubNode(0x3);
+      ZusiTcp3Node nodeIndusiConfig = input.TryGetSubNode(0x2);
+      ZusiTcp3Node nodeIndusiState = input.TryGetSubNode(0x3);
       if (attrSicherungName != null)
       {
         bufferZugsicherung.ZugsicherungName = attrSicherungName.DataAsString;
@@ -278,9 +279,9 @@ namespace Zusi_Datenausgabe.Zusi3
         ZusiTcp3AttributeAbstract attrZugart = nodeIndusiConfig.TryGetSubAttribute(0x1);
         ZusiTcp3AttributeAbstract attrDriverID = nodeIndusiConfig.TryGetSubAttribute(0x2);
         ZusiTcp3AttributeAbstract attrTrainID = nodeIndusiConfig.TryGetSubAttribute(0x3);
-        Node nodeGrunddaten = nodeIndusiConfig.TryGetSubNode(0x4);
-        Node nodeErsatzdaten = nodeIndusiConfig.TryGetSubNode(0x5);
-        Node nodeCurrentData = nodeIndusiConfig.TryGetSubNode(0x6);
+        ZusiTcp3Node nodeGrunddaten = nodeIndusiConfig.TryGetSubNode(0x4);
+        ZusiTcp3Node nodeErsatzdaten = nodeIndusiConfig.TryGetSubNode(0x5);
+        ZusiTcp3Node nodeCurrentData = nodeIndusiConfig.TryGetSubNode(0x6);
         ZusiTcp3AttributeAbstract attrHauptschalter = nodeIndusiConfig.TryGetSubAttribute(0x7);
         ZusiTcp3AttributeAbstract attrStoerschalterPZB = nodeIndusiConfig.TryGetSubAttribute(0x8);
         ZusiTcp3AttributeAbstract attrStoerschalterLZB = nodeIndusiConfig.TryGetSubAttribute(0x9);
@@ -383,7 +384,7 @@ namespace Zusi_Datenausgabe.Zusi3
 
       return new ExtractedValue<Zugsicherung> (0, bufferZugsicherung);
     }
-    private Zugsicherung.IndusiConfig.ConfigData readConfig(Node input)
+    private Zugsicherung.IndusiConfig.ConfigData readConfig(ZusiTcp3Node input)
     {
       var d = new Zugsicherung.IndusiConfig.ConfigData();
       ZusiTcp3AttributeAbstract attrBRH = input.TryGetSubAttribute(0x1);
@@ -417,9 +418,9 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="textureIndex">The index of the texture.</param>
     public void SendTexture(byte[] imageData, byte forView, string melderName, System.Int16 subIndex, byte textureIndex /*= 0*/)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node graphicNode = pultData.AddSubNode(0x10C);
+      ZusiTcp3Node graphicNode = pultData.AddSubNode(0x10C);
       graphicNode.AddSubAttribute(0x1).DataAsByte = forView;
       graphicNode.AddSubAttribute(0x2).DataAsString = melderName;
       graphicNode.AddSubAttribute(0x3).DataAsInt16 = subIndex;
@@ -433,10 +434,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="action">The action doing the pause key.</param>
     public void SendPause(SwitchAction action)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node pauseNode = controlNode.AddSubNode(0x1);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node pauseNode = controlNode.AddSubNode(0x1);
       pauseNode.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) action;
       socket.SendKnoten(pultData);
     }
@@ -446,10 +447,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="path">The path to the train.</param>
     public void RestartPrograme(string trainPath)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node restartNode = controlNode.AddSubNode(0x2);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node restartNode = controlNode.AddSubNode(0x2);
       restartNode.AddSubAttribute(0x1).DataAsString = trainPath;
       socket.SendKnoten(pultData);
     }
@@ -459,10 +460,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="path">The path to the train.</param>
     public void SimulationStart(string trainPath)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node startNode = controlNode.AddSubNode(0x3);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node startNode = controlNode.AddSubNode(0x3);
       startNode.AddSubAttribute(0x1).DataAsString = trainPath;
       socket.SendKnoten(pultData);
     }
@@ -471,10 +472,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// </summary>
     public void SimulationStop()
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node stopNode = controlNode.AddSubNode(0x4);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node stopNode = controlNode.AddSubNode(0x4);
       socket.SendKnoten(pultData);
     }
     /// <summary>
@@ -482,10 +483,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// </summary>
     public void TimetabeRestart()
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node ttrNode = controlNode.AddSubNode(0x5);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node ttrNode = controlNode.AddSubNode(0x5);
       socket.SendKnoten(pultData);
     }
     /// <summary>
@@ -494,10 +495,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="trainNumber">The number of the train.</param>
     public void TrainStart(string trainNumber)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node startNode = controlNode.AddSubNode(0x6);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node startNode = controlNode.AddSubNode(0x6);
       startNode.AddSubAttribute(0x1).DataAsString = trainNumber;
       socket.SendKnoten(pultData);
     }
@@ -507,10 +508,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="action">The action doing the Zeitsprung key.</param>
     public void SendZeitsprung(SwitchAction action)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node zeitsprungNode = controlNode.AddSubNode(0x7);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node zeitsprungNode = controlNode.AddSubNode(0x7);
       zeitsprungNode.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) action;
       socket.SendKnoten(pultData);
     }
@@ -520,10 +521,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="action">The action doing the Zeitraffer key.</param>
     public void SendZeitraffer(SwitchAction action)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node zeitrafferNode = controlNode.AddSubNode(0x8);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0x8);
       zeitrafferNode.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) action;
       socket.SendKnoten(pultData);
     }
@@ -533,10 +534,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="value">0 = dark, 1 = sun</param>
     public void SetLight(float value)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node zeitrafferNode = controlNode.AddSubNode(0x9);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0x9);
       zeitrafferNode.AddSubAttribute(0x1).DataAsSingle = value;
       socket.SendKnoten(pultData);
     }
@@ -546,10 +547,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="value">m able to look</param>
     public void SetFog(float value)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node zeitrafferNode = controlNode.AddSubNode(0xA);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0xA);
       zeitrafferNode.AddSubAttribute(0x1).DataAsSingle = value;
       socket.SendKnoten(pultData);
     }
@@ -559,10 +560,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="value">typical values: 0.4</param>
     public void SetFriction(float value)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node zeitrafferNode = controlNode.AddSubNode(0xB);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0xB);
       zeitrafferNode.AddSubAttribute(0x1).DataAsSingle = value;
       socket.SendKnoten(pultData);
     }
@@ -572,10 +573,10 @@ namespace Zusi_Datenausgabe.Zusi3
     /// <param name="action">The action doing the Autopilot key.</param>
     public void SendKIActive(SwitchAction action)
     {
-      var pultData = new Node();
+      var pultData = new ZusiTcp3Node();
       pultData.ID = 2;
-      Node controlNode = pultData.AddSubNode(0x10B);
-      Node zeitrafferNode = controlNode.AddSubNode(0xC);
+      ZusiTcp3Node controlNode = pultData.AddSubNode(0x10B);
+      ZusiTcp3Node zeitrafferNode = controlNode.AddSubNode(0xC);
       zeitrafferNode.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) action;
       socket.SendKnoten(pultData);
     }

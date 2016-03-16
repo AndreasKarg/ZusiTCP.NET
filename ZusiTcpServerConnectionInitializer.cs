@@ -91,7 +91,7 @@ namespace Zusi_Datenausgabe
 
     public void RefuseConnectionAndTerminate()
     {
-      PacketSender.SendPacket(0, 2, 2);
+      SendPacket(0, 2, 2);
       Dispose();
     }
 
@@ -142,7 +142,7 @@ namespace Zusi_Datenausgabe
       }
       catch
       {
-        PacketSender.SendPacket(PacketSender.Pack(0, 2, 255));
+        SendPacket(Pack(0, 2, 255));
         throw;
       }
 

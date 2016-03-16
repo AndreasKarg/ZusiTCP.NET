@@ -10,10 +10,10 @@ using System.Threading;
 
 #endregion
 
-namespace Zusi_Datenausgabe.Zusi3
+namespace Zusi_Datenausgabe
 {
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public abstract class TcpClientAbstract
+  public abstract class ZusiTcp3ClientAbstract
   {
     private readonly CommandSet _commands;
     private readonly SwitchableReadOnlyList<int> _requestedData = new SwitchableReadOnlyList<int>();
@@ -24,7 +24,7 @@ namespace Zusi_Datenausgabe.Zusi3
 
     protected readonly SynchronizationContext HostContext;
 
-    protected TcpClientAbstract(string clientId,
+    protected ZusiTcp3ClientAbstract(string clientId,
                               string clientVersion,
                               SynchronizationContext hostContext,
                               CommandSet commands)
@@ -39,7 +39,7 @@ namespace Zusi_Datenausgabe.Zusi3
       HostContext = hostContext;
     }
 
-    protected TcpClientAbstract(string clientId, string clientVersion, CommandSet commands)
+    protected ZusiTcp3ClientAbstract(string clientId, string clientVersion, CommandSet commands)
     {
       if (commands == null)
       {
@@ -225,9 +225,9 @@ namespace Zusi_Datenausgabe.Zusi3
       socket.ProcessKnoten += NodeReceived;
       socket.Stream = client.GetStream();
 
-      var communicationNode = new Node();
+      var communicationNode = new ZusiTcp3Node();
       communicationNode.ID = 1;
-      Node helloNode = communicationNode.AddSubNode(1);
+      ZusiTcp3Node helloNode = communicationNode.AddSubNode(1);
       helloNode.AddSubAttribute(1).DataAsInt16 = 2; //Protocol-Version: 2
       helloNode.AddSubAttribute(2).DataAsInt16 = 2; //Client-Type: Fahrpult
       helloNode.AddSubAttribute(3).DataAsString = ClientId;
@@ -394,13 +394,13 @@ namespace Zusi_Datenausgabe.Zusi3
     }
 
 
-    private void NodeReceived(object sender, Node data)
+    private void NodeReceived(object sender, ZusiTcp3Node data)
     {
         switch (data.ID)
         {
             case 1:
             {
-                Node nodeAck = data.TryGetSubNode(0x2);
+                ZusiTcp3Node nodeAck = data.TryGetSubNode(0x2);
                 if (nodeAck == null)
                 {
                     break;
@@ -428,10 +428,10 @@ namespace Zusi_Datenausgabe.Zusi3
                 }
                 
                 //If Accepted send the requested data:
-                var pultData = new Node();
+                var pultData = new ZusiTcp3Node();
                 pultData.ID = 2;
-                Node needData = pultData.AddSubNode(0x3);
-                Node fstData = needData.AddSubNode(0xA); //At the moment only 0xA supported.
+                ZusiTcp3Node needData = pultData.AddSubNode(0x3);
+                ZusiTcp3Node fstData = needData.AddSubNode(0xA); //At the moment only 0xA supported.
                 foreach (int dataID in _requestedData)
                 {
                     fstData.AddSubAttribute(0x1).DataAsInt16 = (System.Int16) dataID;
@@ -441,8 +441,8 @@ namespace Zusi_Datenausgabe.Zusi3
                 break;
             case 2:
             {
-                Node nodeAck = data.TryGetSubNode(0x4);
-                Node nodeFst = data.TryGetSubNode(0xA);
+                ZusiTcp3Node nodeAck = data.TryGetSubNode(0x4);
+                ZusiTcp3Node nodeFst = data.TryGetSubNode(0xA);
                 if (nodeAck != null)
                 {
                     ZusiTcp3AttributeAbstract attrDataAccepted = nodeAck.TryGetSubAttribute(0x1);
@@ -487,7 +487,7 @@ namespace Zusi_Datenausgabe.Zusi3
                             //Even a failed processing data is no longer a problem.
                         }
                     }
-                    foreach(Node cur in nodeFst.Nodes)
+                    foreach(ZusiTcp3Node cur in nodeFst.Nodes)
                     {
                         CommandEntry curCommand = _commands[cur.ID];
 
@@ -499,7 +499,7 @@ namespace Zusi_Datenausgabe.Zusi3
                                 String.Format("HandleDATA_{0}", curCommand.Type),
                                 BindingFlags.Instance | BindingFlags.NonPublic,
                                 null,
-                                new[] {typeof (Node), typeof (int)},
+                                new[] {typeof (ZusiTcp3Node), typeof (int)},
                                 null);
 
                             dataHandlers.Add(curCommand.Type, handlerMethod);

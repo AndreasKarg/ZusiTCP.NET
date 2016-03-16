@@ -76,8 +76,8 @@ namespace Zusi_Datenausgabe
 
     protected override void HandleHandshake()
     {
-      PacketSender.SendLargePacket(
-        PacketSender.Pack(0, 1, 1, (byte) ClientPriority, Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
+      SendLargePacket(
+        Pack(0, 1, 1, (byte) ClientPriority, Convert.ToByte(StringEncoder.GetByteCount(ClientId))),
         StringEncoder.GetBytes(ClientId)); //protocol-Version 1
 
       ExpectResponse(ResponseType.AckHello, 0);
@@ -98,7 +98,7 @@ namespace Zusi_Datenausgabe
         }
         catch
         {
-          PacketSender.SendPacket(PacketSender.Pack(0, 4, 255));
+          SendPacket(Pack(0, 4, 255));
           throw;
         }
 
@@ -111,17 +111,17 @@ namespace Zusi_Datenausgabe
         }
         catch(System.Collections.Generic.KeyNotFoundException)
         {
-          PacketSender.SendPacket(PacketSender.Pack(0, 4, 2));
+          SendPacket(Pack(0, 4, 2));
           throw;
         }
         catch(NotSupportedException)
         {
-          PacketSender.SendPacket(PacketSender.Pack(0, 4, 3));
+          SendPacket(Pack(0, 4, 3));
           throw;
         }
         catch
         {
-          PacketSender.SendPacket(PacketSender.Pack(0, 4, 0xFE));
+          SendPacket(Pack(0, 4, 0xFE));
           throw;
         }
 
@@ -136,7 +136,7 @@ namespace Zusi_Datenausgabe
 	     ((requestedValues == null) || (requestedValues.RequestedDataGroup != 0) ||
              ((requestedValues.RequestedValues != null) && (requestedValues.RequestedValues.Length != 0)))) 
 		//ToDo: Improofe Coding-Style. Maybe another location of this statement?
-          PacketSender.SendPacket(PacketSender.Pack(0, 4, 0));
+        	SendPacket(Pack(0, 4, 0));
       }
 
       OnDataRequested(_requestedData);
@@ -207,7 +207,7 @@ namespace Zusi_Datenausgabe
       var ida = new List<byte>(BitConverter.GetBytes(id));
       ida.RemoveAt(3);
       ida.Reverse();
-      PacketSender.SendLargePacket(ida.ToArray(), array);
+      SendLargePacket(ida.ToArray(), array);
       }
 
     protected override void ReceiveLoop()

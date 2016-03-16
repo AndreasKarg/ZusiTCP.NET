@@ -61,8 +61,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PacketDeserialiser.cs" />
-    <Compile Include="PacketSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BinaryIoTcpClient.cs" />
     <Compile Include="CommandSet.cs" />
@@ -72,26 +70,27 @@
     <Compile Include="Compyling.cs" />
     <Compile Include="DataContainers.cs" />
     <Compile Include="IBinaryReader.cs" />
+    <Compile Include="ObjectExtension.cs" />
+    <Compile Include="ReferenceCounter.cs" />
     <Compile Include="SpecializedCodeCompyler.cs" />
     <Compile Include="SwitchableReadOnlyList.cs" />
-    <Compile Include="TcpServer\ReferenceCountingCollection.cs" />
-    <Compile Include="TcpServer\ZusiTcpServer.cs" />
-    <Compile Include="Zusi3\TcpClientAbstract.cs" />
-    <Compile Include="Zusi3\Node.cs" />
-    <Compile Include="Zusi3\NodeType.cs" />
-    <Compile Include="Zusi3\ZusiTcp3Socket.cs" />
-    <Compile Include="Zusi3\TcpTypeClient.cs" />
-    <Compile Include="Zusi3\TcpTypeClientAbstract.cs" />
+    <Compile Include="ZusiTcp3ClientAbstract.cs" />
+    <Compile Include="ZusiTcp3Node.cs" />
+    <Compile Include="ZusiTcp3NodeType.cs" />
+    <Compile Include="ZusiTcp3Socket.cs" />
+    <Compile Include="ZusiTcp3TypeClient.cs" />
+    <Compile Include="ZusiTcp3TypeClientAbstract.cs" />
     <Compile Include="ZusiTcpBaseConnection.cs" />
     <Compile Include="ZusiTcpClientAbstract.cs" />
     <Compile Include="ZusiTcpExceptions.cs" />
     <Compile Include="ZusiTcpMasterAbstract.cs" />
+    <Compile Include="ZusiTcpServer.cs" />
     <Compile Include="ZusiTcpServerConnectionInitializer.cs" />
     <Compile Include="ZusiTcpServerMasterConnection.cs" />
     <Compile Include="ZusiTcpServerSlaveConnection.cs" />
     <Compile Include="ZusiTcpSpecificClient.cs" />
     <Compile Include="ZusiTcpTypeClient.cs" />
-    <Compile Include="BoolAndSingleStruct.cs" />
+    <Compile Include="ZusiTcpTypeClientAbstract.cs" />
     <Compile Include="ZusiTcpTypeMaster.cs" />
   </ItemGroup>
   <ItemGroup>
