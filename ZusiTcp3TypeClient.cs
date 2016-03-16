@@ -179,24 +179,29 @@ namespace Zusi_Datenausgabe
     public event ReceiveEvent<DateTime> DateTimeReceived;
 
     /// <summary>
-    ///   Event used to handle incoming door status data.
-    /// </summary>
-    public event ReceiveEvent<DoorState> DoorsReceived;
-
-    /// <summary>
-    ///   Event used to handle incoming PZB system type data.
-    /// </summary>
-    public event ReceiveEvent<PZBSystem> PZBReceived;
-
-    /// <summary>
     ///   Event used to handle incoming brake configuration data.
     /// </summary>
     public event ReceiveEvent<BrakeConfiguration> BrakeConfigReceived;
 
     /// <summary>
+    ///   Event used to handle incoming Notbremssystem configuration data.
+    /// </summary>
+    public event ReceiveEvent<Notbremssystem> NotbremssystemReceived;
+
+    /// <summary>
+    ///   Event used to handle incoming Sifa configuration data.
+    /// </summary>
+    public event ReceiveEvent<Sifa> SifaReceived;
+
+    /// <summary>
     ///   Event used to handle incoming Zugsicherung configuration data.
     /// </summary>
     public event ReceiveEvent<Zugsicherung> ZugsicherungReceived;
+
+    /// <summary>
+    ///   Event used to handle incoming DoorSystem configuration data.
+    /// </summary>
+    public event ReceiveEvent<DoorSystem> DoorSystemReceived;
 
     /// <summary>
     ///   Handle incoming data of type Single.
@@ -334,30 +339,6 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Handle incoming door state data that is sent as an Int value by Zusi.
-    /// </summary>
-    /// <param name="input">The binary reader comprising the input data stream.</param>
-    /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_DoorsAsInt(ZusiTcp3AttributeAbstract input, int id)
-    {
-      var data = ReadDoorsAsInt(input);
-      PostToHost(DoorsReceived, id, data.ExtractedData);
-      return data.ExtractedLength;
-    }
-
-    /// <summary>
-    ///   Handle incoming PZB status information that is sent as Int values by Zusi.
-    /// </summary>
-    /// <param name="input">The binary reader comprising the input data stream.</param>
-    /// <param name="id">Contains the Zusi command id for this packet.</param>
-    protected int HandleDATA_PZBAsInt(ZusiTcp3AttributeAbstract input, int id)
-    {
-      var data = ReadPZBAsInt(input);
-      PostToHost(PZBReceived, id, data.ExtractedData);
-      return data.ExtractedLength;
-    }
-
-    /// <summary>
     ///   Handle incoming brake information that is sent as Int values by Zusi.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
@@ -370,7 +351,31 @@ namespace Zusi_Datenausgabe
     }
 
     /// <summary>
-    ///   Handle incoming brake information that is sent as Int values by Zusi.
+    ///   Handle incoming Notbremssystem information.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_Notbremssystem(ZusiTcp3Node input, int id)
+    {
+      var data = ReadNotbremssystem(input);
+      PostToHost(NotbremssystemReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
+    }
+
+    /// <summary>
+    ///   Handle incoming Sifa information.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_Sifa(ZusiTcp3Node input, int id)
+    {
+      var data = ReadSifa(input);
+      PostToHost(SifaReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
+    }
+
+    /// <summary>
+    ///   Handle incoming Zugsicherung information.
     /// </summary>
     /// <param name="input">The binary reader comprising the input data stream.</param>
     /// <param name="id">Contains the Zusi command id for this packet.</param>
@@ -378,6 +383,18 @@ namespace Zusi_Datenausgabe
     {
       var data = ReadZugsicherung(input);
       PostToHost(ZugsicherungReceived, id, data.ExtractedData);
+      return data.ExtractedLength;
+    }
+
+    /// <summary>
+    ///   Handle incoming DoorSystem information.
+    /// </summary>
+    /// <param name="input">The binary reader comprising the input data stream.</param>
+    /// <param name="id">Contains the Zusi command id for this packet.</param>
+    protected int HandleDATA_DoorSystem(ZusiTcp3Node input, int id)
+    {
+      var data = ReadDoorSystem(input);
+      PostToHost(DoorSystemReceived, id, data.ExtractedData);
       return data.ExtractedLength;
     }
 

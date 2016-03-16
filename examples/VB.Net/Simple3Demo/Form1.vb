@@ -143,13 +143,13 @@ Public Class Form1
                 Dim pzb As String = "PZB: Ohne"
                 Dim lzb As String = "LZB: Ohne"
                 For Each s1 As String In s33
-                    If s1.Contains("PZB") Then
+                    If s1.Contains("PZB") OrElse s1.Contains("Indusi") Then
                         pzb = "PZB: " & s1
                     ElseIf s1.Contains("LZB") Then
                         lzb = "LZB: " & s1
                     Else
-                        pzb &= " " & s1
-                        lzb &= " " & s1
+                        pzb &= " / " & s1
+                        lzb &= " / " & s1
                         s1 = s1
                     End If
                 Next
