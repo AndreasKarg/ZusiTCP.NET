@@ -1,9 +1,6 @@
-using MiscUtil.Conversion;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace ZusiTcpInterface.Zusi3
@@ -12,8 +9,6 @@ namespace ZusiTcpInterface.Zusi3
   {
     private readonly byte[] _payload;
     private readonly short _id;
-
-    private static readonly LittleEndianBitConverter BitConverter = EndianBitConverter.Little;
 
     public short Id
     {

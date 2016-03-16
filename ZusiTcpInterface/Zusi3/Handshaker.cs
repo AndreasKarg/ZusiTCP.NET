@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.IO;
+﻿using System.IO;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -29,10 +28,10 @@ namespace ZusiTcpInterface.Zusi3
 
       var handshakeConverter = new BranchingNodeConverter();
       handshakeConverter[0x02] = new AckHelloConverter();
-      
+
       var rootNodeConverter = new TopLevelNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;
-      
+
       var ackHello = (AckHelloPacket)_rxQueue.Take();
 
       if(!ackHello.ConnectionAccepted)
