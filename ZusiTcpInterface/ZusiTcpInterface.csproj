@@ -56,6 +56,8 @@
     <Compile Include="Zusi3\CabDataConverter.cs" />
     <Compile Include="Zusi3\CancellableBlockingStream.cs" />
     <Compile Include="Zusi3\ClientType.cs" />
+    <Compile Include="Zusi3\Command.cs" />
+    <Compile Include="Zusi3\CommandsetReader.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />

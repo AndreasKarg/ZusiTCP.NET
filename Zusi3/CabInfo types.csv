@@ -1,141 +1,141 @@
-0x0001,Geschwindigkeit,m/s,Single
-0x0002,Druck Hauptluftleitung,bar,Single
-0x0003,Druck Bremszylinder,bar,Single
-0x0004,Druck Hauptluftbehälter,bar,Single
-0x0005,Luftpresser läuft,aus/an,BoolAsSingle
-0x0006,Luftstrom Fvb,-1...0...1,Single
-0x0007,Luftstrom Zbv,-1...0...1,Single
-0x0008,Lüfter an,aus/an,BoolAsSingle
-0x0009,Zugkraft gesamt,N,Single
-0x000A,Zugkraft pro Achse,N,Single
-0x000B,Zugkraft-Soll gesamt,N,Single
-0x000C,Zugkraft-Soll pro Achse,N,Single
-0x000D,Oberstrom,A,Single
-0x000E,Fahrleitungsspannung,V,Single
-0x000F,Motordrehzahl,1/min,Single
-0x0010,Uhrzeit Stunde,Stunde,Single,Zeigerposition Analoguhren
-0x0011,Uhrzeit Minute,Min.,Single,Zeigerposition Analoguhren
-0x0012,Uhrzeit Sekunde,Sekunde,Single,Zeigerposition Analoguhren
-0x0013,Hauptschalter,aus/an,BoolAsSingle
-0x0014,Trennschütz,aus/an,BoolAsSingle
-0x0015,Fahrstufe,1,Single
-0x0017,AFB-Sollgeschwindigkeit,m/s,Single
-0x0018,Druck Hilfsluftbehälter,bar,Single
-0x0019,Zurückgelegter Gesamtweg,m,Single
-0x001A,LM Getriebe,aus/an,BoolAsSingle
-0x001B,LM Schleudern,aus/an,BoolAsSingle
-0x001C,LM Gleiten,aus/an,BoolAsSingle
-0x001D,LM Mg-Bremse,aus/an,BoolAsSingle
-0x001E,LM H-Bremse,aus/an,BoolAsSingle
-0x001F,LM R-Bremse,aus/an,BoolAsSingle
-0x0020,LM Hochabbremsung,aus/an,BoolAsSingle
-0x0021,LM Schnellbremsung,aus/an,BoolAsSingle
-0x0022,Status Notbremsung,,Fail,s. eigener Abschnitt
-0x0023,LM Uhrzeit (digital),Zeit,Single,0...1 (0:00 bis 24:00 Uhr)
-0x0024,LM Drehzahlverstellung,aus/an,BoolAsSingle
-0x0025,LM Fahrtrichtung vor,aus/an,BoolAsSingle
-0x0026,LM Fahrtrichtung zurück,aus/an,BoolAsSingle
-0x0027,LM Fahrtrichtung M,aus/an,BoolAsSingle
-0x0029,Motordrehmoment,Nm,Single
-0x002A,Motorlast normiert,1,Single,(0...1)
-0x002B,Tunnel,aus/an,BoolAsSingle
-0x002C,Schienenstoß/Weiche,aus/an,BoolAsSingle
-0x002D,Stahlbrücke,aus/an,BoolAsSingle
-0x002E,Steinbrücke,aus/an,BoolAsSingle
-0x002F,x-Koordinate,m,Single,Bez. Strecken-UTM-Punkt
-0x0030,y-Koordinate,m,Single,Bez. Strecken-UTM-Punkt
-0x0031,z-Koordinate,m,Single
-0x0032,UTM-Referenzpunkt x,km,Single
-0x0033,UTM-Referenzpunkt y,km,Single
-0x0034,UTM-Zone,,Single
-0x0035,UTM-Zone 2,,Single
-0x0036,AFB an,aus/an,BoolAsSingle
-0x0037,Individuell 01,,Single
-0x0038,Individuell 02,,Single
-0x0039,Individuell 03,,Single
-0x003A,Individuell 04,,Single
-0x003B,Individuell 05,,Single
-0x003C,Individuell 06,,Single
-0x003D,Individuell 07,,Single
-0x003E,Individuell 08,,Single
-0x003F,Individuell 09,,Single
-0x0040,Individuell 10,,Single
-0x0041,Individuell 11,,Single
-0x0042,Individuell 12,,Single
-0x0043,Individuell 13,,Single
-0x0044,Individuell 14,,Single
-0x0045,Individuell 15,,Single
-0x0046,Individuell 16,,Single
-0x0047,Individuell 17,,Single
-0x0048,Individuell 18,,Single
-0x0049,Individuell 19,,Single
-0x004A,Individuell 20,,Single
-0x004B,Datum,,Single,Tage mit 0 = 30.12.1899
-0x004C,Gleiskrümmung,1000/m,Single
-0x004D,Streckenhöchstgeschwindigkeit,m/s,Single
-0x004E,Zugkraftvorschlag Autopilot,N,Single
-0x004F,Beschleunigung x,m/s²,Single
-0x0050,Beschleunigung y,m/s²,Single
-0x0051,Beschleunigung z,m/s²,Single
-0x0052,Drehbeschleunigung x-Achse,rad/s²,Single
-0x0053,Drehbeschleunigung y-Achse,rad/s²,Single
-0x0054,Drehbeschleunigung z-Achse,rad/s²,Single
-0x0055,Stromabnehmer,2x4 bit,Fail,4 bit: 1 für SA=oben; 4 bit: 1 für SA hebt sich gerade
-0x0056,LM Federspeicherbremse,aus/an,BoolAsSingle
-0x0057,Zustand Federspeicherbremse,-1/0/1/2,Single,nicht vorhanden/aus/an/blinkend
-0x0058,Steuerwagen: LM Getriebe,aus/an,BoolAsSingle
-0x0059,Steuerwagen: LM Schleudern,aus/an,BoolAsSingle
-0x005A,Steuerwagen: LM Gleiten,aus/an,BoolAsSingle
-0x005B,Steuerwagen: LM H-Bremse,aus/an,BoolAsSingle
-0x005C,Steuerwagen: LM R-Bremse,aus/an,BoolAsSingle
-0x005D,Steuerwagen: LM Drehzahlverstellung,aus/an,BoolAsSingle
-0x005E,Druck Zeitbehälter,bar,Single
-0x005F,Geschwindigkeit (absolut),m/s,Single
-0x0060,Zug ist entgleist,aus/ein,Single
-0x0061,Kilometrierung (Zugspitze),km,Single
-0x0062,Motorstrom,A,Single
-0x0063,Motorspannung,V,Single
-0x0064,Status Sifa,,Fail,s. eigener Abschnitt
-0x0065,Status Zugsicherung,,Fail,s. eigener Abschnitt
-0x0066,Status Türen,,Fail,s. eigener Abschnitt
-0x0067,Individuell 21,,Single
-0x0068,Individuell 22,,Single
-0x0069,Individuell 23,,Single
-0x006A,Individuell 24,,Single
-0x006B,Individuell 25,,Single
-0x006C,Individuell 26,,Single
-0x006D,Individuell 27,,Single
-0x006E,Individuell 28,,Single
-0x006F,Individuell 29,,Single
-0x0070,Individuell 30,,Single
-0x0071,Individuell 31,,Single
-0x0072,Individuell 32,,Single
-0x0073,Individuell 33,,Single
-0x0074,Individuell 34,,Single
-0x0075,Individuell 35,,Single
-0x0076,Individuell 36,,Single
-0x0077,Individuell 37,,Single
-0x0078,Individuell 38,,Single
-0x0079,Individuell 39,,Single
-0x007A,Individuell 40,,Single
-0x007B,Steuerwagen: Lüfter an,aus/an,BoolAsSingle
-0x007C,Steuerwagen: Zugkraft gesamt,N,Single
-0x007D,Steuerwagen: Zugkraft pro Achse,N,Single
-0x007E,Steuerwagen: Zugkraft-Soll gesamt,N,Single
-0x007F,Steuerwagen: Zugkraft-Soll pro Achse,N,Single
-0x0080,Steuerwagen: Oberstrom,A,Single
-0x0081,Steuerwagen: Fahrleitungsspannung,V,Single
-0x0082,Steuerwagen: Motordrehzahl,1/min,Single
-0x0083,Steuerwagen: Hauptschalter,aus/an,BoolAsSingle
-0x0084,Steuerwagen: Trennschütz,aus/an,BoolAsSingle
-0x0085,Steuerwagen: Fahrstufe,1,Single
-0x0086,Steuerwagen: Motordrehmoment,Nm,Single
-0x0087,Steuerwagen: Motorlast normiert,1,Single,(0...1)
-0x0088,Steuerwagen: Stromabnehmer,,Fail
-0x0089,Steuerwagen: Motorstrom,A,Single
-0x008A,Steuerwagen: Motorspannung,V,Single
-0x008B,Geschwindigkeit (absolut) inkl. Schleudern,m/s,Single
-0x008C,Batteriehauptschalter aus,aus=1/an=0,Single
-0x008D,Status Fahrzeug,,Fail,s. eigener Abschnitt
-0x008E,Status Zugverband,,Fail,s. eigener Abschnitt
-0x008F,Bremsprobefunktion,,Single,0: aus/>0: aktiv
+0x0001;Geschwindigkeit;m/s;Single
+0x0002;Druck Hauptluftleitung;bar;Single
+0x0003;Druck Bremszylinder;bar;Single
+0x0004;Druck Hauptluftbehälter;bar;Single
+0x0005;Luftpresser läuft;aus/an;BoolAsSingle
+0x0006;Luftstrom Fvb;-1...0...1;Single
+0x0007;Luftstrom Zbv;-1...0...1;Single
+0x0008;Lüfter an;aus/an;BoolAsSingle
+0x0009;Zugkraft gesamt;N;Single
+0x000A;Zugkraft pro Achse;N;Single
+0x000B;Zugkraft-Soll gesamt;N;Single
+0x000C;Zugkraft-Soll pro Achse;N;Single
+0x000D;Oberstrom;A;Single
+0x000E;Fahrleitungsspannung;V;Single
+0x000F;Motordrehzahl;1/min;Single
+0x0010;Uhrzeit Stunde;Stunde;Single;Zeigerposition Analoguhren
+0x0011;Uhrzeit Minute;Min.;Single;Zeigerposition Analoguhren
+0x0012;Uhrzeit Sekunde;Sekunde;Single;Zeigerposition Analoguhren
+0x0013;Hauptschalter;aus/an;BoolAsSingle
+0x0014;Trennschütz;aus/an;BoolAsSingle
+0x0015;Fahrstufe;1;Single
+0x0017;AFB-Sollgeschwindigkeit;m/s;Single
+0x0018;Druck Hilfsluftbehälter;bar;Single
+0x0019;Zurückgelegter Gesamtweg;m;Single
+0x001A;LM Getriebe;aus/an;BoolAsSingle
+0x001B;LM Schleudern;aus/an;BoolAsSingle
+0x001C;LM Gleiten;aus/an;BoolAsSingle
+0x001D;LM Mg-Bremse;aus/an;BoolAsSingle
+0x001E;LM H-Bremse;aus/an;BoolAsSingle
+0x001F;LM R-Bremse;aus/an;BoolAsSingle
+0x0020;LM Hochabbremsung;aus/an;BoolAsSingle
+0x0021;LM Schnellbremsung;aus/an;BoolAsSingle
+0x0022;Status Notbremsung;;Fail;s. eigener Abschnitt
+0x0023;LM Uhrzeit (digital);Zeit;Single;0...1 (0:00 bis 24:00 Uhr)
+0x0024;LM Drehzahlverstellung;aus/an;BoolAsSingle
+0x0025;LM Fahrtrichtung vor;aus/an;BoolAsSingle
+0x0026;LM Fahrtrichtung zurück;aus/an;BoolAsSingle
+0x0027;LM Fahrtrichtung M;aus/an;BoolAsSingle
+0x0029;Motordrehmoment;Nm;Single
+0x002A;Motorlast normiert;1;Single;(0...1)
+0x002B;Tunnel;aus/an;BoolAsSingle
+0x002C;Schienenstoß/Weiche;aus/an;BoolAsSingle
+0x002D;Stahlbrücke;aus/an;BoolAsSingle
+0x002E;Steinbrücke;aus/an;BoolAsSingle
+0x002F;x-Koordinate;m;Single;Bez. Strecken-UTM-Punkt
+0x0030;y-Koordinate;m;Single;Bez. Strecken-UTM-Punkt
+0x0031;z-Koordinate;m;Single
+0x0032;UTM-Referenzpunkt x;km;Single
+0x0033;UTM-Referenzpunkt y;km;Single
+0x0034;UTM-Zone;;Single
+0x0035;UTM-Zone 2;;Single
+0x0036;AFB an;aus/an;BoolAsSingle
+0x0037;Individuell 01;;Single
+0x0038;Individuell 02;;Single
+0x0039;Individuell 03;;Single
+0x003A;Individuell 04;;Single
+0x003B;Individuell 05;;Single
+0x003C;Individuell 06;;Single
+0x003D;Individuell 07;;Single
+0x003E;Individuell 08;;Single
+0x003F;Individuell 09;;Single
+0x0040;Individuell 10;;Single
+0x0041;Individuell 11;;Single
+0x0042;Individuell 12;;Single
+0x0043;Individuell 13;;Single
+0x0044;Individuell 14;;Single
+0x0045;Individuell 15;;Single
+0x0046;Individuell 16;;Single
+0x0047;Individuell 17;;Single
+0x0048;Individuell 18;;Single
+0x0049;Individuell 19;;Single
+0x004A;Individuell 20;;Single
+0x004B;Datum;;Single;Tage mit 0 = 30.12.1899
+0x004C;Gleiskrümmung;1000/m;Single
+0x004D;Streckenhöchstgeschwindigkeit;m/s;Single
+0x004E;Zugkraftvorschlag Autopilot;N;Single
+0x004F;Beschleunigung x;m/s²;Single
+0x0050;Beschleunigung y;m/s²;Single
+0x0051;Beschleunigung z;m/s²;Single
+0x0052;Drehbeschleunigung x-Achse;rad/s²;Single
+0x0053;Drehbeschleunigung y-Achse;rad/s²;Single
+0x0054;Drehbeschleunigung z-Achse;rad/s²;Single
+0x0055;Stromabnehmer;2x4 bit;Fail;4 bit: 1 für SA=oben; 4 bit: 1 für SA hebt sich gerade
+0x0056;LM Federspeicherbremse;aus/an;BoolAsSingle
+0x0057;Zustand Federspeicherbremse;-1, 0, 1, 2;Single;nicht vorhanden/aus/an/blinkend
+0x0058;Steuerwagen: LM Getriebe;aus/an;BoolAsSingle
+0x0059;Steuerwagen: LM Schleudern;aus/an;BoolAsSingle
+0x005A;Steuerwagen: LM Gleiten;aus/an;BoolAsSingle
+0x005B;Steuerwagen: LM H-Bremse;aus/an;BoolAsSingle
+0x005C;Steuerwagen: LM R-Bremse;aus/an;BoolAsSingle
+0x005D;Steuerwagen: LM Drehzahlverstellung;aus/an;BoolAsSingle
+0x005E;Druck Zeitbehälter;bar;Single
+0x005F;Geschwindigkeit (absolut);m/s;Single
+0x0060;Zug ist entgleist;aus/ein;Single
+0x0061;Kilometrierung (Zugspitze);km;Single
+0x0062;Motorstrom;A;Single
+0x0063;Motorspannung;V;Single
+0x0064;Status Sifa;;Fail;s. eigener Abschnitt
+0x0065;Status Zugsicherung;;Fail;s. eigener Abschnitt
+0x0066;Status Türen;;Fail;s. eigener Abschnitt
+0x0067;Individuell 21;;Single
+0x0068;Individuell 22;;Single
+0x0069;Individuell 23;;Single
+0x006A;Individuell 24;;Single
+0x006B;Individuell 25;;Single
+0x006C;Individuell 26;;Single
+0x006D;Individuell 27;;Single
+0x006E;Individuell 28;;Single
+0x006F;Individuell 29;;Single
+0x0070;Individuell 30;;Single
+0x0071;Individuell 31;;Single
+0x0072;Individuell 32;;Single
+0x0073;Individuell 33;;Single
+0x0074;Individuell 34;;Single
+0x0075;Individuell 35;;Single
+0x0076;Individuell 36;;Single
+0x0077;Individuell 37;;Single
+0x0078;Individuell 38;;Single
+0x0079;Individuell 39;;Single
+0x007A;Individuell 40;;Single
+0x007B;Steuerwagen: Lüfter an;aus/an;BoolAsSingle
+0x007C;Steuerwagen: Zugkraft gesamt;N;Single
+0x007D;Steuerwagen: Zugkraft pro Achse;N;Single
+0x007E;Steuerwagen: Zugkraft-Soll gesamt;N;Single
+0x007F;Steuerwagen: Zugkraft-Soll pro Achse;N;Single
+0x0080;Steuerwagen: Oberstrom;A;Single
+0x0081;Steuerwagen: Fahrleitungsspannung;V;Single
+0x0082;Steuerwagen: Motordrehzahl;1/min;Single
+0x0083;Steuerwagen: Hauptschalter;aus/an;BoolAsSingle
+0x0084;Steuerwagen: Trennschütz;aus/an;BoolAsSingle
+0x0085;Steuerwagen: Fahrstufe;1;Single
+0x0086;Steuerwagen: Motordrehmoment;Nm;Single
+0x0087;Steuerwagen: Motorlast normiert;1;Single;(0...1)
+0x0088;Steuerwagen: Stromabnehmer;;Fail
+0x0089;Steuerwagen: Motorstrom;A;Single
+0x008A;Steuerwagen: Motorspannung;V;Single
+0x008B;Geschwindigkeit (absolut) inkl. Schleudern;m/s;Single
+0x008C;Batteriehauptschalter aus;aus=1, an=0;Single
+0x008D;Status Fahrzeug;;Fail;s. eigener Abschnitt
+0x008E;Status Zugverband;;Fail;s. eigener Abschnitt
+0x008F;Bremsprobefunktion;;Single;0: aus, >0: aktiv
