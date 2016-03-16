@@ -30,19 +30,18 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 #endregion
 
-namespace Zusi_Datenausgabe.TcpServer
+namespace Zusi_Datenausgabe
 {
   /// <summary>
   ///   Represents a collection which elements are contained as long they are in use by at least one claimer.
   /// </summary>
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
-  internal class ReferenceCountingCollection<T>
+  public class ReferenceCounter<T>
   {
-    private readonly Dictionary<T, int> _references = new Dictionary<T, int>();
+    private readonly Dictionary<T, int> _referenceCounts = new Dictionary<T, int>();
 
     public void ClaimRange(IEnumerable<T> range)
     {
@@ -72,40 +71,40 @@ namespace Zusi_Datenausgabe.TcpServer
 
     private void ReleaseItem(T i)
     {
-      int val = _references[i];
+      int val = _referenceCounts[i];
 
       Debug.Assert(val > 0);
 
       if (val == 1)
       {
-        _references.Remove(i);
+        _referenceCounts.Remove(i);
       }
       else
       {
-        _references[i] = val - 1;
+        _referenceCounts[i] = val - 1;
       }
     }
 
     public void ClaimItem(T item)
     {
-      if (!_references.ContainsKey(item)) _references.Add(item, 0);
-      _references[item]++;
+      if (!_referenceCounts.ContainsKey(item)) _referenceCounts.Add(item, 0);
+      _referenceCounts[item]++;
     }
 
     public bool ExistItem(T item)
     {
-      if (!_references.ContainsKey(item)) return false;
-      return _references[item] > 0;
+      if (!_referenceCounts.ContainsKey(item)) return false;
+      return _referenceCounts[item] > 0;
     }
 
     public void Clear()
     {
-      _references.Clear();
+      _referenceCounts.Clear();
     }
 
     public IEnumerable<T> ReferencedToIEnumerable()
     {
-      return _references.Keys.ToList();
+      return new List<T>(_referenceCounts.Keys);
     }
   }
 }

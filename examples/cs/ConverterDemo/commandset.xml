@@ -1,106 +1,23 @@
 ﻿<?xml version="1.0"?>
 <TCPCommands xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://andik.g3th.net/commandset_schema.xsd">
-  <Command ID="0x0001" Name="Geschwindigkeit" Type="Single" />
-  <Command ID="0x0002" Name="Druck Hauptluftleitung" Type="Single" />
-  <Command ID="0x0003" Name="Druck Bremszylinder" Type="Single" />
-  <Command ID="0x0004" Name="Druck Hauptluftbehälter" Type="Single" />
-  <Command ID="0x0005" Name="Luftpresser läuft" Type="BoolAsSingle" />
-  <Command ID="0x0006" Name="Luftstrom Fbv" Type="Single" />
-  <Command ID="0x0007" Name="Luftstrom Zbv" Type="Single" />
-  <Command ID="0x0008" Name="Lüfter läuft" Type="BoolAsSingle" />
-  <Command ID="0x0009" Name="Zugkraft gesamt" Type="Single" />
-  <Command ID="0x000A" Name="Zugkraft pro Achse" Type="Single" />
-  <Command ID="0x000B" Name="Zugkraft-soll gesamt" Type="Single" />
-  <Command ID="0x000C" Name="Zugkraft-soll pro Achse" Type="Single" />
-  <Command ID="0x000D" Name="Oberstrom (nicht unter Zusi 2)" Type="Single" />
-  <Command ID="0x000E" Name="Fahrleitungsspannung" Type="Single" />
-  <Command ID="0x000F" Name="Motordrehzahl" Type="Single" />
-  <Command ID="0x0010" Name="Uhrzeit Stunde" Type="Single" />
-  <Command ID="0x0011" Name="Uhrzeit Minute" Type="Single" />
-  <Command ID="0x0012" Name="Uhrzeit Sekunde" Type="Single" />
-  <Command ID="0x0013" Name="Hauptschalter" Type="BoolAsSingle" />
-  <Command ID="0x0014" Name="Trennschütz" Type="BoolAsSingle" />
-  <Command ID="0x0015" Name="Fahrstufe" Type="Single" />
-  <!--3D-Fenster-->
-  <Command ID="0x0017" Name="AFB Soll-Geschwindigkeit" Type="Single" />
-  <Command ID="0x0018" Name="Druck Hilfsluftbehälter" Type="Single" />
-  <Command ID="0x0019" Name="Zurückgelegter Weg" Type="Single" />
-  <Command ID="0x001A" Name="LM Getriebe" Type="BoolAsSingle" />
-  <Command ID="0x001B" Name="LM Schleudern" Type="BoolAsSingle" />
-  <Command ID="0x001C" Name="LM Gleiten" Type="BoolAsSingle" />
-  <Command ID="0x001D" Name="LM Mg-Bremse" Type="BoolAsSingle" />
-  <Command ID="0x001E" Name="LM H-Bremse" Type="BoolAsSingle" />
-  <Command ID="0x001F" Name="LM R-Bremse" Type="BoolAsSingle" />
-  <Command ID="0x0020" Name="LM Hochabbremsung" Type="BoolAsSingle" />
-  <Command ID="0x0021" Name="LM Schnellbremsung" Type="BoolAsSingle" />
-  <Command ID="0x0022" Name="Notbremssystem" Type="Notbremssystem" />
-  <Command ID="0x0023" Name="Uhrzeit Digital" Type="TimeAsSingle" /> <!--Wird mit dem Datum zusammengefasst-->
-  <Command ID="0x0024" Name="LM Drehzahlverstellung" Type="BoolAsSingle" />
-  <Command ID="0x0025" Name="LM Fahrtrichtung vor" Type="BoolAsSingle" />
-  <Command ID="0x0026" Name="LM Fahrtrichtung zurück" Type="BoolAsSingle" />
-  <Command ID="0x0027" Name="LM Fahrtrichtung M" Type="BoolAsSingle" />
-  <!--HG-Bild-->
-  <Command ID="0x0029" Name="Motordrehmoment" Type="Single" />
-  <Command ID="0x002A" Name="Motorlast normiert" Type="Single" />
-  <Command ID="0x002B" Name="Tunnel" Type="BoolAsSingle" />
-  <Command ID="0x002C" Name="Schienenstoß/Weiche" Type="BoolAsSingle" />
-  <Command ID="0x002D" Name="Stahlbrücke" Type="BoolAsSingle" />
-  <Command ID="0x002E" Name="Steinbrücke" Type="BoolAsSingle" />
-x-Kordinate => In 3D-Point umwandeln, wenn geeigneter Basisdatentyp vorhanden
-y-Kordinate
-z-Kordinate
-UTM-Referenzpunkt x => Dito (z=0)
-y
-  <Command ID="0x0034" Name="UTM-Zone" Type="IntAsSingle" /> <!--ToDo: Wirklich?-->
-  <Command ID="0x0035" Name="UTM-Zone2" Type="IntAsSingle" /> <!--ToDo: Wirklich?-->
-  <Command ID="0x0036" Name="Schalter AFB ein/aus" Type="BoolAsSingle" />
-  <!--Individuell 01 ...20-->
-  <Command ID="0x004B" Name="Datum" Type="DateAsSingle" /> <!--Wird mit der Uhrzeit zusammengefasst, und unter der Uhrzeit-ID gesendet-->
-  <Command ID="0x004C" Name="Gleiskrümmung" Type="Single" />
-  <Command ID="0x004D" Name="Strecken-Vmax" Type="Single" />
-  <Command ID="0x004E" Name="Zugkraftvorschlag AP" Type="Single" />
-Beschleunigung x
-y
-z
-Drehbeschleunigung
-x
-y
-z
-Stromabhnehmer => Spezial!
-  <Command ID="0x0056" Name="LM Federspeicherbremse" Type="BoolAsSingle" />
-Zustand F " => Spezial-Enum
-Steuerwagen 1...6
-
-Druck Zeitbehälter
-Geschwindigkeit (absolut)
-Zug ist entgleist
-  <Command ID="0x0061" Name="Strecken-Km" Type="Single" />
-  <Command ID="0x0062" Name="Motorstrom" Type="Single" />
-  <Command ID="0x0063" Name="Motorspannung" Type="Single" />
-  <Command ID="0x0064" Name="Sifa" Type="Sifa" />
-  <Command ID="0x0065" Name="Zugsicherung" Type="Zugsicherung" />
-  <Command ID="0x0066" Name="Türen" Type="DoorSystem" />
-  
-Individuell 21...40
-
-Stueruwagen7..22
-
-Geschwindigkeit Absolut incl. Schludern
-
-Bateriehauptschalter => b
-Status Fahreug => Spezial
-Status Zugverband => Spezial
-Bremsprobefunktion => ???
-
-
-
-
-  <!--Command ID="2573" Name="LZB Ziel-Geschwindigkeit" Type="Single" />
+  <Command ID="2561" Name="Geschwindigkeit" Type="Single" />
+  <Command ID="2562" Name="Druck Hauptluftleitung" Type="Single" />
+  <Command ID="2563" Name="Druck Bremszylinder" Type="Single" />
+  <Command ID="2564" Name="Druck Hauptluftbehälter" Type="Single" />
+  <Command ID="2565" Name="Zugkraft gesamt" Type="Single" />
+  <Command ID="2566" Name="Zugkraft pro Achse" Type="Single" />
+  <Command ID="2567" Name="Strom" Type="Single" />
+  <Command ID="2568" Name="Spannung" Type="Single" />
+  <Command ID="2569" Name="Motordrehzahl" Type="Single" />
+  <Command ID="2570" Name="Uhrzeit Stunde" Type="Single" />
+  <Command ID="2571" Name="Uhrzeit Minute" Type="Single" />
+  <Command ID="2572" Name="Uhrzeit Sekunde" Type="Single" />
+  <Command ID="2573" Name="LZB Ziel-Geschwindigkeit" Type="Single" />
   <Command ID="2574" Name="LZB/AFB Soll-Geschwindigkeit" Type="Single" />
   <Command ID="2575" Name="LZB Zielweg" Type="Single" />
-
-
-
+  <Command ID="2576" Name="Fahrstufe" Type="Single" />
+  <Command ID="2578" Name="AFB Soll-Geschwindigkeit" Type="Single" />
+  <Command ID="2579" Name="Druck Hilfsluftbehälter" Type="Single" />
   <Command ID="2580" Name="LM PZB 1000Hz" Type="BoolAsSingle" />
   <Command ID="2581" Name="LM PZB 500Hz" Type="BoolAsSingle" />
   <Command ID="2582" Name="LM PZB Befehl" Type="BoolAsSingle" />
@@ -118,8 +35,16 @@ Bremsprobefunktion => ???
   <Command ID="2594" Name="LM LZB Ü" Type="BoolAsSingle" />
   <Command ID="2595" Name="LM LZB Prüfen" Type="BoolAsSingle" />
   <Command ID="2596" Name="LM Sifa" Type="BoolAsSingle" />
-
-
+  <Command ID="2597" Name="LM Hauptschalter" Type="BoolAsSingle" />
+  <Command ID="2598" Name="LM Getriebe" Type="BoolAsSingle" />
+  <Command ID="2599" Name="LM Schleudern" Type="BoolAsSingle" />
+  <Command ID="2600" Name="LM Gleiten" Type="BoolAsSingle" />
+  <Command ID="2601" Name="LM Mg-Bremse" Type="BoolAsSingle" />
+  <Command ID="2602" Name="LM H-Bremse" Type="BoolAsSingle" />
+  <Command ID="2603" Name="LM R-Bremse" Type="BoolAsSingle" />
+  <Command ID="2604" Name="LM Hochabbremsung" Type="BoolAsSingle" />
+  <Command ID="2605" Name="LM Schnellbremsung" Type="BoolAsSingle" />
+  <Command ID="2606" Name="LM Notbremsung" Type="BoolAsSingle" />
   <Command ID="2607" Name="LM Türen" Type="Single" />
   <Command ID="2608" Name="LM Tfz-Nummer" Type="Single" />
   <Command ID="2609" Name="LM max. Tfz-Geschwindidigkeit" Type="Single" />
@@ -129,7 +54,7 @@ Bremsprobefunktion => ???
   <Command ID="2613" Name="Schalter dyn. Bremse" Type="Single" />
   <Command ID="2614" Name="Schalter Zusatzbremse" Type="Single" />
   <Command ID="2615" Name="Schalter AFB-Geschwindigkeit" Type="Single" />
-
+  <Command ID="2616" Name="Schalter AFB ein/aus" Type="BoolAsSingle" />
   <Command ID="2617" Name="Schalter Mg-Bremse" Type="BoolAsSingle" />
   <Command ID="2618" Name="Schalter PZB Wachsam" Type="BoolAsSingle" />
   <Command ID="2619" Name="Schalter PZB Frei" Type="BoolAsSingle" />
@@ -144,18 +69,19 @@ Bremsprobefunktion => ???
   <Command ID="2628" Name="Schalter Glocke" Type="BoolAsSingle" />
   <Command ID="2629" Name="Schalter Lokbremse entlüften" Type="BoolAsSingle" />
   <Command ID="2630" Name="Schalter Schleuderschutzbremse" Type="BoolAsSingle" />
-
-
+  <Command ID="2631" Name="LM Drehzahlverstellung" Type="BoolAsSingle" />
+  <Command ID="2632" Name="LM Fahrtrichtung vor" Type="BoolAsSingle" />
+  <Command ID="2633" Name="LM Fahrtrichtung zurück" Type="BoolAsSingle" />
   <Command ID="2634" Name="Schalter Signum" Type="BoolAsSingle" />
   <Command ID="2635" Name="LM LZB Zielweg (ab 0)" Type="Single" />
   <Command ID="2636" Name="LZB Soll-Geschwindigkeit" Type="Single" />
   <Command ID="2637" Name="LM Block, bis zu dem die Strecke frei ist" Type="String" />
-
+  <Command ID="2638" Name="Schalter Lüfter" Type="BoolAsSingle" />
   <Command ID="2639" Name="LM GNT G" Type="BoolAsSingle" />
   <Command ID="2640" Name="LM GNT Ü" Type="BoolAsSingle" />
   <Command ID="2641" Name="LM GNT B" Type="BoolAsSingle" />
   <Command ID="2642" Name="LM GNT S" Type="BoolAsSingle" />
-
+  <Command ID="2645" Name="Strecken-Km" Type="Single" />
   <Command ID="2646" Name="Türen" Type="DoorsAsInt" />
   <Command ID="2647" Name="Autopilot" Type="BoolAsInt" />
   <Command ID="2648" Name="Reisezug" Type="BoolAsInt" />
@@ -178,5 +104,5 @@ Bremsprobefunktion => ???
   <Command ID="2665" Name="Planzeit nächster Reisezughalt" Type="DateTime" />
   <Command ID="2666" Name="PZB restriktiv" Type="BoolAsInt" />
   <Command ID="2667" Name="PZB-Zwangsbremsung" Type="BoolAsInt" />
-  <Command ID="2680" Name="Oberstrom (nicht unter Zusi 2)" Type="Single" /-->
+  <Command ID="2680" Name="Oberstrom (nicht unter Zusi 2)" Type="Single" />
 </TCPCommands>

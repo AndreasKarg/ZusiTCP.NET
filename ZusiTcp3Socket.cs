@@ -1,11 +1,11 @@
-namespace Zusi_Datenausgabe.Zusi3
+namespace Zusi_Datenausgabe
 {
   /// <summary>
   ///   Represents the delegate type required for event handling. Used to transfer incoming data sets to the client application.
   /// </summary>
   /// <param name="data">Contains the new dataset.</param>
   /// <param name="sender">Contains the object triggering the event.</param>
-  public delegate void Node3ReceiveEvent(object sender, Node data);
+  public delegate void Node3ReceiveEvent(object sender, ZusiTcp3Node data);
 
   /// <summary>
   ///   Represents the delegate type required for error event handling. Used to handle exceptions that occur in the reception thread.
@@ -25,9 +25,9 @@ namespace Zusi_Datenausgabe.Zusi3
     //}
 
     /// <summary>
-    ///   Writes the Node to the stream.
+    ///   Writes the ZusiTcp3Node to the stream.
     /// </summary>
-    public void SendKnoten(Node d)
+    public void SendKnoten(ZusiTcp3Node d)
     {
       d.Write(Stream);
     }
@@ -65,9 +65,9 @@ namespace Zusi_Datenausgabe.Zusi3
 
     private byte[] Buffer = new byte[256];
     private System.IAsyncResult CurrentStreamWorking = null;
-    private Node CurrentNode = null;
+    private ZusiTcp3Node CurrentNode = null;
     private int OldStartPosition = 0;
-    private void On_ProcessKnoten(Node k)
+    private void On_ProcessKnoten(ZusiTcp3Node k)
     {
       ProcessKnoten.Invoke(this, k);
     }
@@ -86,14 +86,14 @@ namespace Zusi_Datenausgabe.Zusi3
         int length = Stream.EndRead(ar) + OldStartPosition;
         int currentPosition = 0;
         bool needsMore = (length == Buffer.Length);
-        Node oldcurrentnode = CurrentNode;
+        ZusiTcp3Node oldcurrentnode = CurrentNode;
         if (length < 0)
             throw new System.Exception();
 
         while (true)
         {
           if (CurrentNode == null)
-            CurrentNode = new Node();
+            CurrentNode = new ZusiTcp3Node();
           if (!CurrentNode.ReadTopNode(Buffer, ref currentPosition, ref length))
             break;
           if (length < 0)
