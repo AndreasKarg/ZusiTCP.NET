@@ -2,7 +2,7 @@
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public static class CabDataAttributeConverters
+  internal static class CabDataAttributeConverters
   {
     public static IProtocolChunk ConvertSingle(short id, byte[] payload)
     {

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterfaceTests", "Zu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterface", "ZusiTcpInterface\ZusiTcpInterface.csproj", "{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "DemoApp\DemoApp.csproj", "{B4E5220D-6A97-4172-89DC-C49B16E166B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

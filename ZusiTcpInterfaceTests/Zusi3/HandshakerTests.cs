@@ -109,20 +109,5 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // When - Throws
       Assert.Throws<ConnectionRefusedException>(_handshaker.ShakeHands);
     }
-
-/*
-    [TestMethod, Ignore]
-    public void Connects_to_real_Zusi()
-    {
-      // Use this test while debugging to play around
-
-      using (var tcpClient = new TcpClient("localhost", 1436))
-      {
-        var binaryWriter = new BinaryWriter(tcpClient.GetStream());
-
-        var handshaker = new Handshaker(_rxQueue, binaryWriter, ClientType.ControlDesk, "Andi", "1.2.3");
-        handshaker.ShakeHands();
-      }
-    }*/
   }
 }
