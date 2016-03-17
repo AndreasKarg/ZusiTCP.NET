@@ -1,7 +1,8 @@
-﻿using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MSTestExtensions;
+using System.Collections.Generic;
+using System.IO;
 using ZusiTcpInterface.Zusi3;
 
 namespace ZusiTcpInterfaceTests.Zusi3
@@ -10,7 +11,14 @@ namespace ZusiTcpInterfaceTests.Zusi3
   public class HandshakerTests : BaseTest
   {
     private readonly AckHelloPacket _positiveAckHello = new AckHelloPacket("3.1.0.0.", "0", true);
-    
+    private readonly AckNeededDataPacket _positiveAckNeededDataPacket = new AckNeededDataPacket(true);
+
+    private readonly List<short> _neededData = new List<short>
+      {
+        0x01,
+        0x1B
+      };
+
     private readonly Handshaker _handshaker;
     private readonly Mock<IBlockingCollection<IProtocolChunk>> _rxQueue = new Mock<IBlockingCollection<IProtocolChunk>>();
     private readonly MemoryStream _txStream = new MemoryStream();
@@ -19,14 +27,18 @@ namespace ZusiTcpInterfaceTests.Zusi3
     {
       var binaryWriter = new BinaryWriter(_txStream);
 
-      _rxQueue.Setup(queue => queue.Take())
-        .Returns(_positiveAckHello);
+      var rxPackets = new Queue<IProtocolChunk>();
+      rxPackets.Enqueue(_positiveAckHello);
+      rxPackets.Enqueue(_positiveAckNeededDataPacket);
 
-      _handshaker = new Handshaker(_rxQueue.Object, binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0");
+      _rxQueue.Setup(queue => queue.Take())
+        .Returns(rxPackets.Dequeue);
+
+      _handshaker = new Handshaker(_rxQueue.Object, binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0", _neededData);
     }
 
     [TestMethod]
-    public void Sends_correct_hello_packet()
+    public void Performs_valid_handshake()
     {
       // Given
       byte[] expectedTxData
@@ -46,8 +58,23 @@ namespace ZusiTcpInterfaceTests.Zusi3
                 0x05, 0x00, 0x00, 0x00,
                   0x04, 0x00,
                   0x32, 0x2E, 0x30,
-              0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-            0xFF, 0xFF, 0xFF};
+              0xFF, 0xFF, 0xFF, 0xFF,
+            0xFF, 0xFF, 0xFF, 0xFF,
+            0x00, 0x00, 0x00, 0x00,
+            0x02, 0x00,
+              0x00, 0x00, 0x00, 0x00,
+              0x03, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x0A, 0x00,
+                  0x04, 0x00, 0x00, 0x00,
+                    0x01, 0x00,
+                    0x01, 0x00,
+                  0x04, 0x00, 0x00, 0x00,
+                    0x01, 0x00,
+                    0x1B, 0x00,
+                0xFF, 0xFF, 0xFF, 0xFF,
+              0xFF, 0xFF, 0xFF, 0xFF,
+            0xFF, 0xFF, 0xFF, 0xFF};
 
       // When
       _handshaker.ShakeHands();
@@ -67,6 +94,22 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // When - Throws
       Assert.Throws<ConnectionRefusedException>(_handshaker.ShakeHands);
     }
+
+    [TestMethod]
+    public void Throws_exception_when_simulator_does_not_acknowledge_needed_data()
+    {
+      // Given
+      var receivedPackets = new Queue<IProtocolChunk>();
+      receivedPackets.Enqueue(_positiveAckHello);
+      receivedPackets.Enqueue(new AckNeededDataPacket(false));
+
+      _rxQueue.Setup(queue => queue.Take())
+        .Returns(receivedPackets.Dequeue);
+
+      // When - Throws
+      Assert.Throws<ConnectionRefusedException>(_handshaker.ShakeHands);
+    }
+
 /*
     [TestMethod, Ignore]
     public void Connects_to_real_Zusi()

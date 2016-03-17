@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -9,14 +10,16 @@ namespace ZusiTcpInterface.Zusi3
     private readonly ClientType _clientType;
     private readonly string _clientName;
     private readonly string _clientVersion;
+    private readonly List<short> _neededData;
     private readonly IBlockingCollection<IProtocolChunk> _rxQueue;
 
-    public Handshaker(IBlockingCollection<IProtocolChunk> rxQueue, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion)
+    public Handshaker(IBlockingCollection<IProtocolChunk> rxQueue, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion, List<short> neededData)
     {
       _binaryWriter = binaryWriter;
       _clientType = clientType;
       _clientName = clientName;
       _clientVersion = clientVersion;
+      _neededData = neededData;
       _rxQueue = rxQueue;
     }
 
@@ -36,6 +39,14 @@ namespace ZusiTcpInterface.Zusi3
 
       if(!ackHello.ConnectionAccepted)
         throw new ConnectionRefusedException("Connection refused by Zusi.");
+
+      var neededDataPacket = new NeededDataPacket(_neededData);
+      neededDataPacket.Serialise(_binaryWriter);
+
+      var ackNeededData = (AckNeededDataPacket) _rxQueue.Take();
+
+      if(!ackNeededData.RequestAccepted)
+        throw new ConnectionRefusedException("Needed data rejected by Zusi.");
     }
   }
 }
