@@ -48,6 +48,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Zusi3\AckHelloConverter.cs" />
     <Compile Include="Zusi3\AckHelloPacket.cs" />
+    <Compile Include="Zusi3\AckNeededDataConverter.cs" />
+    <Compile Include="Zusi3\AckNeededDataPacket.cs" />
     <Compile Include="Zusi3\Attribute.cs" />
     <Compile Include="Zusi3\BlockingCollectionWrapper.cs" />
     <Compile Include="Zusi3\CabDataAttributeConverters.cs" />
