@@ -4,11 +4,11 @@ using System.IO;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  internal static class CommandsetReader
+  internal static class CabInfoTypeDescriptorReader
   {
-    public static IEnumerable<Command> ReadCommandsetFrom(Stream inputStream)
+    public static IEnumerable<CabInfoTypeDescriptor> ReadCommandsetFrom(Stream inputStream)
     {
-      var commands = new List<Command>();
+      var commands = new List<CabInfoTypeDescriptor>();
       var streamReader = new StreamReader(inputStream);
 
       while (!streamReader.EndOfStream)
@@ -23,7 +23,7 @@ namespace ZusiTcpInterface.Zusi3
         string converter = columns[3];
         string comment = (columns.Length == 5) ? columns[4] : "";
 
-        commands.Add(new Command(id, name, unit, converter, comment));
+        commands.Add(new CabInfoTypeDescriptor(id, name, unit, converter, comment));
       }
 
       return commands;

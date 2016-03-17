@@ -56,8 +56,8 @@
     <Compile Include="Zusi3\CabDataConverter.cs" />
     <Compile Include="Zusi3\CancellableBlockingStream.cs" />
     <Compile Include="Zusi3\ClientType.cs" />
-    <Compile Include="Zusi3\Command.cs" />
-    <Compile Include="Zusi3\CommandsetReader.cs" />
+    <Compile Include="Zusi3\CabInfoTypeDescriptor.cs" />
+    <Compile Include="Zusi3\CabInfoTypeDescriptorReader.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />
@@ -65,6 +65,7 @@
     <Compile Include="Zusi3\INodeConverter.cs" />
     <Compile Include="Zusi3\IProtocolElement.cs" />
     <Compile Include="Zusi3\MessageReceiver.cs" />
+    <Compile Include="Zusi3\NeededDataPacket.cs" />
     <Compile Include="Zusi3\Node.cs" />
     <Compile Include="Zusi3\NodeCategory.cs" />
     <Compile Include="Zusi3\BranchingNodeConverter.cs" />

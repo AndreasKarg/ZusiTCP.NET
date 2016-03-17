@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,7 @@ using ZusiTcpInterface.Zusi3;
 namespace ZusiTcpInterfaceTests.Zusi3
 {
   [TestClass]
-  public class CommandsetReaderTests
+  public class CabInfoTypeDescriptorReaderTests
   {
     [TestMethod]
     public void ReadsCsvCorrectly()
@@ -25,22 +24,22 @@ namespace ZusiTcpInterfaceTests.Zusi3
 0x0007;Luftstrom Zbv;-1...0...1;Single
 0x0008;Lüfter an;aus/an;BoolAsSingle";
 
-      var expectedCommands = new List<Command>
+      var expectedCommands = new List<CabInfoTypeDescriptor>
       {
-        new Command(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new Command(0x02, "Druck Hauptluftleitung", "bar", "Single"),
-        new Command(0x03, "Druck Bremszylinder", "bar", "Single"),
-        new Command(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-        new Command(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        new Command(0x06, "Luftstrom Fvb", "-1...0...1", "Fail"),
-        new Command(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-        new Command(0x08, "Lüfter an", "aus/an", "BoolAsSingle"),
+        new CabInfoTypeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
+        new CabInfoTypeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new CabInfoTypeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
+        new CabInfoTypeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new CabInfoTypeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new CabInfoTypeDescriptor(0x06, "Luftstrom Fvb", "-1...0...1", "Fail"),
+        new CabInfoTypeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
+        new CabInfoTypeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle"),
       };
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetCsv.ToCharArray()));
 
       // When
-      var commands = CommandsetReader.ReadCommandsetFrom(inputStream).ToList();
+      var commands = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream).ToList();
 
       // Then
       foreach (var expectedCommand in expectedCommands)

@@ -2,7 +2,7 @@
 
 namespace ZusiTcpInterface.Zusi3
 {
-  internal struct Command : IEquatable<Command>
+  internal struct CabInfoTypeDescriptor : IEquatable<CabInfoTypeDescriptor>
   {
     private readonly short _id;
     private readonly string _name;
@@ -10,7 +10,7 @@ namespace ZusiTcpInterface.Zusi3
     private readonly string _type;
     private readonly string _comment;
 
-    public Command(short id, string name, string unit, string type, string comment = "")
+    public CabInfoTypeDescriptor(short id, string name, string unit, string type, string comment = "")
     {
       _id = id;
       _name = name;
@@ -44,7 +44,7 @@ namespace ZusiTcpInterface.Zusi3
       get { return _comment; }
     }
 
-    public bool Equals(Command other)
+    public bool Equals(CabInfoTypeDescriptor other)
     {
       return Id == other.Id
              && Name == other.Name
