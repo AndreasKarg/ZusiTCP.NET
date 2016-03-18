@@ -2,7 +2,7 @@
 
 namespace ZusiTcpInterface.Zusi3
 {
-  internal struct CabInfoTypeDescriptor : IEquatable<CabInfoTypeDescriptor>
+  public struct CabInfoTypeDescriptor : IEquatable<CabInfoTypeDescriptor>
   {
     private readonly short _id;
     private readonly string _name;

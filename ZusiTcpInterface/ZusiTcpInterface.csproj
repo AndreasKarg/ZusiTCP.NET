@@ -60,7 +60,9 @@
     <Compile Include="Zusi3\ClientType.cs" />
     <Compile Include="Zusi3\CabInfoTypeDescriptor.cs" />
     <Compile Include="Zusi3\CabInfoTypeDescriptorReader.cs" />
+    <Compile Include="Zusi3\ConnectionContainer.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
+    <Compile Include="Zusi3\DescriptorCollection.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />
     <Compile Include="Zusi3\IBlockingCollection.cs" />
