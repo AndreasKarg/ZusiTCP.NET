@@ -14,11 +14,17 @@ namespace ZusiTcpInterface.Zusi3
     private readonly HashSet<short> _neededData = new HashSet<short>();
     private static TopLevelNodeConverter _topLevelNodeConverter;
     private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
-    private TcpClient _tcpClient = null;
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
-    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-    private Task _messageReceptionTask;
+    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+    #region Fields involved in object disposal
+
+    private TcpClient _tcpClient;
     private Task _cabDataForwardingTask;
+    private bool _hasBeenDisposed;
+    private Task _messageReceptionTask;
+
+    #endregion Fields involved in object disposal
 
     public DescriptorCollection Descriptors
     {
@@ -94,17 +100,26 @@ namespace ZusiTcpInterface.Zusi3
 
     public void Dispose()
     {
+      if (_hasBeenDisposed)
+        return;
+
       _cancellationTokenSource.Cancel();
 
-      if(!_messageReceptionTask.Wait(500))
+      if(_messageReceptionTask != null && !_messageReceptionTask.Wait(500))
         throw new TimeoutException("Failed to shut down message recption task within timeout.");
+      _messageReceptionTask = null;
 
-      if(!_cabDataForwardingTask.Wait(500))
+      if (_cabDataForwardingTask != null && !_cabDataForwardingTask.Wait(500))
         throw new TimeoutException("Failed to shut down message forwarding task within timeout.");
+      _cabDataForwardingTask = null;
 
-      _tcpClient.Close();
+      if(_tcpClient != null)
+        _tcpClient.Close();
+
       _receivedCabDataChunks.CompleteAdding();
       _receivedChunks.CompleteAdding();
+
+      _hasBeenDisposed = true;
     }
 
     public void Connect(string hostname = "localhost", int port = 1436)
