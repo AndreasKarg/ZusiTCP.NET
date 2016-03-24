@@ -1,6 +1,6 @@
 namespace ZusiTcpInterface.Zusi3
 {
-  internal abstract class CabDataChunkBase : IProtocolChunk
+  public abstract class CabDataChunkBase : IProtocolChunk
   {
     private readonly short _id;
 

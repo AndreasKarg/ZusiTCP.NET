@@ -10,10 +10,10 @@ namespace ZusiTcpInterface.Zusi3
     private readonly ClientType _clientType;
     private readonly string _clientName;
     private readonly string _clientVersion;
-    private readonly List<short> _neededData;
+    private readonly IEnumerable<short> _neededData;
     private readonly IBlockingCollection<IProtocolChunk> _rxQueue;
 
-    public Handshaker(IBlockingCollection<IProtocolChunk> rxQueue, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion, List<short> neededData)
+    public Handshaker(IBlockingCollection<IProtocolChunk> rxQueue, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion, IEnumerable<short> neededData)
     {
       _binaryWriter = binaryWriter;
       _clientType = clientType;

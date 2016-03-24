@@ -38,46 +38,29 @@ namespace DemoApp
 
       Console.WriteLine("Connecting...");
 
-      using (var client = new TcpClient("localhost", 1436))
+      using (var connectionContainer = new ConnectionContainer())
       {
+        connectionContainer.RequestData("Geschwindigkeit");
+        connectionContainer.RequestData("LM Getriebe");
+        connectionContainer.Connect();
+
         Console.WriteLine("Connected!");
-        var networkStream = client.GetStream();
-        var binaryReader = new BinaryReader(networkStream);
-        var binaryWriter = new BinaryWriter(networkStream);
-
-        var chunkRxQueue = new BlockingCollectionWrapper<IProtocolChunk>();
-
-        var messageReader = new MessageReceiver(binaryReader, topLevelNodeConverter, chunkRxQueue);
-        var messageLoop = Task.Run(() =>
-        {
-          while (true)
-          {
-            messageReader.ProcessNextPacket();
-          }
-        });
-
-        var handshaker = new Handshaker(chunkRxQueue, binaryWriter, ClientType.ControlDesk, "Z3 Protocol Demo", "1.0",
-          neededData);
-
-        handshaker.ShakeHands();
-
-        Console.WriteLine("Hands have been shaken.");
 
         while (true)
         {
-          var chunk = (CabDataChunk<Single>) chunkRxQueue.Take();
+          var chunk = connectionContainer.ReceivedChunkQueue.Take();
           switch (chunk.Id)
           {
             case 0x01:
-              Console.WriteLine("Velocity [km/h] = {0}", chunk.Payload*3.6f);
+              Console.WriteLine("Velocity [km/h] = {0}", ((CabDataChunk<Single>)chunk).Payload*3.6f);
               break;
 
-            case 0x02:
-              Console.WriteLine("Main brake line pressure [bar] = {0}", chunk.Payload);
+            case 0x1A:
+              Console.WriteLine("Gearbox pilot light = {0}", ((CabDataChunk<bool>)chunk).Payload);
               break;
 
             default:
-              throw new NotSupportedException("Lol?");
+              throw new NotSupportedException("lol u mad bro???");
           }
         }
       }

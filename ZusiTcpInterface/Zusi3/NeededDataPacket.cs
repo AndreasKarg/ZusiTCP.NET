@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -14,14 +13,14 @@ namespace ZusiTcpInterface.Zusi3
 
     private readonly List<short> _neededIds;
 
-    public NeededDataPacket(List<short> neededIds)
+    public NeededDataPacket(IEnumerable<short> neededIds)
     {
-      _neededIds = neededIds;
+      _neededIds = neededIds.ToList();
     }
 
     public List<short> NeededIds
     {
-      get { return _neededIds; }
+      get { return _neededIds.ToList(); }
     }
 
     public void Serialise(BinaryWriter binaryWriter)
