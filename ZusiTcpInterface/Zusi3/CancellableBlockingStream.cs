@@ -18,6 +18,7 @@ namespace ZusiTcpInterface.Zusi3
     }
 
     #region Delegating members
+
     public new object GetLifetimeService()
     {
       return _underlyingStream.GetLifetimeService();
@@ -50,12 +51,12 @@ namespace ZusiTcpInterface.Zusi3
 
     public new void CopyTo(Stream destination)
     {
-      _underlyingStream.CopyToAsync(destination).Wait(_cancellationToken);
+      WaitForTaskAndRethrowExceptions(_underlyingStream.CopyToAsync(destination));
     }
 
     public new void CopyTo(Stream destination, int bufferSize)
     {
-      _underlyingStream.CopyToAsync(destination, bufferSize).Wait(_cancellationToken);
+      WaitForTaskAndRethrowExceptions(_underlyingStream.CopyToAsync(destination, bufferSize,_cancellationToken));
     }
 
     public override void Close()
@@ -70,7 +71,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public override void Flush()
     {
-      _underlyingStream.FlushAsync().Wait(_cancellationToken);
+      WaitForTaskAndRethrowExceptions(_underlyingStream.FlushAsync(_cancellationToken));
     }
 
     public new Task FlushAsync()
@@ -95,7 +96,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public new Task<int> ReadAsync(byte[] buffer, int offset, int count)
     {
-      return _underlyingStream.ReadAsync(buffer, offset, count);
+      return _underlyingStream.ReadAsync(buffer, offset, count, _cancellationToken);
     }
 
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
@@ -135,14 +136,16 @@ namespace ZusiTcpInterface.Zusi3
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-      return _underlyingStream.ReadAsync(buffer, offset, count, _cancellationToken).Result;
+      var task = _underlyingStream.ReadAsync(buffer, offset, count, _cancellationToken);
+      WaitForTaskAndRethrowExceptions(task);
+      return task.Result;
     }
 
     public override int ReadByte()
     {
       var buf = new byte[1];
       var task = _underlyingStream.ReadAsync(buf, 0, 1, _cancellationToken);
-      task.Wait();
+      WaitForTaskAndRethrowExceptions(task);
 
       if (task.Result == -1)
         throw new EndOfStreamException();
@@ -152,14 +155,14 @@ namespace ZusiTcpInterface.Zusi3
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-      _underlyingStream.WriteAsync(buffer, offset, count, _cancellationToken).Wait();
+      WaitForTaskAndRethrowExceptions(_underlyingStream.WriteAsync(buffer, offset, count, _cancellationToken));
     }
 
     public override void WriteByte(byte value)
     {
       var buf = new[] {value};
 
-      _underlyingStream.WriteAsync(buf, 0, buf.Length, _cancellationToken).Wait();
+      WaitForTaskAndRethrowExceptions(_underlyingStream.WriteAsync(buf, 0, buf.Length, _cancellationToken));
     }
 
     public override bool CanRead
@@ -204,6 +207,22 @@ namespace ZusiTcpInterface.Zusi3
       get { return _underlyingStream.WriteTimeout; }
       set { _underlyingStream.WriteTimeout = value; }
     }
-#endregion
+
+    #endregion Delegating members
+
+    private void WaitForTaskAndRethrowExceptions(Task task)
+    {
+      try
+      {
+        task.Wait(_cancellationToken);
+      }
+      catch (AggregateException aggregate)
+      {
+        foreach (var innerException in aggregate.InnerExceptions)
+        {
+          throw innerException;
+        }
+      }
+    }
   }
 }

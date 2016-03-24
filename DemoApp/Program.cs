@@ -40,15 +40,20 @@ namespace DemoApp
 
       using (var connectionContainer = new ConnectionContainer())
       {
-        connectionContainer.RequestData("Geschwindigkeit");
-        connectionContainer.RequestData("LM Getriebe");
+        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
+        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
+        connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor);
         connectionContainer.Connect();
 
         Console.WriteLine("Connected!");
 
         while (!Console.KeyAvailable)
         {
-          var chunk = connectionContainer.ReceivedCabDataChunks.Take();
+          CabDataChunkBase chunk;
+          bool chunkTaken = connectionContainer.ReceivedCabDataChunks.TryTake(out chunk, 100);
+          if(!chunkTaken)
+            continue;
+
           switch (chunk.Id)
           {
             case 0x01:

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ZusiTcpInterface.Zusi3
@@ -15,6 +16,9 @@ namespace ZusiTcpInterface.Zusi3
     private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
     private TcpClient _tcpClient = null;
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
+    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private Task _messageReceptionTask;
+    private Task _cabDataForwardingTask;
 
     public DescriptorCollection Descriptors
     {
@@ -80,8 +84,24 @@ namespace ZusiTcpInterface.Zusi3
       _neededData.Add(_descriptors.GetBy(name).Id);
     }
 
+    public void RequestData(params CabInfoTypeDescriptor[] descriptors)
+    {
+      foreach (var descriptor in descriptors)
+      {
+        _neededData.Add(descriptor.Id);
+      }
+    }
+
     public void Dispose()
     {
+      _cancellationTokenSource.Cancel();
+
+      if(!_messageReceptionTask.Wait(500))
+        throw new TimeoutException("Failed to shut down message recption task within timeout.");
+
+      if(!_cabDataForwardingTask.Wait(500))
+        throw new TimeoutException("Failed to shut down message forwarding task within timeout.");
+
       _tcpClient.Close();
       _receivedCabDataChunks.CompleteAdding();
       _receivedChunks.CompleteAdding();
@@ -91,16 +111,24 @@ namespace ZusiTcpInterface.Zusi3
     {
       _tcpClient = new TcpClient(hostname, port);
 
-      var networkStream = _tcpClient.GetStream();
+      var networkStream = new CancellableBlockingStream(_tcpClient.GetStream(), _cancellationTokenSource.Token);
       var binaryReader = new BinaryReader(networkStream);
       var binaryWriter = new BinaryWriter(networkStream);
 
       var messageReader = new MessageReceiver(binaryReader, _topLevelNodeConverter, _receivedChunks);
-      var messageLoop = Task.Run(() =>
+      _messageReceptionTask = Task.Run(() =>
       {
         while (true)
         {
-          messageReader.ProcessNextPacket();
+          try
+          {
+            messageReader.ProcessNextPacket();
+          }
+          catch (OperationCanceledException e)
+          {
+            // Teardown requested
+            return;
+          }
         }
       });
 
@@ -109,11 +137,21 @@ namespace ZusiTcpInterface.Zusi3
 
       handshaker.ShakeHands();
 
-      var secondMessageLoop = Task.Run(() =>
+      _cabDataForwardingTask = Task.Run(() =>
       {
         while (true)
         {
-          _receivedCabDataChunks.Add((CabDataChunkBase)_receivedChunks.Take());
+          IProtocolChunk protocolChunk;
+          try
+          {
+            _receivedChunks.TryTake(out protocolChunk, -1, _cancellationTokenSource.Token);
+          }
+          catch (OperationCanceledException e)
+          {
+            // Teardown requested
+            return;
+          }
+          _receivedCabDataChunks.Add((CabDataChunkBase) protocolChunk);
         }
       });
     }
