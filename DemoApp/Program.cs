@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using ZusiTcpInterface.Zusi3;
 
 namespace DemoApp
@@ -11,31 +7,6 @@ namespace DemoApp
   {
     private static void Main(string[] args)
     {
-      var neededData = new List<short>
-      {
-        0x01, 0x02
-      };
-
-      var cabDataConversionFunctions = new Dictionary<short, Func<short, byte[], IProtocolChunk>>
-      {
-        { 0x01, CabDataAttributeConverters.ConvertSingle},
-        { 0x02, CabDataAttributeConverters.ConvertSingle},
-      };
-
-      var handshakeConverter = new BranchingNodeConverter();
-      var ackHelloConverter = new AckHelloConverter();
-      var ackNeededDataConverter = new AckNeededDataConverter();
-      handshakeConverter[0x02] = ackHelloConverter;
-
-      var cabDataConverter = new CabDataConverter(cabDataConversionFunctions);
-      var userDataConverter = new BranchingNodeConverter();
-      userDataConverter[0x04] = ackNeededDataConverter;
-      userDataConverter[0x0A] = cabDataConverter;
-
-      TopLevelNodeConverter topLevelNodeConverter = new TopLevelNodeConverter();
-      topLevelNodeConverter[0x01] = handshakeConverter;
-      topLevelNodeConverter[0x02] = userDataConverter;
-
       Console.WriteLine("Connecting...");
 
       using (var connectionContainer = new ConnectionContainer())

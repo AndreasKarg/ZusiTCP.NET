@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public class NeededDataPacket
+  internal class NeededDataPacket
   {
     private const short ClientApplicationNodeId = 0x02;
     private const short NeededDataNodeId = 0x03;
@@ -20,7 +20,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public List<short> NeededIds
     {
-      get { return _neededIds.ToList(); }
+      get { return _neededIds; }
     }
 
     public void Serialise(BinaryWriter binaryWriter)

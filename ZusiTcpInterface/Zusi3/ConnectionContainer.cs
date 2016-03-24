@@ -16,6 +16,8 @@ namespace ZusiTcpInterface.Zusi3
     private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private string _clientName = "Unnamed";
+    private string _clientVersion = "Unknown";
 
     #region Fields involved in object disposal
 
@@ -39,6 +41,18 @@ namespace ZusiTcpInterface.Zusi3
     public IBlockingCollection<CabDataChunkBase> ReceivedCabDataChunks
     {
       get { return _receivedCabDataChunks; }
+    }
+
+    public string ClientName
+    {
+      get { return _clientName; }
+      set { _clientName = value; }
+    }
+
+    public string ClientVersion
+    {
+      get { return _clientVersion; }
+      set { _clientVersion = value; }
     }
 
     public ConnectionContainer(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.csv")
@@ -147,7 +161,7 @@ namespace ZusiTcpInterface.Zusi3
         }
       });
 
-      var handshaker = new Handshaker(_receivedChunks, binaryWriter, ClientType.ControlDesk, "Z3 Protocol Demo", "1.0",
+      var handshaker = new Handshaker(_receivedChunks, binaryWriter, ClientType.ControlDesk, _clientName, _clientVersion,
         _neededData);
 
       handshaker.ShakeHands();
