@@ -46,9 +46,9 @@ namespace DemoApp
 
         Console.WriteLine("Connected!");
 
-        while (true)
+        while (!Console.KeyAvailable)
         {
-          var chunk = connectionContainer.ReceivedChunkQueue.Take();
+          var chunk = connectionContainer.ReceivedCabDataChunks.Take();
           switch (chunk.Id)
           {
             case 0x01:
@@ -64,6 +64,8 @@ namespace DemoApp
           }
         }
       }
+
+      Console.WriteLine("Disconnected");
     }
   }
 }

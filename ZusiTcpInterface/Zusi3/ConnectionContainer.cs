@@ -12,8 +12,9 @@ namespace ZusiTcpInterface.Zusi3
     private readonly DescriptorCollection _descriptors;
     private readonly HashSet<short> _neededData = new HashSet<short>();
     private static TopLevelNodeConverter _topLevelNodeConverter;
-    private readonly IBlockingCollection<CabDataChunkBase> _blockingCollection = new BlockingCollectionWrapper<CabDataChunkBase>();
+    private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
     private TcpClient _tcpClient = null;
+    private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
 
     public DescriptorCollection Descriptors
     {
@@ -25,9 +26,9 @@ namespace ZusiTcpInterface.Zusi3
       get { return _neededData; }
     }
 
-    public IBlockingCollection<CabDataChunkBase> ReceivedChunkQueue
+    public IBlockingCollection<CabDataChunkBase> ReceivedCabDataChunks
     {
-      get { return _blockingCollection; }
+      get { return _receivedCabDataChunks; }
     }
 
     public ConnectionContainer(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.csv")
@@ -81,7 +82,9 @@ namespace ZusiTcpInterface.Zusi3
 
     public void Dispose()
     {
-      throw new NotImplementedException();
+      _tcpClient.Close();
+      _receivedCabDataChunks.CompleteAdding();
+      _receivedChunks.CompleteAdding();
     }
 
     public void Connect(string hostname = "localhost", int port = 1436)
@@ -92,9 +95,7 @@ namespace ZusiTcpInterface.Zusi3
       var binaryReader = new BinaryReader(networkStream);
       var binaryWriter = new BinaryWriter(networkStream);
 
-      var chunkRxQueue = new BlockingCollectionWrapper<IProtocolChunk>();
-
-      var messageReader = new MessageReceiver(binaryReader, _topLevelNodeConverter, chunkRxQueue);
+      var messageReader = new MessageReceiver(binaryReader, _topLevelNodeConverter, _receivedChunks);
       var messageLoop = Task.Run(() =>
       {
         while (true)
@@ -103,7 +104,7 @@ namespace ZusiTcpInterface.Zusi3
         }
       });
 
-      var handshaker = new Handshaker(chunkRxQueue, binaryWriter, ClientType.ControlDesk, "Z3 Protocol Demo", "1.0",
+      var handshaker = new Handshaker(_receivedChunks, binaryWriter, ClientType.ControlDesk, "Z3 Protocol Demo", "1.0",
         _neededData);
 
       handshaker.ShakeHands();
@@ -112,7 +113,7 @@ namespace ZusiTcpInterface.Zusi3
       {
         while (true)
         {
-          _blockingCollection.Add((CabDataChunkBase)chunkRxQueue.Take());
+          _receivedCabDataChunks.Add((CabDataChunkBase)_receivedChunks.Take());
         }
       });
     }
