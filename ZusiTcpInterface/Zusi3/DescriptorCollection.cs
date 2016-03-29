@@ -5,21 +5,23 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class DescriptorCollection
   {
-    private readonly List<CabInfoTypeDescriptor> _descriptors;
+    private readonly Dictionary<short, CabInfoTypeDescriptor> _byId;
+    private readonly Dictionary<string, CabInfoTypeDescriptor> _byName;
 
     public DescriptorCollection(List<CabInfoTypeDescriptor> descriptors)
     {
-      _descriptors = descriptors;
+      _byId = descriptors.ToDictionary(descriptor => descriptor.Id);
+      _byName = descriptors.ToDictionary(descriptor => descriptor.Name);
     }
 
     public CabInfoTypeDescriptor GetBy(string name)
     {
-      return _descriptors.Single(descriptor => descriptor.Name == name);
+      return _byName[name];
     }
 
     public CabInfoTypeDescriptor GetBy(short id)
     {
-      return _descriptors.Single(descriptor => descriptor.Id == id);
+      return _byId[id];
     }
 
     public CabInfoTypeDescriptor this[string name]

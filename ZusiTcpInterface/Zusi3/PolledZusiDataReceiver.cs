@@ -5,10 +5,12 @@ namespace ZusiTcpInterface.Zusi3
   public class PolledZusiDataReceiver
   {
     private readonly IBlockingCollection<CabDataChunkBase> _blockingCollection;
+    private readonly DescriptorCollection _descriptorCollection;
 
-    public PolledZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection)
+    internal PolledZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, DescriptorCollection descriptorCollection)
     {
       _blockingCollection = blockingCollection;
+      _descriptorCollection = descriptorCollection;
     }
 
     public event EventHandler<DataReceivedEventArgs<Single>> FloatReceived;
@@ -25,34 +27,24 @@ namespace ZusiTcpInterface.Zusi3
 
     private void RaiseEventFor(CabDataChunkBase chunk)
     {
-      if (RaiseEventIfChunkIs<float>(chunk, OnFloatReceived))
+      if (RaiseEventIfChunkIs<float>(chunk, FloatReceived))
         return;
 
-      if (RaiseEventIfChunkIs<bool>(chunk, OnBoolReceived))
+      if (RaiseEventIfChunkIs<bool>(chunk, BoolReceived))
         return;
 
       throw new NotSupportedException("The data type received is not supported.");
     }
 
-    private bool RaiseEventIfChunkIs<T>(CabDataChunkBase chunk, Action<T> handler)
+    private bool RaiseEventIfChunkIs<T>(CabDataChunkBase chunk, EventHandler<DataReceivedEventArgs<T>> handler)
     {
       var dataChunk = chunk as CabDataChunk<T>;
       if (dataChunk == null) return false;
+      if (handler == null)
+        return true;
 
-      handler(dataChunk.Payload);
+      handler(this, new DataReceivedEventArgs<T>(dataChunk.Payload, dataChunk.Id, _descriptorCollection[dataChunk.Id].Name));
       return true;
-    }
-
-    protected virtual void OnFloatReceived(float payload)
-    {
-      var handler = FloatReceived;
-      if (handler != null) handler(this, new DataReceivedEventArgs<float>(payload, 123, "Lalala"));
-    }
-
-    protected virtual void OnBoolReceived(bool payload)
-    {
-      var handler = BoolReceived;
-      if (handler != null) handler(this, new DataReceivedEventArgs<bool>(payload, 123, "OLOLOL"));
     }
   }
 }
