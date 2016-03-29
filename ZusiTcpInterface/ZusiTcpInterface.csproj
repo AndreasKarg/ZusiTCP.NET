@@ -62,6 +62,7 @@
     <Compile Include="Zusi3\CabInfoTypeDescriptorReader.cs" />
     <Compile Include="Zusi3\ConnectionContainer.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
+    <Compile Include="Zusi3\DataReceivedEventArgs.cs" />
     <Compile Include="Zusi3\DescriptorCollection.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Zusi3\NodeCategory.cs" />
     <Compile Include="Zusi3\BranchingNodeConverter.cs" />
     <Compile Include="Zusi3\IProtocolChunk.cs" />
+    <Compile Include="Zusi3\PolledZusiDataReceiver.cs" />
     <Compile Include="Zusi3\TopLevelNodeConverter.cs" />
   </ItemGroup>
   <ItemGroup>

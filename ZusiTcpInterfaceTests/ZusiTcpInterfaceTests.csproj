@@ -73,6 +73,7 @@
     <Compile Include="Zusi3\NodeTests.cs" />
     <Compile Include="Zusi3\AckHelloConverterTests.cs" />
     <Compile Include="Zusi3\HandshakerTests.cs" />
+    <Compile Include="Zusi3\PolledZusiDataReceiverTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZusiTcpInterface\ZusiTcpInterface.csproj">

@@ -10,6 +10,7 @@ namespace ZusiTcpInterface.Zusi3
     int BoundedCapacity { get; }
     bool IsAddingCompleted { get; }
     bool IsCompleted { get; }
+    new int Count { get; }
 
     void Add(T item);
 

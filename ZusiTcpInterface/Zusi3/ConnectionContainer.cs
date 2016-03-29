@@ -153,7 +153,7 @@ namespace ZusiTcpInterface.Zusi3
           {
             messageReader.ProcessNextPacket();
           }
-          catch (OperationCanceledException e)
+          catch (OperationCanceledException)
           {
             // Teardown requested
             return;
@@ -175,7 +175,7 @@ namespace ZusiTcpInterface.Zusi3
           {
             _receivedChunks.TryTake(out protocolChunk, -1, _cancellationTokenSource.Token);
           }
-          catch (OperationCanceledException e)
+          catch (OperationCanceledException)
           {
             // Teardown requested
             return;
