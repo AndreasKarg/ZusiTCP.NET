@@ -4,10 +4,6 @@ namespace ZusiTcpInterface.Zusi2
 {
   internal struct AckHelloPacket
   {
-    private const int HeaderLength = 4;
-    private const int InstructionLength = 2;
-    private const int AckLength = 1;
-
     private readonly bool _acknowledged;
 
     private AckHelloPacket(bool acknowledged) : this()
