@@ -64,6 +64,7 @@
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
     <Compile Include="Zusi3\DataReceivedEventArgs.cs" />
     <Compile Include="Zusi3\DescriptorCollection.cs" />
+    <Compile Include="Zusi3\EventRaisingZusiDataReceiverBase.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\HelloPacket.cs" />
     <Compile Include="Zusi3\IBlockingCollection.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Zusi3\BranchingNodeConverter.cs" />
     <Compile Include="Zusi3\IProtocolChunk.cs" />
     <Compile Include="Zusi3\PolledZusiDataReceiver.cs" />
+    <Compile Include="Zusi3\ThreadMarshallingZusiDataReceiver.cs" />
     <Compile Include="Zusi3\TopLevelNodeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
