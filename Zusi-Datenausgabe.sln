@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterface", "ZusiTcp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawQueueDemoApp", "RawQueueDemoApp\RawQueueDemoApp.csproj", "{B4E5220D-6A97-4172-89DC-C49B16E166B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PollBasedDemoApp", "PollBasedDemoApp\PollBasedDemoApp.csproj", "{5814B36A-C714-491E-9992-92CFBBA702FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

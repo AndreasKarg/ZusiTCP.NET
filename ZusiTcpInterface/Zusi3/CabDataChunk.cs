@@ -1,6 +1,6 @@
 ﻿namespace ZusiTcpInterface.Zusi3
 {
-  internal class CabDataChunk<T> : CabDataChunkBase
+  public class CabDataChunk<T> : CabDataChunkBase
   {
     private readonly T _payload;
 

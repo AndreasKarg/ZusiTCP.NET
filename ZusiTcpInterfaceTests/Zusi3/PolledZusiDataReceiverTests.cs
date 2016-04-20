@@ -51,14 +51,14 @@ namespace ZusiTcpInterfaceTests.Zusi3
       {
         lastReceivedBool = args.Payload;
         lastReceivedBoolId = args.Id;
-        lastReceivedBoolName = args.Name;
+        lastReceivedBoolName = args.Descriptor.Name;
       };
 
       _polledZusiDataReceiver.FloatReceived += (sender, args) =>
       {
         lastReceivedFloat = args.Payload;
         lastReceivedFloatId = args.Id;
-        lastReceivedFloatName = args.Name;
+        lastReceivedFloatName = args.Descriptor.Name;
       };
 
       const float expectedFloat = 3.0f;

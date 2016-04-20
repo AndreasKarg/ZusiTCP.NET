@@ -6,12 +6,12 @@ namespace ZusiTcpInterface.Zusi3
   {
     private readonly T _payload;
     private readonly short _id;
-    private readonly string _name;
+    private readonly CabInfoTypeDescriptor _descriptor;
 
-    public DataReceivedEventArgs(T payload, short id, string name)
+    public DataReceivedEventArgs(T payload, short id, CabInfoTypeDescriptor descriptor)
     {
       _payload = payload;
-      _name = name;
+      _descriptor = descriptor;
       _id = id;
     }
 
@@ -25,9 +25,9 @@ namespace ZusiTcpInterface.Zusi3
       get { return _id; }
     }
 
-    public string Name
+    public CabInfoTypeDescriptor Descriptor
     {
-      get { return _name; }
+      get { return _descriptor; }
     }
   }
 }
