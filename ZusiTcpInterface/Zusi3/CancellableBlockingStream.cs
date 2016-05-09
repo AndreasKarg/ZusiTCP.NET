@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZusiTcpInterface.Zusi3
 {
+  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class CancellableBlockingStream : Stream
   {
     private readonly Stream _underlyingStream;

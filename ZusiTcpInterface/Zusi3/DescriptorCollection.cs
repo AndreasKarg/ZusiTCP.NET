@@ -3,12 +3,13 @@ using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
 {
+  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class DescriptorCollection
   {
     private readonly Dictionary<short, CabInfoTypeDescriptor> _byId;
     private readonly Dictionary<string, CabInfoTypeDescriptor> _byName;
 
-    public DescriptorCollection(List<CabInfoTypeDescriptor> descriptors)
+    public DescriptorCollection(IEnumerable<CabInfoTypeDescriptor> descriptors)
     {
       _byId = descriptors.ToDictionary(descriptor => descriptor.Id);
       _byName = descriptors.ToDictionary(descriptor => descriptor.Name);

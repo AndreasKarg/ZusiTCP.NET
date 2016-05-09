@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
 {
+  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
   public abstract class EventRaisingZusiDataReceiverBase
   {
     private readonly DescriptorCollection _descriptorCollection;
