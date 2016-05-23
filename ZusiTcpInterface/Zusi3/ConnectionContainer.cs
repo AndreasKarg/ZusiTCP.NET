@@ -10,7 +10,7 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class ConnectionContainer : IDisposable
   {
-    private readonly DescriptorCollection _descriptors;
+    private DescriptorCollection _descriptors;
     private readonly HashSet<short> _neededData = new HashSet<short>();
     private static TopLevelNodeConverter _topLevelNodeConverter;
     private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
@@ -57,14 +57,32 @@ namespace ZusiTcpInterface.Zusi3
 
     public ConnectionContainer(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.csv")
     {
-      List<CabInfoTypeDescriptor> cabInfoDescriptors;
       using (var commandSetFileStream = File.OpenRead(cabInfoTypeDescriptorFilename))
       {
-        cabInfoDescriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(commandSetFileStream).ToList();
+        InitialiseFrom(commandSetFileStream);
       }
+    }
 
-      _descriptors = new DescriptorCollection(cabInfoDescriptors);
-      var cabInfoConversionFunctions = GenerateConversionFunctions(cabInfoDescriptors);
+    public ConnectionContainer(Stream commandsetFileStream)
+    {
+      InitialiseFrom(commandsetFileStream);
+    }
+
+    public ConnectionContainer(IEnumerable<CabInfoTypeDescriptor> cabInfoTypeDescriptors)
+    {
+      InitialiseFrom(cabInfoTypeDescriptors.ToList());
+    }
+
+    private void InitialiseFrom(Stream fileStream)
+    {
+      var cabInfoDescriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(fileStream).ToList();
+      InitialiseFrom(cabInfoDescriptors);
+    }
+
+    private void InitialiseFrom(List<CabInfoTypeDescriptor> cabInfoTypeDescriptors)
+    {
+      _descriptors = new DescriptorCollection(cabInfoTypeDescriptors);
+      var cabInfoConversionFunctions = GenerateConversionFunctions(cabInfoTypeDescriptors);
 
       SetupNodeConverters(cabInfoConversionFunctions);
     }
