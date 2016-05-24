@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.Converters;
+using ZusiTcpInterface.Zusi3.DOM;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {

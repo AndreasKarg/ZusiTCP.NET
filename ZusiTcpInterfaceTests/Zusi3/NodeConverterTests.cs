@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ZusiTcpInterface.Zusi3;
-using Attribute = ZusiTcpInterface.Zusi3.Attribute;
+using ZusiTcpInterface.Zusi3.Converters;
+using ZusiTcpInterface.Zusi3.DOM;
+using Attribute = ZusiTcpInterface.Zusi3.DOM.Attribute;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {

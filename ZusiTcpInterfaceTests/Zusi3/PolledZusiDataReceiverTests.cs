@@ -4,6 +4,7 @@ using MSTestExtensions;
 using System;
 using System.Collections.Generic;
 using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {

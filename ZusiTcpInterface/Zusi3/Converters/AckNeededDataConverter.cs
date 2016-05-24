@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ZusiTcpInterface.Zusi3.DOM;
+using ZusiTcpInterface.Zusi3.Packets;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal class AckNeededDataConverter : INodeConverter
   {

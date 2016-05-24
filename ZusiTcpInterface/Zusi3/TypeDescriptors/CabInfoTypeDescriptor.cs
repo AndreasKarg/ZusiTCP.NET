@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   public struct CabInfoTypeDescriptor : IEquatable<CabInfoTypeDescriptor>
   {

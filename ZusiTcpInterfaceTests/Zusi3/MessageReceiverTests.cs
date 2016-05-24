@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.Converters;
+using ZusiTcpInterface.Zusi3.Packets;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {

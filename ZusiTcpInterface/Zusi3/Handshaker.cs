@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using ZusiTcpInterface.Zusi3.Converters;
+using ZusiTcpInterface.Zusi3.DOM;
+using ZusiTcpInterface.Zusi3.Packets;
 
 namespace ZusiTcpInterface.Zusi3
 {

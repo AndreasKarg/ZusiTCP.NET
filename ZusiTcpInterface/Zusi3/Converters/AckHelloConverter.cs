@@ -2,8 +2,10 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using ZusiTcpInterface.Zusi3.DOM;
+using ZusiTcpInterface.Zusi3.Packets;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal class AckHelloConverter : INodeConverter
   {

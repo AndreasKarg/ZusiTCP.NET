@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.Converters;
+using ZusiTcpInterface.Zusi3.DOM;
+using ZusiTcpInterface.Zusi3.Packets;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZusiTcpInterface.Zusi3.DOM;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal class SifaNodeConverter : INodeConverter
   {

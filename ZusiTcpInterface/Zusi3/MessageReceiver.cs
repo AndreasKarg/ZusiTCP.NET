@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using ZusiTcpInterface.Zusi3.Converters;
+using ZusiTcpInterface.Zusi3.DOM;
 
 namespace ZusiTcpInterface.Zusi3
 {

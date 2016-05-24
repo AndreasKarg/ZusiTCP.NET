@@ -1,4 +1,6 @@
-﻿namespace ZusiTcpInterface.Zusi3
+﻿using ZusiTcpInterface.Zusi3.TypeDescriptors;
+
+namespace ZusiTcpInterface.Zusi3
 {
   public class PolledZusiDataReceiver : EventRaisingZusiDataReceiverBase
   {

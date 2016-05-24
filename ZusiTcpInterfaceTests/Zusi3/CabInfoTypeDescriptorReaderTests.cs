@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {

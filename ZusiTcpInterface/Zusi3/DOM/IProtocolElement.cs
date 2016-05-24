@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.DOM
 {
   internal interface IProtocolElement
   {

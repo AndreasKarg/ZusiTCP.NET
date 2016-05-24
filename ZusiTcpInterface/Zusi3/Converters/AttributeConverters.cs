@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal static class AttributeConverters
   {

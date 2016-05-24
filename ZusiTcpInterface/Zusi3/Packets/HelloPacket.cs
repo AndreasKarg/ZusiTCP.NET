@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using ZusiTcpInterface.Zusi3.DOM;
+using Attribute = ZusiTcpInterface.Zusi3.DOM.Attribute;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.Packets
 {
   internal struct HelloPacket
   {
-    private const NodeCategory NodeCategory = Zusi3.NodeCategory.Handshake;
+    private const NodeCategory NodeCategory = DOM.NodeCategory.Handshake;
     private const short HelloNodeId = 0x01;
 
     private const short ProtocolVersion = 2;

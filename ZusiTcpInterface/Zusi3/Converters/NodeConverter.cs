@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using ZusiTcpInterface.Zusi3.DOM;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal class NodeConverter : INodeConverter
   {

@@ -4,6 +4,8 @@ using MSTestExtensions;
 using System.Collections.Generic;
 using System.IO;
 using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.DOM;
+using ZusiTcpInterface.Zusi3.Packets;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {

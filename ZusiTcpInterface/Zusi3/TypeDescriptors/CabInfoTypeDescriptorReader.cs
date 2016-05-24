@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.IO;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   internal static class CabInfoTypeDescriptorReader
   {

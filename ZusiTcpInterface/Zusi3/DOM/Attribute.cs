@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
 
-namespace ZusiTcpInterface.Zusi3
+namespace ZusiTcpInterface.Zusi3.DOM
 {
   internal class Attribute : IProtocolElement
   {
