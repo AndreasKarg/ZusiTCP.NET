@@ -79,6 +79,7 @@
     <Compile Include="Zusi3\PolledZusiDataReceiver.cs" />
     <Compile Include="Zusi3\SifaNodeConverter.cs" />
     <Compile Include="Zusi3\SifaStatus.cs" />
+    <Compile Include="Zusi3\StringDumpNodeConverter.cs" />
     <Compile Include="Zusi3\ThreadMarshallingZusiDataReceiver.cs" />
     <Compile Include="Zusi3\RootNodeConverter.cs" />
   </ItemGroup>

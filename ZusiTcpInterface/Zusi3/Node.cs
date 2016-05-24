@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 
@@ -31,7 +32,7 @@ namespace ZusiTcpInterface.Zusi3
     public Node(short id, Dictionary<short, Node> subNodes, Dictionary<short, Attribute> attributes)
     {
       _id = id;
-      
+
       _subNodes = subNodes;
       _attributes = attributes;
     }
@@ -95,6 +96,29 @@ namespace ZusiTcpInterface.Zusi3
       }
 
       return new Node(id, subNodes, attributes);
+    }
+
+    public IEnumerable<String> DumpToStrings()
+    {
+      yield return String.Format("Node 0x{0:x2}:", Id);
+
+      foreach (var attribute in Attributes.Values)
+      {
+        var attributeDump = attribute.DumpToStrings();
+        foreach (var line in attributeDump)
+        {
+          yield return "  " + line;
+        }
+      }
+
+      foreach (var subNode in SubNodes.Values)
+      {
+        var nodeDump = subNode.DumpToStrings();
+        foreach (var line in nodeDump)
+        {
+          yield return "  " + line;
+        }
+      }
     }
   }
 }

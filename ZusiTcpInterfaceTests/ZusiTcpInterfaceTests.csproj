@@ -75,6 +75,7 @@
     <Compile Include="Zusi3\HandshakerTests.cs" />
     <Compile Include="Zusi3\PolledZusiDataReceiverTests.cs" />
     <Compile Include="Zusi3\SifaNodeConverterTests.cs" />
+    <Compile Include="Zusi3\StringDumpNodeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZusiTcpInterface\ZusiTcpInterface.csproj">

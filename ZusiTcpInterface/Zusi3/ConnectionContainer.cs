@@ -95,7 +95,7 @@ namespace ZusiTcpInterface.Zusi3
       var ackNeededDataConverter = new AckNeededDataConverter();
       handshakeConverter.SubNodeConverters[0x02] = ackHelloConverter;
 
-      var cabDataConverter = new NodeConverter{ ConversionFunctions = cabInfoAttributeConverters, SubNodeConverters = cabInfoNodeConverters };
+      var cabDataConverter = new NodeConverter { ConversionFunctions = cabInfoAttributeConverters, SubNodeConverters = cabInfoNodeConverters };
       var userDataConverter = new NodeConverter();
       userDataConverter.SubNodeConverters[0x04] = ackNeededDataConverter;
       userDataConverter.SubNodeConverters[0x0A] = cabDataConverter;
@@ -123,6 +123,7 @@ namespace ZusiTcpInterface.Zusi3
       var converters = new Dictionary<string, INodeConverter>(StringComparer.InvariantCultureIgnoreCase)
       {
         {"sifa", new SifaNodeConverter()},
+        {"dumptostring", new StringDumpNodeConverter()}
       };
 
       return cabInfoDescriptors.Where(d => converters.ContainsKey(d.Type))
@@ -149,7 +150,7 @@ namespace ZusiTcpInterface.Zusi3
 
       _cancellationTokenSource.Cancel();
 
-      if(_messageReceptionTask != null && !_messageReceptionTask.Wait(500))
+      if (_messageReceptionTask != null && !_messageReceptionTask.Wait(500))
         throw new TimeoutException("Failed to shut down message recption task within timeout.");
       _messageReceptionTask = null;
 
@@ -157,7 +158,7 @@ namespace ZusiTcpInterface.Zusi3
         throw new TimeoutException("Failed to shut down message forwarding task within timeout.");
       _cabDataForwardingTask = null;
 
-      if(_tcpClient != null)
+      if (_tcpClient != null)
         _tcpClient.Close();
 
       _receivedCabDataChunks.CompleteAdding();
@@ -210,7 +211,7 @@ namespace ZusiTcpInterface.Zusi3
             // Teardown requested
             return;
           }
-          _receivedCabDataChunks.Add((CabDataChunkBase) protocolChunk);
+          _receivedCabDataChunks.Add((CabDataChunkBase)protocolChunk);
         }
       });
     }

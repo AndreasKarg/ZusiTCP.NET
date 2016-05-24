@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
@@ -64,6 +65,26 @@ namespace ZusiTcpInterface.Zusi3
       rxStream.Read(payload, 0, payload.Length);
 
       return new Attribute(id, payload);
+    }
+
+    [Pure]
+    public IEnumerable<String> DumpToStrings()
+    {
+      yield return String.Format("Attribute 0x{0:x2}:", Id);
+
+      var sb = new StringBuilder();
+      sb.Append("  ");
+
+      var payload = Payload;
+      for (int i = 0; i < payload.Length; i++)
+      {
+        sb.AppendFormat("0x{0:X2}", payload[i]);
+
+        if (i < payload.Length-1)
+          sb.Append(", ");
+      }
+
+      yield return sb.ToString();
     }
   }
 }
