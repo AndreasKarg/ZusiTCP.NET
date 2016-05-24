@@ -95,7 +95,7 @@
 0x0061;Kilometrierung (Zugspitze);km;Single
 0x0062;Motorstrom;A;Single
 0x0063;Motorspannung;V;Single
-0x0064;Status Sifa;;Fail;s. eigener Abschnitt
+0x0064;Status Sifa;;Sifa;s. eigener Abschnitt
 0x0065;Status Zugsicherung;;Fail;s. eigener Abschnitt
 0x0066;Status Türen;;Fail;s. eigener Abschnitt
 0x0067;Individuell 21;;Single

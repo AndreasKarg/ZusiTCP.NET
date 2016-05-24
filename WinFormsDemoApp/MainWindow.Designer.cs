@@ -33,6 +33,8 @@
       this.lblGearboxIndicator = new System.Windows.Forms.Label();
       this.lblVelocity = new System.Windows.Forms.Label();
       this.lblConnecting = new System.Windows.Forms.Label();
+      this.lblSifaStatus = new System.Windows.Forms.Label();
+      this.label5 = new System.Windows.Forms.Label();
       this.SuspendLayout();
       // 
       // label2
@@ -80,9 +82,29 @@
       this.lblConnecting.TabIndex = 4;
       this.lblConnecting.Text = "Connecting...";
       // 
+      // lblSifaStatus
+      // 
+      this.lblSifaStatus.AutoSize = true;
+      this.lblSifaStatus.Location = new System.Drawing.Point(129, 70);
+      this.lblSifaStatus.Name = "lblSifaStatus";
+      this.lblSifaStatus.Size = new System.Drawing.Size(35, 13);
+      this.lblSifaStatus.TabIndex = 6;
+      this.lblSifaStatus.Text = "label4";
+      // 
+      // label5
+      // 
+      this.label5.AutoSize = true;
+      this.label5.Location = new System.Drawing.Point(30, 70);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(59, 13);
+      this.label5.TabIndex = 5;
+      this.label5.Text = "Sifa status:";
+      // 
       // MainWindow
       // 
-      this.ClientSize = new System.Drawing.Size(284, 261);
+      this.ClientSize = new System.Drawing.Size(1221, 261);
+      this.Controls.Add(this.lblSifaStatus);
+      this.Controls.Add(this.label5);
       this.Controls.Add(this.lblConnecting);
       this.Controls.Add(this.lblVelocity);
       this.Controls.Add(this.lblGearboxIndicator);
@@ -105,6 +127,8 @@
     private System.Windows.Forms.Label lblGearboxIndicator;
     private System.Windows.Forms.Label lblVelocity;
     private System.Windows.Forms.Label lblConnecting;
+    private System.Windows.Forms.Label lblSifaStatus;
+    private System.Windows.Forms.Label label5;
   }
 }
 

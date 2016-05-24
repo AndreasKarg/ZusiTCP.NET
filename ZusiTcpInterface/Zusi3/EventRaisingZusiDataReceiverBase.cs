@@ -7,7 +7,7 @@ namespace ZusiTcpInterface.Zusi3
   {
     private readonly DescriptorCollection _descriptorCollection;
 
-    public EventRaisingZusiDataReceiverBase(DescriptorCollection descriptorCollection)
+    protected EventRaisingZusiDataReceiverBase(DescriptorCollection descriptorCollection)
     {
       _descriptorCollection = descriptorCollection;
     }
@@ -16,12 +16,17 @@ namespace ZusiTcpInterface.Zusi3
 
     public event EventHandler<DataReceivedEventArgs<bool>> BoolReceived;
 
+    public event EventHandler<DataReceivedEventArgs<SifaStatus>> SifaStatusReceived;
+
     protected void RaiseEventFor(CabDataChunkBase chunk)
     {
       if (RaiseEventIfChunkIs<float>(chunk, FloatReceived))
         return;
 
       if (RaiseEventIfChunkIs<bool>(chunk, BoolReceived))
+        return;
+
+      if (RaiseEventIfChunkIs<SifaStatus>(chunk, SifaStatusReceived))
         return;
 
       var payloadType = chunk.GetType().GenericTypeArguments.Single();
@@ -34,9 +39,8 @@ namespace ZusiTcpInterface.Zusi3
       if (dataChunk == null) return false;
 
       var eventArgs = new DataReceivedEventArgs<T>(dataChunk.Payload, dataChunk.Id, _descriptorCollection[dataChunk.Id]);
-      if (handler == null)
-        return false;
-      handler(this, eventArgs);
+      if (handler != null)
+        handler(this, eventArgs);
 
       return true;
     }

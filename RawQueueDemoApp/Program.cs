@@ -13,7 +13,8 @@ namespace DemoApp
       {
         var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
         var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor);
+        var sifaStatusDescriptor = connectionContainer.Descriptors["Status Sifa"];
+        connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
         connectionContainer.Connect();
 
         Console.WriteLine("Connected!");
@@ -33,6 +34,10 @@ namespace DemoApp
 
             case 0x1A:
               Console.WriteLine("Gearbox pilot light = {0}", ((CabDataChunk<bool>)chunk).Payload);
+              break;
+
+            case 0x64:
+              Console.WriteLine("Sifa status = {0}", ((CabDataChunk<SifaStatus>)chunk).Payload);
               break;
 
             default:

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +6,7 @@ namespace ZusiTcpInterface.Zusi3
 {
   internal class SifaNodeConverter : INodeConverter
   {
-    private NodeConverter _dataConverter;
+    private readonly NodeConverter _dataConverter;
 
     private const short TypeId = 0x01;
     private const short PilotLightId = 0x02;
