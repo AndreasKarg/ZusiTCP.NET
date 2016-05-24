@@ -44,15 +44,16 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // When
       var deserialised = Node.Deserialise(binaryReader);
-      var converted = (SifaStatus)_sifaConverter.Convert(deserialised).Single();
+      var converted = (CabDataChunk<SifaStatus>)_sifaConverter.Convert(deserialised).Single();
+      var sifaStatus = converted.Payload;
 
       // Then
-      Assert.AreEqual("3.0.1.0", converted.Type);
-      Assert.AreEqual(true, converted.PilotLightOn);
-      Assert.AreEqual(SifaHornState.AutomaticBraking, converted.HornState);
-      Assert.AreEqual(false, converted.MainSwitchEnabled);
-      Assert.AreEqual(true, converted.DisruptionOverrideSwitchEnabled);
-      Assert.AreEqual(false, converted.AirCutoffValveOpen);
+      Assert.AreEqual("3.0.1.0", sifaStatus.Type);
+      Assert.AreEqual(true, sifaStatus.PilotLightOn);
+      Assert.AreEqual(SifaHornState.AutomaticBraking, sifaStatus.HornState);
+      Assert.AreEqual(false, sifaStatus.MainSwitchEnabled);
+      Assert.AreEqual(true, sifaStatus.DisruptionOverrideSwitchEnabled);
+      Assert.AreEqual(false, sifaStatus.AirCutoffValveOpen);
     }
   }
 }

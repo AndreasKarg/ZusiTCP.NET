@@ -94,7 +94,7 @@ namespace ZusiTcpInterface.Zusi3
       var ackNeededDataConverter = new AckNeededDataConverter();
       handshakeConverter[0x02] = ackHelloConverter;
 
-      var cabDataConverter = new CabDataConverter(cabInfoConversionFunctions);
+      var cabDataConverter = new CabDataConverter{ ConversionFunctions = cabInfoConversionFunctions};
       var userDataConverter = new BranchingNodeConverter();
       userDataConverter[0x04] = ackNeededDataConverter;
       userDataConverter[0x0A] = cabDataConverter;

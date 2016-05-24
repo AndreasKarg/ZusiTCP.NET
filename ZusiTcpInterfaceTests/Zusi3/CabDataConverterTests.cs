@@ -43,5 +43,36 @@ namespace ZusiTcpInterfaceTests.Zusi3
       Assert.AreEqual(expectedPilotLightState, pilotLightState);
       Assert.AreEqual(expectedOtherPilotLightState, otherPilotLightState);
     }
+
+    [TestMethod]
+    public void Converts_child_node_correctly()
+    {
+      // Given
+      var type = "3.0.1.0";
+      var expectedSifaStatus = new SifaStatus(type, true, false, SifaHornState.AutomaticBraking, true, false);
+
+      var attributes = new Dictionary<short, Attribute>
+      {
+        { 0x01, new Attribute(0x01, type) },
+        { 0x02, new Attribute(0x02, (byte)0x01) },
+        { 0x03, new Attribute(0x03, (byte)0x02) },
+        { 0x04, new Attribute(0x04, (byte)0x01) },
+        { 0x05, new Attribute(0x05, (byte)0x02) },
+        { 0x06, new Attribute(0x06, (byte)0x01) },
+      };
+
+      var sifaNode = new Node(0x64, attributes);
+      var cabDataNode = new Node(0x0A, sifaNode);
+
+      var converter = new CabDataConverter();
+
+      converter.SubNodeConverters[0x64] = new SifaNodeConverter();
+
+      // When
+      var actualSifaStatus = converter.Convert(cabDataNode).Cast<CabDataChunk<SifaStatus>>().Single();
+
+      // Then
+      Assert.AreEqual(expectedSifaStatus, actualSifaStatus.Payload);
+    }
   }
 }

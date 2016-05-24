@@ -27,7 +27,7 @@ namespace ZusiTcpInterface.Zusi3
     }
 
     public Attribute(short id, byte payload)
-      : this(id, BitConverter.GetBytes(payload))
+      : this(id, new []{payload})
     {
     }
 

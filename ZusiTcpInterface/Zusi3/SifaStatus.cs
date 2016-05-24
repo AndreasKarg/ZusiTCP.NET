@@ -2,7 +2,7 @@
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public class SifaStatus : IProtocolChunk
+  public struct SifaStatus : IEquatable<SifaStatus>
   {
     private readonly string _type;
     private readonly bool _pilotLightOn;
@@ -55,5 +55,44 @@ namespace ZusiTcpInterface.Zusi3
     {
       return string.Format("Type: {0}, PilotLightOn: {1}, HornState: {2}, MainSwitchEnabled: {3}, DisruptionOverrideSwitchEnabled: {4}, AirCutoffValveOpen: {5}", Type, PilotLightOn, HornState, MainSwitchEnabled, DisruptionOverrideSwitchEnabled, AirCutoffValveOpen);
     }
+
+    #region Equality operator etc
+
+    public bool Equals(SifaStatus other)
+    {
+      return string.Equals(_type, other._type) && _pilotLightOn == other._pilotLightOn && _hornState == other._hornState && _mainSwitchEnabled == other._mainSwitchEnabled && _disruptionOverrideSwitchEnabled == other._disruptionOverrideSwitchEnabled && _airCutoffValveOpen == other._airCutoffValveOpen;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      return obj is SifaStatus && Equals((SifaStatus) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = (_type != null ? _type.GetHashCode() : 0);
+        hashCode = (hashCode*397) ^ _pilotLightOn.GetHashCode();
+        hashCode = (hashCode*397) ^ (int) _hornState;
+        hashCode = (hashCode*397) ^ _mainSwitchEnabled.GetHashCode();
+        hashCode = (hashCode*397) ^ _disruptionOverrideSwitchEnabled.GetHashCode();
+        hashCode = (hashCode*397) ^ _airCutoffValveOpen.GetHashCode();
+        return hashCode;
+      }
+    }
+
+    public static bool operator ==(SifaStatus left, SifaStatus right)
+    {
+      return left.Equals(right);
+    }
+
+    public static bool operator !=(SifaStatus left, SifaStatus right)
+    {
+      return !left.Equals(right);
+    }
+
+#endregion Equality operator etc
   }
 }

@@ -27,7 +27,7 @@ namespace ZusiTcpInterface.Zusi3
       attributeConverters[DisruptionOverrideId] = CabDataAttributeConverters.ConvertOneBasedBool;
       attributeConverters[AirCutoffValveId] = CabDataAttributeConverters.ConvertOneBasedBool;
 
-      _dataConverter = new CabDataConverter(attributeConverters);
+      _dataConverter = new CabDataConverter{ ConversionFunctions = attributeConverters };
     }
 
     private static IProtocolChunk ConvertHornState(short id, byte[] payload)
@@ -79,10 +79,12 @@ namespace ZusiTcpInterface.Zusi3
       if(type == null)
         throw new InvalidOperationException("Sifa type was not set.");
 
+      var sifaStatus = new SifaStatus(type, pilotLight.Value, mainSwitch.Value, hornState.Value, disruptionOverride.Value,
+        airCutoffValve.Value);
+
       return new[]
       {
-        new SifaStatus(type, pilotLight.Value, mainSwitch.Value, hornState.Value, disruptionOverride.Value,
-          airCutoffValve.Value)
+        new CabDataChunk<SifaStatus>(node.Id, sifaStatus),
       };
     }
   }

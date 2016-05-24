@@ -5,11 +5,12 @@ namespace ZusiTcpInterface.Zusi3
 {
   internal class BranchingNodeConverter : INodeConverter
   {
-    private readonly Dictionary<short, INodeConverter> _subNodeConverters = new Dictionary<short, INodeConverter>();
+    private Dictionary<short, INodeConverter> _subNodeConverters = new Dictionary<short, INodeConverter>();
 
     public Dictionary<short, INodeConverter> SubNodeConverters
     {
       get { return _subNodeConverters; }
+      set { _subNodeConverters = value; }
     }
 
     public INodeConverter this[short i]
@@ -20,6 +21,9 @@ namespace ZusiTcpInterface.Zusi3
 
     public IEnumerable<IProtocolChunk> Convert(Node node)
     {
+      if (node.SubNodes.Count == 0)
+        return Enumerable.Empty<IProtocolChunk>();
+
       return node.SubNodes
         .Where(subNode => _subNodeConverters.ContainsKey(subNode.Key))
         .Select(subNode => _subNodeConverters[subNode.Key].Convert(subNode.Value))

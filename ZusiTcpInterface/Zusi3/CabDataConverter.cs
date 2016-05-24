@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
 {
   internal class CabDataConverter : INodeConverter
   {
-    private readonly Dictionary<short, Func<short, byte[], IProtocolChunk>> _conversionFunctions;
+    private Dictionary<short, Func<short, byte[], IProtocolChunk>> _conversionFunctions = new Dictionary<short, Func<short, byte[], IProtocolChunk>>();
+    private readonly BranchingNodeConverter _subNodeConverter = new BranchingNodeConverter();
 
-    public CabDataConverter()
-      : this(new Dictionary<short, Func<short, byte[], IProtocolChunk>>())
+    public Dictionary<short, INodeConverter> SubNodeConverters
     {
-    }
-
-    public CabDataConverter(Dictionary<short, Func<short, byte[], IProtocolChunk>> conversionFunctions)
-    {
-      _conversionFunctions = conversionFunctions;
+      get { return _subNodeConverter.SubNodeConverters; }
+      set { _subNodeConverter.SubNodeConverters = value; }
     }
 
     public Dictionary<short, Func<short, byte[], IProtocolChunk>> ConversionFunctions
     {
       get { return _conversionFunctions; }
+      set { _conversionFunctions = value; }
     }
 
     public IEnumerable<IProtocolChunk> Convert(Node node)
@@ -35,6 +34,8 @@ namespace ZusiTcpInterface.Zusi3
 
         chunks.Add(conversionFunction(attribute.Key, attribute.Value.Payload));
       }
+
+      chunks.AddRange(_subNodeConverter.Convert(node));
 
       return chunks;
     }
