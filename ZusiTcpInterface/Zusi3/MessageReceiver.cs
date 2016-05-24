@@ -5,10 +5,10 @@ namespace ZusiTcpInterface.Zusi3
   internal class MessageReceiver
   {
     private readonly BinaryReader _binaryReader;
-    private readonly TopLevelNodeConverter _rootNodeConverter;
+    private readonly RootNodeConverter _rootNodeConverter;
     private readonly IBlockingCollection<IProtocolChunk> _blockingChunkQueue;
 
-    public MessageReceiver(BinaryReader binaryReader, TopLevelNodeConverter rootNodeConverter, IBlockingCollection<IProtocolChunk> blockingChunkQueue)
+    public MessageReceiver(BinaryReader binaryReader, RootNodeConverter rootNodeConverter, IBlockingCollection<IProtocolChunk> blockingChunkQueue)
     {
       _binaryReader = binaryReader;
       _rootNodeConverter = rootNodeConverter;

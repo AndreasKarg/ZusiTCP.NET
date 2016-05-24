@@ -12,7 +12,7 @@ namespace ZusiTcpInterface.Zusi3
   {
     private DescriptorCollection _descriptors;
     private readonly HashSet<short> _neededData = new HashSet<short>();
-    private static TopLevelNodeConverter _topLevelNodeConverter;
+    private static RootNodeConverter _rootNodeConverter;
     private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
@@ -99,9 +99,9 @@ namespace ZusiTcpInterface.Zusi3
       userDataConverter.SubNodeConverters[0x04] = ackNeededDataConverter;
       userDataConverter.SubNodeConverters[0x0A] = cabDataConverter;
 
-      _topLevelNodeConverter = new TopLevelNodeConverter();
-      _topLevelNodeConverter[0x01] = handshakeConverter;
-      _topLevelNodeConverter[0x02] = userDataConverter;
+      _rootNodeConverter = new RootNodeConverter();
+      _rootNodeConverter[0x01] = handshakeConverter;
+      _rootNodeConverter[0x02] = userDataConverter;
     }
 
     private Dictionary<short, Func<short, byte[], IProtocolChunk>> GenerateConversionFunctions(IEnumerable<CabInfoTypeDescriptor> cabInfoDescriptors)
@@ -162,7 +162,7 @@ namespace ZusiTcpInterface.Zusi3
       var binaryReader = new BinaryReader(networkStream);
       var binaryWriter = new BinaryWriter(networkStream);
 
-      var messageReader = new MessageReceiver(binaryReader, _topLevelNodeConverter, _receivedChunks);
+      var messageReader = new MessageReceiver(binaryReader, _rootNodeConverter, _receivedChunks);
       _messageReceptionTask = Task.Run(() =>
       {
         while (true)

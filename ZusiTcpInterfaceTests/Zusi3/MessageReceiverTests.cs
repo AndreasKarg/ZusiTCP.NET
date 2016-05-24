@@ -40,7 +40,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var handshakeConverter = new NodeConverter();
       handshakeConverter.SubNodeConverters[0x02] = new AckHelloConverter();
 
-      var rootNodeConverter = new TopLevelNodeConverter();
+      var rootNodeConverter = new RootNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;
 
       var mockQueue = new Mock<IBlockingCollection<IProtocolChunk>>();

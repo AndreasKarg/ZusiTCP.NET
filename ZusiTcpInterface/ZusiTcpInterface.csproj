@@ -80,7 +80,7 @@
     <Compile Include="Zusi3\SifaNodeConverter.cs" />
     <Compile Include="Zusi3\SifaStatus.cs" />
     <Compile Include="Zusi3\ThreadMarshallingZusiDataReceiver.cs" />
-    <Compile Include="Zusi3\TopLevelNodeConverter.cs" />
+    <Compile Include="Zusi3\RootNodeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Zusi3\CabInfoTypes.csv">
