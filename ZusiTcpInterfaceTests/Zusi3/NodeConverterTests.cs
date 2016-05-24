@@ -7,7 +7,7 @@ using Attribute = ZusiTcpInterface.Zusi3.Attribute;
 namespace ZusiTcpInterfaceTests.Zusi3
 {
   [TestClass]
-  public class CabDataConverterTests
+  public class NodeConverterTests
   {
     [TestMethod]
     public void Converts_node_correctly()
@@ -25,11 +25,11 @@ namespace ZusiTcpInterfaceTests.Zusi3
       };
 
       var cabDataNode = new Node(0x0A, attributes);
-      var converter = new CabDataConverter();
+      var converter = new NodeConverter();
 
-      converter.ConversionFunctions[0x01] = CabDataAttributeConverters.ConvertSingle;
-      converter.ConversionFunctions[0x1B] = CabDataAttributeConverters.ConvertBoolAsSingle;
-      converter.ConversionFunctions[0x1C] = CabDataAttributeConverters.ConvertBoolAsSingle;
+      converter.ConversionFunctions[0x01] = AttributeConverters.ConvertSingle;
+      converter.ConversionFunctions[0x1B] = AttributeConverters.ConvertBoolAsSingle;
+      converter.ConversionFunctions[0x1C] = AttributeConverters.ConvertBoolAsSingle;
 
       // When
       var chunks = converter.Convert(cabDataNode).Cast<CabDataChunkBase>().ToList();
@@ -64,7 +64,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var sifaNode = new Node(0x64, attributes);
       var cabDataNode = new Node(0x0A, sifaNode);
 
-      var converter = new CabDataConverter();
+      var converter = new NodeConverter();
 
       converter.SubNodeConverters[0x64] = new SifaNodeConverter();
 

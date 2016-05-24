@@ -29,8 +29,8 @@ namespace ZusiTcpInterface.Zusi3
 
       hello.Serialise(_binaryWriter);
 
-      var handshakeConverter = new BranchingNodeConverter();
-      handshakeConverter[0x02] = new AckHelloConverter();
+      var handshakeConverter = new NodeConverter();
+      handshakeConverter.SubNodeConverters[0x02] = new AckHelloConverter();
 
       var rootNodeConverter = new TopLevelNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;

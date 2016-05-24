@@ -7,7 +7,7 @@ namespace ZusiTcpInterface.Zusi3
 {
   internal class SifaNodeConverter : INodeConverter
   {
-    private CabDataConverter _dataConverter;
+    private NodeConverter _dataConverter;
 
     private const short TypeId = 0x01;
     private const short PilotLightId = 0x02;
@@ -20,14 +20,14 @@ namespace ZusiTcpInterface.Zusi3
     {
       var attributeConverters = new Dictionary<short, Func<short, byte[], IProtocolChunk>>();
 
-      attributeConverters[TypeId] = CabDataAttributeConverters.ConvertString;
-      attributeConverters[PilotLightId] = CabDataAttributeConverters.ConvertBool;
+      attributeConverters[TypeId] = AttributeConverters.ConvertString;
+      attributeConverters[PilotLightId] = AttributeConverters.ConvertBool;
       attributeConverters[HornStateId] = ConvertHornState;
-      attributeConverters[MainSwitchId] = CabDataAttributeConverters.ConvertOneBasedBool;
-      attributeConverters[DisruptionOverrideId] = CabDataAttributeConverters.ConvertOneBasedBool;
-      attributeConverters[AirCutoffValveId] = CabDataAttributeConverters.ConvertOneBasedBool;
+      attributeConverters[MainSwitchId] = AttributeConverters.ConvertOneBasedBool;
+      attributeConverters[DisruptionOverrideId] = AttributeConverters.ConvertOneBasedBool;
+      attributeConverters[AirCutoffValveId] = AttributeConverters.ConvertOneBasedBool;
 
-      _dataConverter = new CabDataConverter{ ConversionFunctions = attributeConverters };
+      _dataConverter = new NodeConverter{ ConversionFunctions = attributeConverters };
     }
 
     private static IProtocolChunk ConvertHornState(short id, byte[] payload)

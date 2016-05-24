@@ -52,10 +52,10 @@
     <Compile Include="Zusi3\AckNeededDataPacket.cs" />
     <Compile Include="Zusi3\Attribute.cs" />
     <Compile Include="Zusi3\BlockingCollectionWrapper.cs" />
-    <Compile Include="Zusi3\CabDataAttributeConverters.cs" />
+    <Compile Include="Zusi3\AttributeConverters.cs" />
     <Compile Include="Zusi3\CabDataChunk.cs" />
     <Compile Include="Zusi3\CabDataChunkBase.cs" />
-    <Compile Include="Zusi3\CabDataConverter.cs" />
+    <Compile Include="Zusi3\NodeConverter.cs" />
     <Compile Include="Zusi3\CancellableBlockingStream.cs" />
     <Compile Include="Zusi3\ClientType.cs" />
     <Compile Include="Zusi3\CabInfoTypeDescriptor.cs" />
@@ -75,7 +75,6 @@
     <Compile Include="Zusi3\NeededDataPacket.cs" />
     <Compile Include="Zusi3\Node.cs" />
     <Compile Include="Zusi3\NodeCategory.cs" />
-    <Compile Include="Zusi3\BranchingNodeConverter.cs" />
     <Compile Include="Zusi3\IProtocolChunk.cs" />
     <Compile Include="Zusi3\PolledZusiDataReceiver.cs" />
     <Compile Include="Zusi3\SifaNodeConverter.cs" />

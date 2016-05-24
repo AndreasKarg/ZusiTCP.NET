@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using ZusiTcpInterface.Zusi3;
 
 namespace ZusiTcpInterfaceTests.Zusi3
@@ -12,7 +12,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
   {
     private readonly MessageReceiver _messageReceiver;
 
-    readonly byte[] _samplePacket =
+    private readonly byte[] _samplePacket =
          { 0x00, 0x00, 0x00, 0x00,
            0x01, 0x00,
              0x00, 0x00, 0x00, 0x00,
@@ -37,8 +37,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var serverStream = new MemoryStream(_samplePacket);
       var binaryReader = new BinaryReader(serverStream);
 
-      var handshakeConverter = new BranchingNodeConverter();
-      handshakeConverter[0x02] = new AckHelloConverter();
+      var handshakeConverter = new NodeConverter();
+      handshakeConverter.SubNodeConverters[0x02] = new AckHelloConverter();
 
       var rootNodeConverter = new TopLevelNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;

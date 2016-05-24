@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  internal static class CabDataAttributeConverters
+  internal static class AttributeConverters
   {
     public static IProtocolChunk ConvertSingle(short id, byte[] payload)
     {

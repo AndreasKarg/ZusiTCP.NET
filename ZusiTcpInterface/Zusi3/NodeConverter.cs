@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  internal class CabDataConverter : INodeConverter
+  internal class NodeConverter : INodeConverter
   {
     private Dictionary<short, Func<short, byte[], IProtocolChunk>> _conversionFunctions = new Dictionary<short, Func<short, byte[], IProtocolChunk>>();
-    private readonly BranchingNodeConverter _subNodeConverter = new BranchingNodeConverter();
+    private Dictionary<short, INodeConverter> _subNodeConverters = new Dictionary<short, INodeConverter>();
 
     public Dictionary<short, INodeConverter> SubNodeConverters
     {
-      get { return _subNodeConverter.SubNodeConverters; }
-      set { _subNodeConverter.SubNodeConverters = value; }
+      get { return _subNodeConverters; }
+      set { _subNodeConverters = value; }
     }
 
     public Dictionary<short, Func<short, byte[], IProtocolChunk>> ConversionFunctions
@@ -27,15 +26,23 @@ namespace ZusiTcpInterface.Zusi3
 
       foreach (var attribute in node.Attributes)
       {
-        Func<short, byte[], IProtocolChunk> conversionFunction;
+        Func<short, byte[], IProtocolChunk> attributeConverter;
 
-        if (!_conversionFunctions.TryGetValue(attribute.Key, out conversionFunction))
+        if (!_conversionFunctions.TryGetValue(attribute.Key, out attributeConverter))
           continue;
 
-        chunks.Add(conversionFunction(attribute.Key, attribute.Value.Payload));
+        chunks.Add(attributeConverter(attribute.Key, attribute.Value.Payload));
       }
 
-      chunks.AddRange(_subNodeConverter.Convert(node));
+      foreach (var subNode in node.SubNodes)
+      {
+        INodeConverter nodeConverter;
+
+        if(!SubNodeConverters.TryGetValue(subNode.Key, out nodeConverter))
+          continue;
+
+        chunks.AddRange(nodeConverter.Convert(subNode.Value));
+      }
 
       return chunks;
     }

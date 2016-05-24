@@ -65,7 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Zusi2\HandShakerTests.cs" />
     <Compile Include="Zusi3\AckNeededDataConverterTests.cs" />
-    <Compile Include="Zusi3\CabDataConverterTests.cs" />
+    <Compile Include="Zusi3\NodeConverterTests.cs" />
     <Compile Include="Zusi3\CabInfoTypeDescriptorReaderTests.cs" />
     <Compile Include="Zusi3\HelloPacketTests.cs" />
     <Compile Include="Zusi3\MessageReceiverTests.cs" />

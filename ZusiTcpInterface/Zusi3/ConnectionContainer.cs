@@ -89,15 +89,15 @@ namespace ZusiTcpInterface.Zusi3
 
     private static void SetupNodeConverters(Dictionary<short, Func<short, byte[], IProtocolChunk>> cabInfoConversionFunctions)
     {
-      var handshakeConverter = new BranchingNodeConverter();
+      var handshakeConverter = new NodeConverter();
       var ackHelloConverter = new AckHelloConverter();
       var ackNeededDataConverter = new AckNeededDataConverter();
-      handshakeConverter[0x02] = ackHelloConverter;
+      handshakeConverter.SubNodeConverters[0x02] = ackHelloConverter;
 
-      var cabDataConverter = new CabDataConverter{ ConversionFunctions = cabInfoConversionFunctions};
-      var userDataConverter = new BranchingNodeConverter();
-      userDataConverter[0x04] = ackNeededDataConverter;
-      userDataConverter[0x0A] = cabDataConverter;
+      var cabDataConverter = new NodeConverter{ ConversionFunctions = cabInfoConversionFunctions};
+      var userDataConverter = new NodeConverter();
+      userDataConverter.SubNodeConverters[0x04] = ackNeededDataConverter;
+      userDataConverter.SubNodeConverters[0x0A] = cabDataConverter;
 
       _topLevelNodeConverter = new TopLevelNodeConverter();
       _topLevelNodeConverter[0x01] = handshakeConverter;
@@ -108,8 +108,8 @@ namespace ZusiTcpInterface.Zusi3
     {
       var descriptorToConversionFunctionMap = new Dictionary<string, Func<short, byte[], IProtocolChunk>>()
       {
-        {"single", CabDataAttributeConverters.ConvertSingle},
-        {"boolassingle", CabDataAttributeConverters.ConvertBoolAsSingle},
+        {"single", AttributeConverters.ConvertSingle},
+        {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
         {"fail", (s, bytes) => {throw new NotSupportedException("Unsupported data type received");} }
       };
 
