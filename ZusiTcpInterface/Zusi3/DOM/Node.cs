@@ -7,7 +7,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
 {
   internal class Node : IProtocolElement
   {
-    private readonly Dictionary<short, Node> _subNodes;
+    private readonly List<Node> _subNodes;
     private readonly Dictionary<short, Attribute> _attributes;
     private readonly short _id;
 
@@ -19,7 +19,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
       get { return _id; }
     }
 
-    public Dictionary<short, Node> SubNodes
+    public List<Node> SubNodes
     {
       get { return _subNodes; }
     }
@@ -29,7 +29,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
       get { return _attributes; }
     }
 
-    public Node(short id, Dictionary<short, Node> subNodes, Dictionary<short, Attribute> attributes)
+    public Node(short id, List<Node> subNodes, Dictionary<short, Attribute> attributes)
     {
       _id = id;
 
@@ -38,21 +38,21 @@ namespace ZusiTcpInterface.Zusi3.DOM
     }
 
     public Node(short id, Dictionary<short, Attribute> attributes)
-      : this(id, new Dictionary<short, Node>(), attributes)
+      : this(id, new List<Node>(), attributes)
     {
     }
 
     public Node(short id, Node subNode)
-      : this(id, new Dictionary<short, Node>(), new Dictionary<short, Attribute>())
+      : this(id, new List<Node>(), new Dictionary<short, Attribute>())
     {
-      _subNodes.Add(subNode.Id, subNode);
+      _subNodes.Add(subNode);
     }
 
     public void Serialise(BinaryWriter binaryWriter)
     {
       binaryWriter.Write(NodeStarter);
       binaryWriter.Write(Id);
-      foreach (var subNode in _subNodes.Values)
+      foreach (var subNode in _subNodes)
       {
         subNode.Serialise(binaryWriter);
       }
@@ -67,7 +67,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
     [Pure]
     public static Node Deserialise(BinaryReader binaryReader, bool nodeStarterHasAlreadyBeenConsumed = false)
     {
-      var subNodes = new Dictionary<short, Node>();
+      var subNodes = new List<Node>();
       var attributes = new Dictionary<short, Attribute>();
 
       if (!nodeStarterHasAlreadyBeenConsumed)
@@ -84,7 +84,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
         if (nextTag == NodeStarter)
         {
           var newNode = Node.Deserialise(binaryReader, true);
-          subNodes.Add(newNode.Id, newNode);
+          subNodes.Add(newNode);
         }
         else
         {
@@ -111,7 +111,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
         }
       }
 
-      foreach (var subNode in SubNodes.Values)
+      foreach (var subNode in SubNodes)
       {
         var nodeDump = subNode.DumpToStrings();
         foreach (var line in nodeDump)

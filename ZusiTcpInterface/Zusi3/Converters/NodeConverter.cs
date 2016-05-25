@@ -39,10 +39,10 @@ namespace ZusiTcpInterface.Zusi3.Converters
       {
         INodeConverter nodeConverter;
 
-        if(!SubNodeConverters.TryGetValue(subNode.Key, out nodeConverter))
+        if(!SubNodeConverters.TryGetValue(subNode.Id, out nodeConverter))
           continue;
 
-        chunks.AddRange(nodeConverter.Convert(subNode.Value));
+        chunks.AddRange(nodeConverter.Convert(subNode));
       }
 
       return chunks;
