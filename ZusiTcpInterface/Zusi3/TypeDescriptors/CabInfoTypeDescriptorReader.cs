@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
@@ -8,25 +10,24 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
   {
     public static IEnumerable<CabInfoTypeDescriptor> ReadCommandsetFrom(Stream inputStream)
     {
-      var commands = new List<CabInfoTypeDescriptor>();
-      var streamReader = new StreamReader(inputStream);
+      var root = XElement.Load(inputStream);
 
-      while (!streamReader.EndOfStream)
-      {
-        var line = streamReader.ReadLine();
+      return root.Elements().Select(ConvertToDescriptor);
+    }
 
-        // ToDo: Make handling of syntax errors more graceful - e.g. w/ error message and continuation...
-        var columns = line.Split(';');
-        short id = short.Parse(columns[0].Split('x', 'X')[1], NumberStyles.HexNumber);
-        string name = columns[1];
-        string unit = columns[2];
-        string converter = columns[3];
-        string comment = (columns.Length == 5) ? columns[4] : "";
+    private static CabInfoTypeDescriptor ConvertToDescriptor(XElement arg)
+    {
+      var attributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
-        commands.Add(new CabInfoTypeDescriptor(id, name, unit, converter, comment));
-      }
+      var id = Convert.ToInt16(attributes["id"], 16);
+      var name = attributes["name"];
+      var converter = attributes["converter"];
 
-      return commands;
+      // Optional attributes
+      string unit = attributes.ContainsKey("unit") ? attributes["unit"] : String.Empty;
+      string comment = attributes.ContainsKey("comment") ? attributes["comment"] : String.Empty;
+
+      return new CabInfoTypeDescriptor(id, name, unit, converter, comment);
     }
   }
 }

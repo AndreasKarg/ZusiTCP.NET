@@ -58,7 +58,7 @@ namespace ZusiTcpInterface.Zusi3
       set { _clientVersion = value; }
     }
 
-    public ConnectionContainer(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.csv")
+    public ConnectionContainer(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.xml")
     {
       using (var commandSetFileStream = File.OpenRead(cabInfoTypeDescriptorFilename))
       {
