@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -114,11 +115,12 @@ namespace ZusiTcpInterface.Zusi3
       {
         {"single", AttributeConverters.ConvertSingle},
         {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
+        {"string", AttributeConverters.ConvertString},
+        {"zugart", AttributeConverters.ConvertEnumAsShort<Zugart>},
         {"fail", (s, bytes) => {throw new NotSupportedException("Unsupported data type received");} }
       };
 
-      return cabInfoDescriptors.Where(d => converters.ContainsKey(d.Type))
-                               .ToDictionary(d => d.Id, d => converters[d.Type]);
+      return cabInfoDescriptors.ToDictionary(d => d.Id, d => converters[d.Type]);
     }
 
     private Dictionary<short, INodeConverter> MapSubNodeConverters(IEnumerable<CabInfoTypeDescriptor> cabInfoDescriptors)
@@ -218,5 +220,9 @@ namespace ZusiTcpInterface.Zusi3
         }
       });
     }
+  }
+
+  internal enum Zugart
+  {
   }
 }

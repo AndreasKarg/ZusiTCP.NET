@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="ZusiTcpInterface/CabInfoTypes" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="ZusiTcpInterface/CabInfoTypes">
+
+    <complexType name="Attribute">
+    	<attribute name="id" type="tns:HexNumber" use="required"></attribute>
+    	<attribute name="name" type="string" use="required"></attribute>
+    	<attribute name="converter" type="string" use="required"></attribute>
+    	<attribute name="unit" type="string" use="optional"></attribute>
+    	<attribute name="comment" type="string" use="optional"></attribute>
+    </complexType>
+
+    <simpleType name="HexNumber">
+    	<restriction base="string">
+    		<pattern value="0x[0-9A-Fa-f]+|[0-9]+"></pattern>
+    	</restriction>
+    </simpleType>
+
+    <complexType name="Node">
+    	<sequence minOccurs="0" maxOccurs="unbounded">
+    		<choice><element name="Attribute" type="tns:Attribute" maxOccurs="unbounded" minOccurs="0">
+    		</element><element name="Node" type="tns:Node" minOccurs="0" maxOccurs="unbounded">
+    		</element></choice>
+    	</sequence>
+    	<attribute name="id" type="tns:HexNumber"></attribute>
+      <attribute name="name" type="string" use="required"></attribute>
+    </complexType>
+
+    <element name="ProtocolDefinition" type="tns:Node"></element>
+</schema>

@@ -30,5 +30,19 @@ namespace ZusiTcpInterface.Zusi3.Converters
     {
       return new CabDataChunk<bool>(id, payload.Single() != 1);
     }
+
+    public static IProtocolChunk ConvertEnumAsByte<T>(short id, byte[] payload)
+    {
+      var enumValue = (T) (object) payload.Single();
+
+      return new CabDataChunk<T>(id, enumValue);
+    }
+
+    public static IProtocolChunk ConvertEnumAsShort<T>(short id, byte[] payload)
+    {
+      var enumValue = (T) (object) Convert.ToInt16(payload);
+
+      return new CabDataChunk<T>(id, enumValue);
+    }
   }
 }

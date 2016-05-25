@@ -19,7 +19,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 <ProtocolDefinition>
   <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
   <Attribute id=""0002"" name=""Druck Hauptluftleitung"" unit=""bar"" converter=""Single"" />
-  <Attribute id=""0003"" name=""Druck Bremszylinder"" unit=""bar"" converter=""Single"" />
+  <Attribute id=""0x0003"" name=""Druck Bremszylinder"" unit=""bar"" converter=""Single"" />
   <Attribute id=""0004"" name=""Druck Hauptluftbehälter"" unit=""bar"" converter=""Single"" comment=""Mit Sauce""/>
   <Attribute id=""0005"" name=""Luftpresser läuft"" unit=""aus/an"" converter=""BoolAsSingle"" />
   <Attribute id=""0006"" name=""Luftstrom Fbv"" unit=""-1...0...1"" converter=""Fail"" />
