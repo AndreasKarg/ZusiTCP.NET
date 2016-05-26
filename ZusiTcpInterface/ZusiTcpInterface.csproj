@@ -86,6 +86,7 @@
   <ItemGroup>
     <Content Include="Zusi3\CabInfoTypes.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
