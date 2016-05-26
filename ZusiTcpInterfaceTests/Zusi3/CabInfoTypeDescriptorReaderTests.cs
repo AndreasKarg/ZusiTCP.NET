@@ -42,12 +42,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When
-      var commands = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream).ToList();
+      var descriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream);
 
       // Then
       foreach (var expectedCommand in expectedCommands)
       {
-        Assert.IsTrue(commands.Contains(expectedCommand));
+        Assert.IsTrue(descriptors.Contains(expectedCommand, EqualityComparer<CabInfoAttributeDescriptor>.Default));
       }
     }
 

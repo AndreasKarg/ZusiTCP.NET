@@ -6,8 +6,8 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
   [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class DescriptorCollection
   {
-    private readonly Dictionary<short, CabInfoAttributeDescriptor> _byId;
-    private readonly Dictionary<string, CabInfoAttributeDescriptor> _byName;
+    private readonly Dictionary<short, CabInfoDescriptorBase> _byId;
+    private readonly Dictionary<string, CabInfoDescriptorBase> _byName;
 
     public DescriptorCollection(IEnumerable<CabInfoAttributeDescriptor> descriptors)
     {
@@ -15,22 +15,22 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       _byName = descriptors.ToDictionary(descriptor => descriptor.Name);
     }
 
-    public CabInfoAttributeDescriptor GetBy(string name)
+    public CabInfoDescriptorBase GetBy(string name)
     {
       return _byName[name];
     }
 
-    public CabInfoAttributeDescriptor GetBy(short id)
+    public CabInfoDescriptorBase GetBy(short id)
     {
       return _byId[id];
     }
 
-    public CabInfoAttributeDescriptor this[string name]
+    public CabInfoDescriptorBase this[string name]
     {
       get { return GetBy(name); }
     }
 
-    public CabInfoAttributeDescriptor this[short id]
+    public CabInfoDescriptorBase this[short id]
     {
       get { return GetBy(id); }
     }

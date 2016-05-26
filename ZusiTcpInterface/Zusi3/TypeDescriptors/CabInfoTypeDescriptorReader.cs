@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -8,11 +7,11 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   internal static class CabInfoTypeDescriptorReader
   {
-    public static IEnumerable<CabInfoAttributeDescriptor> ReadCommandsetFrom(Stream inputStream)
+    public static DescriptorCollection ReadCommandsetFrom(Stream inputStream)
     {
       var root = XElement.Load(inputStream);
 
-      return root.Elements().Select(ConvertToDescriptor);
+      return new DescriptorCollection(root.Elements().Select(ConvertToDescriptor));
     }
 
     private static CabInfoAttributeDescriptor ConvertToDescriptor(XElement arg)
