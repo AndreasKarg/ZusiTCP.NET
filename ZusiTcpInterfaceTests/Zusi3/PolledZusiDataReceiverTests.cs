@@ -13,8 +13,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
   {
     private readonly Queue<CabDataChunkBase> _cabDataChunks = new Queue<CabDataChunkBase>();
     private readonly PolledZusiDataReceiver _polledZusiDataReceiver;
-    private readonly CabInfoTypeDescriptor _floatDescriptor = new CabInfoTypeDescriptor(1, "Float", "N/A", "N/A");
-    private readonly CabInfoTypeDescriptor _boolDescriptor = new CabInfoTypeDescriptor(2, "Bool", "N/A", "N/A");
+    private readonly CabInfoAttributeDescriptor _floatDescriptor = new CabInfoAttributeDescriptor(1, "Float", "N/A", "N/A");
+    private readonly CabInfoAttributeDescriptor _boolDescriptor = new CabInfoAttributeDescriptor(2, "Bool", "N/A", "N/A");
 
     public PolledZusiDataReceiverTests()
     {
@@ -25,7 +25,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       mockQueue.Setup(mock => mock.Count)
         .Returns(() => _cabDataChunks.Count);
 
-      var descriptors = new List<CabInfoTypeDescriptor>
+      var descriptors = new List<CabInfoAttributeDescriptor>
       {
         _floatDescriptor,
         _boolDescriptor

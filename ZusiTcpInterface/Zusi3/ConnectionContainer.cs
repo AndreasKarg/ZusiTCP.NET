@@ -72,7 +72,7 @@ namespace ZusiTcpInterface.Zusi3
       InitialiseFrom(commandsetFileStream);
     }
 
-    public ConnectionContainer(IEnumerable<CabInfoTypeDescriptor> cabInfoTypeDescriptors)
+    public ConnectionContainer(IEnumerable<CabInfoAttributeDescriptor> cabInfoTypeDescriptors)
     {
       InitialiseFrom(cabInfoTypeDescriptors.ToList());
     }
@@ -83,7 +83,7 @@ namespace ZusiTcpInterface.Zusi3
       InitialiseFrom(cabInfoDescriptors);
     }
 
-    private void InitialiseFrom(List<CabInfoTypeDescriptor> cabInfoTypeDescriptors)
+    private void InitialiseFrom(List<CabInfoAttributeDescriptor> cabInfoTypeDescriptors)
     {
       _descriptors = new DescriptorCollection(cabInfoTypeDescriptors);
       var cabInfoAttributeConverters = MapAttributeConverters(cabInfoTypeDescriptors);
@@ -109,7 +109,7 @@ namespace ZusiTcpInterface.Zusi3
       _rootNodeConverter[0x02] = userDataConverter;
     }
 
-    private Dictionary<short, Func<short, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<CabInfoTypeDescriptor> cabInfoDescriptors)
+    private Dictionary<short, Func<short, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
     {
       var converters = new Dictionary<string, Func<short, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
       {
@@ -123,7 +123,7 @@ namespace ZusiTcpInterface.Zusi3
       return cabInfoDescriptors.ToDictionary(d => d.Id, d => converters[d.Type]);
     }
 
-    private Dictionary<short, INodeConverter> MapSubNodeConverters(IEnumerable<CabInfoTypeDescriptor> cabInfoDescriptors)
+    private Dictionary<short, INodeConverter> MapSubNodeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
     {
       var converters = new Dictionary<string, INodeConverter>(StringComparer.InvariantCultureIgnoreCase)
       {
@@ -140,7 +140,7 @@ namespace ZusiTcpInterface.Zusi3
       _neededData.Add(_descriptors.GetBy(name).Id);
     }
 
-    public void RequestData(params CabInfoTypeDescriptor[] descriptors)
+    public void RequestData(params CabInfoAttributeDescriptor[] descriptors)
     {
       foreach (var descriptor in descriptors)
       {
