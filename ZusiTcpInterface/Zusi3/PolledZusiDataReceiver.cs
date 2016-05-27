@@ -6,12 +6,12 @@ namespace ZusiTcpInterface.Zusi3
   {
     private readonly IBlockingCollection<CabDataChunkBase> _blockingCollection;
 
-    public PolledZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, DescriptorCollection descriptorCollection) : base(descriptorCollection)
+    public PolledZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, CabInfoNodeDescriptor rootNode) : base(rootNode)
     {
       _blockingCollection = blockingCollection;
     }
 
-    public PolledZusiDataReceiver(ConnectionContainer connectionContainer) : this(connectionContainer.ReceivedCabDataChunks, connectionContainer.Descriptors)
+    public PolledZusiDataReceiver(ConnectionContainer connectionContainer) : this(connectionContainer.ReceivedCabDataChunks, connectionContainer.CabDataDescriptors)
     {
     }
 

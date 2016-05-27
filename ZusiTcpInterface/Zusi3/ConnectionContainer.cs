@@ -14,7 +14,7 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class ConnectionContainer : IDisposable
   {
-    private DescriptorCollection _descriptors;
+    private CabInfoNodeDescriptor _cabDataDescriptors;
     private readonly HashSet<short> _neededData = new HashSet<short>();
     private RootNodeConverter _rootNodeConverter;
     private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
@@ -22,6 +22,15 @@ namespace ZusiTcpInterface.Zusi3
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
     private string _clientName = "Unnamed";
     private string _clientVersion = "Unknown";
+
+    private readonly Dictionary<string, Func<short, byte[], IProtocolChunk>> _converterMap = new Dictionary<string, Func<short, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
+      {
+        {"single", AttributeConverters.ConvertSingle},
+        {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
+        {"string", AttributeConverters.ConvertString},
+        {"zugart", AttributeConverters.ConvertEnumAsShort<Zugart>},
+        {"fail", (s, bytes) => {throw new NotSupportedException("Unsupported data type received");} }
+      };
 
     #region Fields involved in object disposal
 
@@ -32,9 +41,9 @@ namespace ZusiTcpInterface.Zusi3
 
     #endregion Fields involved in object disposal
 
-    public DescriptorCollection Descriptors
+    public CabInfoNodeDescriptor CabDataDescriptors
     {
-      get { return _descriptors; }
+      get { return _cabDataDescriptors; }
     }
 
     public HashSet<short> NeededData
@@ -72,34 +81,32 @@ namespace ZusiTcpInterface.Zusi3
       InitialiseFrom(commandsetFileStream);
     }
 
-    public ConnectionContainer(IEnumerable<CabInfoAttributeDescriptor> cabInfoTypeDescriptors)
+    public ConnectionContainer(CabInfoNodeDescriptor rootDescriptor)
     {
-      InitialiseFrom(cabInfoTypeDescriptors.ToList());
+      InitialiseFrom(rootDescriptor);
     }
 
     private void InitialiseFrom(Stream fileStream)
     {
-      var cabInfoDescriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(fileStream).ToList();
+      var cabInfoDescriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(fileStream);
       InitialiseFrom(cabInfoDescriptors);
     }
 
-    private void InitialiseFrom(List<CabInfoAttributeDescriptor> cabInfoTypeDescriptors)
+    private void InitialiseFrom(CabInfoNodeDescriptor rootDescriptor)
     {
-      _descriptors = new DescriptorCollection(cabInfoTypeDescriptors);
-      var cabInfoAttributeConverters = MapAttributeConverters(cabInfoTypeDescriptors);
-      var cabInfoNodeConverters = MapSubNodeConverters(cabInfoTypeDescriptors);
+      _cabDataDescriptors = rootDescriptor;
 
-      SetupNodeConverters(cabInfoAttributeConverters, cabInfoNodeConverters);
+      SetupNodeConverters();
     }
 
-    private void SetupNodeConverters(Dictionary<short, Func<short, byte[], IProtocolChunk>> cabInfoAttributeConverters, Dictionary<short, INodeConverter> cabInfoNodeConverters)
+    private void SetupNodeConverters()
     {
       var handshakeConverter = new NodeConverter();
       var ackHelloConverter = new AckHelloConverter();
       var ackNeededDataConverter = new AckNeededDataConverter();
       handshakeConverter.SubNodeConverters[0x02] = ackHelloConverter;
 
-      var cabDataConverter = new NodeConverter { ConversionFunctions = cabInfoAttributeConverters, SubNodeConverters = cabInfoNodeConverters };
+      var cabDataConverter = GenerateNodeConverter(_cabDataDescriptors);
       var userDataConverter = new NodeConverter();
       userDataConverter.SubNodeConverters[0x04] = ackNeededDataConverter;
       userDataConverter.SubNodeConverters[0x0A] = cabDataConverter;
@@ -109,38 +116,20 @@ namespace ZusiTcpInterface.Zusi3
       _rootNodeConverter[0x02] = userDataConverter;
     }
 
+    private INodeConverter GenerateNodeConverter(CabInfoNodeDescriptor nodeDescriptor)
+    {
+      var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
+      Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Id, GenerateNodeConverter);
+
+      return new NodeConverter() {ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters};
+    }
+
     private Dictionary<short, Func<short, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
     {
-      var converters = new Dictionary<string, Func<short, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
-      {
-        {"single", AttributeConverters.ConvertSingle},
-        {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
-        {"string", AttributeConverters.ConvertString},
-        {"zugart", AttributeConverters.ConvertEnumAsShort<Zugart>},
-        {"fail", (s, bytes) => {throw new NotSupportedException("Unsupported data type received");} }
-      };
-
-      return cabInfoDescriptors.ToDictionary(d => d.Id, d => converters[d.Type]);
+      return cabInfoDescriptors.ToDictionary(d => d.Id, d => _converterMap[d.Type]);
     }
 
-    private Dictionary<short, INodeConverter> MapSubNodeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
-    {
-      var converters = new Dictionary<string, INodeConverter>(StringComparer.InvariantCultureIgnoreCase)
-      {
-        {"sifa", new SifaNodeConverter()},
-        {"dumptostring", new StringDumpNodeConverter()}
-      };
-
-      return cabInfoDescriptors.Where(d => converters.ContainsKey(d.Type))
-                               .ToDictionary(d => d.Id, d => converters[d.Type]);
-    }
-
-    public void RequestData(string name)
-    {
-      _neededData.Add(_descriptors.GetBy(name).Id);
-    }
-
-    public void RequestData(params CabInfoAttributeDescriptor[] descriptors)
+    public void RequestData(params CabInfoDescriptorBase[] descriptors)
     {
       foreach (var descriptor in descriptors)
       {

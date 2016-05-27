@@ -11,9 +11,9 @@ namespace DemoApp
 
       using (var connectionContainer = new ConnectionContainer())
       {
-        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.Descriptors["Status Sifa"];
+        var velocityDescriptor = connectionContainer.CabDataDescriptors.AttributeDescriptors["Geschwindigkeit"];
+        var gearboxPilotLightDescriptor = connectionContainer.CabDataDescriptors.AttributeDescriptors["LM Getriebe"];
+        var sifaStatusDescriptor = connectionContainer.CabDataDescriptors.AttributeDescriptors["Status Sifa"];
         connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
         connectionContainer.Connect();
 

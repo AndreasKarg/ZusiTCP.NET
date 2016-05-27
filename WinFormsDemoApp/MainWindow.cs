@@ -15,9 +15,9 @@ namespace WinFormsDemoApp
       InitializeComponent();
 
       _connectionContainer = new ConnectionContainer();
-      var velocityDescriptor = _connectionContainer.Descriptors["Geschwindigkeit"];
-      var gearboxPilotLightDescriptor = _connectionContainer.Descriptors["LM Getriebe"];
-      var sifaStatusDescriptor = _connectionContainer.Descriptors["Status Sifa"];
+      var velocityDescriptor = _connectionContainer.CabDataDescriptors.AttributeDescriptors["Geschwindigkeit"];
+      var gearboxPilotLightDescriptor = _connectionContainer.CabDataDescriptors.AttributeDescriptors["LM Getriebe"];
+      var sifaStatusDescriptor = _connectionContainer.CabDataDescriptors.AttributeDescriptors["Status Sifa"];
       _connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
 
       _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);

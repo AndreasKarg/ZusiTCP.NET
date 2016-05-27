@@ -27,7 +27,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
   <Attribute id=""0008"" name=""Lüfter an"" unit=""aus/an"" converter=""BoolAsSingle"" />
 </ProtocolDefinition>";
 
-      var expectedCommands = new List<CabInfoAttributeDescriptor>
+      var expectedDescriptors = new CabInfoNodeDescriptor(0, "Root", new[]
       {
         new CabInfoAttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
         new CabInfoAttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
@@ -37,7 +37,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
         new CabInfoAttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
         new CabInfoAttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
         new CabInfoAttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle"),
-      };
+      });
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
@@ -45,10 +45,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var descriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream);
 
       // Then
-      foreach (var expectedCommand in expectedCommands)
-      {
-        Assert.IsTrue(descriptors.Contains(expectedCommand, EqualityComparer<CabInfoAttributeDescriptor>.Default));
-      }
+      Assert.AreEqual(expectedDescriptors, descriptors);
     }
 
     [TestMethod]
@@ -72,32 +69,35 @@ namespace ZusiTcpInterfaceTests.Zusi3
   </Node>
 </ProtocolDefinition>";
 
-      var expectedCommands = new List<CabInfoDescriptorBase>
+      var expectedAttributes = new []
       {
         new CabInfoAttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
         new CabInfoAttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
-        new CabInfoNodeDescriptor(123, "Test", new List<CabInfoAttributeDescriptor>{
+      };
+
+      var expectedNodes = new []
+      { new CabInfoNodeDescriptor(0x123, "Test", new []
+        {
           new CabInfoAttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
           new CabInfoAttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
           new CabInfoAttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
         }, "Lalala"),
-        new CabInfoNodeDescriptor(153, "Test2", new List<CabInfoAttributeDescriptor>{
+        new CabInfoNodeDescriptor(0x153, "Test2", new []
+        {
           new CabInfoAttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
           new CabInfoAttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
           new CabInfoAttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })
-      };
+        })};
+
+      var expectedDescriptors = new CabInfoNodeDescriptor(0, "Root", expectedAttributes, expectedNodes);
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When
-      var commands = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream).ToList();
+      var descriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream);
 
       // Then
-      foreach (var expectedCommand in expectedCommands)
-      {
-        Assert.IsTrue(commands.Contains(expectedCommand));
-      }
+      Assert.AreEqual(expectedDescriptors, descriptors);
     }
   }
 }

@@ -14,7 +14,7 @@ namespace ZusiTcpInterface.Zusi3
 
     private bool _disposed;
 
-    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, DescriptorCollection descriptorCollection, SynchronizationContext synchronizationContext = null) : base(descriptorCollection)
+    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, CabInfoNodeDescriptor rootNode, SynchronizationContext synchronizationContext = null) : base(rootNode)
     {
       _blockingCollection = blockingCollection;
       _synchronizationContext = synchronizationContext ?? SynchronizationContext.Current;
@@ -23,7 +23,7 @@ namespace ZusiTcpInterface.Zusi3
     }
 
     public ThreadMarshallingZusiDataReceiver(ConnectionContainer connectionContainer, SynchronizationContext synchronizationContext = null) :
-      this(connectionContainer.ReceivedCabDataChunks, connectionContainer.Descriptors, synchronizationContext)
+      this(connectionContainer.ReceivedCabDataChunks, connectionContainer.CabDataDescriptors, synchronizationContext)
     { }
 
     private void MainMarshallingLoop()

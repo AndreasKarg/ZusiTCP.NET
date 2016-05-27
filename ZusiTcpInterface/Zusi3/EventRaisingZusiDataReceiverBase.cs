@@ -7,11 +7,11 @@ namespace ZusiTcpInterface.Zusi3
   [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
   public abstract class EventRaisingZusiDataReceiverBase
   {
-    private readonly DescriptorCollection _descriptorCollection;
+    private readonly CabInfoNodeDescriptor _rootNode;
 
-    protected EventRaisingZusiDataReceiverBase(DescriptorCollection descriptorCollection)
+    protected EventRaisingZusiDataReceiverBase(CabInfoNodeDescriptor rootNode)
     {
-      _descriptorCollection = descriptorCollection;
+      _rootNode = rootNode;
     }
 
     public event EventHandler<DataReceivedEventArgs<float>> FloatReceived;
@@ -40,7 +40,7 @@ namespace ZusiTcpInterface.Zusi3
       var dataChunk = chunk as CabDataChunk<T>;
       if (dataChunk == null) return false;
 
-      var eventArgs = new DataReceivedEventArgs<T>(dataChunk.Payload, dataChunk.Id, _descriptorCollection[dataChunk.Id]);
+      var eventArgs = new DataReceivedEventArgs<T>(dataChunk.Payload, dataChunk.Id, _rootNode.AttributeDescriptors[dataChunk.Id]);
       if (handler != null)
         handler(this, eventArgs);
 

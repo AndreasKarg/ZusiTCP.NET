@@ -33,7 +33,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       get { return _comment; }
     }
 
-    protected bool Equals(CabInfoDescriptorBase other)
+    protected bool BaseEquals(CabInfoDescriptorBase other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;

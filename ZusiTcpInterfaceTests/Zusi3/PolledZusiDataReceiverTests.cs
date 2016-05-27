@@ -31,7 +31,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
         _boolDescriptor
       };
 
-      var descriptorCollection = new DescriptorCollection(descriptors);
+      var descriptorCollection = new CabInfoNodeDescriptor(0, "Root", descriptors);
 
       _polledZusiDataReceiver = new PolledZusiDataReceiver(mockQueue.Object, descriptorCollection);
     }

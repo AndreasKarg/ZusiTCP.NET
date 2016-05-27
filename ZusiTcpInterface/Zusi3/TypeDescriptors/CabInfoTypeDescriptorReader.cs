@@ -7,24 +7,39 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   internal static class CabInfoTypeDescriptorReader
   {
-    public static DescriptorCollection ReadCommandsetFrom(Stream inputStream)
+    public static CabInfoNodeDescriptor ReadCommandsetFrom(Stream inputStream)
     {
       var root = XElement.Load(inputStream);
 
-      return new DescriptorCollection(root.Elements().Select(ConvertToDescriptor));
+      return new CabInfoNodeDescriptor(0, "Root", root.Elements(XName.Get("Attribute")).Select(ConvertAttribute),
+                                                  root.Elements(XName.Get("Node")).Select(ConvertNode));
     }
 
-    private static CabInfoAttributeDescriptor ConvertToDescriptor(XElement arg)
+    private static CabInfoNodeDescriptor ConvertNode(XElement arg)
     {
-      var attributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
+      var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
-      var id = Convert.ToInt16(attributes["id"], 16);
-      var name = attributes["name"];
-      var converter = attributes["converter"];
+      var id = Convert.ToInt16(xmlAttributes["id"], 16);
+      var name = xmlAttributes["name"];
+
+      // Optional attribute
+      string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
+
+      return new CabInfoNodeDescriptor(id, name, comment);
+    }
+
+    private static CabInfoAttributeDescriptor ConvertAttribute(XElement arg)
+    {
+      var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
+
+      var id = Convert.ToInt16(xmlAttributes["id"], 16);
+      var name = xmlAttributes["name"];
+
+      var converter = xmlAttributes["converter"];
 
       // Optional attributes
-      string unit = attributes.ContainsKey("unit") ? attributes["unit"] : String.Empty;
-      string comment = attributes.ContainsKey("comment") ? attributes["comment"] : String.Empty;
+      string unit = xmlAttributes.ContainsKey("unit") ? xmlAttributes["unit"] : String.Empty;
+      string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
       return new CabInfoAttributeDescriptor(id, name, unit, converter, comment);
     }
