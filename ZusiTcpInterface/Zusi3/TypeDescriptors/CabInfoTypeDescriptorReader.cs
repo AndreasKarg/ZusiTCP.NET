@@ -7,12 +7,14 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   internal static class CabInfoTypeDescriptorReader
   {
+    private static readonly string _namespace = "ZusiTcpInterface/CabInfoTypes";
+
     public static CabInfoNodeDescriptor ReadCommandsetFrom(Stream inputStream)
     {
       var root = XElement.Load(inputStream);
 
-      return new CabInfoNodeDescriptor(0, "Root", root.Elements(XName.Get("Attribute")).Select(ConvertAttribute),
-                                                  root.Elements(XName.Get("Node")).Select(ConvertNode));
+      return new CabInfoNodeDescriptor(0, "Root", root.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
+                                                  root.Elements(XName.Get("Node", _namespace)).Select(ConvertNode));
     }
 
     private static CabInfoNodeDescriptor ConvertNode(XElement arg)

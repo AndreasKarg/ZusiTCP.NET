@@ -16,7 +16,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // Given
       string commandsetXml =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<ProtocolDefinition>
+<ProtocolDefinition xmlns=""ZusiTcpInterface/CabInfoTypes"">
   <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
   <Attribute id=""0002"" name=""Druck Hauptluftleitung"" unit=""bar"" converter=""Single"" />
   <Attribute id=""0x0003"" name=""Druck Bremszylinder"" unit=""bar"" converter=""Single"" />
@@ -54,7 +54,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // Given
       string commandsetXml =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<ProtocolDefinition>
+<ProtocolDefinition xmlns=""ZusiTcpInterface/CabInfoTypes"">
   <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
   <Attribute id=""0002"" name=""Druck Hauptluftleitung"" unit=""bar"" converter=""Single"" />
   <Node id=""123"" name=""Test"" comment=""Lalala"">
