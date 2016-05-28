@@ -26,22 +26,25 @@ namespace DemoApp
           if(!chunkTaken)
             continue;
 
-          switch (chunk.Id)
+          var velocityAddress = new Address(0x01);
+          var gearboxPilotLightAddress = new Address(0x1A);
+          var sifaAddress = new Address(0x64);
+
+          if (chunk.Id == velocityAddress)
           {
-            case 0x01:
-              Console.WriteLine("Velocity [km/h] = {0}", ((CabDataChunk<Single>)chunk).Payload*3.6f);
-              break;
-
-            case 0x1A:
-              Console.WriteLine("Gearbox pilot light = {0}", ((CabDataChunk<bool>)chunk).Payload);
-              break;
-
-            case 0x64:
-              Console.WriteLine("Sifa status = {0}", ((CabDataChunk<SifaStatus>)chunk).Payload);
-              break;
-
-            default:
-              throw new NotSupportedException("lol u mad bro???");
+            Console.WriteLine("Velocity [km/h] = {0}", ((CabDataChunk<Single>) chunk).Payload*3.6f);
+          }
+          else if (chunk.Id == gearboxPilotLightAddress)
+          {
+            Console.WriteLine("Gearbox pilot light = {0}", ((CabDataChunk<bool>) chunk).Payload);
+          }
+          else if (chunk.Id == sifaAddress)
+          {
+            Console.WriteLine("Sifa status = {0}", ((CabDataChunk<SifaStatus>) chunk).Payload);
+          }
+          else
+          {
+            throw new NotSupportedException("lol u mad bro???");
           }
         }
       }

@@ -65,8 +65,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
       const float expectedFloat = 3.0f;
       const bool expectedBool = true;
 
-      _cabDataChunks.Enqueue(new CabDataChunk<float>(_floatDescriptor.Id, expectedFloat));
-      _cabDataChunks.Enqueue(new CabDataChunk<bool>(_boolDescriptor.Id, expectedBool));
+      _cabDataChunks.Enqueue(new CabDataChunk<float>(new Address(_floatDescriptor.Id), expectedFloat));
+      _cabDataChunks.Enqueue(new CabDataChunk<bool>(new Address(_boolDescriptor.Id), expectedBool));
 
       // When
       _polledZusiDataReceiver.Service();
@@ -85,7 +85,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
     public void Throws_exception_when_receiving_unknown_cab_data_chunk_type()
     {
       // Given
-      _cabDataChunks.Enqueue(new CabDataChunk<PolledZusiDataReceiverTests>(1233, null));
+      _cabDataChunks.Enqueue(new CabDataChunk<PolledZusiDataReceiverTests>(new Address(1233), null));
 
       // When/Then
       Assert.Throws<NotSupportedException>(_polledZusiDataReceiver.Service);

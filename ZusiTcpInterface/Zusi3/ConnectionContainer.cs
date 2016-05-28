@@ -23,7 +23,7 @@ namespace ZusiTcpInterface.Zusi3
     private string _clientName = "Unnamed";
     private string _clientVersion = "Unknown";
 
-    private readonly Dictionary<string, Func<short, byte[], IProtocolChunk>> _converterMap = new Dictionary<string, Func<short, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
+    private readonly Dictionary<string, Func<Address, byte[], IProtocolChunk>> _converterMap = new Dictionary<string, Func<Address, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
       {
         {"single", AttributeConverters.ConvertSingle},
         {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
@@ -121,10 +121,10 @@ namespace ZusiTcpInterface.Zusi3
       var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
       Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Id, GenerateNodeConverter);
 
-      return new NodeConverter() {ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters};
+      return new NodeConverter{ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters};
     }
 
-    private Dictionary<short, Func<short, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
+    private Dictionary<short, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
     {
       return cabInfoDescriptors.ToDictionary(d => d.Id, d => _converterMap[d.Type]);
     }

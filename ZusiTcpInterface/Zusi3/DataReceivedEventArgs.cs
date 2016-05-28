@@ -9,7 +9,7 @@ namespace ZusiTcpInterface.Zusi3
     private readonly short _id;
     private readonly CabInfoAttributeDescriptor _descriptor;
 
-    public DataReceivedEventArgs(T payload, short id, CabInfoAttributeDescriptor descriptor)
+    public DataReceivedEventArgs(T payload, Address id, CabInfoAttributeDescriptor descriptor)
     {
       _payload = payload;
       _descriptor = descriptor;

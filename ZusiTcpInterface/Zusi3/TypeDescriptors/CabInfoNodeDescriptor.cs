@@ -78,5 +78,10 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
     }
 
     #endregion Equality operations
+
+    public CabInfoAttributeDescriptor FindDescriptor(Address id)
+    {
+      throw new NotImplementedException();
+    }
   }
 }
