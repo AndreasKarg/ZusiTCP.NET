@@ -9,30 +9,25 @@ namespace ZusiTcpInterface.Zusi3.Converters
   {
     private readonly NodeConverter _dataConverter;
 
-    private const short TypeId = 0x01;
-    private const short PilotLightId = 0x02;
-    private const short HornStateId = 0x03;
-    private const short MainSwitchId = 0x04;
-    private const short DisruptionOverrideId = 0x05;
-    private const short AirCutoffValveId = 0x06;
+    private static readonly Address TypeId = new Address(0x01);
+    private static readonly Address PilotLightId = new Address(0x02);
+    private static readonly Address HornStateId = new Address(0x03);
+    private static readonly Address MainSwitchId = new Address(0x04);
+    private static readonly Address DisruptionOverrideId = new Address(0x05);
+    private static readonly Address AirCutoffValveId = new Address(0x06);
 
     public SifaNodeConverter()
     {
-      var attributeConverters = new Dictionary<short, Func<short, byte[], IProtocolChunk>>();
+      var attributeConverters = new Dictionary<short, Func<Address, byte[], IProtocolChunk>>();
 
       attributeConverters[TypeId] = AttributeConverters.ConvertString;
       attributeConverters[PilotLightId] = AttributeConverters.ConvertBool;
-      attributeConverters[HornStateId] = ConvertHornState;
+      attributeConverters[HornStateId] = AttributeConverters.ConvertEnumAsByte<SifaHornState>;
       attributeConverters[MainSwitchId] = AttributeConverters.ConvertOneBasedBool;
       attributeConverters[DisruptionOverrideId] = AttributeConverters.ConvertOneBasedBool;
       attributeConverters[AirCutoffValveId] = AttributeConverters.ConvertOneBasedBool;
 
       _dataConverter = new NodeConverter{ ConversionFunctions = attributeConverters };
-    }
-
-    private static IProtocolChunk ConvertHornState(short id, byte[] payload)
-    {
-      return new CabDataChunk<SifaHornState>(id, (SifaHornState)payload.Single());
     }
 
     public IEnumerable<IProtocolChunk> Convert(Node node)
@@ -45,34 +40,33 @@ namespace ZusiTcpInterface.Zusi3.Converters
 
       foreach (var field in fields)
       {
-        switch (field.Id)
+        if (field.Id == TypeId)
         {
-          case TypeId:
-            type = ((CabDataChunk<string>) field).Payload;
-            break;
-
-          case PilotLightId:
-            pilotLight = ((CabDataChunk<bool>)field).Payload;
-            break;
-
-          case MainSwitchId:
-            mainSwitch = ((CabDataChunk<bool>)field).Payload;
-            break;
-
-          case DisruptionOverrideId:
-            disruptionOverride = ((CabDataChunk<bool>)field).Payload;
-            break;
-
-          case AirCutoffValveId:
-            airCutoffValve = ((CabDataChunk<bool>)field).Payload;
-            break;
-
-          case HornStateId:
-            hornState = ((CabDataChunk<SifaHornState>)field).Payload;
-            break;
-
-          default:
-            throw new InvalidOperationException("Invalid Sifa packet received.");
+          type = ((CabDataChunk<string>) field).Payload;
+        }
+        else if (field.Id == PilotLightId)
+        {
+          pilotLight = ((CabDataChunk<bool>) field).Payload;
+        }
+        else if (field.Id == MainSwitchId)
+        {
+          mainSwitch = ((CabDataChunk<bool>) field).Payload;
+        }
+        else if (field.Id == DisruptionOverrideId)
+        {
+          disruptionOverride = ((CabDataChunk<bool>) field).Payload;
+        }
+        else if (field.Id == AirCutoffValveId)
+        {
+          airCutoffValve = ((CabDataChunk<bool>) field).Payload;
+        }
+        else if (field.Id == HornStateId)
+        {
+          hornState = ((CabDataChunk<SifaHornState>) field).Payload;
+        }
+        else
+        {
+          throw new InvalidOperationException("Invalid Sifa packet received.");
         }
       }
 

@@ -5,7 +5,7 @@
   {
     private readonly T _payload;
 
-    public CabDataChunk(short id, T payload)
+    public CabDataChunk(Address id, T payload)
       :base(id)
     {
       _payload = payload;

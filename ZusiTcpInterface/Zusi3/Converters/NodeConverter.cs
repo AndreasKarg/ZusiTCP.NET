@@ -15,7 +15,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
       set { _subNodeConverters = value; }
     }
 
-    public Dictionary<short, Func<short, byte[], IProtocolChunk>> ConversionFunctions
+    public Dictionary<short, Func<Address, byte[], IProtocolChunk>> ConversionFunctions
     {
       get { return _conversionFunctions; }
       set { _conversionFunctions = value; }
