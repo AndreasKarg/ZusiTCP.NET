@@ -18,17 +18,12 @@ namespace ZusiTcpInterface.Zusi3
 
     public event EventHandler<DataReceivedEventArgs<bool>> BoolReceived;
 
-    public event EventHandler<DataReceivedEventArgs<SifaStatus>> SifaStatusReceived;
-
     protected void RaiseEventFor(CabDataChunkBase chunk)
     {
       if (RaiseEventIfChunkIs<float>(chunk, FloatReceived))
         return;
 
       if (RaiseEventIfChunkIs<bool>(chunk, BoolReceived))
-        return;
-
-      if (RaiseEventIfChunkIs<SifaStatus>(chunk, SifaStatusReceived))
         return;
 
       var payloadType = chunk.GetType().GenericTypeArguments.Single();

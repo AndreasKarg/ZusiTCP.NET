@@ -87,9 +87,9 @@
       this.lblSifaStatus.AutoSize = true;
       this.lblSifaStatus.Location = new System.Drawing.Point(129, 70);
       this.lblSifaStatus.Name = "lblSifaStatus";
-      this.lblSifaStatus.Size = new System.Drawing.Size(35, 13);
+      this.lblSifaStatus.Size = new System.Drawing.Size(119, 13);
       this.lblSifaStatus.TabIndex = 6;
-      this.lblSifaStatus.Text = "label4";
+      this.lblSifaStatus.Text = "temporarily unsupported";
       // 
       // label5
       // 

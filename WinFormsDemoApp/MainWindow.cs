@@ -23,7 +23,6 @@ namespace WinFormsDemoApp
       _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);
       _dataReceiver.FloatReceived += OnFloatReceived;
       _dataReceiver.BoolReceived += OnBoolReceived;
-      _dataReceiver.SifaStatusReceived += OnSifaStatusReceived;
     }
 
     private void OnBoolReceived(object sender, DataReceivedEventArgs<bool> e)
@@ -40,14 +39,6 @@ namespace WinFormsDemoApp
         return;
 
       lblVelocity.Text = String.Format("{0:F1}", dataReceivedEventArgs.Payload * 3.6f);
-    }
-
-    private void OnSifaStatusReceived(object sender, DataReceivedEventArgs<SifaStatus> dataReceivedEventArgs)
-    {
-      if (dataReceivedEventArgs.Descriptor.Name != "Status Sifa")
-        return;
-
-      lblSifaStatus.Text = dataReceivedEventArgs.Payload.ToString();
     }
 
     private void MainWindow_Load(object sender, System.EventArgs e)

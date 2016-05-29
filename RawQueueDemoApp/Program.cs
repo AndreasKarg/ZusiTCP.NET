@@ -38,10 +38,6 @@ namespace DemoApp
           {
             Console.WriteLine("Gearbox pilot light = {0}", ((CabDataChunk<bool>) chunk).Payload);
           }
-          else if (chunk.Address == sifaAddress)
-          {
-            Console.WriteLine("Sifa status = {0}", ((CabDataChunk<SifaStatus>) chunk).Payload);
-          }
           else
           {
             throw new NotSupportedException("lol u mad bro???");

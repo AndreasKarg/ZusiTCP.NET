@@ -21,7 +21,6 @@ namespace PollBasedDemoApp
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);
         polledDataReceiver.FloatReceived += PolledDataReceiverOnFloatReceived;
         polledDataReceiver.BoolReceived += PolledDataReceiverOnBoolReceived;
-        polledDataReceiver.SifaStatusReceived += PolledDataReceiverOnSifaStatusReceived;
 
         Console.WriteLine("Connected!");
 
@@ -54,12 +53,6 @@ namespace PollBasedDemoApp
           Console.WriteLine("{0} [{1}] = {2}", descriptor.Name, descriptor.Unit, dataReceivedEventArgs.Payload * 3.6f);
           break;
       }
-    }
-
-    private static void PolledDataReceiverOnSifaStatusReceived(object sender, DataReceivedEventArgs<SifaStatus> dataReceivedEventArgs)
-    {
-      var descriptor = dataReceivedEventArgs.Descriptor;
-      Console.WriteLine("{0} = {1}", descriptor.Name, dataReceivedEventArgs.Payload);
     }
   }
 }

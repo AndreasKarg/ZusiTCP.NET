@@ -80,7 +80,6 @@
     <Compile Include="Zusi3\DOM\NodeCategory.cs" />
     <Compile Include="Zusi3\IProtocolChunk.cs" />
     <Compile Include="Zusi3\PolledZusiDataReceiver.cs" />
-    <Compile Include="Zusi3\SifaStatus.cs" />
     <Compile Include="Zusi3\Converters\StringDumpNodeConverter.cs" />
     <Compile Include="Zusi3\ThreadMarshallingZusiDataReceiver.cs" />
     <Compile Include="Zusi3\Converters\RootNodeConverter.cs" />
