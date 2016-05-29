@@ -2,7 +2,7 @@
 <schema targetNamespace="ZusiTcpInterface/CabInfoTypes" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="ZusiTcpInterface/CabInfoTypes">
 
     <complexType name="Attribute">
-    	<attribute name="Address" type="tns:HexNumber" use="required"></attribute>
+    	<attribute name="id" type="tns:HexNumber" use="required"></attribute>
     	<attribute name="name" type="string" use="required"></attribute>
     	<attribute name="converter" type="string" use="required"></attribute>
     	<attribute name="unit" type="string" use="optional"></attribute>
@@ -21,7 +21,7 @@
     		</element><element name="Node" type="tns:Node" minOccurs="0" maxOccurs="unbounded">
     		</element></choice>
     	</sequence>
-    	<attribute name="Address" type="tns:HexNumber"></attribute>
+    	<attribute name="id" type="tns:HexNumber"></attribute>
       <attribute name="name" type="string" use="required"></attribute>
     </complexType>
 
