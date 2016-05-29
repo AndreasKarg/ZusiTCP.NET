@@ -3,16 +3,16 @@ namespace ZusiTcpInterface.Zusi3
   [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
   public abstract class CabDataChunkBase : IProtocolChunk
   {
-    private readonly Address _id;
+    private readonly Address _address;
 
-    protected CabDataChunkBase(Address id)
+    protected CabDataChunkBase(Address address)
     {
-      _id = id;
+      _address = address;
     }
 
-    public Address Id
+    public Address Address
     {
-      get { return _id; }
+      get { return _address; }
     }
   }
 }

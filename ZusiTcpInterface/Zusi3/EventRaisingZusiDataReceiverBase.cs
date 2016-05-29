@@ -40,7 +40,7 @@ namespace ZusiTcpInterface.Zusi3
       var dataChunk = chunk as CabDataChunk<T>;
       if (dataChunk == null) return false;
 
-      var eventArgs = new DataReceivedEventArgs<T>(dataChunk.Payload, dataChunk.Id, _rootNode.FindDescriptor(dataChunk.Id));
+      var eventArgs = new DataReceivedEventArgs<T>(dataChunk.Payload, dataChunk.Address, _rootNode.FindDescriptor(dataChunk.Address));
       if (handler != null)
         handler(this, eventArgs);
 

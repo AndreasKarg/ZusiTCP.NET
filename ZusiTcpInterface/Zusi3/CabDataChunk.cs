@@ -5,8 +5,8 @@
   {
     private readonly T _payload;
 
-    public CabDataChunk(Address id, T payload)
-      :base(id)
+    public CabDataChunk(Address address, T payload)
+      :base(address)
     {
       _payload = payload;
     }

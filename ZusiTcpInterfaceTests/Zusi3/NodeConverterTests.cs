@@ -37,9 +37,9 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var chunks = converter.Convert(new Address(), cabDataNode).Cast<CabDataChunkBase>().ToList();
 
       // Then
-      var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Id == new Address(0x01))).Payload;
-      var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == new Address(0x1B))).Payload;
-      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == new Address(0x1C))).Payload;
+      var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Address == new Address(0x01))).Payload;
+      var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x1B))).Payload;
+      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x1C))).Payload;
 
       Assert.AreEqual(expectedVelocity, velocity);
       Assert.AreEqual(expectedPilotLightState, pilotLightState);
@@ -50,34 +50,31 @@ namespace ZusiTcpInterfaceTests.Zusi3
     public void Converts_child_node_correctly()
     {
       // Given
-      Assert.Inconclusive("Test does not make sense at the moment.");
-        /*
       var type = "3.0.1.0";
-      var expectedSifaStatus = new SifaStatus(type, true, false, SifaHornState.AutomaticBraking, true, false);
 
       var attributes = new Dictionary<short, Attribute>
       {
         { 0x01, new Attribute(0x01, type) },
         { 0x02, new Attribute(0x02, (byte)0x01) },
-        { 0x03, new Attribute(0x03, (byte)0x02) },
-        { 0x04, new Attribute(0x04, (byte)0x01) },
-        { 0x05, new Attribute(0x05, (byte)0x02) },
-        { 0x06, new Attribute(0x06, (byte)0x01) },
       };
 
-      var sifaNode = new Node(0x64, attributes);
-      var cabDataNode = new Node(0x0A, sifaNode);
+      var subNode = new Node(0x64, attributes);
+      var rootNode = new Node(0x0A, subNode);
 
-      var converter = new NodeConverter();
+      var rootConverter = new NodeConverter();
 
-      converter.SubNodeConverters[0x64] = new SifaNodeConverter();
+      var subNodeConverter = new NodeConverter(new Address(0x64));
+      subNodeConverter.ConversionFunctions[0x01] = AttributeConverters.ConvertString;
+      subNodeConverter.ConversionFunctions[0x02] = AttributeConverters.ConvertEnumAsByte<SifaHornState>;
+
+      rootConverter.SubNodeConverters[0x64] = subNodeConverter;
 
       // When
-      var actualSifaStatus = converter.Convert(cabDataNode).Cast<CabDataChunk<SifaStatus>>().Single();
+      var chunks = rootConverter.Convert(new Address(), rootNode).Cast<CabDataChunkBase>().ToDictionary(chunk => chunk.Address);
 
       // Then
-      Assert.AreEqual(expectedSifaStatus, actualSifaStatus.Payload);
-      */
+      Assert.AreEqual(type, ((CabDataChunk<string>)chunks[new Address(0x64, 0x01)]).Payload);
+      Assert.AreEqual(SifaHornState.Warning, ((CabDataChunk<SifaHornState>)chunks[new Address(0x64, 0x02)]).Payload);
     }
   }
-}
+}                                                                                      

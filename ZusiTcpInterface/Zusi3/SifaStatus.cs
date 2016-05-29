@@ -2,6 +2,7 @@
 
 namespace ZusiTcpInterface.Zusi3
 {
+  [Obsolete]
   public struct SifaStatus : IEquatable<SifaStatus>
   {
     private readonly string _type;

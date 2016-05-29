@@ -30,15 +30,15 @@ namespace DemoApp
           var gearboxPilotLightAddress = new Address(0x1A);
           var sifaAddress = new Address(0x64);
 
-          if (chunk.Id == velocityAddress)
+          if (chunk.Address == velocityAddress)
           {
             Console.WriteLine("Velocity [km/h] = {0}", ((CabDataChunk<Single>) chunk).Payload*3.6f);
           }
-          else if (chunk.Id == gearboxPilotLightAddress)
+          else if (chunk.Address == gearboxPilotLightAddress)
           {
             Console.WriteLine("Gearbox pilot light = {0}", ((CabDataChunk<bool>) chunk).Payload);
           }
-          else if (chunk.Id == sifaAddress)
+          else if (chunk.Address == sifaAddress)
           {
             Console.WriteLine("Sifa status = {0}", ((CabDataChunk<SifaStatus>) chunk).Payload);
           }

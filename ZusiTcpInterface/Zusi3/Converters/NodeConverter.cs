@@ -15,11 +15,6 @@ namespace ZusiTcpInterface.Zusi3.Converters
     {
     }
 
-    public NodeConverter(short address)
-      : this(new Address(address))
-    {
-    }
-
     public NodeConverter(Address address)
     {
       _address = address;
