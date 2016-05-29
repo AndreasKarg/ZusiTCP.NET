@@ -29,6 +29,14 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       _nodeDescriptors = new DescriptorCollection<CabInfoNodeDescriptor>(nodeDescriptors);
     }
 
+    public CabInfoAttributeDescriptor FindDescriptor(Address id)
+    {
+      if (id.Ids.Count == 1)
+        return _attributeDescriptors[id.Single()];
+
+      return _nodeDescriptors[id.First()].FindDescriptor(new Address(id.Skip(1).ToArray()));
+    }
+
     public DescriptorCollection<CabInfoAttributeDescriptor> AttributeDescriptors
     {
       get { return _attributeDescriptors; }
@@ -78,10 +86,5 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
     }
 
     #endregion Equality operations
-
-    public CabInfoAttributeDescriptor FindDescriptor(Address id)
-    {
-      throw new NotImplementedException();
-    }
   }
 }

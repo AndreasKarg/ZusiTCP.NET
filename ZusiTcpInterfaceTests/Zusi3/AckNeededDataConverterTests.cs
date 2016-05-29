@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.DOM;
 using ZusiTcpInterface.Zusi3.Packets;
@@ -31,7 +32,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // When
       var deserialised = Node.Deserialise(binaryReader);
-      var converted = (AckNeededDataPacket)_ackNeededDataConverter.Convert(deserialised).Single();
+      var converted = (AckNeededDataPacket)_ackNeededDataConverter.Convert(new Address(), deserialised).Single();
 
       // Then
       Assert.IsTrue(converted.RequestAccepted);

@@ -6,7 +6,7 @@ namespace ZusiTcpInterface.Zusi3
   public class DataReceivedEventArgs<T> : EventArgs
   {
     private readonly T _payload;
-    private readonly short _id;
+    private readonly Address _id;
     private readonly CabInfoAttributeDescriptor _descriptor;
 
     public DataReceivedEventArgs(T payload, Address id, CabInfoAttributeDescriptor descriptor)
@@ -21,7 +21,7 @@ namespace ZusiTcpInterface.Zusi3
       get { return _payload; }
     }
 
-    public short Id
+    public Address Id
     {
       get { return _id; }
     }

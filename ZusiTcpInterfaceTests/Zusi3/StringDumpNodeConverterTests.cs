@@ -63,7 +63,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // When
       var deserialised = Node.Deserialise(binaryReader);
-      var converted = (CabDataChunk<String>)_stringDumpNodeConverter.Convert(deserialised).Single();
+      var converted = (CabDataChunk<String>)_stringDumpNodeConverter.Convert(new Address(), deserialised).Single();
       var dumpedString = converted.Payload;
 
       // Then
@@ -123,7 +123,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // When
       var deserialised = Node.Deserialise(binaryReader);
-      var converted = (CabDataChunk<String>)_stringDumpNodeConverter.Convert(deserialised).Single();
+      var converted = (CabDataChunk<String>)_stringDumpNodeConverter.Convert(new Address(), deserialised).Single();
       var dumpedString = converted.Payload;
 
       // Then

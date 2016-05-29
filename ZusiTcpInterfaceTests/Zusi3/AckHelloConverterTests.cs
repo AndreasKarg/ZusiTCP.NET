@@ -1,7 +1,8 @@
-﻿using System.IO;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.DOM;
 using ZusiTcpInterface.Zusi3.Packets;
@@ -11,7 +12,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
   [TestClass]
   public class AckHelloConverterTests
   {
-    readonly AckHelloConverter _ackHelloConverter = new AckHelloConverter();
+    private readonly AckHelloConverter _ackHelloConverter = new AckHelloConverter();
 
     [TestMethod]
     public void Deserialises_well_formed_packet()
@@ -37,7 +38,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // When
       var deserialised = Node.Deserialise(binaryReader);
-      var converted = (AckHelloPacket)_ackHelloConverter.Convert(deserialised).Single();
+      var converted = (AckHelloPacket)_ackHelloConverter.Convert(new Address(), deserialised).Single();
 
       // Then
       Assert.AreEqual("3.0.1.0", converted.ZusiVersion);

@@ -6,13 +6,21 @@ using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public struct Address : IEquatable<Address>, IEnumerable<short>
+  public class Address : IEquatable<Address>, IEnumerable<short>
   {
     private readonly short[] _ids;
     private readonly int _hashValue;
 
+    public Address()
+    {
+      _ids = new short[0];
+      _hashValue = 0;
+    }
+
     public Address(params short[] ids)
     {
+      if (ids == null) throw new ArgumentNullException("ids");
+
       _ids = ids;
       _hashValue = ids.Aggregate(0, AddToHash);
     }
@@ -49,7 +57,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public IEnumerator<short> GetEnumerator()
     {
-      return (IEnumerator<short>) _ids.GetEnumerator();
+      return _ids.AsEnumerable().GetEnumerator();
     }
 
     public override bool Equals(object obj)

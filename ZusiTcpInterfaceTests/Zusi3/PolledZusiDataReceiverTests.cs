@@ -41,11 +41,11 @@ namespace ZusiTcpInterfaceTests.Zusi3
     {
       // Given
       float? lastReceivedFloat = null;
-      short? lastReceivedFloatId = null;
+      Address lastReceivedFloatId = null;
       string lastReceivedFloatName = null;
 
       bool? lastReceivedBool = null;
-      short? lastReceivedBoolId = null;
+      Address lastReceivedBoolId = null;
       string lastReceivedBoolName = null;
 
       _polledZusiDataReceiver.BoolReceived += (sender, args) =>
@@ -64,20 +64,22 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       const float expectedFloat = 3.0f;
       const bool expectedBool = true;
+      var floatAddress = new Address(_floatDescriptor.Id);
+      var boolAddress = new Address(_boolDescriptor.Id);
 
-      _cabDataChunks.Enqueue(new CabDataChunk<float>(new Address(_floatDescriptor.Id), expectedFloat));
-      _cabDataChunks.Enqueue(new CabDataChunk<bool>(new Address(_boolDescriptor.Id), expectedBool));
+      _cabDataChunks.Enqueue(new CabDataChunk<float>(floatAddress, expectedFloat));
+      _cabDataChunks.Enqueue(new CabDataChunk<bool>(boolAddress, expectedBool));
 
       // When
       _polledZusiDataReceiver.Service();
 
       // Then
       Assert.AreEqual(expectedFloat, lastReceivedFloat);
-      Assert.AreEqual(_floatDescriptor.Id, lastReceivedFloatId);
+      Assert.AreEqual(floatAddress, lastReceivedFloatId);
       Assert.AreEqual(_floatDescriptor.Name, lastReceivedFloatName);
 
       Assert.AreEqual(expectedBool, lastReceivedBool);
-      Assert.AreEqual(_boolDescriptor.Id, lastReceivedBoolId);
+      Assert.AreEqual(boolAddress, lastReceivedBoolId);
       Assert.AreEqual(_boolDescriptor.Name, lastReceivedBoolName);
     }
 

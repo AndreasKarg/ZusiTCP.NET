@@ -23,7 +23,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
       var connectionAccepted = attributes[ConnectionAcceptedId].Payload.Single() == 0;
 
       var ackHelloPacket = new AckHelloPacket(zusiVersion, connectionInfo, connectionAccepted);
-      return new [] {ackHelloPacket};
+      return new[] { ackHelloPacket };
     }
   }
 }

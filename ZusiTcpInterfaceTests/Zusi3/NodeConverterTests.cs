@@ -34,12 +34,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
       converter.ConversionFunctions[0x1C] = AttributeConverters.ConvertBoolAsSingle;
 
       // When
-      var chunks = converter.Convert(cabDataNode).Cast<CabDataChunkBase>().ToList();
+      var chunks = converter.Convert(new Address(), cabDataNode).Cast<CabDataChunkBase>().ToList();
 
       // Then
       var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Id == new Address(0x01))).Payload;
       var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == new Address(0x1B))).Payload;
-      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == new Address(0x1C)).Payload;
+      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == new Address(0x1C))).Payload;
 
       Assert.AreEqual(expectedVelocity, velocity);
       Assert.AreEqual(expectedPilotLightState, pilotLightState);
