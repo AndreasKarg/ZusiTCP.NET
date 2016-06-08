@@ -1,21 +1,23 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MSTestExtensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {
   [TestClass]
-  public class CabInfoTypeDescriptorReaderTests
+  public class CabInfoTypeDescriptorReaderTests : BaseTest
   {
     [TestMethod]
     public void Reads_flat_Xml_correctly()
     {
       // Given
       string commandsetXml =
-@"<?xml version=""1.0"" encoding=""utf-8""?>
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
 <ProtocolDefinition xmlns=""ZusiTcpInterface/CabInfoTypes"">
   <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
   <Attribute id=""0002"" name=""Druck Hauptluftleitung"" unit=""bar"" converter=""Single"" />
@@ -53,7 +55,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
     {
       // Given
       string commandsetXml =
-@"<?xml version=""1.0"" encoding=""utf-8""?>
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
 <ProtocolDefinition xmlns=""ZusiTcpInterface/CabInfoTypes"">
   <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
   <Attribute id=""0002"" name=""Druck Hauptluftleitung"" unit=""bar"" converter=""Single"" />
@@ -69,25 +71,27 @@ namespace ZusiTcpInterfaceTests.Zusi3
   </Node>
 </ProtocolDefinition>";
 
-      var expectedAttributes = new []
+      var expectedAttributes = new[]
       {
         new CabInfoAttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
         new CabInfoAttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
       };
 
-      var expectedNodes = new []
-      { new CabInfoNodeDescriptor(0x123, "Test", new []
+      var expectedNodes = new[]
+      {
+        new CabInfoNodeDescriptor(0x123, "Test", new[]
         {
           new CabInfoAttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
           new CabInfoAttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
           new CabInfoAttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
         }, "Lalala"),
-        new CabInfoNodeDescriptor(0x153, "Test2", new []
+        new CabInfoNodeDescriptor(0x153, "Test2", new[]
         {
           new CabInfoAttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
           new CabInfoAttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
           new CabInfoAttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
+        })
+      };
 
       var expectedDescriptors = new CabInfoNodeDescriptor(0, "Root", expectedAttributes, expectedNodes);
 
@@ -98,6 +102,39 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // Then
       Assert.AreEqual(expectedDescriptors, descriptors);
+    }
+
+    [TestMethod]
+    public void Throws_exception_on_duplicate_attribute_name()
+    {
+      // Given
+      string commandsetXml =
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
+<ProtocolDefinition xmlns=""ZusiTcpInterface/CabInfoTypes"">
+  <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
+  <Attribute id=""0002"" name=""Geschwindigkeit"" unit=""bar"" converter=""Single"" />
+</ProtocolDefinition>";
+      var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
+
+      // When - Throws
+      Assert.Throws<InvalidDescriptorException>(() => CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream));
+    }
+
+    [TestMethod]
+    public void Throws_exception_on_duplicate_attribute_id()
+    {
+      // Given
+      string commandsetXml =
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
+<ProtocolDefinition xmlns=""ZusiTcpInterface/CabInfoTypes"">
+  <Attribute id=""0001"" name=""Foo"" unit=""m/s"" converter=""Single"" />
+  <Attribute id=""0001"" name=""Bar"" unit=""bar"" converter=""Single"" />
+</ProtocolDefinition>";
+      var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
+
+      // When - Throws
+      //Assert.Throws<InvalidDescriptorException>(() => CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream));
+      CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream);
     }
   }
 }

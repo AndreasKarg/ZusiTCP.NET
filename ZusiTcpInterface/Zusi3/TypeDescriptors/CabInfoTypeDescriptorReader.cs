@@ -27,7 +27,8 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       // Optional attribute
       string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
-      return new CabInfoNodeDescriptor(id, name, comment);
+      return new CabInfoNodeDescriptor(id, name, arg.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
+                                                 arg.Elements(XName.Get("Node", _namespace)).Select(ConvertNode), comment);
     }
 
     private static CabInfoAttributeDescriptor ConvertAttribute(XElement arg)

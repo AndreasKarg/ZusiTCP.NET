@@ -66,6 +66,7 @@
     <Compile Include="Zusi2\HandShakerTests.cs" />
     <Compile Include="Zusi3\AckNeededDataConverterTests.cs" />
     <Compile Include="Zusi3\AddressTests.cs" />
+    <Compile Include="Zusi3\CabInfoDescriptorTests.cs" />
     <Compile Include="Zusi3\NodeConverterTests.cs" />
     <Compile Include="Zusi3\CabInfoTypeDescriptorReaderTests.cs" />
     <Compile Include="Zusi3\HelloPacketTests.cs" />

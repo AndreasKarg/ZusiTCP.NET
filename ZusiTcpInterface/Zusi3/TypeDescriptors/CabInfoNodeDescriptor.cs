@@ -25,8 +25,23 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       if (attributeDescriptors == null) throw new ArgumentNullException("attributeDescriptors");
       if (nodeDescriptors == null) throw new ArgumentNullException("nodeDescriptors");
 
-      _attributeDescriptors = new DescriptorCollection<CabInfoAttributeDescriptor>(attributeDescriptors);
-      _nodeDescriptors = new DescriptorCollection<CabInfoNodeDescriptor>(nodeDescriptors);
+      try
+      {
+        _attributeDescriptors = new DescriptorCollection<CabInfoAttributeDescriptor>(attributeDescriptors);
+      }
+      catch (InvalidDescriptorException e)
+      {
+        throw new InvalidDescriptorException(String.Format("Error while processing attributes for node 0x{1:x4} - '{0}'", name, id), e);
+      }
+
+      try
+      {
+        _nodeDescriptors = new DescriptorCollection<CabInfoNodeDescriptor>(nodeDescriptors);
+      }
+      catch (InvalidDescriptorException e)
+      {
+        throw new InvalidDescriptorException(String.Format("Error while processing child nodes of node 0x{1:x4} - '{0}'", name, id), e);
+      }
     }
 
     public CabInfoAttributeDescriptor FindDescriptor(Address id)
