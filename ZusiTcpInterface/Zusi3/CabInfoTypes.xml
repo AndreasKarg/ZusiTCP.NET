@@ -153,7 +153,7 @@
       <Node id="0x0010" name="Falschfahrauftrag aktiv">
         <Attribute id="0x0001" name="Status" converter="StatusAuftrag" />
       </Node>
-      <Node id="0x0010" name="Vorsichtauftrag aktiv">
+      <Node id="0x0011" name="Vorsichtauftrag aktiv">
         <Attribute id="0x0001" name="Status" converter="StatusVorsichtAuftrag" />
       </Node>
       <Node id="0x0012" name="Fahrt über LZB-Halt per Befehl">
@@ -189,8 +189,8 @@
       <Attribute id="0x0021" name="Sollgeschwindigkeit" unit="m/s" converter="Single" />
       <Attribute id="0x0022" name="Zielgeschwindigkeit" unit="m/s" converter="Single" comment="Wert &lt; 0 -> dunkel" />
       <Attribute id="0x0023" name="Zielweg" unit="m" converter="Single" comment="Wert &lt; 0 -> dunkel" />
-      <Attribute id="0x0024" name="LM G" converter="PilotLightState" />
-      <Attribute id="0x0025" name="LM Prüf/Stör" converter="PilotLightState" />
+      <Attribute id="0x0024" name="Status LM G" converter="PilotLightState" />
+      <Attribute id="0x0025" name="Status LM Prüf/Stör" converter="PilotLightState" />
       <Attribute id="0x0026" name="CIR-Elke-Modus aktiv" converter="BoolAsByte" />
       <!-- Node 0x0028 (Funktionsprüfung) is not supported -->
 	  </Node>
