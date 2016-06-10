@@ -126,14 +126,14 @@
         <Attribute id="0x0005" name="Zugart" converter="Zugart" />
         <Attribute id="0x0006" name="Modus" converter="AktiveZugdaten" />
       </Node>
-  		<Attribute id="0x0007" name="Hauptschalter" converter="Schalterzustand" />
-  		<Attribute id="0x0008" name="Indusi-Störschalter" converter="Schalterzustand" />
-  		<Attribute id="0x0009" name="LZB-Störschalter" converter="Schalterzustand" />
-  		<Attribute id="0x000A" name="Luftabsperrhahn" converter="Schalterzustand" />
+  		<Attribute id="0x0007" name="Hauptschalter" converter="SwitchState" />
+  		<Attribute id="0x0008" name="Indusi-Störschalter" converter="SwitchState" />
+  		<Attribute id="0x0009" name="LZB-Störschalter" converter="SwitchState" />
+  		<Attribute id="0x000A" name="Luftabsperrhahn" converter="SwitchState" />
   	</Node>
   	<Node id="0x0003" name="Betriebsdaten">
   		<Attribute id="0x0002" name="Zustand Zugsicherung" converter="ZustandZugsicherung" />
-  		<Attribute id="0x0003" name="Zustand Zwangsbremsung" converter="ZustandZwangsbremsung" />
+  		<Attribute id="0x0003" name="Grund für Zwangsbremsung" converter="GrundZwangsbremsung" />
   		<Attribute id="0x0004" name="Zwangsbremsung Grund" converter="String" />
   		<Attribute id="0x0005" name="LM 1000Hz" converter="BoolAsByte" />
   		<Attribute id="0x0006" name="LM Zugart U" converter="BoolAsByte" />

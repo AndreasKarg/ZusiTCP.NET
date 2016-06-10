@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.DOM;
+using ZusiTcpInterface.Zusi3.Enums;
+using ZusiTcpInterface.Zusi3.Enums.Lzb;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterface.Zusi3
@@ -27,8 +29,25 @@ namespace ZusiTcpInterface.Zusi3
       {
         {"single", AttributeConverters.ConvertSingle},
         {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
+        {"boolasbyte", AttributeConverters.ConvertBoolAsByte},
         {"string", AttributeConverters.ConvertString},
         {"zugart", AttributeConverters.ConvertEnumAsShort<Zugart>},
+        {"switchstate", AttributeConverters.ConvertEnumAsShort<SwitchState>},
+        {"aktivezugdaten", AttributeConverters.ConvertEnumAsShort<AktiveZugdaten>},
+        {"zustandzugsicherung", AttributeConverters.ConvertEnumAsShort<ZustandZugsicherung>},
+        {"grundzwangsbremsung", AttributeConverters.ConvertEnumAsShort<GrundZwangsbremsung>},
+        {"lzbzustand", AttributeConverters.ConvertEnumAsShort<LzbZustand>},
+        {"statuslzbuebertragungsausfall", AttributeConverters.ConvertEnumAsShort<StatusLzbUebertragungsausfall>},
+        {"indusihupe", AttributeConverters.ConvertEnumAsByte<IndusiHupe>},
+        {"zusatzinfomelderbild", AttributeConverters.ConvertEnumAsByte<ZusatzinfoMelderbild>},
+        {"pilotlightstate", AttributeConverters.ConvertEnumAsByte<PilotLightState>},
+        {"statusendeverfahren", AttributeConverters.ConvertEnumAsByte<StatusEndeVerfahren>},
+        {"statusauftrag", AttributeConverters.ConvertEnumAsByte<StatusAuftrag>},
+        {"statusvorsichtauftrag", AttributeConverters.ConvertEnumAsByte<StatusVorsichtauftrag>},
+        {"statusnothalt", AttributeConverters.ConvertEnumAsByte<StatusLzbNothalt>},
+        {"statusrechnerausfall", AttributeConverters.ConvertEnumAsByte<StatusRechnerausfall>},
+        {"statuselauftrag", AttributeConverters.ConvertEnumAsByte<StatusElAuftrag>},
+        {"short", AttributeConverters.ConvertShort},
         {"fail", (s, bytes) => {throw new NotSupportedException("Unsupported data type received");} }
       };
 
@@ -118,15 +137,35 @@ namespace ZusiTcpInterface.Zusi3
 
     private INodeConverter GenerateNodeConverter(CabInfoNodeDescriptor nodeDescriptor)
     {
-      var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
-      Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Id, GenerateNodeConverter);
-
-      return new NodeConverter{ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters};
+      try
+      {
+        var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
+        Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Id, GenerateNodeConverter);
+        return new NodeConverter { ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters };
+      }
+      catch (Exception e)
+      {
+        throw new InvalidOperationException(String.Format("Error while processing node 0x{0:x4} - {1}", nodeDescriptor.Id, nodeDescriptor.Name), e);
+      }
     }
 
     private Dictionary<short, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
     {
-      return cabInfoDescriptors.ToDictionary(d => d.Id, d => _converterMap[d.Type]);
+      Dictionary<short, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<short, Func<Address, byte[], IProtocolChunk>>();
+
+      foreach (var descriptor in cabInfoDescriptors)
+      {
+        try
+        {
+          dictionary.Add(descriptor.Id, _converterMap[descriptor.Type]);
+        }
+        catch (KeyNotFoundException e)
+        {
+          throw new InvalidDescriptorException(String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Id, descriptor.Name));
+        }
+      }
+
+      return dictionary;
     }
 
     public void RequestData(params CabInfoDescriptorBase[] descriptors)

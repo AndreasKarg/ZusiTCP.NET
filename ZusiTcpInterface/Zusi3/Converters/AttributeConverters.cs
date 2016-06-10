@@ -21,14 +21,9 @@ namespace ZusiTcpInterface.Zusi3.Converters
       return new CabDataChunk<string>(id, Encoding.ASCII.GetString(payload));
     }
 
-    public static IProtocolChunk ConvertBool(Address id, byte[] payload)
+    public static IProtocolChunk ConvertBoolAsByte(Address id, byte[] payload)
     {
       return new CabDataChunk<bool>(id, payload.Single() != 0);
-    }
-
-    public static IProtocolChunk ConvertOneBasedBool(Address id, byte[] payload)
-    {
-      return new CabDataChunk<bool>(id, payload.Single() != 1);
     }
 
     public static IProtocolChunk ConvertEnumAsByte<T>(Address id, byte[] payload)
@@ -43,6 +38,11 @@ namespace ZusiTcpInterface.Zusi3.Converters
       var enumValue = CastToEnum<T>(Convert.ToInt16(payload));
 
       return new CabDataChunk<T>(id, enumValue);
+    }
+
+    public static IProtocolChunk ConvertShort(Address id, byte[] payload)
+    {
+      return new CabDataChunk<short>(id, BitConverter.ToInt16(payload, 0));
     }
 
     private static T CastToEnum<T>(int value)

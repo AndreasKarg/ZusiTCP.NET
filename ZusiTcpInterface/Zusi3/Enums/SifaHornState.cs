@@ -1,4 +1,4 @@
-﻿namespace ZusiTcpInterface.Zusi3
+﻿namespace ZusiTcpInterface.Zusi3.Enums
 {
   public enum SifaHornState
   {

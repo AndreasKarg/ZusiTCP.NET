@@ -4,6 +4,7 @@ using System.Linq;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.DOM;
+using ZusiTcpInterface.Zusi3.Enums;
 using Attribute = ZusiTcpInterface.Zusi3.DOM.Attribute;
 
 namespace ZusiTcpInterfaceTests.Zusi3
