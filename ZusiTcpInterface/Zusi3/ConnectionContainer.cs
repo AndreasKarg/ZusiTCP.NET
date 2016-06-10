@@ -34,6 +34,7 @@ namespace ZusiTcpInterface.Zusi3
         {"zugart", AttributeConverters.ConvertEnumAsShort<Zugart>},
         {"switchstate", AttributeConverters.ConvertEnumAsShort<SwitchState>},
         {"aktivezugdaten", AttributeConverters.ConvertEnumAsShort<AktiveZugdaten>},
+        {"statussifahupe", AttributeConverters.ConvertEnumAsByte<StatusSifaHupe>},
         {"zustandzugsicherung", AttributeConverters.ConvertEnumAsShort<ZustandZugsicherung>},
         {"grundzwangsbremsung", AttributeConverters.ConvertEnumAsShort<GrundZwangsbremsung>},
         {"lzbzustand", AttributeConverters.ConvertEnumAsShort<LzbZustand>},

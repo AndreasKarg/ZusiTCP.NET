@@ -97,7 +97,14 @@
   <Attribute id="0x0061" name="Kilometrierung (Zugspitze)" unit="km" converter="Single" />
   <Attribute id="0x0062" name="Motorstrom" unit="A" converter="Single" />
   <Attribute id="0x0063" name="Motorspannung" unit="V" converter="Single" />
-  <Attribute id="0x0064" name="Status Sifa" converter="Fail" comment="s. eigener Abschnitt" />
+  <Node id="0x0064" name="Status Sifa">
+    <Attribute id="0x0001" name="Bauart" converter="String" />
+    <Attribute id="0x0002" name="Status Sifa-Leuchtmelder" converter="BoolAsByte" />
+    <Attribute id="0x0003" name="Status Sifa-Hupe" converter="StatusSifaHupe" />
+    <Attribute id="0x0004" name="Status Sifa-Hauptschalter" converter="SwitchState" />
+    <Attribute id="0x0005" name="Status Sifa-Stoerschalter" converter="SwitchState" />
+    <Attribute id="0x0006" name="Status Sifa-Luftabsperrhahn" converter="SwitchState" />
+  </Node>
   <Node id="0x0065" name="Status Zugsicherung">
   	<Attribute id="0x0001" name="Bauart" converter="String" />
   	<Node id="0x0002" name="Einstellungen">

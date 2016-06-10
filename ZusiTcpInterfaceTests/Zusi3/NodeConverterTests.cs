@@ -66,7 +66,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       var subNodeConverter = new NodeConverter(new Address(0x64));
       subNodeConverter.ConversionFunctions[0x01] = AttributeConverters.ConvertString;
-      subNodeConverter.ConversionFunctions[0x02] = AttributeConverters.ConvertEnumAsByte<SifaHornState>;
+      subNodeConverter.ConversionFunctions[0x02] = AttributeConverters.ConvertEnumAsByte<StatusSifaHupe>;
 
       rootConverter.SubNodeConverters[0x64] = subNodeConverter;
 
@@ -75,7 +75,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // Then
       Assert.AreEqual(type, ((CabDataChunk<string>)chunks[new Address(0x64, 0x01)]).Payload);
-      Assert.AreEqual(SifaHornState.Warning, ((CabDataChunk<SifaHornState>)chunks[new Address(0x64, 0x02)]).Payload);
+      Assert.AreEqual(StatusSifaHupe.Warnung, ((CabDataChunk<StatusSifaHupe>)chunks[new Address(0x64, 0x02)]).Payload);
     }
   }
 }                                                                                      

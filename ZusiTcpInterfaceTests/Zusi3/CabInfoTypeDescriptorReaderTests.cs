@@ -133,8 +133,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When - Throws
-      //Assert.Throws<InvalidDescriptorException>(() => CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream));
-      CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream);
+      Assert.Throws<InvalidDescriptorException>(() => CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream));
     }
   }
 }
