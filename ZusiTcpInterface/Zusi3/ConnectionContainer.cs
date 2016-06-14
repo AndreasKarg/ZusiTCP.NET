@@ -32,7 +32,7 @@ namespace ZusiTcpInterface.Zusi3
         {"boolasbyte", AttributeConverters.ConvertBoolAsByte},
         {"string", AttributeConverters.ConvertString},
         {"zugart", AttributeConverters.ConvertEnumAsShort<Zugart>},
-        {"switchstate", AttributeConverters.ConvertEnumAsShort<SwitchState>},
+        {"switchstate", AttributeConverters.ConvertEnumAsByte<SwitchState>},
         {"aktivezugdaten", AttributeConverters.ConvertEnumAsShort<AktiveZugdaten>},
         {"statussifahupe", AttributeConverters.ConvertEnumAsByte<StatusSifaHupe>},
         {"zustandzugsicherung", AttributeConverters.ConvertEnumAsShort<ZustandZugsicherung>},
@@ -142,7 +142,7 @@ namespace ZusiTcpInterface.Zusi3
       {
         var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
         Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Id, GenerateNodeConverter);
-        return new NodeConverter { ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters };
+        return new NodeConverter() { ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters };
       }
       catch (Exception e)
       {

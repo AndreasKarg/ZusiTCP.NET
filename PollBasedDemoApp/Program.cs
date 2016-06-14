@@ -14,7 +14,7 @@ namespace PollBasedDemoApp
       {
         var velocityDescriptor = connectionContainer.CabDataDescriptors.AttributeDescriptors["Geschwindigkeit"];
         var gearboxPilotLightDescriptor = connectionContainer.CabDataDescriptors.AttributeDescriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.CabDataDescriptors.AttributeDescriptors["Status Sifa"];
+        var sifaStatusDescriptor = connectionContainer.CabDataDescriptors.NodeDescriptors["Status Sifa"];
         connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
         connectionContainer.Connect();
 

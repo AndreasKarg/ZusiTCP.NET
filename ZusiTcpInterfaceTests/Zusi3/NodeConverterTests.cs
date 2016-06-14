@@ -38,9 +38,9 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var chunks = converter.Convert(new Address(), cabDataNode).Cast<CabDataChunkBase>().ToList();
 
       // Then
-      var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Address == new Address(0x01))).Payload;
-      var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x1B))).Payload;
-      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x1C))).Payload;
+      var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x01))).Payload;
+      var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1B))).Payload;
+      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1C))).Payload;
 
       Assert.AreEqual(expectedVelocity, velocity);
       Assert.AreEqual(expectedPilotLightState, pilotLightState);
@@ -62,20 +62,20 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var subNode = new Node(0x64, attributes);
       var rootNode = new Node(0x0A, subNode);
 
-      var rootConverter = new NodeConverter();
+      var rootConverter = new RootNodeConverter();
 
-      var subNodeConverter = new NodeConverter(new Address(0x64));
+      var subNodeConverter = new NodeConverter();
       subNodeConverter.ConversionFunctions[0x01] = AttributeConverters.ConvertString;
       subNodeConverter.ConversionFunctions[0x02] = AttributeConverters.ConvertEnumAsByte<StatusSifaHupe>;
 
       rootConverter.SubNodeConverters[0x64] = subNodeConverter;
 
       // When
-      var chunks = rootConverter.Convert(new Address(), rootNode).Cast<CabDataChunkBase>().ToDictionary(chunk => chunk.Address);
+      var chunks = rootConverter.Convert(rootNode).Cast<CabDataChunkBase>().ToDictionary(chunk => chunk.Address);
 
       // Then
-      Assert.AreEqual(type, ((CabDataChunk<string>)chunks[new Address(0x64, 0x01)]).Payload);
-      Assert.AreEqual(StatusSifaHupe.Warnung, ((CabDataChunk<StatusSifaHupe>)chunks[new Address(0x64, 0x02)]).Payload);
+      Assert.AreEqual(type, ((CabDataChunk<string>)chunks[new Address(0x0A, 0x64, 0x01)]).Payload);
+      Assert.AreEqual(StatusSifaHupe.Warnung, ((CabDataChunk<StatusSifaHupe>)chunks[new Address(0x0A, 0x64, 0x02)]).Payload);
     }
   }
 }                                                                                      
