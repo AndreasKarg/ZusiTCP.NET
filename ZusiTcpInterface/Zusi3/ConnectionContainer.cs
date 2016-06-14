@@ -162,7 +162,7 @@ namespace ZusiTcpInterface.Zusi3
         }
         catch (KeyNotFoundException e)
         {
-          throw new InvalidDescriptorException(String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Id, descriptor.Name));
+          throw new InvalidDescriptorException(String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Id, descriptor.Name), e);
         }
       }
 
