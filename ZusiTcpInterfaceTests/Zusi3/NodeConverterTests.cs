@@ -60,18 +60,20 @@ namespace ZusiTcpInterfaceTests.Zusi3
       };
 
       var subNode = new Node(0x64, attributes);
-      var rootNode = new Node(0x0A, subNode);
+      var cabDataNode = new Node(0x0A, subNode);
 
       var rootConverter = new RootNodeConverter();
+      var cabDataConverter = new NodeConverter();
 
       var subNodeConverter = new NodeConverter();
       subNodeConverter.ConversionFunctions[0x01] = AttributeConverters.ConvertString;
       subNodeConverter.ConversionFunctions[0x02] = AttributeConverters.ConvertEnumAsByte<StatusSifaHupe>;
 
-      rootConverter.SubNodeConverters[0x64] = subNodeConverter;
+      cabDataConverter.SubNodeConverters[0x64] = subNodeConverter;
+      rootConverter.SubNodeConverters[0x0A] = cabDataConverter;
 
       // When
-      var chunks = rootConverter.Convert(rootNode).Cast<CabDataChunkBase>().ToDictionary(chunk => chunk.Address);
+      var chunks = rootConverter.Convert(cabDataNode).Cast<CabDataChunkBase>().ToDictionary(chunk => chunk.Address);
 
       // Then
       Assert.AreEqual(type, ((CabDataChunk<string>)chunks[new Address(0x0A, 0x64, 0x01)]).Payload);
