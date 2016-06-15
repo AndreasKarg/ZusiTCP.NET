@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
@@ -7,26 +8,37 @@ namespace ZusiTcpInterface.Zusi3
   public class DataRequester
   {
     private readonly DescriptorCollection<CabInfoNodeDescriptor> _descriptors;
-    private readonly List<Address> _requestedAddresses = new List<Address>();
+    private readonly HashSet<Address> _requestedAddresses = new HashSet<Address>();
 
     public DataRequester(DescriptorCollection<CabInfoNodeDescriptor> descriptors)
     {
       _descriptors = descriptors;
     }
 
-    public IReadOnlyCollection<Address> RequestedAddresses
+    public HashSet<Address> RequestedAddresses
     {
       get { return _requestedAddresses; }
     }
 
     public void Request(string attributeName)
     {
-      var address = _descriptors.SelectMany(FindInNodeDescriptor);
+      var matchingAttribute = Find(attributeName);
+      _requestedAddresses.Add(matchingAttribute.Address);
     }
 
-    private IEnumerable<Address> FindInNodeDescriptor(CabInfoNodeDescriptor descriptor)
+    private CabInfoAttributeDescriptor Find(string attributeName)
     {
-      throw new System.NotImplementedException();
+      var matchingAttribute = _descriptors.SelectMany(descriptor => FindInNodeDescriptor(descriptor, attributeName)).Single();
+      return matchingAttribute;
+    }
+
+    private static IEnumerable<CabInfoAttributeDescriptor> FindInNodeDescriptor(CabInfoNodeDescriptor node, string attributeName)
+    {
+      var localAttributes = node.AttributeDescriptors.Where(attribute => attribute.Name == attributeName);
+
+      var subNodeAttributes = node.NodeDescriptors.SelectMany(descriptor => FindInNodeDescriptor(descriptor, attributeName));
+
+      return localAttributes.Concat(subNodeAttributes);
     }
   }
 }

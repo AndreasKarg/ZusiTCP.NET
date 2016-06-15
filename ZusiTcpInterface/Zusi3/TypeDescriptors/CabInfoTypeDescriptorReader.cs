@@ -13,8 +13,13 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
     {
       var root = XElement.Load(inputStream);
 
-      return new CabInfoNodeDescriptor(0x0A, "Root", root.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
-                                                  root.Elements(XName.Get("Node", _namespace)).Select(ConvertNode));
+      var attributeElements = root.Elements(XName.Get("Attribute", _namespace));
+      var attributeDescriptors = attributeElements.Select(ConvertAttribute);
+
+      var nodeElements = root.Elements(XName.Get("Node", _namespace));
+      var nodeDescriptors = nodeElements.Select(ConvertNode);
+
+      return new CabInfoNodeDescriptor(new Address(0x0A), "Root", attributeDescriptors, nodeDescriptors);
     }
 
     private static CabInfoNodeDescriptor ConvertNode(XElement arg)

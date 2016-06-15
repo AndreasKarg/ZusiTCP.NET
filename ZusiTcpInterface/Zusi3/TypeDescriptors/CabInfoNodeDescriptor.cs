@@ -9,18 +9,18 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
     private readonly DescriptorCollection<CabInfoAttributeDescriptor> _attributeDescriptors;
     private readonly DescriptorCollection<CabInfoNodeDescriptor> _nodeDescriptors;
 
-    public CabInfoNodeDescriptor(short id, string name, string comment = "")
-      : this(id, name, Enumerable.Empty<CabInfoAttributeDescriptor>(), comment)
+    public CabInfoNodeDescriptor(Address address, string name, string comment = "")
+      : this(address, name, Enumerable.Empty<CabInfoAttributeDescriptor>(), comment)
     {
     }
 
-    public CabInfoNodeDescriptor(short id, string name, IEnumerable<CabInfoAttributeDescriptor> attributeDescriptors, string comment = "")
-      : this(id, name, attributeDescriptors, Enumerable.Empty<CabInfoNodeDescriptor>(), comment)
+    public CabInfoNodeDescriptor(Address address, string name, IEnumerable<CabInfoAttributeDescriptor> attributeDescriptors, string comment = "")
+      : this(address, name, attributeDescriptors, Enumerable.Empty<CabInfoNodeDescriptor>(), comment)
     {
     }
 
-    public CabInfoNodeDescriptor(short id, string name, IEnumerable<CabInfoAttributeDescriptor> attributeDescriptors, IEnumerable<CabInfoNodeDescriptor> nodeDescriptors, string comment = "")
-      : base(id, name, comment)
+    public CabInfoNodeDescriptor(Address address, string name, IEnumerable<CabInfoAttributeDescriptor> attributeDescriptors, IEnumerable<CabInfoNodeDescriptor> nodeDescriptors, string comment = "")
+      : base(address, name, comment)
     {
       if (attributeDescriptors == null) throw new ArgumentNullException("attributeDescriptors");
       if (nodeDescriptors == null) throw new ArgumentNullException("nodeDescriptors");
@@ -31,7 +31,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
       catch (InvalidDescriptorException e)
       {
-        throw new InvalidDescriptorException(String.Format("Error while processing attributes for node 0x{1:x4} - '{0}'", name, id), e);
+        throw new InvalidDescriptorException(String.Format("Error while processing attributes for node 0x{1:x4} - '{0}'", name, address), e);
       }
 
       try
@@ -40,16 +40,16 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
       catch (InvalidDescriptorException e)
       {
-        throw new InvalidDescriptorException(String.Format("Error while processing child nodes of node 0x{1:x4} - '{0}'", name, id), e);
+        throw new InvalidDescriptorException(String.Format("Error while processing child nodes of node 0x{1:x4} - '{0}'", name, address), e);
       }
     }
 
-    public CabInfoAttributeDescriptor FindDescriptor(Address id)
+    public CabInfoAttributeDescriptor FindDescriptor(Address address)
     {
-      if (id.Ids.Count == 1)
-        return _attributeDescriptors[id.Single()];
+      if (address.Ids.Count == 1)
+        return _attributeDescriptors[address.Single()];
 
-      return _nodeDescriptors[id.First()].FindDescriptor(new Address(id.Skip(1).ToArray()));
+      return _nodeDescriptors[address.First()].FindDescriptor(new Address(address.Skip(1).ToArray()));
     }
 
     public DescriptorCollection<CabInfoAttributeDescriptor> AttributeDescriptors
