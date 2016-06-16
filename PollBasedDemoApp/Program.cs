@@ -21,8 +21,10 @@ namespace PollBasedDemoApp
         connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
 
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);
-        polledDataReceiver.FloatReceived += PolledDataReceiverOnFloatReceived;
-        polledDataReceiver.BoolReceived += PolledDataReceiverOnBoolReceived;
+
+        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), dataChunk => OnBoolReceived("LM Sifa", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
 
         Console.WriteLine("Connected!");
 
@@ -36,25 +38,14 @@ namespace PollBasedDemoApp
       Console.WriteLine("Disconnected");
     }
 
-    private static void PolledDataReceiverOnBoolReceived(object sender, DataReceivedEventArgs<bool> dataReceivedEventArgs)
+    private static void OnVelocityReceived(DataChunk<float> dataChunk)
     {
-      var descriptor = dataReceivedEventArgs.Descriptor;
-      Console.WriteLine("{0} = {1}", descriptor.Name, dataReceivedEventArgs.Payload);
+      Console.WriteLine("Velocity [km/h] = {0}", dataChunk.Payload * 3.6f);
     }
 
-    private static void PolledDataReceiverOnFloatReceived(object sender, DataReceivedEventArgs<float> dataReceivedEventArgs)
+    private static void OnBoolReceived(string name, DataChunk<bool> dataChunk)
     {
-      var descriptor = dataReceivedEventArgs.Descriptor;
-      switch (descriptor.Name)
-      {
-        case "Geschwindigkeit":
-          Console.WriteLine("Velocity [km/h] = {0}", dataReceivedEventArgs.Payload * 3.6f);
-          break;
-
-        default:
-          Console.WriteLine("{0} [{1}] = {2}", descriptor.Name, descriptor.Unit, dataReceivedEventArgs.Payload * 3.6f);
-          break;
-      }
+      Console.WriteLine("{0} = {1}", name, dataChunk.Payload);
     }
   }
 }

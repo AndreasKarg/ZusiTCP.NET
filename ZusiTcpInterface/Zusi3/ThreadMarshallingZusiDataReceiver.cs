@@ -5,7 +5,7 @@ using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public class ThreadMarshallingZusiDataReceiver : EventRaisingZusiDataReceiverBase, IDisposable
+  public class ThreadMarshallingZusiDataReceiver : CallbackBasedZusiDataReceiverBase, IDisposable
   {
     private readonly IBlockingCollection<DataChunkBase> _blockingCollection;
     private readonly SynchronizationContext _synchronizationContext;
@@ -14,7 +14,7 @@ namespace ZusiTcpInterface.Zusi3
 
     private bool _disposed;
 
-    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, NodeDescriptor rootNode, SynchronizationContext synchronizationContext = null) : base(rootNode)
+    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, NodeDescriptor rootNode, SynchronizationContext synchronizationContext = null) : base()
     {
       _blockingCollection = blockingCollection;
       _synchronizationContext = synchronizationContext ?? SynchronizationContext.Current;

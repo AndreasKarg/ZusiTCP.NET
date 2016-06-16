@@ -2,11 +2,11 @@
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public class PolledZusiDataReceiver : EventRaisingZusiDataReceiverBase
+  public class PolledZusiDataReceiver : CallbackBasedZusiDataReceiverBase
   {
     private readonly IBlockingCollection<DataChunkBase> _blockingCollection;
 
-    public PolledZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, NodeDescriptor rootNode) : base(rootNode)
+    public PolledZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, NodeDescriptor rootNode) : base()
     {
       _blockingCollection = blockingCollection;
     }

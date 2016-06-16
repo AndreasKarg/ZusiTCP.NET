@@ -18,24 +18,25 @@ namespace WinFormsDemoApp
       _connectionContainer = new ConnectionContainer();
 
       _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);
-      _dataReceiver.FloatReceived += OnFloatReceived;
-      _dataReceiver.BoolReceived += OnBoolReceived;
+
+      _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), OnGearboxPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), OnSifaPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
     }
 
-    private void OnBoolReceived(object sender, DataReceivedEventArgs<bool> e)
+    private void OnGearboxPilotLightReceived(DataChunk<bool> dataChunk)
     {
-      if (e.Descriptor.Name != "LM Getriebe")
-        return;
-
-      lblGearboxIndicator.Text = e.Payload.ToString();
+      lblGearboxIndicator.Text = dataChunk.Payload.ToString();
     }
 
-    private void OnFloatReceived(object sender, DataReceivedEventArgs<float> dataReceivedEventArgs)
+    private void OnSifaPilotLightReceived(DataChunk<bool> dataChunk)
     {
-      if (dataReceivedEventArgs.Descriptor.Name != "Geschwindigkeit")
-        return;
+      lblSifaStatus.Text = dataChunk.Payload.ToString();
+    }
 
-      lblVelocity.Text = String.Format("{0:F1}", dataReceivedEventArgs.Payload * 3.6f);
+    private void OnVelocityReceived(DataChunk<float> dataChunk)
+    {
+      lblVelocity.Text = String.Format("{0:F1}", dataChunk.Payload * 3.6f);
     }
 
     private void MainWindow_Load(object sender, System.EventArgs e)

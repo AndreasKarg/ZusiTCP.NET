@@ -60,18 +60,18 @@
       this.lblGearboxIndicator.AutoSize = true;
       this.lblGearboxIndicator.Location = new System.Drawing.Point(129, 57);
       this.lblGearboxIndicator.Name = "lblGearboxIndicator";
-      this.lblGearboxIndicator.Size = new System.Drawing.Size(35, 13);
+      this.lblGearboxIndicator.Size = new System.Drawing.Size(89, 13);
       this.lblGearboxIndicator.TabIndex = 2;
-      this.lblGearboxIndicator.Text = "label4";
+      this.lblGearboxIndicator.Text = "No data received";
       // 
       // lblVelocity
       // 
       this.lblVelocity.AutoSize = true;
       this.lblVelocity.Location = new System.Drawing.Point(129, 44);
       this.lblVelocity.Name = "lblVelocity";
-      this.lblVelocity.Size = new System.Drawing.Size(35, 13);
+      this.lblVelocity.Size = new System.Drawing.Size(89, 13);
       this.lblVelocity.TabIndex = 3;
-      this.lblVelocity.Text = "label4";
+      this.lblVelocity.Text = "No data received";
       // 
       // lblConnecting
       // 
@@ -87,9 +87,9 @@
       this.lblSifaStatus.AutoSize = true;
       this.lblSifaStatus.Location = new System.Drawing.Point(129, 70);
       this.lblSifaStatus.Name = "lblSifaStatus";
-      this.lblSifaStatus.Size = new System.Drawing.Size(119, 13);
+      this.lblSifaStatus.Size = new System.Drawing.Size(89, 13);
       this.lblSifaStatus.TabIndex = 6;
-      this.lblSifaStatus.Text = "temporarily unsupported";
+      this.lblSifaStatus.Text = "No data received";
       // 
       // label5
       // 
@@ -102,7 +102,7 @@
       // 
       // MainWindow
       // 
-      this.ClientSize = new System.Drawing.Size(1221, 261);
+      this.ClientSize = new System.Drawing.Size(429, 261);
       this.Controls.Add(this.lblSifaStatus);
       this.Controls.Add(this.label5);
       this.Controls.Add(this.lblConnecting);

@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MSTestExtensions;
-using System;
-using System.Collections.Generic;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
@@ -37,35 +37,34 @@ namespace ZusiTcpInterfaceTests.Zusi3
     }
 
     [TestMethod]
-    public void Raises_correct_events_when_supplied_with_data_chunks()
+    public void Calls_correct_callbacks_when_supplied_with_data_chunks()
     {
       // Given
       float? lastReceivedFloat = null;
       Address lastReceivedFloatId = null;
-      string lastReceivedFloatName = null;
 
       bool? lastReceivedBool = null;
       Address lastReceivedBoolId = null;
-      string lastReceivedBoolName = null;
 
-      _polledZusiDataReceiver.BoolReceived += (sender, args) =>
+      var boolReceived = new Action<DataChunk<bool>>(args =>
       {
         lastReceivedBool = args.Payload;
-        lastReceivedBoolId = args.Id;
-        lastReceivedBoolName = args.Descriptor.Name;
-      };
+        lastReceivedBoolId = args.Address;
+      });
 
-      _polledZusiDataReceiver.FloatReceived += (sender, args) =>
+      var floatReceived = new Action<DataChunk<float>>(args =>
       {
         lastReceivedFloat = args.Payload;
-        lastReceivedFloatId = args.Id;
-        lastReceivedFloatName = args.Descriptor.Name;
-      };
+        lastReceivedFloatId = args.Address;
+      });
 
       const float expectedFloat = 3.0f;
       const bool expectedBool = true;
-      var floatAddress = new Address(_floatDescriptor.Id);
-      var boolAddress = new Address(_boolDescriptor.Id);
+      var floatAddress = new CabInfoAddress(_floatDescriptor.Id);
+      var boolAddress = new CabInfoAddress(_boolDescriptor.Id);
+
+      _polledZusiDataReceiver.RegisterCallbackFor(floatAddress, floatReceived);
+      _polledZusiDataReceiver.RegisterCallbackFor(boolAddress, boolReceived);
 
       _cabDataChunks.Enqueue(new DataChunk<float>(floatAddress, expectedFloat));
       _cabDataChunks.Enqueue(new DataChunk<bool>(boolAddress, expectedBool));
@@ -76,21 +75,21 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // Then
       Assert.AreEqual(expectedFloat, lastReceivedFloat);
       Assert.AreEqual(floatAddress, lastReceivedFloatId);
-      Assert.AreEqual(_floatDescriptor.Name, lastReceivedFloatName);
 
       Assert.AreEqual(expectedBool, lastReceivedBool);
       Assert.AreEqual(boolAddress, lastReceivedBoolId);
-      Assert.AreEqual(_boolDescriptor.Name, lastReceivedBoolName);
     }
 
     [TestMethod]
-    public void Throws_exception_when_receiving_unknown_cab_data_chunk_type()
+    public void Throws_ArgumentException_when_another_callback_for_same_address_is_registered()
     {
       // Given
-      _cabDataChunks.Enqueue(new DataChunk<PolledZusiDataReceiverTests>(new Address(1233), null));
+      var floatAddress = new CabInfoAddress(_floatDescriptor.Id);
 
-      // When/Then
-      Assert.Throws<NotSupportedException>(_polledZusiDataReceiver.Service);
+      _polledZusiDataReceiver.RegisterCallbackFor<float>(floatAddress, chunk => { });
+
+      // When - Throws
+      Assert.Throws<ArgumentException>(() => _polledZusiDataReceiver.RegisterCallbackFor<float>(floatAddress, chunk => { }));
     }
   }
 }

@@ -9,10 +9,6 @@ namespace ZusiTcpInterface.Zusi3.Converters
     private Dictionary<short, Func<Address, byte[], IProtocolChunk>> _conversionFunctions = new Dictionary<short, Func<Address, byte[], IProtocolChunk>>();
     private Dictionary<short, INodeConverter> _subNodeConverters = new Dictionary<short, INodeConverter>();
 
-    public NodeConverter()
-    {
-    }
-
     public Dictionary<short, INodeConverter> SubNodeConverters
     {
       get { return _subNodeConverters; }
@@ -28,7 +24,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
     public IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node node)
     {
       var chunks = new List<IProtocolChunk>();
-      var fullAddress = new Address(accumulatedAddress, node.Id);
+      var fullAddress = accumulatedAddress.Concat(node.Id);
 
       foreach (var attribute in node.Attributes)
       {
@@ -37,7 +33,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
         if (!_conversionFunctions.TryGetValue(attribute.Key, out attributeConverter))
           continue;
 
-        chunks.Add(attributeConverter(new Address(fullAddress, attribute.Key), attribute.Value.Payload));
+        chunks.Add(attributeConverter(fullAddress.Concat(attribute.Key), attribute.Value.Payload));
       }
 
       foreach (var subNode in node.SubNodes)

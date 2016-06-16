@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3
@@ -11,12 +12,6 @@ namespace ZusiTcpInterface.Zusi3
     private readonly short[] _ids;
     private readonly int _hashValue;
 
-    public Address()
-    {
-      _ids = new short[0];
-      _hashValue = 0;
-    }
-
     public Address(params short[] ids)
     {
       if (ids == null) throw new ArgumentNullException("ids");
@@ -25,14 +20,10 @@ namespace ZusiTcpInterface.Zusi3
       _hashValue = ids.Aggregate(0, AddToHash);
     }
 
-    public Address(Address address, short key)
-      : this(address.Ids.Concat(new[] {key}).ToArray())
-    {
-    }
-
-    public Address(Address accumulatedAddress, Address address)
-      : this(accumulatedAddress.Ids.Concat(address.Ids).ToArray())
-    {
+    [Pure]
+    public Address Concat(short suffix)
+    { 
+      return new Address(Ids.Concat(new[] {suffix}).ToArray());
     }
 
     public ReadOnlyCollection<short> Ids
@@ -46,6 +37,13 @@ namespace ZusiTcpInterface.Zusi3
       hashValue ^= id;
 
       return hashValue;
+    }
+
+    public override string ToString()
+    {
+      var formattedIds = _ids.Select(id => String.Format("0x{0:x2}", id));
+
+      return "{" + String.Join(", ", formattedIds) + "}";
     }
 
     #region Equality operations
@@ -63,7 +61,7 @@ namespace ZusiTcpInterface.Zusi3
     public override bool Equals(object obj)
     {
       if (ReferenceEquals(null, obj)) return false;
-      if (obj.GetType() != this.GetType()) return false;
+      if (!(obj is Address)) return false;
       return Equals((Address) obj);
     }
 
