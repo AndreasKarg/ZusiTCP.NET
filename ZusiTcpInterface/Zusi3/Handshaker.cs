@@ -28,9 +28,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public void ShakeHands()
     {
-      var hello = new HelloPacket(_clientType, _clientName, _clientVersion);
-
-      hello.Serialise(_binaryWriter);
+      HelloPacket.Serialise(_binaryWriter, _clientType, _clientName, _clientVersion);
 
       var handshakeConverter = new NodeConverter();
       handshakeConverter.SubNodeConverters[0x02] = new AckHelloConverter();
