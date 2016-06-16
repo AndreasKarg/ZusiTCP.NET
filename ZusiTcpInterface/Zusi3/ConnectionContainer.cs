@@ -16,15 +16,13 @@ namespace ZusiTcpInterface.Zusi3
   public class ConnectionContainer : IDisposable
   {
     private NodeDescriptor _descriptors;
-    private readonly HashSet<short> _neededData = new HashSet<short>();
     private RootNodeConverter _rootNodeConverter;
     private readonly IBlockingCollection<DataChunkBase> _receivedDataChunks = new BlockingCollectionWrapper<DataChunkBase>();
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-    private string _clientName = "Unnamed";
-    private string _clientVersion = "Unknown";
 
-    private readonly Dictionary<string, Func<Address, byte[], IProtocolChunk>> _converterMap = new Dictionary<string, Func<Address, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
+    private readonly Dictionary<string, Func<Address, byte[], IProtocolChunk>> _converterMap =
+      new Dictionary<string, Func<Address, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
       {
         {"single", AttributeConverters.ConvertSingle},
         {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
@@ -48,7 +46,7 @@ namespace ZusiTcpInterface.Zusi3
         {"statusrechnerausfall", AttributeConverters.ConvertEnumAsByte<StatusRechnerausfall>},
         {"statuselauftrag", AttributeConverters.ConvertEnumAsByte<StatusElAuftrag>},
         {"short", AttributeConverters.ConvertShort},
-        {"fail", (s, bytes) => {throw new NotSupportedException("Unsupported data type received");} }
+        {"fail", (s, bytes) => { throw new NotSupportedException("Unsupported data type received"); }}
       };
 
     #region Fields involved in object disposal
@@ -65,26 +63,9 @@ namespace ZusiTcpInterface.Zusi3
       get { return _descriptors; }
     }
 
-    public HashSet<short> NeededData
-    {
-      get { return _neededData; }
-    }
-
     public IBlockingCollection<DataChunkBase> ReceivedDataChunks
     {
       get { return _receivedDataChunks; }
-    }
-
-    public string ClientName
-    {
-      get { return _clientName; }
-      set { _clientName = value; }
-    }
-
-    public string ClientVersion
-    {
-      get { return _clientVersion; }
-      set { _clientVersion = value; }
     }
 
     public ConnectionContainer(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.xml")
@@ -161,19 +142,12 @@ namespace ZusiTcpInterface.Zusi3
         }
         catch (KeyNotFoundException e)
         {
-          throw new InvalidDescriptorException(String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Id, descriptor.Name), e);
+          throw new InvalidDescriptorException(
+            String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Id, descriptor.Name), e);
         }
       }
 
       return dictionary;
-    }
-
-    public void RequestData(params DescriptorBase[] descriptors)
-    {
-      foreach (var descriptor in descriptors)
-      {
-        _neededData.Add(descriptor.Id);
-      }
     }
 
     public void Dispose()
@@ -200,7 +174,7 @@ namespace ZusiTcpInterface.Zusi3
       _hasBeenDisposed = true;
     }
 
-    public void Connect(string hostname = "localhost", int port = 1436)
+    public void Connect(string clientName, string clientVersion, IEnumerable<short> neededData, string hostname = "localhost", int port = 1436)
     {
       _tcpClient = new TcpClient(hostname, port);
 
@@ -225,8 +199,8 @@ namespace ZusiTcpInterface.Zusi3
         }
       });
 
-      var handshaker = new Handshaker(_receivedChunks, binaryWriter, ClientType.ControlDesk, _clientName, _clientVersion,
-        _neededData);
+      var handshaker = new Handshaker(_receivedChunks, binaryWriter, ClientType.ControlDesk, clientName, clientVersion,
+        neededData);
 
       handshaker.ShakeHands();
 
@@ -248,9 +222,5 @@ namespace ZusiTcpInterface.Zusi3
         }
       });
     }
-  }
-
-  internal enum Zugart
-  {
   }
 }

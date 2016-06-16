@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ZusiTcpInterface.Zusi3;
@@ -15,10 +16,6 @@ namespace WinFormsDemoApp
       InitializeComponent();
 
       _connectionContainer = new ConnectionContainer();
-      var velocityDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
-      var gearboxPilotLightDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
-      var sifaStatusDescriptor = _connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
-      _connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
 
       _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);
       _dataReceiver.FloatReceived += OnFloatReceived;
@@ -44,7 +41,13 @@ namespace WinFormsDemoApp
     private void MainWindow_Load(object sender, System.EventArgs e)
     {
       lblConnecting.Text = "Connecting!";
-      _connectionContainer.Connect();
+
+      var velocityDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
+      var gearboxPilotLightDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
+      var sifaStatusDescriptor = _connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
+      var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+
+      _connectionContainer.Connect("Win-Forms demo app", "1.0.0.0", neededData);
       lblConnecting.Text = "Connected!";
     }
 

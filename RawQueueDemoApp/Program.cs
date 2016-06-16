@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ZusiTcpInterface.Zusi3;
 
 namespace DemoApp
@@ -14,8 +15,8 @@ namespace DemoApp
         var velocityDescriptor = connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
         var gearboxPilotLightDescriptor = connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
         var sifaStatusDescriptor = connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
-        connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
-        connectionContainer.Connect();
+        var neededData = new HashSet<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+        connectionContainer.Connect("Raw queue demo app", "1.0.0.0", neededData);
 
         Console.WriteLine("Connected!");
 
