@@ -44,14 +44,6 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
     }
 
-    public AttributeDescriptor FindDescriptor(Address id)
-    {
-      if (id.Ids.Count == 1)
-        return _attributeDescriptors[id.Single()];
-
-      return _nodeDescriptors[id.First()].FindDescriptor(new Address(id.Skip(1).ToArray()));
-    }
-
     public DescriptorCollection<AttributeDescriptor> AttributeDescriptors
     {
       get { return _attributeDescriptors; }

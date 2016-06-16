@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ZusiTcpInterface.Zusi3.DOM
 {
-  internal class Attribute : IProtocolElement
+  internal class Attribute
   {
     private readonly byte[] _payload;
     private readonly short _id;

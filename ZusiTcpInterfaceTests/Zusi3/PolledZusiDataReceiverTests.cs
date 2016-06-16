@@ -33,7 +33,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       var descriptorCollection = new NodeDescriptor(0, "Root", descriptors);
 
-      _polledZusiDataReceiver = new PolledZusiDataReceiver(mockQueue.Object, descriptorCollection);
+      _polledZusiDataReceiver = new PolledZusiDataReceiver(mockQueue.Object);
     }
 
     [TestMethod]

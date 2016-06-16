@@ -5,7 +5,7 @@ using System.IO;
 
 namespace ZusiTcpInterface.Zusi3.DOM
 {
-  internal class Node : IProtocolElement
+  internal class Node
   {
     private readonly List<Node> _subNodes;
     private readonly Dictionary<short, Attribute> _attributes;
@@ -65,14 +65,14 @@ namespace ZusiTcpInterface.Zusi3.DOM
     }
 
     [Pure]
-    public static Node Deserialise(BinaryReader binaryReader, bool nodeStarterHasAlreadyBeenConsumed = false)
+    public static Node Deserialise(BinaryReader binaryReader, bool nodeStartTagHasAlreadyBeenConsumed = false)
     {
       var subNodes = new List<Node>();
       var attributes = new Dictionary<short, Attribute>();
 
-      if (!nodeStarterHasAlreadyBeenConsumed)
+      if (!nodeStartTagHasAlreadyBeenConsumed)
       {
-        var nodeStarter = binaryReader.ReadInt32(); // Todo: Introduce rainy day scenario that tests this when malformed
+        var nodeStartTag = binaryReader.ReadInt32(); // Todo: Introduce rainy day scenario that tests this when malformed
       }
 
       short id = binaryReader.ReadInt16();

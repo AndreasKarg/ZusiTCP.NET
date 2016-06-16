@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterface.Zusi3
 {
@@ -14,17 +13,13 @@ namespace ZusiTcpInterface.Zusi3
 
     private bool _disposed;
 
-    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, NodeDescriptor rootNode, SynchronizationContext synchronizationContext = null) : base()
+    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, SynchronizationContext synchronizationContext = null)
     {
       _blockingCollection = blockingCollection;
       _synchronizationContext = synchronizationContext ?? SynchronizationContext.Current;
 
       _marshallingTask = Task.Run((Action) MainMarshallingLoop);
     }
-
-    public ThreadMarshallingZusiDataReceiver(ConnectionContainer connectionContainer, SynchronizationContext synchronizationContext = null) :
-      this(connectionContainer.ReceivedDataChunks, connectionContainer.Descriptors, synchronizationContext)
-    { }
 
     private void MainMarshallingLoop()
     {

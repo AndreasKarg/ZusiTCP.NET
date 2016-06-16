@@ -17,7 +17,7 @@ namespace WinFormsDemoApp
 
       _connectionContainer = new ConnectionContainer();
 
-      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);
+      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer.ReceivedDataChunks, SynchronizationContext.Current);
 
       _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), OnGearboxPilotLightReceived);
       _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), OnSifaPilotLightReceived);
@@ -39,7 +39,7 @@ namespace WinFormsDemoApp
       lblVelocity.Text = String.Format("{0:F1}", dataChunk.Payload * 3.6f);
     }
 
-    private void MainWindow_Load(object sender, System.EventArgs e)
+    private void MainWindow_Load(object sender, EventArgs e)
     {
       lblConnecting.Text = "Connecting!";
 

@@ -24,7 +24,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
     private readonly Handshaker _handshaker;
     private readonly Mock<IBlockingCollection<IProtocolChunk>> _rxQueue = new Mock<IBlockingCollection<IProtocolChunk>>();
     private readonly MemoryStream _txStream = new MemoryStream();
-    private BinaryWriter _binaryWriter;
+    private readonly BinaryWriter _binaryWriter;
 
     public HandshakerTests()
     {

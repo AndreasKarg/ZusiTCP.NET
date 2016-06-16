@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
 using System.IO;
 using ZusiTcpInterface.Zusi3.DOM;
 using Attribute = ZusiTcpInterface.Zusi3.DOM.Attribute;
