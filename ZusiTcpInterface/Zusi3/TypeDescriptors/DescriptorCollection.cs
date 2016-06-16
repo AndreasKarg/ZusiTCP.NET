@@ -6,7 +6,7 @@ using System.Linq;
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public class DescriptorCollection<T> : IEnumerable<T>, IEquatable<DescriptorCollection<T>> where T: CabInfoDescriptorBase
+  public class DescriptorCollection<T> : IEnumerable<T>, IEquatable<DescriptorCollection<T>> where T: DescriptorBase
   {
     private readonly Dictionary<short, T> _byId = new Dictionary<short, T>();
     private readonly Dictionary<string, T> _byName = new Dictionary<string, T>();

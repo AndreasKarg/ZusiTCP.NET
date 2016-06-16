@@ -4,14 +4,14 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class PolledZusiDataReceiver : EventRaisingZusiDataReceiverBase
   {
-    private readonly IBlockingCollection<CabDataChunkBase> _blockingCollection;
+    private readonly IBlockingCollection<DataChunkBase> _blockingCollection;
 
-    public PolledZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, CabInfoNodeDescriptor rootNode) : base(rootNode)
+    public PolledZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, NodeDescriptor rootNode) : base(rootNode)
     {
       _blockingCollection = blockingCollection;
     }
 
-    public PolledZusiDataReceiver(ConnectionContainer connectionContainer) : this(connectionContainer.ReceivedCabDataChunks, connectionContainer.CabDataDescriptors)
+    public PolledZusiDataReceiver(ConnectionContainer connectionContainer) : this(connectionContainer.ReceivedDataChunks, connectionContainer.Descriptors)
     {
     }
 

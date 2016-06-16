@@ -7,14 +7,14 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class ThreadMarshallingZusiDataReceiver : EventRaisingZusiDataReceiverBase, IDisposable
   {
-    private readonly IBlockingCollection<CabDataChunkBase> _blockingCollection;
+    private readonly IBlockingCollection<DataChunkBase> _blockingCollection;
     private readonly SynchronizationContext _synchronizationContext;
     private Task _marshallingTask;
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
     private bool _disposed;
 
-    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, CabInfoNodeDescriptor rootNode, SynchronizationContext synchronizationContext = null) : base(rootNode)
+    public ThreadMarshallingZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection, NodeDescriptor rootNode, SynchronizationContext synchronizationContext = null) : base(rootNode)
     {
       _blockingCollection = blockingCollection;
       _synchronizationContext = synchronizationContext ?? SynchronizationContext.Current;
@@ -23,7 +23,7 @@ namespace ZusiTcpInterface.Zusi3
     }
 
     public ThreadMarshallingZusiDataReceiver(ConnectionContainer connectionContainer, SynchronizationContext synchronizationContext = null) :
-      this(connectionContainer.ReceivedCabDataChunks, connectionContainer.CabDataDescriptors, synchronizationContext)
+      this(connectionContainer.ReceivedDataChunks, connectionContainer.Descriptors, synchronizationContext)
     { }
 
     private void MainMarshallingLoop()
@@ -46,7 +46,7 @@ namespace ZusiTcpInterface.Zusi3
 
     private void RaiseEventFor(object chunk)
     {
-      base.RaiseEventFor((CabDataChunkBase)chunk);
+      base.RaiseEventFor((DataChunkBase)chunk);
     }
 
     public void Dispose()

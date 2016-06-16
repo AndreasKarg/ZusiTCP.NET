@@ -4,22 +4,22 @@ using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  public class CabInfoNodeDescriptor : CabInfoDescriptorBase, IEquatable<CabInfoNodeDescriptor>
+  public class NodeDescriptor : DescriptorBase, IEquatable<NodeDescriptor>
   {
-    private readonly DescriptorCollection<CabInfoAttributeDescriptor> _attributeDescriptors;
-    private readonly DescriptorCollection<CabInfoNodeDescriptor> _nodeDescriptors;
+    private readonly DescriptorCollection<AttributeDescriptor> _attributeDescriptors;
+    private readonly DescriptorCollection<NodeDescriptor> _nodeDescriptors;
 
-    public CabInfoNodeDescriptor(short id, string name, string comment = "")
-      : this(id, name, Enumerable.Empty<CabInfoAttributeDescriptor>(), comment)
+    public NodeDescriptor(short id, string name, string comment = "")
+      : this(id, name, Enumerable.Empty<AttributeDescriptor>(), comment)
     {
     }
 
-    public CabInfoNodeDescriptor(short id, string name, IEnumerable<CabInfoAttributeDescriptor> attributeDescriptors, string comment = "")
-      : this(id, name, attributeDescriptors, Enumerable.Empty<CabInfoNodeDescriptor>(), comment)
+    public NodeDescriptor(short id, string name, IEnumerable<AttributeDescriptor> attributeDescriptors, string comment = "")
+      : this(id, name, attributeDescriptors, Enumerable.Empty<NodeDescriptor>(), comment)
     {
     }
 
-    public CabInfoNodeDescriptor(short id, string name, IEnumerable<CabInfoAttributeDescriptor> attributeDescriptors, IEnumerable<CabInfoNodeDescriptor> nodeDescriptors, string comment = "")
+    public NodeDescriptor(short id, string name, IEnumerable<AttributeDescriptor> attributeDescriptors, IEnumerable<NodeDescriptor> nodeDescriptors, string comment = "")
       : base(id, name, comment)
     {
       if (attributeDescriptors == null) throw new ArgumentNullException("attributeDescriptors");
@@ -27,7 +27,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
       try
       {
-        _attributeDescriptors = new DescriptorCollection<CabInfoAttributeDescriptor>(attributeDescriptors);
+        _attributeDescriptors = new DescriptorCollection<AttributeDescriptor>(attributeDescriptors);
       }
       catch (InvalidDescriptorException e)
       {
@@ -36,7 +36,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
       try
       {
-        _nodeDescriptors = new DescriptorCollection<CabInfoNodeDescriptor>(nodeDescriptors);
+        _nodeDescriptors = new DescriptorCollection<NodeDescriptor>(nodeDescriptors);
       }
       catch (InvalidDescriptorException e)
       {
@@ -44,7 +44,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
     }
 
-    public CabInfoAttributeDescriptor FindDescriptor(Address id)
+    public AttributeDescriptor FindDescriptor(Address id)
     {
       if (id.Ids.Count == 1)
         return _attributeDescriptors[id.Single()];
@@ -52,19 +52,19 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return _nodeDescriptors[id.First()].FindDescriptor(new Address(id.Skip(1).ToArray()));
     }
 
-    public DescriptorCollection<CabInfoAttributeDescriptor> AttributeDescriptors
+    public DescriptorCollection<AttributeDescriptor> AttributeDescriptors
     {
       get { return _attributeDescriptors; }
     }
 
-    public DescriptorCollection<CabInfoNodeDescriptor> NodeDescriptors
+    public DescriptorCollection<NodeDescriptor> NodeDescriptors
     {
       get { return _nodeDescriptors; }
     }
 
     #region Equality operations
 
-    public bool Equals(CabInfoNodeDescriptor other)
+    public bool Equals(NodeDescriptor other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -76,7 +76,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((CabInfoNodeDescriptor) obj);
+      return Equals((NodeDescriptor) obj);
     }
 
     public override int GetHashCode()
@@ -90,12 +90,12 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
     }
 
-    public static bool operator ==(CabInfoNodeDescriptor left, CabInfoNodeDescriptor right)
+    public static bool operator ==(NodeDescriptor left, NodeDescriptor right)
     {
       return Equals(left, right);
     }
 
-    public static bool operator !=(CabInfoNodeDescriptor left, CabInfoNodeDescriptor right)
+    public static bool operator !=(NodeDescriptor left, NodeDescriptor right)
     {
       return !Equals(left, right);
     }

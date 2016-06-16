@@ -1,16 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MSTestExtensions;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MSTestExtensions;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {
   [TestClass]
-  public class CabInfoTypeDescriptorReaderTests : BaseTest
+  public class DescriptorReaderTests : BaseTest
   {
     [TestMethod]
     public void Reads_flat_Xml_correctly()
@@ -29,22 +27,22 @@ namespace ZusiTcpInterfaceTests.Zusi3
   <Attribute id=""0008"" name=""Lüfter an"" unit=""aus/an"" converter=""BoolAsSingle"" />
 </ProtocolDefinition>";
 
-      var expectedDescriptors = new CabInfoNodeDescriptor(0, "Root", new[]
+      var expectedDescriptors = new NodeDescriptor(0, "Root", new[]
       {
-        new CabInfoAttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new CabInfoAttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
-        new CabInfoAttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-        new CabInfoAttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-        new CabInfoAttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        new CabInfoAttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-        new CabInfoAttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-        new CabInfoAttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle"),
+        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
+        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
+        new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle"),
       });
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When
-      var descriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream);
+      var descriptors = DescriptorReader.ReadCommandsetFrom(inputStream);
 
       // Then
       Assert.AreEqual(expectedDescriptors, descriptors);
@@ -73,32 +71,32 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       var expectedAttributes = new[]
       {
-        new CabInfoAttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new CabInfoAttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
+        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
       };
 
       var expectedNodes = new[]
       {
-        new CabInfoNodeDescriptor(0x123, "Test", new[]
+        new NodeDescriptor(0x123, "Test", new[]
         {
-          new CabInfoAttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new CabInfoAttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new CabInfoAttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
+          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
         }, "Lalala"),
-        new CabInfoNodeDescriptor(0x153, "Test2", new[]
+        new NodeDescriptor(0x153, "Test2", new[]
         {
-          new CabInfoAttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new CabInfoAttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new CabInfoAttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
+          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
+          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
+          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
         })
       };
 
-      var expectedDescriptors = new CabInfoNodeDescriptor(0, "Root", expectedAttributes, expectedNodes);
+      var expectedDescriptors = new NodeDescriptor(0, "Root", expectedAttributes, expectedNodes);
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When
-      var descriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream);
+      var descriptors = DescriptorReader.ReadCommandsetFrom(inputStream);
 
       // Then
       Assert.AreEqual(expectedDescriptors, descriptors);
@@ -117,7 +115,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When - Throws
-      Assert.Throws<InvalidDescriptorException>(() => CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream));
+      Assert.Throws<InvalidDescriptorException>(() => DescriptorReader.ReadCommandsetFrom(inputStream));
     }
 
     [TestMethod]
@@ -133,7 +131,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When - Throws
-      Assert.Throws<InvalidDescriptorException>(() => CabInfoTypeDescriptorReader.ReadCommandsetFrom(inputStream));
+      Assert.Throws<InvalidDescriptorException>(() => DescriptorReader.ReadCommandsetFrom(inputStream));
     }
   }
 }

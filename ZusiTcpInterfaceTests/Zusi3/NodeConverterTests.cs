@@ -1,11 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.DOM;
 using ZusiTcpInterface.Zusi3.Enums;
-using Attribute = ZusiTcpInterface.Zusi3.DOM.Attribute;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {
@@ -35,12 +34,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
       converter.ConversionFunctions[0x1C] = AttributeConverters.ConvertBoolAsSingle;
 
       // When
-      var chunks = converter.Convert(new Address(), cabDataNode).Cast<CabDataChunkBase>().ToList();
+      var chunks = converter.Convert(new Address(), cabDataNode).Cast<DataChunkBase>().ToList();
 
       // Then
-      var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x01))).Payload;
-      var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1B))).Payload;
-      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1C))).Payload;
+      var velocity = ((DataChunk<float>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x01))).Payload;
+      var pilotLightState = ((DataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1B))).Payload;
+      var otherPilotLightState = ((DataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1C))).Payload;
 
       Assert.AreEqual(expectedVelocity, velocity);
       Assert.AreEqual(expectedPilotLightState, pilotLightState);
@@ -73,11 +72,11 @@ namespace ZusiTcpInterfaceTests.Zusi3
       rootConverter.SubNodeConverters[0x0A] = cabDataConverter;
 
       // When
-      var chunks = rootConverter.Convert(cabDataNode).Cast<CabDataChunkBase>().ToDictionary(chunk => chunk.Address);
+      var chunks = rootConverter.Convert(cabDataNode).Cast<DataChunkBase>().ToDictionary(chunk => chunk.Address);
 
       // Then
-      Assert.AreEqual(type, ((CabDataChunk<string>)chunks[new Address(0x0A, 0x64, 0x01)]).Payload);
-      Assert.AreEqual(StatusSifaHupe.Warnung, ((CabDataChunk<StatusSifaHupe>)chunks[new Address(0x0A, 0x64, 0x02)]).Payload);
+      Assert.AreEqual(type, ((DataChunk<string>)chunks[new Address(0x0A, 0x64, 0x01)]).Payload);
+      Assert.AreEqual(StatusSifaHupe.Warnung, ((DataChunk<StatusSifaHupe>)chunks[new Address(0x0A, 0x64, 0x02)]).Payload);
     }
   }
 }                                                                                      

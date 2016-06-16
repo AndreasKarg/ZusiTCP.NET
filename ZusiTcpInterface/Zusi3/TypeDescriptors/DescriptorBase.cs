@@ -2,13 +2,13 @@
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  public abstract class CabInfoDescriptorBase
+  public abstract class DescriptorBase
   {
     private readonly short _id;
     private readonly string _name;
     private readonly string _comment;
 
-    protected CabInfoDescriptorBase(short id, string name, string comment)
+    protected DescriptorBase(short id, string name, string comment)
     {
       if (name == null) throw new ArgumentNullException("name");
       if (comment == null) throw new ArgumentNullException("comment");
@@ -33,7 +33,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       get { return _comment; }
     }
 
-    protected bool BaseEquals(CabInfoDescriptorBase other)
+    protected bool BaseEquals(DescriptorBase other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;

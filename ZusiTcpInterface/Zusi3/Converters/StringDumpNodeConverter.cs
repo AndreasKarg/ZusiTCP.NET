@@ -11,7 +11,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
     public IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node node)
     {
       var dump = node.DumpToStrings().Aggregate(new StringBuilder(), (sb, line) => sb.AppendLine(line)).ToString();
-      yield return new CabDataChunk<String>(new Address(accumulatedAddress, node.Id), dump);
+      yield return new DataChunk<String>(new Address(accumulatedAddress, node.Id), dump);
     }
   }
 }

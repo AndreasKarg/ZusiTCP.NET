@@ -7,9 +7,9 @@ namespace ZusiTcpInterface.Zusi3
   [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
   public abstract class EventRaisingZusiDataReceiverBase
   {
-    private readonly CabInfoNodeDescriptor _rootNode;
+    private readonly NodeDescriptor _rootNode;
 
-    protected EventRaisingZusiDataReceiverBase(CabInfoNodeDescriptor rootNode)
+    protected EventRaisingZusiDataReceiverBase(NodeDescriptor rootNode)
     {
       _rootNode = rootNode;
     }
@@ -18,7 +18,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public event EventHandler<DataReceivedEventArgs<bool>> BoolReceived;
 
-    protected void RaiseEventFor(CabDataChunkBase chunk)
+    protected void RaiseEventFor(DataChunkBase chunk)
     {
       if (RaiseEventIfChunkIs<float>(chunk, FloatReceived))
         return;
@@ -30,9 +30,9 @@ namespace ZusiTcpInterface.Zusi3
       throw new NotSupportedException(String.Format("The data type received ({0}) is not supported.", payloadType));
     }
 
-    private bool RaiseEventIfChunkIs<T>(CabDataChunkBase chunk, EventHandler<DataReceivedEventArgs<T>> handler)
+    private bool RaiseEventIfChunkIs<T>(DataChunkBase chunk, EventHandler<DataReceivedEventArgs<T>> handler)
     {
-      var dataChunk = chunk as CabDataChunk<T>;
+      var dataChunk = chunk as DataChunk<T>;
       if (dataChunk == null) return false;
 
       var eventArgs = new DataReceivedEventArgs<T>(dataChunk.Payload, dataChunk.Address, _rootNode.FindDescriptor(dataChunk.Address));

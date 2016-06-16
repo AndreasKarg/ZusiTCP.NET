@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,10 +15,10 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class ConnectionContainer : IDisposable
   {
-    private CabInfoNodeDescriptor _cabDataDescriptors;
+    private NodeDescriptor _descriptors;
     private readonly HashSet<short> _neededData = new HashSet<short>();
     private RootNodeConverter _rootNodeConverter;
-    private readonly IBlockingCollection<CabDataChunkBase> _receivedCabDataChunks = new BlockingCollectionWrapper<CabDataChunkBase>();
+    private readonly IBlockingCollection<DataChunkBase> _receivedDataChunks = new BlockingCollectionWrapper<DataChunkBase>();
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
     private string _clientName = "Unnamed";
@@ -55,15 +54,15 @@ namespace ZusiTcpInterface.Zusi3
     #region Fields involved in object disposal
 
     private TcpClient _tcpClient;
-    private Task _cabDataForwardingTask;
+    private Task _dataForwardingTask;
     private bool _hasBeenDisposed;
     private Task _messageReceptionTask;
 
     #endregion Fields involved in object disposal
 
-    public CabInfoNodeDescriptor CabDataDescriptors
+    public NodeDescriptor Descriptors
     {
-      get { return _cabDataDescriptors; }
+      get { return _descriptors; }
     }
 
     public HashSet<short> NeededData
@@ -71,9 +70,9 @@ namespace ZusiTcpInterface.Zusi3
       get { return _neededData; }
     }
 
-    public IBlockingCollection<CabDataChunkBase> ReceivedCabDataChunks
+    public IBlockingCollection<DataChunkBase> ReceivedDataChunks
     {
-      get { return _receivedCabDataChunks; }
+      get { return _receivedDataChunks; }
     }
 
     public string ClientName
@@ -101,20 +100,20 @@ namespace ZusiTcpInterface.Zusi3
       InitialiseFrom(commandsetFileStream);
     }
 
-    public ConnectionContainer(CabInfoNodeDescriptor rootDescriptor)
+    public ConnectionContainer(NodeDescriptor rootDescriptor)
     {
       InitialiseFrom(rootDescriptor);
     }
 
     private void InitialiseFrom(Stream fileStream)
     {
-      var cabInfoDescriptors = CabInfoTypeDescriptorReader.ReadCommandsetFrom(fileStream);
+      var cabInfoDescriptors = DescriptorReader.ReadCommandsetFrom(fileStream);
       InitialiseFrom(cabInfoDescriptors);
     }
 
-    private void InitialiseFrom(CabInfoNodeDescriptor rootDescriptor)
+    private void InitialiseFrom(NodeDescriptor rootDescriptor)
     {
-      _cabDataDescriptors = rootDescriptor;
+      _descriptors = rootDescriptor;
 
       SetupNodeConverters();
     }
@@ -126,7 +125,7 @@ namespace ZusiTcpInterface.Zusi3
       var ackNeededDataConverter = new AckNeededDataConverter();
       handshakeConverter.SubNodeConverters[0x02] = ackHelloConverter;
 
-      var cabDataConverter = GenerateNodeConverter(_cabDataDescriptors);
+      var cabDataConverter = GenerateNodeConverter(_descriptors);
       var userDataConverter = new NodeConverter();
       userDataConverter.SubNodeConverters[0x04] = ackNeededDataConverter;
       userDataConverter.SubNodeConverters[0x0A] = cabDataConverter;
@@ -136,7 +135,7 @@ namespace ZusiTcpInterface.Zusi3
       _rootNodeConverter[0x02] = userDataConverter;
     }
 
-    private INodeConverter GenerateNodeConverter(CabInfoNodeDescriptor nodeDescriptor)
+    private INodeConverter GenerateNodeConverter(NodeDescriptor nodeDescriptor)
     {
       try
       {
@@ -150,7 +149,7 @@ namespace ZusiTcpInterface.Zusi3
       }
     }
 
-    private Dictionary<short, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<CabInfoAttributeDescriptor> cabInfoDescriptors)
+    private Dictionary<short, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AttributeDescriptor> cabInfoDescriptors)
     {
       Dictionary<short, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<short, Func<Address, byte[], IProtocolChunk>>();
 
@@ -169,7 +168,7 @@ namespace ZusiTcpInterface.Zusi3
       return dictionary;
     }
 
-    public void RequestData(params CabInfoDescriptorBase[] descriptors)
+    public void RequestData(params DescriptorBase[] descriptors)
     {
       foreach (var descriptor in descriptors)
       {
@@ -188,14 +187,14 @@ namespace ZusiTcpInterface.Zusi3
         throw new TimeoutException("Failed to shut down message recption task within timeout.");
       _messageReceptionTask = null;
 
-      if (_cabDataForwardingTask != null && !_cabDataForwardingTask.Wait(500))
+      if (_dataForwardingTask != null && !_dataForwardingTask.Wait(500))
         throw new TimeoutException("Failed to shut down message forwarding task within timeout.");
-      _cabDataForwardingTask = null;
+      _dataForwardingTask = null;
 
       if (_tcpClient != null)
         _tcpClient.Close();
 
-      _receivedCabDataChunks.CompleteAdding();
+      _receivedDataChunks.CompleteAdding();
       _receivedChunks.CompleteAdding();
 
       _hasBeenDisposed = true;
@@ -231,7 +230,7 @@ namespace ZusiTcpInterface.Zusi3
 
       handshaker.ShakeHands();
 
-      _cabDataForwardingTask = Task.Run(() =>
+      _dataForwardingTask = Task.Run(() =>
       {
         while (true)
         {
@@ -245,7 +244,7 @@ namespace ZusiTcpInterface.Zusi3
             // Teardown requested
             return;
           }
-          _receivedCabDataChunks.Add((CabDataChunkBase)protocolChunk);
+          _receivedDataChunks.Add((DataChunkBase)protocolChunk);
         }
       });
     }

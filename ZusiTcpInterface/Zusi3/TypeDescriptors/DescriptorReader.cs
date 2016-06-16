@@ -5,19 +5,19 @@ using System.Xml.Linq;
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  internal static class CabInfoTypeDescriptorReader
+  internal static class DescriptorReader
   {
     private static readonly string _namespace = "ZusiTcpInterface/CabInfoTypes";
 
-    public static CabInfoNodeDescriptor ReadCommandsetFrom(Stream inputStream)
+    public static NodeDescriptor ReadCommandsetFrom(Stream inputStream)
     {
       var root = XElement.Load(inputStream);
 
-      return new CabInfoNodeDescriptor(0x0A, "Root", root.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
+      return new NodeDescriptor(0x0A, "Root", root.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
                                                   root.Elements(XName.Get("Node", _namespace)).Select(ConvertNode));
     }
 
-    private static CabInfoNodeDescriptor ConvertNode(XElement arg)
+    private static NodeDescriptor ConvertNode(XElement arg)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -27,11 +27,11 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       // Optional attribute
       string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
-      return new CabInfoNodeDescriptor(id, name, arg.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
+      return new NodeDescriptor(id, name, arg.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
                                                  arg.Elements(XName.Get("Node", _namespace)).Select(ConvertNode), comment);
     }
 
-    private static CabInfoAttributeDescriptor ConvertAttribute(XElement arg)
+    private static AttributeDescriptor ConvertAttribute(XElement arg)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -44,7 +44,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       string unit = xmlAttributes.ContainsKey("unit") ? xmlAttributes["unit"] : String.Empty;
       string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
-      return new CabInfoAttributeDescriptor(id, name, unit, converter, comment);
+      return new AttributeDescriptor(id, name, unit, converter, comment);
     }
   }
 }
