@@ -43,8 +43,7 @@ namespace ZusiTcpInterface.Zusi3
       if(!ackHello.ConnectionAccepted)
         throw new ConnectionRefusedException("Connection refused by Zusi.");
 
-      var neededDataPacket = new NeededDataPacket(_neededData);
-      neededDataPacket.Serialise(_binaryWriter);
+      NeededDataPacket.Serialise(_binaryWriter, _neededData);
 
       var ackNeededData = (AckNeededDataPacket) _rxQueue.Take();
 
