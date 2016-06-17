@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ZusiTcpInterface.Zusi3;
 
 namespace DemoApp
@@ -11,37 +12,36 @@ namespace DemoApp
 
       using (var connectionContainer = new ConnectionContainer())
       {
-        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.Descriptors["Status Sifa"];
-        connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
-        connectionContainer.Connect();
+        var velocityDescriptor = connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
+        var gearboxPilotLightDescriptor = connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
+        var sifaStatusDescriptor = connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
+        var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+        connectionContainer.Connect("Raw queue demo app", "1.0.0.0", neededData);
 
         Console.WriteLine("Connected!");
 
         while (!Console.KeyAvailable)
         {
-          CabDataChunkBase chunk;
-          bool chunkTaken = connectionContainer.ReceivedCabDataChunks.TryTake(out chunk, 100);
+          DataChunkBase chunk;
+          bool chunkTaken = connectionContainer.ReceivedDataChunks.TryTake(out chunk, 100);
           if(!chunkTaken)
             continue;
 
-          switch (chunk.Id)
+          var velocityAddress = new CabInfoAddress(0x01);
+          var gearboxPilotLightAddress = new CabInfoAddress(0x1A);
+          var sifaPilotLightAddress = new CabInfoAddress(0x64, 0x02);
+
+          if (chunk.Address == velocityAddress)
           {
-            case 0x01:
-              Console.WriteLine("Velocity [km/h] = {0}", ((CabDataChunk<Single>)chunk).Payload*3.6f);
-              break;
-
-            case 0x1A:
-              Console.WriteLine("Gearbox pilot light = {0}", ((CabDataChunk<bool>)chunk).Payload);
-              break;
-
-            case 0x64:
-              Console.WriteLine("Sifa status = {0}", ((CabDataChunk<SifaStatus>)chunk).Payload);
-              break;
-
-            default:
-              throw new NotSupportedException("lol u mad bro???");
+            Console.WriteLine("Velocity [km/h] = {0}", ((DataChunk<Single>) chunk).Payload*3.6f);
+          }
+          else if (chunk.Address == gearboxPilotLightAddress)
+          {
+            Console.WriteLine("Gearbox pilot light = {0}", ((DataChunk<bool>) chunk).Payload);
+          }
+          else if (chunk.Address == sifaPilotLightAddress)
+          {
+            Console.WriteLine("Sifa pilot light = {0}", ((DataChunk<bool>)chunk).Payload);
           }
         }
       }

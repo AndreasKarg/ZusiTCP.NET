@@ -1,17 +1,15 @@
-﻿using ZusiTcpInterface.Zusi3.TypeDescriptors;
-
-namespace ZusiTcpInterface.Zusi3
+﻿namespace ZusiTcpInterface.Zusi3
 {
-  public class PolledZusiDataReceiver : EventRaisingZusiDataReceiverBase
+  public class PolledZusiDataReceiver : CallbackBasedZusiDataReceiverBase
   {
-    private readonly IBlockingCollection<CabDataChunkBase> _blockingCollection;
+    private readonly IBlockingCollection<DataChunkBase> _blockingCollection;
 
-    public PolledZusiDataReceiver(IBlockingCollection<CabDataChunkBase> blockingCollection, DescriptorCollection descriptorCollection) : base(descriptorCollection)
+    public PolledZusiDataReceiver(IBlockingCollection<DataChunkBase> blockingCollection)
     {
       _blockingCollection = blockingCollection;
     }
 
-    public PolledZusiDataReceiver(ConnectionContainer connectionContainer) : this(connectionContainer.ReceivedCabDataChunks, connectionContainer.Descriptors)
+    public PolledZusiDataReceiver(ConnectionContainer connectionContainer) : this(connectionContainer.ReceivedDataChunks)
     {
     }
 

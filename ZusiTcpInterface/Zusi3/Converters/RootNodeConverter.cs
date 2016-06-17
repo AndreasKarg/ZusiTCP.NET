@@ -27,7 +27,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
     public IEnumerable<IProtocolChunk> Convert(Node node)
     {
       return (_subNodeConverters.ContainsKey(node.Id))
-        ? _subNodeConverters[node.Id].Convert(node)
+        ? _subNodeConverters[node.Id].Convert(new Address(), node)
         : Enumerable.Empty<IProtocolChunk>();
     }
   }

@@ -1,12 +1,12 @@
 ﻿namespace ZusiTcpInterface.Zusi3
 {
   [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public class CabDataChunk<T> : CabDataChunkBase
+  public class DataChunk<T> : DataChunkBase
   {
     private readonly T _payload;
 
-    public CabDataChunk(short id, T payload)
-      :base(id)
+    public DataChunk(Address address, T payload)
+      :base(address)
     {
       _payload = payload;
     }

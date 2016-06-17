@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using ZusiTcpInterface.Zusi3;
 
@@ -12,16 +13,18 @@ namespace PollBasedDemoApp
 
       using (var connectionContainer = new ConnectionContainer())
       {
-        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.Descriptors["Status Sifa"];
-        connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
-        connectionContainer.Connect();
+        var velocityDescriptor = connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
+        var gearboxPilotLightDescriptor = connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
+        var sifaStatusDescriptor = connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
+
+        var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+        connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
 
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);
-        polledDataReceiver.FloatReceived += PolledDataReceiverOnFloatReceived;
-        polledDataReceiver.BoolReceived += PolledDataReceiverOnBoolReceived;
-        polledDataReceiver.SifaStatusReceived += PolledDataReceiverOnSifaStatusReceived;
+
+        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), dataChunk => OnBoolReceived("LM Sifa", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
 
         Console.WriteLine("Connected!");
 
@@ -35,31 +38,14 @@ namespace PollBasedDemoApp
       Console.WriteLine("Disconnected");
     }
 
-    private static void PolledDataReceiverOnBoolReceived(object sender, DataReceivedEventArgs<bool> dataReceivedEventArgs)
+    private static void OnVelocityReceived(DataChunk<float> dataChunk)
     {
-      var descriptor = dataReceivedEventArgs.Descriptor;
-      Console.WriteLine("{0} = {1}", descriptor.Name, dataReceivedEventArgs.Payload);
+      Console.WriteLine("Velocity [km/h] = {0}", dataChunk.Payload * 3.6f);
     }
 
-    private static void PolledDataReceiverOnFloatReceived(object sender, DataReceivedEventArgs<float> dataReceivedEventArgs)
+    private static void OnBoolReceived(string name, DataChunk<bool> dataChunk)
     {
-      var descriptor = dataReceivedEventArgs.Descriptor;
-      switch (descriptor.Name)
-      {
-        case "Geschwindigkeit":
-          Console.WriteLine("Velocity [km/h] = {0}", dataReceivedEventArgs.Payload * 3.6f);
-          break;
-
-        default:
-          Console.WriteLine("{0} [{1}] = {2}", descriptor.Name, descriptor.Unit, dataReceivedEventArgs.Payload * 3.6f);
-          break;
-      }
-    }
-
-    private static void PolledDataReceiverOnSifaStatusReceived(object sender, DataReceivedEventArgs<SifaStatus> dataReceivedEventArgs)
-    {
-      var descriptor = dataReceivedEventArgs.Descriptor;
-      Console.WriteLine("{0} = {1}", descriptor.Name, dataReceivedEventArgs.Payload);
+      Console.WriteLine("{0} = {1}", name, dataChunk.Payload);
     }
   }
 }

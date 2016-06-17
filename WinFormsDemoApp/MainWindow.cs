@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ZusiTcpInterface.Zusi3;
@@ -15,45 +16,39 @@ namespace WinFormsDemoApp
       InitializeComponent();
 
       _connectionContainer = new ConnectionContainer();
-      var velocityDescriptor = _connectionContainer.Descriptors["Geschwindigkeit"];
-      var gearboxPilotLightDescriptor = _connectionContainer.Descriptors["LM Getriebe"];
-      var sifaStatusDescriptor = _connectionContainer.Descriptors["Status Sifa"];
-      _connectionContainer.RequestData(velocityDescriptor, gearboxPilotLightDescriptor, sifaStatusDescriptor);
 
-      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);
-      _dataReceiver.FloatReceived += OnFloatReceived;
-      _dataReceiver.BoolReceived += OnBoolReceived;
-      _dataReceiver.SifaStatusReceived += OnSifaStatusReceived;
+      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer.ReceivedDataChunks, SynchronizationContext.Current);
+
+      _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), OnGearboxPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), OnSifaPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
     }
 
-    private void OnBoolReceived(object sender, DataReceivedEventArgs<bool> e)
+    private void OnGearboxPilotLightReceived(DataChunk<bool> dataChunk)
     {
-      if (e.Descriptor.Name != "LM Getriebe")
-        return;
-
-      lblGearboxIndicator.Text = e.Payload.ToString();
+      lblGearboxIndicator.Text = dataChunk.Payload.ToString();
     }
 
-    private void OnFloatReceived(object sender, DataReceivedEventArgs<float> dataReceivedEventArgs)
+    private void OnSifaPilotLightReceived(DataChunk<bool> dataChunk)
     {
-      if (dataReceivedEventArgs.Descriptor.Name != "Geschwindigkeit")
-        return;
-
-      lblVelocity.Text = String.Format("{0:F1}", dataReceivedEventArgs.Payload * 3.6f);
+      lblSifaStatus.Text = dataChunk.Payload.ToString();
     }
 
-    private void OnSifaStatusReceived(object sender, DataReceivedEventArgs<SifaStatus> dataReceivedEventArgs)
+    private void OnVelocityReceived(DataChunk<float> dataChunk)
     {
-      if (dataReceivedEventArgs.Descriptor.Name != "Status Sifa")
-        return;
-
-      lblSifaStatus.Text = dataReceivedEventArgs.Payload.ToString();
+      lblVelocity.Text = String.Format("{0:F1}", dataChunk.Payload * 3.6f);
     }
 
-    private void MainWindow_Load(object sender, System.EventArgs e)
+    private void MainWindow_Load(object sender, EventArgs e)
     {
       lblConnecting.Text = "Connecting!";
-      _connectionContainer.Connect();
+
+      var velocityDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
+      var gearboxPilotLightDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
+      var sifaStatusDescriptor = _connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
+      var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+
+      _connectionContainer.Connect("Win-Forms demo app", "1.0.0.0", neededData);
       lblConnecting.Text = "Connected!";
     }
 

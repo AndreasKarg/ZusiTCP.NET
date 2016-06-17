@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.DOM;
-using Attribute = ZusiTcpInterface.Zusi3.DOM.Attribute;
+using ZusiTcpInterface.Zusi3.Enums;
 
 namespace ZusiTcpInterfaceTests.Zusi3
 {
@@ -34,12 +34,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
       converter.ConversionFunctions[0x1C] = AttributeConverters.ConvertBoolAsSingle;
 
       // When
-      var chunks = converter.Convert(cabDataNode).Cast<CabDataChunkBase>().ToList();
+      var chunks = converter.Convert(new Address(), cabDataNode).Cast<DataChunkBase>().ToList();
 
       // Then
-      var velocity = ((CabDataChunk<float>)chunks.Single(chunk => chunk.Id == 0x01)).Payload;
-      var pilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == 0x1B)).Payload;
-      var otherPilotLightState = ((CabDataChunk<bool>)chunks.Single(chunk => chunk.Id == 0x1C)).Payload;
+      var velocity = ((DataChunk<float>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x01))).Payload;
+      var pilotLightState = ((DataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1B))).Payload;
+      var otherPilotLightState = ((DataChunk<bool>)chunks.Single(chunk => chunk.Address == new Address(0x0A, 0x1C))).Payload;
 
       Assert.AreEqual(expectedVelocity, velocity);
       Assert.AreEqual(expectedPilotLightState, pilotLightState);
@@ -51,30 +51,32 @@ namespace ZusiTcpInterfaceTests.Zusi3
     {
       // Given
       var type = "3.0.1.0";
-      var expectedSifaStatus = new SifaStatus(type, true, false, SifaHornState.AutomaticBraking, true, false);
 
       var attributes = new Dictionary<short, Attribute>
       {
         { 0x01, new Attribute(0x01, type) },
         { 0x02, new Attribute(0x02, (byte)0x01) },
-        { 0x03, new Attribute(0x03, (byte)0x02) },
-        { 0x04, new Attribute(0x04, (byte)0x01) },
-        { 0x05, new Attribute(0x05, (byte)0x02) },
-        { 0x06, new Attribute(0x06, (byte)0x01) },
       };
 
-      var sifaNode = new Node(0x64, attributes);
-      var cabDataNode = new Node(0x0A, sifaNode);
+      var subNode = new Node(0x64, attributes);
+      var cabDataNode = new Node(0x0A, subNode);
 
-      var converter = new NodeConverter();
+      var rootConverter = new RootNodeConverter();
+      var cabDataConverter = new NodeConverter();
 
-      converter.SubNodeConverters[0x64] = new SifaNodeConverter();
+      var subNodeConverter = new NodeConverter();
+      subNodeConverter.ConversionFunctions[0x01] = AttributeConverters.ConvertString;
+      subNodeConverter.ConversionFunctions[0x02] = AttributeConverters.ConvertEnumAsByte<StatusSifaHupe>;
+
+      cabDataConverter.SubNodeConverters[0x64] = subNodeConverter;
+      rootConverter.SubNodeConverters[0x0A] = cabDataConverter;
 
       // When
-      var actualSifaStatus = converter.Convert(cabDataNode).Cast<CabDataChunk<SifaStatus>>().Single();
+      var chunks = rootConverter.Convert(cabDataNode).Cast<DataChunkBase>().ToDictionary(chunk => chunk.Address);
 
       // Then
-      Assert.AreEqual(expectedSifaStatus, actualSifaStatus.Payload);
+      Assert.AreEqual(type, ((DataChunk<string>)chunks[new Address(0x0A, 0x64, 0x01)]).Payload);
+      Assert.AreEqual(StatusSifaHupe.Warnung, ((DataChunk<StatusSifaHupe>)chunks[new Address(0x0A, 0x64, 0x02)]).Payload);
     }
   }
-}
+}                                                                                      

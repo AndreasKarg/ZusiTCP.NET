@@ -31,14 +31,13 @@ namespace ZusiTcpInterfaceTests.Zusi3
                             0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                           0xFF, 0xFF, 0xFF};
 
-      var helloPacket = new HelloPacket(ClientType.ControlDesk, "Fahrpult", "2.0");
-
       // When
       var serialised = new MemoryStream();
       var binaryWriter = new BinaryWriter(serialised);
         
-      helloPacket.Serialise(binaryWriter);
+      HelloPacket.Serialise(binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0");
 
+      // Then
       CollectionAssert.AreEqual(expected, serialised.ToArray());
     }
   }

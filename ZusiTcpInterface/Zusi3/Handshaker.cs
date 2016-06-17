@@ -28,9 +28,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public void ShakeHands()
     {
-      var hello = new HelloPacket(_clientType, _clientName, _clientVersion);
-
-      hello.Serialise(_binaryWriter);
+      HelloPacket.Serialise(_binaryWriter, _clientType, _clientName, _clientVersion);
 
       var handshakeConverter = new NodeConverter();
       handshakeConverter.SubNodeConverters[0x02] = new AckHelloConverter();
@@ -43,8 +41,7 @@ namespace ZusiTcpInterface.Zusi3
       if(!ackHello.ConnectionAccepted)
         throw new ConnectionRefusedException("Connection refused by Zusi.");
 
-      var neededDataPacket = new NeededDataPacket(_neededData);
-      neededDataPacket.Serialise(_binaryWriter);
+      NeededDataPacket.Serialise(_binaryWriter, _neededData);
 
       var ackNeededData = (AckNeededDataPacket) _rxQueue.Take();
 

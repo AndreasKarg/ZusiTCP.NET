@@ -9,12 +9,12 @@ namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal class AckHelloConverter : INodeConverter
   {
-    const short ZusiVersionId = 0x01,
+    private const short ZusiVersionId = 0x01,
                 ConnectionInfoId = 0x02,
                 ConnectionAcceptedId = 0x03;
 
     [Pure]
-    public IEnumerable<IProtocolChunk> Convert(Node ackHelloNode)
+    public IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node ackHelloNode)
     {
       var attributes = ackHelloNode.Attributes;
 
@@ -23,7 +23,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
       var connectionAccepted = attributes[ConnectionAcceptedId].Payload.Single() == 0;
 
       var ackHelloPacket = new AckHelloPacket(zusiVersion, connectionInfo, connectionAccepted);
-      return new [] {ackHelloPacket};
+      return new[] { ackHelloPacket };
     }
   }
 }
