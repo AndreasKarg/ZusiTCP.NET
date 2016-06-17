@@ -35,6 +35,8 @@
       this.lblConnecting = new System.Windows.Forms.Label();
       this.lblSifaStatus = new System.Windows.Forms.Label();
       this.label5 = new System.Windows.Forms.Label();
+      this.label4 = new System.Windows.Forms.Label();
+      this.lblSifaHorn = new System.Windows.Forms.Label();
       this.SuspendLayout();
       // 
       // label2
@@ -96,13 +98,33 @@
       this.label5.AutoSize = true;
       this.label5.Location = new System.Drawing.Point(30, 70);
       this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(59, 13);
+      this.label5.Size = new System.Drawing.Size(71, 13);
       this.label5.TabIndex = 5;
-      this.label5.Text = "Sifa status:";
+      this.label5.Text = "Sifa indicator:";
+      // 
+      // label4
+      // 
+      this.label4.AutoSize = true;
+      this.label4.Location = new System.Drawing.Point(30, 83);
+      this.label4.Name = "label4";
+      this.label4.Size = new System.Drawing.Size(52, 13);
+      this.label4.TabIndex = 7;
+      this.label4.Text = "Sifa horn:";
+      // 
+      // lblSifaHorn
+      // 
+      this.lblSifaHorn.AutoSize = true;
+      this.lblSifaHorn.Location = new System.Drawing.Point(129, 83);
+      this.lblSifaHorn.Name = "lblSifaHorn";
+      this.lblSifaHorn.Size = new System.Drawing.Size(89, 13);
+      this.lblSifaHorn.TabIndex = 8;
+      this.lblSifaHorn.Text = "No data received";
       // 
       // MainWindow
       // 
       this.ClientSize = new System.Drawing.Size(429, 261);
+      this.Controls.Add(this.lblSifaHorn);
+      this.Controls.Add(this.label4);
       this.Controls.Add(this.lblSifaStatus);
       this.Controls.Add(this.label5);
       this.Controls.Add(this.lblConnecting);
@@ -129,6 +151,8 @@
     private System.Windows.Forms.Label lblConnecting;
     private System.Windows.Forms.Label lblSifaStatus;
     private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.Label label4;
+    private System.Windows.Forms.Label lblSifaHorn;
   }
 }
 

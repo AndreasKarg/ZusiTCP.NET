@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.Enums;
 
 namespace WinFormsDemoApp
 {
@@ -21,6 +22,7 @@ namespace WinFormsDemoApp
 
       _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), OnGearboxPilotLightReceived);
       _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), OnSifaPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<StatusSifaHupe>(new CabInfoAddress(0x64, 0x03), OnSifaHornReceived);
       _dataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
     }
 
@@ -37,6 +39,11 @@ namespace WinFormsDemoApp
     private void OnVelocityReceived(DataChunk<float> dataChunk)
     {
       lblVelocity.Text = String.Format("{0:F1}", dataChunk.Payload * 3.6f);
+    }
+
+    private void OnSifaHornReceived(DataChunk<StatusSifaHupe> dataChunk)
+    {
+      lblSifaHorn.Text = dataChunk.Payload.ToString();
     }
 
     private void MainWindow_Load(object sender, EventArgs e)

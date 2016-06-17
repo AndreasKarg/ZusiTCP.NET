@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.Enums;
 
 namespace PollBasedDemoApp
 {
@@ -24,6 +25,7 @@ namespace PollBasedDemoApp
 
         polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
         polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), dataChunk => OnBoolReceived("LM Sifa", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<StatusSifaHupe>(new CabInfoAddress(0x64, 0x03), OnSifaHornReceived);
         polledDataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
 
         Console.WriteLine("Connected!");
@@ -36,6 +38,12 @@ namespace PollBasedDemoApp
       }
 
       Console.WriteLine("Disconnected");
+    }
+
+    private static void OnSifaHornReceived(DataChunk<StatusSifaHupe> dataChunk)
+    {
+      Console.WriteLine("Sifa-Horn = {0}", dataChunk.Payload);
+
     }
 
     private static void OnVelocityReceived(DataChunk<float> dataChunk)

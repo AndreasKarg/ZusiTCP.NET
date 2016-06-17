@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZusiTcpInterface.Zusi3;
+using ZusiTcpInterface.Zusi3.Enums;
 
 namespace DemoApp
 {
@@ -30,6 +31,7 @@ namespace DemoApp
           var velocityAddress = new CabInfoAddress(0x01);
           var gearboxPilotLightAddress = new CabInfoAddress(0x1A);
           var sifaPilotLightAddress = new CabInfoAddress(0x64, 0x02);
+          var sifaHornAddress = new CabInfoAddress(0x64, 0x03);
 
           if (chunk.Address == velocityAddress)
           {
@@ -42,6 +44,10 @@ namespace DemoApp
           else if (chunk.Address == sifaPilotLightAddress)
           {
             Console.WriteLine("Sifa pilot light = {0}", ((DataChunk<bool>)chunk).Payload);
+          }
+          else if (chunk.Address == sifaHornAddress)
+          {
+            Console.WriteLine("Sifa horn state = {0}", ((DataChunk<StatusSifaHupe>)chunk).Payload);
           }
         }
       }
