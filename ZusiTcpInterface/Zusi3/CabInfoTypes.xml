@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProtocolDefinition>
+  <Attribute id="0001" name="Geschwindigkeit" unit="m/s" converter="Single" />
+  <Attribute id="0002" name="Druck Hauptluftleitung" unit="bar" converter="Single" />
+  <Attribute id="0003" name="Druck Bremszylinder" unit="bar" converter="Single" />
+  <Attribute id="0004" name="Druck Hauptluftbehälter" unit="bar" converter="Single" />
+  <Attribute id="0005" name="Luftpresser läuft" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0006" name="Luftstrom Fbv" unit="-1...0...1" converter="Single" />
+  <Attribute id="0007" name="Luftstrom Zbv" unit="-1...0...1" converter="Single" />
+  <Attribute id="0008" name="Lüfter an" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0009" name="Zugkraft gesamt" unit="N" converter="Single" />
+  <Attribute id="000A" name="Zugkraft pro Achse" unit="N" converter="Single" />
+  <Attribute id="000B" name="Zugkraft-Soll gesamt" unit="N" converter="Single" />
+  <Attribute id="000C" name="Zugkraft-Soll pro Achse" unit="N" converter="Single" />
+  <Attribute id="000D" name="Oberstrom" unit="A" converter="Single" />
+  <Attribute id="000E" name="Fahrleitungsspannung" unit="V" converter="Single" />
+  <Attribute id="000F" name="Motordrehzahl" unit="1/min" converter="Single" />
+  <Attribute id="0010" name="Uhrzeit Stunde" unit="Stunde" converter="Single" comment="Zeigerposition Analoguhren" />
+  <Attribute id="0011" name="Uhrzeit Minute" unit="Min." converter="Single" comment="Zeigerposition Analoguhren" />
+  <Attribute id="0012" name="Uhrzeit Sekunde" unit="Sekunde" converter="Single" comment="Zeigerposition Analoguhren" />
+  <Attribute id="0013" name="Hauptschalter" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0014" name="Trennschütz" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0015" name="Fahrstufe" unit="1" converter="Single" />
+  <Attribute id="0017" name="AFB-Sollgeschwindigkeit" unit="m/s" converter="Single" />
+  <Attribute id="0018" name="Druck Hilfsluftbehälter" unit="bar" converter="Single" />
+  <Attribute id="0019" name="Zurückgelegter Gesamtweg" unit="m" converter="Single" />
+  <Attribute id="001A" name="LM Getriebe" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="001B" name="LM Schleudern" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="001C" name="LM Gleiten" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="001D" name="LM Mg-Bremse" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="001E" name="LM H-Bremse" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="001F" name="LM R-Bremse" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0020" name="LM Hochabbremsung" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0021" name="LM Schnellbremsung" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0022" name="Status Notbremsung" converter="Fail" comment="s. eigener Abschnitt" />
+  <Attribute id="0023" name="LM Uhrzeit (digital)" unit="Zeit" converter="Single" comment="0...1 (0:00 bis 24:00 Uhr)" />
+  <Attribute id="0024" name="LM Drehzahlverstellung" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0025" name="LM Fahrtrichtung vor" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0026" name="LM Fahrtrichtung zurück" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0027" name="LM Fahrtrichtung M" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0029" name="Motordrehmoment" unit="Nm" converter="Single" />
+  <Attribute id="002A" name="Motorlast normiert" unit="1" converter="Single" comment="(0...1)" />
+  <Attribute id="002B" name="Tunnel" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="002C" name="Schienenstoß/Weiche" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="002D" name="Stahlbrücke" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="002E" name="Steinbrücke" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="002F" name="x-Koordinate" unit="m" converter="Single" comment="Bez. Strecken-UTM-Punkt" />
+  <Attribute id="0030" name="y-Koordinate" unit="m" converter="Single" comment="Bez. Strecken-UTM-Punkt" />
+  <Attribute id="0031" name="z-Koordinate" unit="m" converter="Single" />
+  <Attribute id="0032" name="UTM-Referenzpunkt x" unit="km" converter="Single" />
+  <Attribute id="0033" name="UTM-Referenzpunkt y" unit="km" converter="Single" />
+  <Attribute id="0034" name="UTM-Zone" converter="Single" />
+  <Attribute id="0035" name="UTM-Zone 2" converter="Single" />
+  <Attribute id="0036" name="AFB an" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0037" name="Individuell 01" converter="Single" />
+  <Attribute id="0038" name="Individuell 02" converter="Single" />
+  <Attribute id="0039" name="Individuell 03" converter="Single" />
+  <Attribute id="003A" name="Individuell 04" converter="Single" />
+  <Attribute id="003B" name="Individuell 05" converter="Single" />
+  <Attribute id="003C" name="Individuell 06" converter="Single" />
+  <Attribute id="003D" name="Individuell 07" converter="Single" />
+  <Attribute id="003E" name="Individuell 08" converter="Single" />
+  <Attribute id="003F" name="Individuell 09" converter="Single" />
+  <Attribute id="0040" name="Individuell 10" converter="Single" />
+  <Attribute id="0041" name="Individuell 11" converter="Single" />
+  <Attribute id="0042" name="Individuell 12" converter="Single" />
+  <Attribute id="0043" name="Individuell 13" converter="Single" />
+  <Attribute id="0044" name="Individuell 14" converter="Single" />
+  <Attribute id="0045" name="Individuell 15" converter="Single" />
+  <Attribute id="0046" name="Individuell 16" converter="Single" />
+  <Attribute id="0047" name="Individuell 17" converter="Single" />
+  <Attribute id="0048" name="Individuell 18" converter="Single" />
+  <Attribute id="0049" name="Individuell 19" converter="Single" />
+  <Attribute id="004A" name="Individuell 20" converter="Single" />
+  <Attribute id="004B" name="Datum" converter="Single" comment="Tage mit 0 = 30.12.1899" />
+  <Attribute id="004C" name="Gleiskrümmung" unit="1000/m" converter="Single" />
+  <Attribute id="004D" name="Streckenhöchstgeschwindigkeit" unit="m/s" converter="Single" />
+  <Attribute id="004E" name="Zugkraftvorschlag Autopilot" unit="N" converter="Single" />
+  <Attribute id="004F" name="Beschleunigung x" unit="m/s²" converter="Single" />
+  <Attribute id="0050" name="Beschleunigung y" unit="m/s²" converter="Single" />
+  <Attribute id="0051" name="Beschleunigung z" unit="m/s²" converter="Single" />
+  <Attribute id="0052" name="Drehbeschleunigung x-Achse" unit="rad/s²" converter="Single" />
+  <Attribute id="0053" name="Drehbeschleunigung y-Achse" unit="rad/s²" converter="Single" />
+  <Attribute id="0054" name="Drehbeschleunigung z-Achse" unit="rad/s²" converter="Single" />
+  <Attribute id="0055" name="Stromabnehmer" unit="2x4 bit" converter="Fail" />
+  <Attribute id="0056" name="LM Federspeicherbremse" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0057" name="Zustand Federspeicherbremse" unit="-1, 0, 1, 2" converter="Single" comment="nicht vorhanden/aus/an/blinkend" />
+  <Attribute id="0058" name="Steuerwagen: LM Getriebe" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0059" name="Steuerwagen: LM Schleudern" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="005A" name="Steuerwagen: LM Gleiten" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="005B" name="Steuerwagen: LM H-Bremse" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="005C" name="Steuerwagen: LM R-Bremse" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="005D" name="Steuerwagen: LM Drehzahlverstellung" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="005E" name="Druck Zeitbehälter" unit="bar" converter="Single" />
+  <Attribute id="005F" name="Geschwindigkeit (absolut)" unit="m/s" converter="Single" />
+  <Attribute id="0060" name="Zug ist entgleist" unit="aus/ein" converter="Single" />
+  <Attribute id="0061" name="Kilometrierung (Zugspitze)" unit="km" converter="Single" />
+  <Attribute id="0062" name="Motorstrom" unit="A" converter="Single" />
+  <Attribute id="0063" name="Motorspannung" unit="V" converter="Single" />
+  <Attribute id="0064" name="Status Sifa" converter="Sifa" comment="s. eigener Abschnitt" />
+  <Attribute id="0065" name="Status Zugsicherung" converter="DumpToString" comment="s. eigener Abschnitt" />
+  <Attribute id="0066" name="Status Türen" converter="Fail" comment="s. eigener Abschnitt" />
+  <Attribute id="0067" name="Individuell 21" converter="Single" />
+  <Attribute id="0068" name="Individuell 22" converter="Single" />
+  <Attribute id="0069" name="Individuell 23" converter="Single" />
+  <Attribute id="006A" name="Individuell 24" converter="Single" />
+  <Attribute id="006B" name="Individuell 25" converter="Single" />
+  <Attribute id="006C" name="Individuell 26" converter="Single" />
+  <Attribute id="006D" name="Individuell 27" converter="Single" />
+  <Attribute id="006E" name="Individuell 28" converter="Single" />
+  <Attribute id="006F" name="Individuell 29" converter="Single" />
+  <Attribute id="0070" name="Individuell 30" converter="Single" />
+  <Attribute id="0071" name="Individuell 31" converter="Single" />
+  <Attribute id="0072" name="Individuell 32" converter="Single" />
+  <Attribute id="0073" name="Individuell 33" converter="Single" />
+  <Attribute id="0074" name="Individuell 34" converter="Single" />
+  <Attribute id="0075" name="Individuell 35" converter="Single" />
+  <Attribute id="0076" name="Individuell 36" converter="Single" />
+  <Attribute id="0077" name="Individuell 37" converter="Single" />
+  <Attribute id="0078" name="Individuell 38" converter="Single" />
+  <Attribute id="0079" name="Individuell 39" converter="Single" />
+  <Attribute id="007A" name="Individuell 40" converter="Single" />
+  <Attribute id="007B" name="Steuerwagen: Lüfter an" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="007C" name="Steuerwagen: Zugkraft gesamt" unit="N" converter="Single" />
+  <Attribute id="007D" name="Steuerwagen: Zugkraft pro Achse" unit="N" converter="Single" />
+  <Attribute id="007E" name="Steuerwagen: Zugkraft-Soll gesamt" unit="N" converter="Single" />
+  <Attribute id="007F" name="Steuerwagen: Zugkraft-Soll pro Achse" unit="N" converter="Single" />
+  <Attribute id="0080" name="Steuerwagen: Oberstrom" unit="A" converter="Single" />
+  <Attribute id="0081" name="Steuerwagen: Fahrleitungsspannung" unit="V" converter="Single" />
+  <Attribute id="0082" name="Steuerwagen: Motordrehzahl" unit="1/min" converter="Single" />
+  <Attribute id="0083" name="Steuerwagen: Hauptschalter" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0084" name="Steuerwagen: Trennschütz" unit="aus/an" converter="BoolAsSingle" />
+  <Attribute id="0085" name="Steuerwagen: Fahrstufe" unit="1" converter="Single" />
+  <Attribute id="0086" name="Steuerwagen: Motordrehmoment" unit="Nm" converter="Single" />
+  <Attribute id="0087" name="Steuerwagen: Motorlast normiert" unit="1" converter="Single" comment="(0...1)" />
+  <Attribute id="0088" name="Steuerwagen: Stromabnehmer" converter="Fail" />
+  <Attribute id="0089" name="Steuerwagen: Motorstrom" unit="A" converter="Single" />
+  <Attribute id="008A" name="Steuerwagen: Motorspannung" unit="V" converter="Single" />
+  <Attribute id="008B" name="Geschwindigkeit (absolut) inkl. Schleudern" unit="m/s" converter="Single" />
+  <Attribute id="008C" name="Batteriehauptschalter aus" unit="aus=1, an=0" converter="Single" />
+  <Attribute id="008D" name="Status Fahrzeug" converter="Fail" comment="s. eigener Abschnitt" />
+  <Attribute id="008E" name="Status Zugverband" converter="Fail" comment="s. eigener Abschnitt" />
+  <Attribute id="008F" name="Bremsprobefunktion" converter="Single" comment="0: aus, &gt;0: aktiv" />
+</ProtocolDefinition>

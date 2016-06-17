@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZusiTcpInterface</RootNamespace>
+    <AssemblyName>ZusiTcpInterface</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>8007576a</NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Zusi2\AckHelloPacket.cs" />
+    <Compile Include="Zusi2\ClientType.cs" />
+    <Compile Include="Zusi2\HandShaker.cs" />
+    <Compile Include="Zusi2\HelloPacket.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Zusi3\Converters\AckHelloConverter.cs" />
+    <Compile Include="Zusi3\Packets\AckHelloPacket.cs" />
+    <Compile Include="Zusi3\Converters\AckNeededDataConverter.cs" />
+    <Compile Include="Zusi3\Packets\AckNeededDataPacket.cs" />
+    <Compile Include="Zusi3\DOM\Attribute.cs" />
+    <Compile Include="Zusi3\BlockingCollectionWrapper.cs" />
+    <Compile Include="Zusi3\Converters\AttributeConverters.cs" />
+    <Compile Include="Zusi3\CabDataChunk.cs" />
+    <Compile Include="Zusi3\CabDataChunkBase.cs" />
+    <Compile Include="Zusi3\Converters\NodeConverter.cs" />
+    <Compile Include="Zusi3\CancellableBlockingStream.cs" />
+    <Compile Include="Zusi3\DOM\ClientType.cs" />
+    <Compile Include="Zusi3\TypeDescriptors\CabInfoTypeDescriptor.cs" />
+    <Compile Include="Zusi3\TypeDescriptors\CabInfoTypeDescriptorReader.cs" />
+    <Compile Include="Zusi3\ConnectionContainer.cs" />
+    <Compile Include="Zusi3\ConnectionRefusedException.cs" />
+    <Compile Include="Zusi3\DataReceivedEventArgs.cs" />
+    <Compile Include="Zusi3\TypeDescriptors\DescriptorCollection.cs" />
+    <Compile Include="Zusi3\EventRaisingZusiDataReceiverBase.cs" />
+    <Compile Include="Zusi3\Handshaker.cs" />
+    <Compile Include="Zusi3\Packets\HelloPacket.cs" />
+    <Compile Include="Zusi3\SifaHornState.cs" />
+    <Compile Include="Zusi3\IBlockingCollection.cs" />
+    <Compile Include="Zusi3\Converters\INodeConverter.cs" />
+    <Compile Include="Zusi3\DOM\IProtocolElement.cs" />
+    <Compile Include="Zusi3\MessageReceiver.cs" />
+    <Compile Include="Zusi3\Packets\NeededDataPacket.cs" />
+    <Compile Include="Zusi3\DOM\Node.cs" />
+    <Compile Include="Zusi3\DOM\NodeCategory.cs" />
+    <Compile Include="Zusi3\IProtocolChunk.cs" />
+    <Compile Include="Zusi3\PolledZusiDataReceiver.cs" />
+    <Compile Include="Zusi3\Converters\SifaNodeConverter.cs" />
+    <Compile Include="Zusi3\SifaStatus.cs" />
+    <Compile Include="Zusi3\Converters\StringDumpNodeConverter.cs" />
+    <Compile Include="Zusi3\ThreadMarshallingZusiDataReceiver.cs" />
+    <Compile Include="Zusi3\Converters\RootNodeConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Zusi3\CabInfoTypes.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

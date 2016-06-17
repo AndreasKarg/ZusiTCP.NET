@@ -1,7 +1,16 @@
-
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zusi-Datenausgabe", "Zusi-Datenausgabe.csproj", "{F99B982E-EB0C-44A8-A9E1-C8103795AF41}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterfaceTests", "ZusiTcpInterfaceTests\ZusiTcpInterfaceTests.csproj", "{3A42EE34-D274-4AB7-8E5C-4EFBDFE40CFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZusiTcpInterface", "ZusiTcpInterface\ZusiTcpInterface.csproj", "{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawQueueDemoApp", "RawQueueDemoApp\RawQueueDemoApp.csproj", "{B4E5220D-6A97-4172-89DC-C49B16E166B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PollBasedDemoApp", "PollBasedDemoApp\PollBasedDemoApp.csproj", "{5814B36A-C714-491E-9992-92CFBBA702FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsDemoApp", "WinFormsDemoApp\WinFormsDemoApp.csproj", "{063E42FA-4126-45F5-9893-F1FB8F2D5164}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +18,29 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F99B982E-EB0C-44A8-A9E1-C8103795AF41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F99B982E-EB0C-44A8-A9E1-C8103795AF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F99B982E-EB0C-44A8-A9E1-C8103795AF41}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F99B982E-EB0C-44A8-A9E1-C8103795AF41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A42EE34-D274-4AB7-8E5C-4EFBDFE40CFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A42EE34-D274-4AB7-8E5C-4EFBDFE40CFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A42EE34-D274-4AB7-8E5C-4EFBDFE40CFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A42EE34-D274-4AB7-8E5C-4EFBDFE40CFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC4D426-6F7F-4ED2-B6E6-08A101AA907E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4E5220D-6A97-4172-89DC-C49B16E166B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5814B36A-C714-491E-9992-92CFBBA702FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{063E42FA-4126-45F5-9893-F1FB8F2D5164}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{063E42FA-4126-45F5-9893-F1FB8F2D5164}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{063E42FA-4126-45F5-9893-F1FB8F2D5164}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{063E42FA-4126-45F5-9893-F1FB8F2D5164}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Zusi-Datenausgabe.csproj
@@ -32,8 +60,5 @@ Global
 		$3.inheritsSet = Mono
 		$3.inheritsScope = text/x-csharp
 		$3.scope = text/x-csharp
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
