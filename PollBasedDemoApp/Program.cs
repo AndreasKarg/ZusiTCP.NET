@@ -18,7 +18,7 @@ namespace PollBasedDemoApp
         var gearboxPilotLightDescriptor = connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
         var sifaStatusDescriptor = connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
 
-        var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+        var neededData = new List<short> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaStatusDescriptor.Address };
         connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
 
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);

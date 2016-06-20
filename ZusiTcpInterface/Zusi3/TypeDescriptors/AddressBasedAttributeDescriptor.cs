@@ -2,13 +2,12 @@
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  [Obsolete]
-  public class AttributeDescriptor : DescriptorBase, IEquatable<AttributeDescriptor>
+  public class AddressBasedAttributeDescriptor : AddressBasedDescriptorBase, IEquatable<AddressBasedAttributeDescriptor>
   {
     private readonly string _unit;
     private readonly string _type;
 
-    public AttributeDescriptor(short address, string name, string unit, string type, string comment = "") : base(address, name, comment)
+    public AddressBasedAttributeDescriptor(Address address, string name, string unit, string type, string comment = "") : base(address, name, comment)
     {
       if (unit == null) throw new ArgumentNullException("unit");
       if (type == null) throw new ArgumentNullException("type");
@@ -29,7 +28,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
     #region Equality operations
 
-    public bool Equals(AttributeDescriptor other)
+    public bool Equals(AddressBasedAttributeDescriptor other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -41,7 +40,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((AttributeDescriptor) obj);
+      return Equals((AddressBasedAttributeDescriptor) obj);
     }
 
     public override int GetHashCode()
@@ -55,12 +54,12 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
     }
 
-    public static bool operator ==(AttributeDescriptor left, AttributeDescriptor right)
+    public static bool operator ==(AddressBasedAttributeDescriptor left, AddressBasedAttributeDescriptor right)
     {
       return Equals(left, right);
     }
 
-    public static bool operator !=(AttributeDescriptor left, AttributeDescriptor right)
+    public static bool operator !=(AddressBasedAttributeDescriptor left, AddressBasedAttributeDescriptor right)
     {
       return !Equals(left, right);
     }

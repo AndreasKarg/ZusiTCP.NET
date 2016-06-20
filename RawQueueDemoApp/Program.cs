@@ -16,7 +16,7 @@ namespace DemoApp
         var velocityDescriptor = connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
         var gearboxPilotLightDescriptor = connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
         var sifaStatusDescriptor = connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
-        var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+        var neededData = new List<short> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaStatusDescriptor.Address };
         connectionContainer.Connect("Raw queue demo app", "1.0.0.0", neededData);
 
         Console.WriteLine("Connected!");

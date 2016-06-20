@@ -60,8 +60,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       const float expectedFloat = 3.0f;
       const bool expectedBool = true;
-      var floatAddress = new CabInfoAddress(_floatDescriptor.Id);
-      var boolAddress = new CabInfoAddress(_boolDescriptor.Id);
+      var floatAddress = new CabInfoAddress(_floatDescriptor.Address);
+      var boolAddress = new CabInfoAddress(_boolDescriptor.Address);
 
       _polledZusiDataReceiver.RegisterCallbackFor(floatAddress, floatReceived);
       _polledZusiDataReceiver.RegisterCallbackFor(boolAddress, boolReceived);
@@ -84,7 +84,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
     public void Throws_ArgumentException_when_another_callback_for_same_address_is_registered()
     {
       // Given
-      var floatAddress = new CabInfoAddress(_floatDescriptor.Id);
+      var floatAddress = new CabInfoAddress(_floatDescriptor.Address);
 
       _polledZusiDataReceiver.RegisterCallbackFor<float>(floatAddress, chunk => { });
 

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  [EditorBrowsable(EditorBrowsableState.Advanced), Obsolete]
-  public class DescriptorCollection<T> : IEnumerable<T>, IEquatable<DescriptorCollection<T>> where T: DescriptorBase
+  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+  public class AddressBasedDescriptorCollection<T> : IEnumerable<T>, IEquatable<AddressBasedDescriptorCollection<T>> where T: AddressBasedDescriptorBase
   {
-    private readonly Dictionary<short, T> _byId = new Dictionary<short, T>();
+    private readonly Dictionary<Address, T> _byId = new Dictionary<Address, T>();
     private readonly Dictionary<string, T> _byName = new Dictionary<string, T>();
 
-    public DescriptorCollection(IEnumerable<T> descriptors)
+    public AddressBasedDescriptorCollection(IEnumerable<T> descriptors)
     {
       var descriptorList = descriptors as IList<T> ?? descriptors.ToArray();
       foreach (var descriptor in descriptorList)
@@ -51,7 +50,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return _byName[name];
     }
 
-    public T GetBy(short id)
+    public T GetBy(Address id)
     {
       return _byId[id];
     }
@@ -61,7 +60,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       get { return GetBy(name); }
     }
 
-    public T this[short id]
+    public T this[Address id]
     {
       get { return GetBy(id); }
     }
@@ -78,7 +77,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
     #region Equality operations
 
-    public bool Equals(DescriptorCollection<T> other)
+    public bool Equals(AddressBasedDescriptorCollection<T> other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -100,7 +99,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((DescriptorCollection<T>) obj);
+      return Equals((AddressBasedDescriptorCollection<T>) obj);
     }
 
     public override int GetHashCode()
@@ -108,18 +107,18 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return _byId.Aggregate(0, ComputeHashCode);
     }
 
-    private int ComputeHashCode(int aggregateHashCode, KeyValuePair<short, T> descriptor)
+    private int ComputeHashCode(int aggregateHashCode, KeyValuePair<Address, T> descriptor)
     {
-      var hashCode = (aggregateHashCode*397) ^ descriptor.Key;
+      var hashCode = (aggregateHashCode*397) ^ descriptor.Key.GetHashCode();
       return (hashCode * 397) ^ descriptor.Value.GetHashCode();
     }
 
-    public static bool operator ==(DescriptorCollection<T> left, DescriptorCollection<T> right)
+    public static bool operator ==(AddressBasedDescriptorCollection<T> left, AddressBasedDescriptorCollection<T> right)
     {
       return Equals(left, right);
     }
 
-    public static bool operator !=(DescriptorCollection<T> left, DescriptorCollection<T> right)
+    public static bool operator !=(AddressBasedDescriptorCollection<T> left, AddressBasedDescriptorCollection<T> right)
     {
       return !Equals(left, right);
     }

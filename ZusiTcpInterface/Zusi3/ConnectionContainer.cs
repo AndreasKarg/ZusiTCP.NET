@@ -121,12 +121,12 @@ namespace ZusiTcpInterface.Zusi3
       try
       {
         var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
-        Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Id, GenerateNodeConverter);
+        Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Address, GenerateNodeConverter);
         return new NodeConverter() { ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters };
       }
       catch (Exception e)
       {
-        throw new InvalidOperationException(String.Format("Error while processing node 0x{0:x4} - {1}", nodeDescriptor.Id, nodeDescriptor.Name), e);
+        throw new InvalidOperationException(String.Format("Error while processing node 0x{0:x4} - {1}", nodeDescriptor.Address, nodeDescriptor.Name), e);
       }
     }
 
@@ -138,12 +138,12 @@ namespace ZusiTcpInterface.Zusi3
       {
         try
         {
-          dictionary.Add(descriptor.Id, _converterMap[descriptor.Type]);
+          dictionary.Add(descriptor.Address, _converterMap[descriptor.Type]);
         }
         catch (KeyNotFoundException e)
         {
           throw new InvalidDescriptorException(
-            String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Id, descriptor.Name), e);
+            String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Address, descriptor.Name), e);
         }
       }
 

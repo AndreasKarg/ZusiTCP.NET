@@ -2,14 +2,13 @@
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  [Obsolete]
-  public abstract class DescriptorBase
+  public abstract class AddressBasedDescriptorBase
   {
-    private readonly short _address;
+    private readonly Address _address;
     private readonly string _name;
     private readonly string _comment;
 
-    protected DescriptorBase(short address, string name, string comment)
+    protected AddressBasedDescriptorBase(Address address, string name, string comment)
     {
       if (name == null) throw new ArgumentNullException("name");
       if (comment == null) throw new ArgumentNullException("comment");
@@ -19,7 +18,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       _comment = comment;
     }
 
-    public short Address
+    public Address Address
     {
       get { return _address; }
     }
@@ -34,7 +33,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       get { return _comment; }
     }
 
-    protected bool BaseEquals(DescriptorBase other)
+    protected bool BaseEquals(AddressBasedDescriptorBase other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;

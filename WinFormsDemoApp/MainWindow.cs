@@ -53,7 +53,7 @@ namespace WinFormsDemoApp
       var velocityDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
       var gearboxPilotLightDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
       var sifaStatusDescriptor = _connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
-      var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+      var neededData = new List<short> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaStatusDescriptor.Address };
 
       _connectionContainer.Connect("Win-Forms demo app", "1.0.0.0", neededData);
       lblConnecting.Text = "Connected!";
