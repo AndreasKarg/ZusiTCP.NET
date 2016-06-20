@@ -10,24 +10,25 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
   {
     private static readonly string _namespace = "ZusiTcpInterface/CabInfoTypes";
 
-    public static IEnumerable<AddressBasedAttributeDescriptor> ReadCommandsetFrom(Stream inputStream, Address baseAddress)
+    public static IEnumerable<AddressBasedAttributeDescriptor> ReadCommandsetFrom(Stream inputStream)
     {
       var root = XElement.Load(inputStream);
 
-      var descriptors = ConvertRootNode(root, baseAddress);
+      var descriptors = ConvertRootNode(root);
 
       return descriptors;
     }
 
-    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertRootNode(XElement arg, Address baseAddress)
+    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertRootNode(XElement arg)
     {
+      var baseAddress = new CabInfoAddress();
       var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, baseAddress));
       var attributesFromChildNodes = arg.Elements(XName.Get("Node", _namespace)).SelectMany(xmlNode => ConvertNode(xmlNode, baseAddress));
 
       return attributes.Concat(attributesFromChildNodes);
     }
 
-    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertNode(XElement arg, Address baseAddress)
+    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertNode(XElement arg, CabInfoAddress baseAddress)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -45,7 +46,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return attributes.Concat(attributesFromChildNodes);
     }
 
-    private static AddressBasedAttributeDescriptor ConvertAttribute(XElement arg, Address baseAddress)
+    private static AddressBasedAttributeDescriptor ConvertAttribute(XElement arg, CabInfoAddress baseAddress)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 

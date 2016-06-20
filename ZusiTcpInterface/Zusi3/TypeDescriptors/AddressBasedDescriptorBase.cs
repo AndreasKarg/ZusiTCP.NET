@@ -4,11 +4,11 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   public abstract class AddressBasedDescriptorBase
   {
-    private readonly Address _address;
+    private readonly CabInfoAddress _address;
     private readonly string _name;
     private readonly string _comment;
 
-    protected AddressBasedDescriptorBase(Address address, string name, string comment)
+    protected AddressBasedDescriptorBase(CabInfoAddress address, string name, string comment)
     {
       if (name == null) throw new ArgumentNullException("name");
       if (comment == null) throw new ArgumentNullException("comment");
@@ -18,7 +18,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       _comment = comment;
     }
 
-    public Address Address
+    public CabInfoAddress Address
     {
       get { return _address; }
     }

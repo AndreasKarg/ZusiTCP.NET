@@ -21,10 +21,10 @@ namespace ZusiTcpInterface.Zusi3.Converters
       set { _conversionFunctions = value; }
     }
 
-    public IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node node)
+    public IEnumerable<IProtocolChunk> Convert(Address baseAddress, Node node)
     {
       var chunks = new List<IProtocolChunk>();
-      var fullAddress = accumulatedAddress.Concat(node.Id);
+      var fullAddress = baseAddress.Concat(node.Id);
 
       foreach (var attribute in node.Attributes)
       {
@@ -36,7 +36,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
         chunks.Add(attributeConverter(fullAddress.Concat(attribute.Key), attribute.Value.Payload));
       }
 
-      foreach (var subNode in node.SubNodes)
+      foreach (var subNode in node.ChildNodes)
       {
         INodeConverter nodeConverter;
 

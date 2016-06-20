@@ -7,7 +7,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
 {
   internal class Node
   {
-    private readonly List<Node> _subNodes;
+    private readonly List<Node> _childNodes;
     private readonly Dictionary<short, Attribute> _attributes;
     private readonly short _id;
 
@@ -19,9 +19,9 @@ namespace ZusiTcpInterface.Zusi3.DOM
       get { return _id; }
     }
 
-    public List<Node> SubNodes
+    public List<Node> ChildNodes
     {
-      get { return _subNodes; }
+      get { return _childNodes; }
     }
 
     public Dictionary<short, Attribute> Attributes
@@ -29,11 +29,11 @@ namespace ZusiTcpInterface.Zusi3.DOM
       get { return _attributes; }
     }
 
-    public Node(short id, List<Node> subNodes, Dictionary<short, Attribute> attributes)
+    public Node(short id, List<Node> childNodes, Dictionary<short, Attribute> attributes)
     {
       _id = id;
 
-      _subNodes = subNodes;
+      _childNodes = childNodes;
       _attributes = attributes;
     }
 
@@ -45,14 +45,14 @@ namespace ZusiTcpInterface.Zusi3.DOM
     public Node(short id, Node subNode)
       : this(id, new List<Node>(), new Dictionary<short, Attribute>())
     {
-      _subNodes.Add(subNode);
+      _childNodes.Add(subNode);
     }
 
     public void Serialise(BinaryWriter binaryWriter)
     {
       binaryWriter.Write(NodeStarter);
       binaryWriter.Write(Id);
-      foreach (var subNode in _subNodes)
+      foreach (var subNode in _childNodes)
       {
         subNode.Serialise(binaryWriter);
       }
@@ -111,7 +111,7 @@ namespace ZusiTcpInterface.Zusi3.DOM
         }
       }
 
-      foreach (var subNode in SubNodes)
+      foreach (var subNode in ChildNodes)
       {
         var nodeDump = subNode.DumpToStrings();
         foreach (var line in nodeDump)

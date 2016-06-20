@@ -8,10 +8,10 @@ namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal class StringDumpNodeConverter : INodeConverter
   {
-    public IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node node)
+    public IEnumerable<IProtocolChunk> Convert(Address baseAddress, Node node)
     {
       var dump = node.DumpToStrings().Aggregate(new StringBuilder(), (sb, line) => sb.AppendLine(line)).ToString();
-      yield return new DataChunk<String>(accumulatedAddress.Concat(node.Id), dump);
+      yield return new DataChunk<String>(baseAddress.Concat(node.Id), dump);
     }
   }
 }

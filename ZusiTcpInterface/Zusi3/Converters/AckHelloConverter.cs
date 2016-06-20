@@ -14,7 +14,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
                 ConnectionAcceptedId = 0x03;
 
     [Pure]
-    public IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node ackHelloNode)
+    public IEnumerable<IProtocolChunk> Convert(Address baseAddress, Node ackHelloNode)
     {
       var attributes = ackHelloNode.Attributes;
 

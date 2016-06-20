@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class ConnectionContainer : IDisposable
   {
-    private NodeDescriptor _descriptors;
+    private AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor> _descriptors;
     private RootNodeConverter _rootNodeConverter;
     private readonly IBlockingCollection<DataChunkBase> _receivedDataChunks = new BlockingCollectionWrapper<DataChunkBase>();
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
@@ -58,7 +57,7 @@ namespace ZusiTcpInterface.Zusi3
 
     #endregion Fields involved in object disposal
 
-    public NodeDescriptor Descriptors
+    public AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor> Descriptors
     {
       get { return _descriptors; }
     }
@@ -81,18 +80,24 @@ namespace ZusiTcpInterface.Zusi3
       InitialiseFrom(commandsetFileStream);
     }
 
-    public ConnectionContainer(NodeDescriptor rootDescriptor)
+    public ConnectionContainer(IEnumerable<AddressBasedAttributeDescriptor> descriptors)
     {
-      InitialiseFrom(rootDescriptor);
+      InitialiseFrom(descriptors);
     }
 
     private void InitialiseFrom(Stream fileStream)
     {
-      var cabInfoDescriptors = DescriptorReader.ReadCommandsetFrom(fileStream);
-      InitialiseFrom(cabInfoDescriptors);
+      var descriptors = AddressBasedDescriptorReader.ReadCommandsetFrom(fileStream);
+      InitialiseFrom(descriptors);
     }
 
-    private void InitialiseFrom(NodeDescriptor rootDescriptor)
+    private void InitialiseFrom(IEnumerable<AddressBasedAttributeDescriptor> descriptors)
+    {
+      var descriptorCollection = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptors);
+      InitialiseFrom(descriptorCollection);
+    }
+
+    private void InitialiseFrom(AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor> rootDescriptor)
     {
       _descriptors = rootDescriptor;
 
@@ -116,23 +121,15 @@ namespace ZusiTcpInterface.Zusi3
       _rootNodeConverter[0x02] = userDataConverter;
     }
 
-    private INodeConverter GenerateNodeConverter(NodeDescriptor nodeDescriptor)
+    private INodeConverter GenerateNodeConverter(AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor> descriptors)
     {
-      try
-      {
-        var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
-        Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Address, GenerateNodeConverter);
-        return new NodeConverter() { ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters };
-      }
-      catch (Exception e)
-      {
-        throw new InvalidOperationException(String.Format("Error while processing node 0x{0:x4} - {1}", nodeDescriptor.Address, nodeDescriptor.Name), e);
-      }
+        var attributeConverters = MapAttributeConverters(descriptors);
+        return new FlatteningNodeConverter { ConversionFunctions = attributeConverters };
     }
 
-    private Dictionary<short, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AttributeDescriptor> cabInfoDescriptors)
+    private Dictionary<Address, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AddressBasedAttributeDescriptor> cabInfoDescriptors)
     {
-      Dictionary<short, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<short, Func<Address, byte[], IProtocolChunk>>();
+      Dictionary<Address, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<Address, Func<Address, byte[], IProtocolChunk>>();
 
       foreach (var descriptor in cabInfoDescriptors)
       {
@@ -174,7 +171,7 @@ namespace ZusiTcpInterface.Zusi3
       _hasBeenDisposed = true;
     }
 
-    public void Connect(string clientName, string clientVersion, IEnumerable<short> neededData, string hostname = "localhost", int port = 1436)
+    public void Connect(string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData, string hostname = "localhost", int port = 1436)
     {
       _tcpClient = new TcpClient(hostname, port);
 
@@ -211,7 +208,8 @@ namespace ZusiTcpInterface.Zusi3
           IProtocolChunk protocolChunk;
           try
           {
-            _receivedChunks.TryTake(out protocolChunk, -1, _cancellationTokenSource.Token);
+            const int noTimeout = -1;
+            _receivedChunks.TryTake(out protocolChunk, noTimeout, _cancellationTokenSource.Token);
           }
           catch (OperationCanceledException)
           {

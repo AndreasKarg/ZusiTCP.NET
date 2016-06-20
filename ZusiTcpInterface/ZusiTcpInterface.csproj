@@ -51,6 +51,7 @@
     <Compile Include="Zusi3\CabInfoAddress.cs" />
     <Compile Include="Zusi3\CallbackWrapper.cs" />
     <Compile Include="Zusi3\Converters\AckHelloConverter.cs" />
+    <Compile Include="Zusi3\Converters\FlatteningNodeConverter.cs" />
     <Compile Include="Zusi3\Enums\IndusiHupe.cs" />
     <Compile Include="Zusi3\Enums\Lzb\StatusAuftrag.cs" />
     <Compile Include="Zusi3\Enums\Lzb\StatusElAuftrag.cs" />

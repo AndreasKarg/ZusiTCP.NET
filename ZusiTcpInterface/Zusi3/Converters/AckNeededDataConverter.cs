@@ -7,7 +7,7 @@ namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal class AckNeededDataConverter : INodeConverter
   {
-    public IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node node)
+    public IEnumerable<IProtocolChunk> Convert(Address baseAddress, Node node)
     {
       var attribute = node.Attributes.Single().Value;
       var requestAccepted = attribute.Payload[0] == 0;

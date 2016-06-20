@@ -7,6 +7,6 @@ namespace ZusiTcpInterface.Zusi3.Converters
   internal interface INodeConverter
   {
     [Pure]
-    IEnumerable<IProtocolChunk> Convert(Address accumulatedAddress, Node node);
+    IEnumerable<IProtocolChunk> Convert(Address baseAddress, Node node);
   }
 }

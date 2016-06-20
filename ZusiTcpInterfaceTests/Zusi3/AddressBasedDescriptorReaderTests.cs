@@ -29,22 +29,21 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       var expectedDescriptorList = new[]
       {
-        new AddressBasedAttributeDescriptor(new Address(0x01), "Geschwindigkeit", "m/s", "Single"),
-        new AddressBasedAttributeDescriptor(new Address(0x02), "Druck Hauptluftleitung", "bar", "Single"),
-        new AddressBasedAttributeDescriptor(new Address(0x03), "Druck Bremszylinder", "bar", "Single"),
-        new AddressBasedAttributeDescriptor(new Address(0x04), "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-        new AddressBasedAttributeDescriptor(new Address(0x05), "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        new AddressBasedAttributeDescriptor(new Address(0x06), "Luftstrom Fbv", "-1...0...1", "Fail"),
-        new AddressBasedAttributeDescriptor(new Address(0x07), "Luftstrom Zbv", "-1...0...1", "Single"),
-        new AddressBasedAttributeDescriptor(new Address(0x08), "Lüfter an", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x03), "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x04), "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x05), "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x06), "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x07), "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x08), "Lüfter an", "aus/an", "BoolAsSingle"),
       };
       var expectedDescriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(expectedDescriptorList);
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
-      var baseAddress = new Address();
 
       // When
-      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream, baseAddress);
+      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
       var descriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList);
 
       // Then
@@ -89,10 +88,9 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var expectedDescriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(expectedDescriptorList);
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
-      var baseAddress = new CabInfoAddress();
 
       // When
-      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream, baseAddress);
+      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
       var descriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList);
 
 
@@ -111,7 +109,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
   <Attribute id=""0002"" name=""Geschwindigkeit"" unit=""bar"" converter=""Single"" />
 </ProtocolDefinition>";
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
-      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream, new Address());
+      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
 
       // When - Throws
       Assert.Throws<InvalidDescriptorException>(() => new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList));
@@ -128,7 +126,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
   <Attribute id=""0001"" name=""Bar"" unit=""bar"" converter=""Single"" />
 </ProtocolDefinition>";
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
-      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream, new Address());
+      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
 
       // When - Throws
       Assert.Throws<InvalidDescriptorException>(() => new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList));

@@ -7,7 +7,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
     private readonly string _unit;
     private readonly string _type;
 
-    public AddressBasedAttributeDescriptor(Address address, string name, string unit, string type, string comment = "") : base(address, name, comment)
+    public AddressBasedAttributeDescriptor(CabInfoAddress address, string name, string unit, string type, string comment = "") : base(address, name, comment)
     {
       if (unit == null) throw new ArgumentNullException("unit");
       if (type == null) throw new ArgumentNullException("type");

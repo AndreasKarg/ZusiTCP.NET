@@ -72,6 +72,7 @@
     <Compile Include="Zusi3\AddressTests.cs" />
     <Compile Include="Zusi3\AddressBasedDescriptorReaderTests.cs" />
     <Compile Include="Zusi3\DescriptorTests.cs" />
+    <Compile Include="Zusi3\FlatteningNodeConverterTests.cs" />
     <Compile Include="Zusi3\NodeConverterTests.cs" />
     <Compile Include="Zusi3\DescriptorReaderTests.cs" />
     <Compile Include="Zusi3\HelloPacketTests.cs" />
