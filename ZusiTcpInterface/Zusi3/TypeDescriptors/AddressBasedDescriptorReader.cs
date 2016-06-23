@@ -22,13 +22,13 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
     private static IEnumerable<AddressBasedAttributeDescriptor> ConvertRootNode(XElement arg)
     {
       var baseAddress = new CabInfoAddress();
-      var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, baseAddress));
-      var attributesFromChildNodes = arg.Elements(XName.Get("Node", _namespace)).SelectMany(xmlNode => ConvertNode(xmlNode, baseAddress));
+      var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, baseAddress, null));
+      var attributesFromChildNodes = arg.Elements(XName.Get("Node", _namespace)).SelectMany(xmlNode => ConvertNode(xmlNode, baseAddress, null));
 
       return attributes.Concat(attributesFromChildNodes);
     }
 
-    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertNode(XElement arg, CabInfoAddress baseAddress)
+    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertNode(XElement arg, CabInfoAddress baseAddress, string baseName)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -40,13 +40,13 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
       var localAddress = baseAddress.Concat(id);
 
-      var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, localAddress));
-      var attributesFromChildNodes = arg.Elements(XName.Get("Node", _namespace)).SelectMany(xmlNode => ConvertNode(xmlNode, localAddress));
+      var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, localAddress, ConcatenateNames(baseName, name)));
+      var attributesFromChildNodes = arg.Elements(XName.Get("Node", _namespace)).SelectMany(xmlNode => ConvertNode(xmlNode, localAddress, ConcatenateNames(baseName, name)));
 
       return attributes.Concat(attributesFromChildNodes);
     }
 
-    private static AddressBasedAttributeDescriptor ConvertAttribute(XElement arg, CabInfoAddress baseAddress)
+    private static AddressBasedAttributeDescriptor ConvertAttribute(XElement arg, CabInfoAddress baseAddress, string baseName)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -60,7 +60,12 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
       var localAddress = baseAddress.Concat(id);
-      return new AddressBasedAttributeDescriptor(localAddress, name, unit, converter, comment);
+      return new AddressBasedAttributeDescriptor(localAddress, ConcatenateNames(baseName, name), name, unit, converter, comment);
+    }
+
+    private static string ConcatenateNames(string baseName, string name)
+    {
+      return (baseName != null) ? String.Join(":", baseName, name) : name;
     }
   }
 }

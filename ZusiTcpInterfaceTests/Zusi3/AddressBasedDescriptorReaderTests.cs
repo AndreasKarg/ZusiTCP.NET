@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
+using System.IO;
+using System.Text;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
@@ -29,14 +29,14 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       var expectedDescriptorList = new[]
       {
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "m/s", "Single"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "bar", "Single"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x03), "Druck Bremszylinder", "bar", "Single"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x04), "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x05), "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x06), "Luftstrom Fbv", "-1...0...1", "Fail"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x07), "Luftstrom Zbv", "-1...0...1", "Single"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x08), "Lüfter an", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x03), "Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x04), "Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x05), "Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x06), "Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x07), "Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x08), "Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle"),
       };
       var expectedDescriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(expectedDescriptorList);
 
@@ -73,16 +73,16 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       var expectedDescriptorList = new[]
       {
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "m/s", "Single"),
-        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
 
-          new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Druck Bremszylinder", "bar", "Single"),
-          new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Test:Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
 
-          new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Lüfter an", "aus/an", "BoolAsSingle")
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
       var expectedDescriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(expectedDescriptorList);
@@ -92,7 +92,6 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // When
       var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
       var descriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList);
-
 
       // Then
       Assert.AreEqual(expectedDescriptors, descriptors);
@@ -116,7 +115,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
     }
 
     [TestMethod]
-    public void Throws_exception_on_duplicate_attribute_id()
+    public void Throws_exception_on_duplicate_attribute_address()
     {
       // Given
       string commandsetXml =
@@ -130,6 +129,32 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       // When - Throws
       Assert.Throws<InvalidDescriptorException>(() => new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList));
+    }
+
+    [TestMethod]
+    public void Uses_qualified_name_to_find_nested_descriptors()
+    {
+      // Given
+      string commandsetXml =
+        @"<?xml version=""1.0"" encoding=""utf-8""?>
+<ProtocolDefinition xmlns=""ZusiTcpInterface/CabInfoTypes"">
+  <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
+  <Node id=""123"" name=""Test"" comment=""Lalala"">
+    <Attribute id=""0001"" name=""Geschwindigkeit"" unit=""m/s"" converter=""Single"" />
+  </Node>
+</ProtocolDefinition>";
+      var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
+      var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
+
+      var outerDescriptor = new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single");
+      var innerDescriptor = new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x01), "Test:Geschwindigkeit", "Geschwindigkeit", "m/s", "Single");
+
+      // When
+      var descriptorCollection = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList);
+
+      // Then
+      Assert.AreEqual(outerDescriptor, descriptorCollection["Geschwindigkeit"]);
+      Assert.AreEqual(innerDescriptor, descriptorCollection["Test:Geschwindigkeit"]);
     }
   }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ZusiTcpInterface.Zusi3
 {
-  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class DataChunk<T> : DataChunkBase
   {
     private readonly T _payload;

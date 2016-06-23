@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public interface IBlockingCollection<T> : ICollection, IDisposable, IReadOnlyCollection<T>
   {
     int BoundedCapacity { get; }

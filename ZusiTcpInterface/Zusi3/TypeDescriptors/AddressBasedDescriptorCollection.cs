@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class AddressBasedDescriptorCollection<T> : IEnumerable<T>, IEquatable<AddressBasedDescriptorCollection<T>> where T: AddressBasedDescriptorBase
   {
     private readonly Dictionary<Address, T> _byId = new Dictionary<Address, T>();
@@ -16,7 +16,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       var descriptorList = descriptors as IList<T> ?? descriptors.ToArray();
       foreach (var descriptor in descriptorList)
       {
-        var name = descriptor.Name;
+        var name = descriptor.QualifiedName;
         var id = descriptor.Address;
 
         try

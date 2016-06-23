@@ -16,17 +16,17 @@ namespace PollBasedDemoApp
       {
         var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
         var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.Descriptors["Status Sifa"];
+        var sifaPilotLightDescriptor = connectionContainer.Descriptors["Status Sifa:Status Sifa-Leuchtmelder"];
 
-        var neededData = new List<CabInfoAddress> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaStatusDescriptor.Address };
+        var neededData = new List<CabInfoAddress> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaPilotLightDescriptor.Address };
         connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
 
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);
 
-        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
-        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), dataChunk => OnBoolReceived("LM Sifa", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<bool>(gearboxPilotLightDescriptor.Address, dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<bool>(sifaPilotLightDescriptor.Address, dataChunk => OnBoolReceived("LM Sifa", dataChunk));
         polledDataReceiver.RegisterCallbackFor<StatusSifaHupe>(new CabInfoAddress(0x64, 0x03), OnSifaHornReceived);
-        polledDataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
+        polledDataReceiver.RegisterCallbackFor<float>(velocityDescriptor.Address, OnVelocityReceived);
 
         Console.WriteLine("Connected!");
 
@@ -43,7 +43,6 @@ namespace PollBasedDemoApp
     private static void OnSifaHornReceived(DataChunk<StatusSifaHupe> dataChunk)
     {
       Console.WriteLine("Sifa-Horn = {0}", dataChunk.Payload);
-
     }
 
     private static void OnVelocityReceived(DataChunk<float> dataChunk)
