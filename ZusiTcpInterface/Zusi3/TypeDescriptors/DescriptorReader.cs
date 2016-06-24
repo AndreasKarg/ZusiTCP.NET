@@ -6,11 +6,11 @@ using System.Xml.Linq;
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  internal static class AddressBasedDescriptorReader
+  internal static class DescriptorReader
   {
     private static readonly string _namespace = "ZusiTcpInterface/CabInfoTypes";
 
-    public static IEnumerable<AddressBasedAttributeDescriptor> ReadCommandsetFrom(Stream inputStream)
+    public static IEnumerable<AttributeDescriptor> ReadCommandsetFrom(Stream inputStream)
     {
       var root = XElement.Load(inputStream);
 
@@ -19,7 +19,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return descriptors;
     }
 
-    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertRootNode(XElement arg)
+    private static IEnumerable<AttributeDescriptor> ConvertRootNode(XElement arg)
     {
       var baseAddress = new CabInfoAddress();
       var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, baseAddress, null));
@@ -28,7 +28,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return attributes.Concat(attributesFromChildNodes);
     }
 
-    private static IEnumerable<AddressBasedAttributeDescriptor> ConvertNode(XElement arg, CabInfoAddress baseAddress, string baseName)
+    private static IEnumerable<AttributeDescriptor> ConvertNode(XElement arg, CabInfoAddress baseAddress, string baseName)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -46,7 +46,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return attributes.Concat(attributesFromChildNodes);
     }
 
-    private static AddressBasedAttributeDescriptor ConvertAttribute(XElement arg, CabInfoAddress baseAddress, string baseName)
+    private static AttributeDescriptor ConvertAttribute(XElement arg, CabInfoAddress baseAddress, string baseName)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -60,7 +60,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
       var localAddress = baseAddress.Concat(id);
-      return new AddressBasedAttributeDescriptor(localAddress, ConcatenateNames(baseName, name), name, unit, converter, comment);
+      return new AttributeDescriptor(localAddress, ConcatenateNames(baseName, name), name, unit, converter, comment);
     }
 
     private static string ConcatenateNames(string baseName, string name)

@@ -14,7 +14,7 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class ConnectionContainer : IDisposable
   {
-    private AddressBasedDescriptorCollection _descriptors;
+    private DescriptorCollection _descriptors;
     private RootNodeConverter _rootNodeConverter;
     private readonly IBlockingCollection<DataChunkBase> _receivedDataChunks = new BlockingCollectionWrapper<DataChunkBase>();
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
@@ -57,7 +57,7 @@ namespace ZusiTcpInterface.Zusi3
 
     #endregion Fields involved in object disposal
 
-    public AddressBasedDescriptorCollection Descriptors
+    public DescriptorCollection Descriptors
     {
       get { return _descriptors; }
     }
@@ -80,24 +80,24 @@ namespace ZusiTcpInterface.Zusi3
       InitialiseFrom(commandsetFileStream);
     }
 
-    public ConnectionContainer(IEnumerable<AddressBasedAttributeDescriptor> descriptors)
+    public ConnectionContainer(IEnumerable<AttributeDescriptor> descriptors)
     {
       InitialiseFrom(descriptors);
     }
 
     private void InitialiseFrom(Stream fileStream)
     {
-      var descriptors = AddressBasedDescriptorReader.ReadCommandsetFrom(fileStream);
+      var descriptors = DescriptorReader.ReadCommandsetFrom(fileStream);
       InitialiseFrom(descriptors);
     }
 
-    private void InitialiseFrom(IEnumerable<AddressBasedAttributeDescriptor> descriptors)
+    private void InitialiseFrom(IEnumerable<AttributeDescriptor> descriptors)
     {
-      var descriptorCollection = new AddressBasedDescriptorCollection(descriptors);
+      var descriptorCollection = new DescriptorCollection(descriptors);
       InitialiseFrom(descriptorCollection);
     }
 
-    private void InitialiseFrom(AddressBasedDescriptorCollection rootDescriptor)
+    private void InitialiseFrom(DescriptorCollection rootDescriptor)
     {
       _descriptors = rootDescriptor;
 
@@ -121,13 +121,13 @@ namespace ZusiTcpInterface.Zusi3
       _rootNodeConverter[0x02] = userDataConverter;
     }
 
-    private INodeConverter GenerateNodeConverter(AddressBasedDescriptorCollection descriptors)
+    private INodeConverter GenerateNodeConverter(DescriptorCollection descriptors)
     {
         var attributeConverters = MapAttributeConverters(descriptors);
         return new FlatteningNodeConverter { ConversionFunctions = attributeConverters };
     }
 
-    private Dictionary<Address, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AddressBasedAttributeDescriptor> cabInfoDescriptors)
+    private Dictionary<Address, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AttributeDescriptor> cabInfoDescriptors)
     {
       Dictionary<Address, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<Address, Func<Address, byte[], IProtocolChunk>>();
 

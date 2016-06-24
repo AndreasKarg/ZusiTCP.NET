@@ -2,7 +2,7 @@
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  public class AddressBasedAttributeDescriptor : IEquatable<AddressBasedAttributeDescriptor>
+  public class AttributeDescriptor : IEquatable<AttributeDescriptor>
   {
     private readonly string _unit;
     private readonly string _type;
@@ -11,7 +11,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
     private readonly string _name;
     private readonly string _comment;
 
-    public AddressBasedAttributeDescriptor(CabInfoAddress address, string qualifiedName, string name, string unit, string type, string comment = "")
+    public AttributeDescriptor(CabInfoAddress address, string qualifiedName, string name, string unit, string type, string comment = "")
     {
       if (address == null)
         throw new ArgumentNullException("address");
@@ -64,7 +64,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
     #region Equality operations
 
-    public bool Equals(AddressBasedAttributeDescriptor other)
+    public bool Equals(AttributeDescriptor other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -81,7 +81,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((AddressBasedAttributeDescriptor) obj);
+      return Equals((AttributeDescriptor) obj);
     }
 
     public override int GetHashCode()
@@ -98,12 +98,12 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
     }
 
-    public static bool operator ==(AddressBasedAttributeDescriptor left, AddressBasedAttributeDescriptor right)
+    public static bool operator ==(AttributeDescriptor left, AttributeDescriptor right)
     {
       return Equals(left, right);
     }
 
-    public static bool operator !=(AddressBasedAttributeDescriptor left, AddressBasedAttributeDescriptor right)
+    public static bool operator !=(AttributeDescriptor left, AttributeDescriptor right)
     {
       return !Equals(left, right);
     }

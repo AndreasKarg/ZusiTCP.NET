@@ -75,9 +75,9 @@
     <Compile Include="Zusi3\DOM\ClientType.cs" />
     <Compile Include="Zusi3\Enums\PilotLightState.cs" />
     <Compile Include="Zusi3\Enums\SwitchState.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\AddressBasedAttributeDescriptor.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\AddressBasedDescriptorCollection.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\AddressBasedDescriptorReader.cs" />
+    <Compile Include="Zusi3\TypeDescriptors\AttributeDescriptor.cs" />
+    <Compile Include="Zusi3\TypeDescriptors\DescriptorCollection.cs" />
+    <Compile Include="Zusi3\TypeDescriptors\DescriptorReader.cs" />
     <Compile Include="Zusi3\ConnectionContainer.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
     <Compile Include="Zusi3\CallbackBasedZusiDataReceiverBase.cs" />

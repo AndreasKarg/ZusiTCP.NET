@@ -13,8 +13,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
   {
     private readonly Queue<DataChunkBase> _cabDataChunks = new Queue<DataChunkBase>();
     private readonly PolledZusiDataReceiver _polledZusiDataReceiver;
-    private readonly AddressBasedAttributeDescriptor _floatDescriptor = new AddressBasedAttributeDescriptor(new CabInfoAddress(1), "Float", "Float", "N/A", "N/A");
-    private readonly AddressBasedAttributeDescriptor _boolDescriptor = new AddressBasedAttributeDescriptor(new CabInfoAddress(2), "Bool", "Bool", "N/A", "N/A");
+    private readonly AttributeDescriptor _floatDescriptor = new AttributeDescriptor(new CabInfoAddress(1), "Float", "Float", "N/A", "N/A");
+    private readonly AttributeDescriptor _boolDescriptor = new AttributeDescriptor(new CabInfoAddress(2), "Bool", "Bool", "N/A", "N/A");
 
     public PolledZusiDataReceiverTests()
     {

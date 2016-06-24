@@ -6,14 +6,14 @@ using System.Linq;
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
   [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public class AddressBasedDescriptorCollection : IEnumerable<AddressBasedAttributeDescriptor>, IEquatable<AddressBasedDescriptorCollection>
+  public class DescriptorCollection : IEnumerable<AttributeDescriptor>, IEquatable<DescriptorCollection>
   {
-    private readonly Dictionary<Address, AddressBasedAttributeDescriptor> _byId = new Dictionary<Address, AddressBasedAttributeDescriptor>();
-    private readonly Dictionary<string, AddressBasedAttributeDescriptor> _byName = new Dictionary<string, AddressBasedAttributeDescriptor>();
+    private readonly Dictionary<Address, AttributeDescriptor> _byId = new Dictionary<Address, AttributeDescriptor>();
+    private readonly Dictionary<string, AttributeDescriptor> _byName = new Dictionary<string, AttributeDescriptor>();
 
-    public AddressBasedDescriptorCollection(IEnumerable<AddressBasedAttributeDescriptor> descriptors)
+    public DescriptorCollection(IEnumerable<AttributeDescriptor> descriptors)
     {
-      var descriptorList = descriptors as IList<AddressBasedAttributeDescriptor> ?? descriptors.ToArray();
+      var descriptorList = descriptors as IList<AttributeDescriptor> ?? descriptors.ToArray();
       foreach (var descriptor in descriptorList)
       {
         var name = descriptor.QualifiedName;
@@ -45,27 +45,27 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       }
     }
 
-    public AddressBasedAttributeDescriptor GetBy(string name)
+    public AttributeDescriptor GetBy(string name)
     {
       return _byName[name];
     }
 
-    public AddressBasedAttributeDescriptor GetBy(Address id)
+    public AttributeDescriptor GetBy(Address id)
     {
       return _byId[id];
     }
 
-    public AddressBasedAttributeDescriptor this[string name]
+    public AttributeDescriptor this[string name]
     {
       get { return GetBy(name); }
     }
 
-    public AddressBasedAttributeDescriptor this[Address id]
+    public AttributeDescriptor this[Address id]
     {
       get { return GetBy(id); }
     }
 
-    IEnumerator<AddressBasedAttributeDescriptor> IEnumerable<AddressBasedAttributeDescriptor>.GetEnumerator()
+    IEnumerator<AttributeDescriptor> IEnumerable<AttributeDescriptor>.GetEnumerator()
     {
       return _byId.Values.GetEnumerator();
     }
@@ -77,7 +77,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
     #region Equality operations
 
-    public bool Equals(AddressBasedDescriptorCollection other)
+    public bool Equals(DescriptorCollection other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -99,7 +99,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((AddressBasedDescriptorCollection) obj);
+      return Equals((DescriptorCollection) obj);
     }
 
     public override int GetHashCode()
@@ -107,18 +107,18 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return _byId.Aggregate(0, ComputeHashCode);
     }
 
-    private int ComputeHashCode(int aggregateHashCode, KeyValuePair<Address, AddressBasedAttributeDescriptor> descriptor)
+    private int ComputeHashCode(int aggregateHashCode, KeyValuePair<Address, AttributeDescriptor> descriptor)
     {
       var hashCode = (aggregateHashCode*397) ^ descriptor.Key.GetHashCode();
       return (hashCode * 397) ^ descriptor.Value.GetHashCode();
     }
 
-    public static bool operator ==(AddressBasedDescriptorCollection left, AddressBasedDescriptorCollection right)
+    public static bool operator ==(DescriptorCollection left, DescriptorCollection right)
     {
       return Equals(left, right);
     }
 
-    public static bool operator !=(AddressBasedDescriptorCollection left, AddressBasedDescriptorCollection right)
+    public static bool operator !=(DescriptorCollection left, DescriptorCollection right)
     {
       return !Equals(left, right);
     }
