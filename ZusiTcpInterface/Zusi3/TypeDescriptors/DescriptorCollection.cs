@@ -47,7 +47,11 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
     public AttributeDescriptor GetBy(string name)
     {
-      return _byName[name];
+      AttributeDescriptor foundDescriptor;
+      if(_byName.TryGetValue(name, out foundDescriptor))
+        return foundDescriptor;
+
+      return _byName.Values.Single(descriptor => descriptor.Name == name);
     }
 
     public AttributeDescriptor GetBy(Address id)

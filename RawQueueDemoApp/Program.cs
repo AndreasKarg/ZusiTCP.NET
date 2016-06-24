@@ -15,8 +15,9 @@ namespace DemoApp
       {
         var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
         var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.Descriptors["Status Sifa"];
-        var neededData = new List<CabInfoAddress> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaStatusDescriptor.Address };
+        var sifaPilotLightDescriptor = connectionContainer.Descriptors["Status Sifa-Leuchtmelder"];
+        var sifaHornDescriptor = connectionContainer.Descriptors["Status Sifa-Hupe"];
+        var neededData = new List<CabInfoAddress> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaPilotLightDescriptor.Address, sifaHornDescriptor.Address };
         connectionContainer.Connect("Raw queue demo app", "1.0.0.0", neededData);
 
         Console.WriteLine("Connected!");
@@ -28,10 +29,10 @@ namespace DemoApp
           if(!chunkTaken)
             continue;
 
-          var velocityAddress = new CabInfoAddress(0x01);
-          var gearboxPilotLightAddress = new CabInfoAddress(0x1A);
-          var sifaPilotLightAddress = new CabInfoAddress(0x64, 0x02);
-          var sifaHornAddress = new CabInfoAddress(0x64, 0x03);
+          var velocityAddress = velocityDescriptor.Address;
+          var gearboxPilotLightAddress = gearboxPilotLightDescriptor.Address;
+          var sifaPilotLightAddress = sifaPilotLightDescriptor.Address;
+          var sifaHornAddress = sifaHornDescriptor.Address;
 
           if (chunk.Address == velocityAddress)
           {

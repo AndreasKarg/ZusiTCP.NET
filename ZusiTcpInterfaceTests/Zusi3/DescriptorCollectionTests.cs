@@ -5,7 +5,7 @@ using ZusiTcpInterface.Zusi3.TypeDescriptors;
 namespace ZusiTcpInterfaceTests.Zusi3
 {
   [TestClass]
-  public class DescriptorTests
+  public class DescriptorCollectionTests
   {
     [TestMethod]
     public void Equal_descriptors_are_considered_equal()
@@ -136,6 +136,34 @@ namespace ZusiTcpInterfaceTests.Zusi3
       Assert.IsTrue(areInequal);
       Assert.IsFalse(explicitEquals);
       Assert.IsFalse(objectEquals);
+    }
+
+    [TestMethod]
+    public void Can_use_short_name_to_find_unique_nested_descriptors()
+    {
+      // Given
+      string expectedDescriptorShortName = "Luftpresser läuft";
+      var expectedDescriptor = new AttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", expectedDescriptorShortName, "aus/an", "BoolAsSingle");
+
+      var descriptors = new[]
+      {
+        new AttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Test:Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        expectedDescriptor,
+        new AttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
+      };
+
+      var descriptorCollection = new DescriptorCollection(descriptors);
+
+      // When
+      var actualDescriptor = descriptorCollection[expectedDescriptorShortName];
+
+      // Then
+      Assert.AreEqual(expectedDescriptor, actualDescriptor);
     }
   }
 }

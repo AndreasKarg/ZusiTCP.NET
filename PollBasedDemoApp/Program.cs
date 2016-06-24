@@ -17,16 +17,17 @@ namespace PollBasedDemoApp
         var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
         var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
         var sifaPilotLightDescriptor = connectionContainer.Descriptors["Status Sifa:Status Sifa-Leuchtmelder"];
+        var sifaHornDescriptor = connectionContainer.Descriptors["Status Sifa-Hupe"];
 
         var neededData = new List<CabInfoAddress> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaPilotLightDescriptor.Address };
         connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
 
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);
 
-        polledDataReceiver.RegisterCallbackFor<bool>(gearboxPilotLightDescriptor.Address, dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
-        polledDataReceiver.RegisterCallbackFor<bool>(sifaPilotLightDescriptor.Address, dataChunk => OnBoolReceived("LM Sifa", dataChunk));
-        polledDataReceiver.RegisterCallbackFor<StatusSifaHupe>(new CabInfoAddress(0x64, 0x03), OnSifaHornReceived);
-        polledDataReceiver.RegisterCallbackFor<float>(velocityDescriptor.Address, OnVelocityReceived);
+        polledDataReceiver.RegisterCallbackFor<bool>("LM Getriebe", dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<bool>("Status Sifa-Leuchtmelder", dataChunk => OnBoolReceived("LM Sifa", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<StatusSifaHupe>("Status Sifa-Hupe", OnSifaHornReceived);
+        polledDataReceiver.RegisterCallbackFor<float>("Geschwindigkeit", OnVelocityReceived);
 
         Console.WriteLine("Connected!");
 
