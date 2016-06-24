@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterfaceTests.Zusi3
@@ -12,46 +13,30 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // Given
       var attributesA = new[]
       {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Test:Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
       var attributesB = new[]
       {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Test:Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
-      var nodesA = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var nodesB = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var a = new NodeDescriptor(0, "Root", attributesA, nodesA);
-      var b = new NodeDescriptor(0, "Root", attributesB, nodesB);
+      var a = new AddressBasedDescriptorCollection(attributesA);
+      var b = new AddressBasedDescriptorCollection(attributesB);
 
       // When
       var areEqual = a == b;
@@ -72,106 +57,30 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // Given
       var attributesA = new[]
       {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/sx", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/sx", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Test:Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
       var attributesB = new[]
       {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Test:Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
-      var nodesA = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var nodesB = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var a = new NodeDescriptor(0, "Root", attributesA, nodesA);
-      var b = new NodeDescriptor(0, "Root", attributesB, nodesB);
-
-      // When
-      var areEqual = a == b;
-      var areInequal = a != b;
-      var explicitEquals = a.Equals(b);
-      var objectEquals = a.Equals((object)b);
-
-      // Then
-      Assert.IsFalse(areEqual);
-      Assert.IsTrue(areInequal);
-      Assert.IsFalse(explicitEquals);
-      Assert.IsFalse(objectEquals);
-    }
-
-    [TestMethod]
-    public void Nested_inequality_treated_as_inequal()
-    {
-      // Given
-      var attributesA = new[]
-      {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
-      };
-
-      var attributesB = new[]
-      {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
-      };
-
-      var nodesA = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "baromatiksauce", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var nodesB = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var a = new NodeDescriptor(0, "Root", attributesA, nodesA);
-      var b = new NodeDescriptor(0, "Root", attributesB, nodesB);
+      var a = new AddressBasedDescriptorCollection(attributesA);
+      var b = new AddressBasedDescriptorCollection(attributesB);
 
       // When
       var areEqual = a == b;
@@ -192,100 +101,29 @@ namespace ZusiTcpInterfaceTests.Zusi3
       // Given
       var attributesA = new[]
       {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x04), "Test:Druck Hauptluftbehälter", "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
       var attributesB = new[]
       {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x01), "Geschwindigkeit", "Geschwindigkeit", "m/s", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x02), "Druck Hauptluftleitung", "Druck Hauptluftleitung", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x03), "Test:Druck Bremszylinder", "Druck Bremszylinder", "bar", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x05), "Test:Luftpresser läuft", "Luftpresser läuft", "aus/an", "BoolAsSingle"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x06), "Test2:Luftstrom Fbv", "Luftstrom Fbv", "-1...0...1", "Fail"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x07), "Test2:Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
+        new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
-      var nodesA = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var nodesB = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var a = new NodeDescriptor(0, "Root", attributesA, nodesA);
-      var b = new NodeDescriptor(0, "Root", attributesB, nodesB);
-
-      // When
-      var areEqual = a == b;
-      var areInequal = a != b;
-      var explicitEquals = a.Equals(b);
-      var objectEquals = a.Equals((object)b);
-
-      // Then
-      Assert.IsFalse(areEqual);
-      Assert.IsTrue(areInequal);
-      Assert.IsFalse(explicitEquals);
-      Assert.IsFalse(objectEquals);
-    }
-
-    [TestMethod]
-    public void Different_number_of_nodes_is_inequal()
-    {
-      // Given
-      var attributesA = new[]
-      {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
-      };
-
-      var attributesB = new[]
-      {
-        new AttributeDescriptor(0x01, "Geschwindigkeit", "m/s", "Single"),
-        new AttributeDescriptor(0x02, "Druck Hauptluftleitung", "bar", "Single"),
-      };
-
-      var nodesA = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala")
-      };
-
-      var nodesB = new[]
-      { new NodeDescriptor(0x123, "Test", new []
-        {
-          new AttributeDescriptor(0x03, "Druck Bremszylinder", "bar", "Single"),
-          new AttributeDescriptor(0x04, "Druck Hauptluftbehälter", "bar", "Single", "Mit Sauce"),
-          new AttributeDescriptor(0x05, "Luftpresser läuft", "aus/an", "BoolAsSingle"),
-        }, "Lalala"),
-        new NodeDescriptor(0x153, "Test2", new []
-        {
-          new AttributeDescriptor(0x06, "Luftstrom Fbv", "-1...0...1", "Fail"),
-          new AttributeDescriptor(0x07, "Luftstrom Zbv", "-1...0...1", "Single"),
-          new AttributeDescriptor(0x08, "Lüfter an", "aus/an", "BoolAsSingle")
-        })};
-
-      var a = new NodeDescriptor(0, "Root", attributesA, nodesA);
-      var b = new NodeDescriptor(0, "Root", attributesB, nodesB);
+      var a = new AddressBasedDescriptorCollection(attributesA);
+      var b = new AddressBasedDescriptorCollection(attributesB);
 
       // When
       var areEqual = a == b;

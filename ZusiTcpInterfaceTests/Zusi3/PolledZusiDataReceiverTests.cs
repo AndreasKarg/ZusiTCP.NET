@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MSTestExtensions;
+using System;
+using System.Collections.Generic;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
@@ -13,8 +13,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
   {
     private readonly Queue<DataChunkBase> _cabDataChunks = new Queue<DataChunkBase>();
     private readonly PolledZusiDataReceiver _polledZusiDataReceiver;
-    private readonly AttributeDescriptor _floatDescriptor = new AttributeDescriptor(1, "Float", "N/A", "N/A");
-    private readonly AttributeDescriptor _boolDescriptor = new AttributeDescriptor(2, "Bool", "N/A", "N/A");
+    private readonly AddressBasedAttributeDescriptor _floatDescriptor = new AddressBasedAttributeDescriptor(new CabInfoAddress(1), "Float", "Float", "N/A", "N/A");
+    private readonly AddressBasedAttributeDescriptor _boolDescriptor = new AddressBasedAttributeDescriptor(new CabInfoAddress(2), "Bool", "Bool", "N/A", "N/A");
 
     public PolledZusiDataReceiverTests()
     {
@@ -24,14 +24,6 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       mockQueue.Setup(mock => mock.Count)
         .Returns(() => _cabDataChunks.Count);
-
-      var descriptors = new List<AttributeDescriptor>
-      {
-        _floatDescriptor,
-        _boolDescriptor
-      };
-
-      var descriptorCollection = new NodeDescriptor(0, "Root", descriptors);
 
       _polledZusiDataReceiver = new PolledZusiDataReceiver(mockQueue.Object);
     }
@@ -60,8 +52,8 @@ namespace ZusiTcpInterfaceTests.Zusi3
 
       const float expectedFloat = 3.0f;
       const bool expectedBool = true;
-      var floatAddress = new CabInfoAddress(_floatDescriptor.Address);
-      var boolAddress = new CabInfoAddress(_boolDescriptor.Address);
+      var floatAddress = _floatDescriptor.Address;
+      var boolAddress = _boolDescriptor.Address;
 
       _polledZusiDataReceiver.RegisterCallbackFor(floatAddress, floatReceived);
       _polledZusiDataReceiver.RegisterCallbackFor(boolAddress, boolReceived);
@@ -84,7 +76,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
     public void Throws_ArgumentException_when_another_callback_for_same_address_is_registered()
     {
       // Given
-      var floatAddress = new CabInfoAddress(_floatDescriptor.Address);
+      var floatAddress = _floatDescriptor.Address;
 
       _polledZusiDataReceiver.RegisterCallbackFor<float>(floatAddress, chunk => { });
 
