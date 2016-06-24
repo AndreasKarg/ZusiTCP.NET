@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Net;
 using ZusiTcpInterface.Zusi3.Converters;
-using ZusiTcpInterface.Zusi3.DOM;
 using ZusiTcpInterface.Zusi3.Enums;
 using ZusiTcpInterface.Zusi3.Enums.Lzb;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  public class ConnectionContainer : IDisposable
+  public class ConnectionCreator
   {
     private DescriptorCollection _descriptors;
     private RootNodeConverter _rootNodeConverter;
-    private readonly IBlockingCollection<DataChunkBase> _receivedDataChunks = new BlockingCollectionWrapper<DataChunkBase>();
-    private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
-    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
     private readonly Dictionary<string, Func<Address, byte[], IProtocolChunk>> _converterMap =
       new Dictionary<string, Func<Address, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
@@ -49,26 +42,12 @@ namespace ZusiTcpInterface.Zusi3
         {"fail", (s, bytes) => { throw new NotSupportedException("Unsupported data type received"); }}
       };
 
-    #region Fields involved in object disposal
-
-    private TcpClient _tcpClient;
-    private Task _dataForwardingTask;
-    private bool _hasBeenDisposed;
-    private Task _messageReceptionTask;
-
-    #endregion Fields involved in object disposal
-
     public DescriptorCollection Descriptors
     {
       get { return _descriptors; }
     }
 
-    public IBlockingCollection<DataChunkBase> ReceivedDataChunks
-    {
-      get { return _receivedDataChunks; }
-    }
-
-    public ConnectionContainer(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.xml")
+    public ConnectionCreator(string cabInfoTypeDescriptorFilename = "Zusi3/CabInfoTypes.xml")
     {
       using (var commandSetFileStream = File.OpenRead(cabInfoTypeDescriptorFilename))
       {
@@ -76,12 +55,12 @@ namespace ZusiTcpInterface.Zusi3
       }
     }
 
-    public ConnectionContainer(Stream commandsetFileStream)
+    public ConnectionCreator(Stream commandsetFileStream)
     {
       InitialiseFrom(commandsetFileStream);
     }
 
-    public ConnectionContainer(IEnumerable<AttributeDescriptor> descriptors)
+    public ConnectionCreator(IEnumerable<AttributeDescriptor> descriptors)
     {
       InitialiseFrom(descriptors);
     }
@@ -101,7 +80,6 @@ namespace ZusiTcpInterface.Zusi3
     private void InitialiseFrom(DescriptorCollection rootDescriptor)
     {
       _descriptors = rootDescriptor;
-
       SetupNodeConverters();
     }
 
@@ -148,84 +126,17 @@ namespace ZusiTcpInterface.Zusi3
       return dictionary;
     }
 
-    public void Dispose()
+    public Connection CreateConnection()
     {
-      if (_hasBeenDisposed)
-        return;
-
-      _cancellationTokenSource.Cancel();
-
-      if (_messageReceptionTask != null && !_messageReceptionTask.Wait(500))
-        throw new TimeoutException("Failed to shut down message recption task within timeout.");
-      _messageReceptionTask = null;
-
-      if (_dataForwardingTask != null && !_dataForwardingTask.Wait(500))
-        throw new TimeoutException("Failed to shut down message forwarding task within timeout.");
-      _dataForwardingTask = null;
-
-      if (_tcpClient != null)
-        _tcpClient.Close();
-
-      _receivedDataChunks.CompleteAdding();
-      _receivedChunks.CompleteAdding();
-
-      _hasBeenDisposed = true;
+      return new Connection(ClientName, ClientVersion, NeededData, EndPoint, _rootNodeConverter);
     }
 
-    public void Connect(string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData, string hostname = "localhost", int port = 1436)
-    {
-      _tcpClient = new TcpClient(hostname, port);
+    public IPEndPoint EndPoint { get; set; }
 
-      var networkStream = new CancellableBlockingStream(_tcpClient.GetStream(), _cancellationTokenSource.Token);
-      var binaryReader = new BinaryReader(networkStream);
-      var binaryWriter = new BinaryWriter(networkStream);
+    public IEnumerable<CabInfoAddress> NeededData { get; set; }
 
-      var messageReader = new MessageReceiver(binaryReader, _rootNodeConverter, _receivedChunks);
-      _messageReceptionTask = Task.Run(() =>
-      {
-        while (true)
-        {
-          try
-          {
-            messageReader.ProcessNextPacket();
-          }
-          catch (OperationCanceledException)
-          {
-            // Teardown requested
-            return;
-          }
-        }
-      });
+    public string ClientVersion { get; set; }
 
-      var handshaker = new Handshaker(_receivedChunks, binaryWriter, ClientType.ControlDesk, clientName, clientVersion,
-        neededData);
-
-      handshaker.ShakeHands();
-
-      _dataForwardingTask = Task.Run(() =>
-      {
-        while (true)
-        {
-          IProtocolChunk protocolChunk;
-          try
-          {
-            const int noTimeout = -1;
-            _receivedChunks.TryTake(out protocolChunk, noTimeout, _cancellationTokenSource.Token);
-          }
-          catch (OperationCanceledException)
-          {
-            // Teardown requested
-            return;
-          }
-          _receivedDataChunks.Add((DataChunkBase)protocolChunk);
-        }
-      });
-    }
-
-    public void Connect(string clientName, string clientVersion, IEnumerable<string> neededData, string hostname = "localhost", int port = 1436)
-    {
-      var addresses = neededData.Select(name => _descriptors[name].Address);
-      Connect(clientName, clientVersion, addresses, hostname, port);
-    }
+    public string ClientName { get; set; }
   }
 }

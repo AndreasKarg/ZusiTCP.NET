@@ -11,12 +11,16 @@ namespace PollBasedDemoApp
     {
       Console.WriteLine("Connecting...");
 
-      using (var connectionContainer = new ConnectionContainer())
-      {
-        var neededData = new [] { "Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
-        connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
+      var connectionCreator = new ConnectionCreator();
+      connectionCreator.ClientName = "Poll-based demo app";
+      connectionCreator.ClientVersion = "1.0.0.0";
+      connectionCreator.NeededData =
 
-        var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);
+      var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
+
+      using (var connection = connectionCreator.CreateConnection())
+      {
+        var polledDataReceiver = new PolledZusiDataReceiver(connectionCreator.Descriptors, connection.ReceivedDataChunks);
 
         polledDataReceiver.RegisterCallbackFor<bool>("LM Getriebe", dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
         polledDataReceiver.RegisterCallbackFor<bool>("Status Sifa-Leuchtmelder", dataChunk => OnBoolReceived("LM Sifa", dataChunk));
