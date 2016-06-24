@@ -38,13 +38,13 @@ namespace ZusiTcpInterfaceTests.Zusi3
         new AddressBasedAttributeDescriptor(new CabInfoAddress(0x07), "Luftstrom Zbv", "Luftstrom Zbv", "-1...0...1", "Single"),
         new AddressBasedAttributeDescriptor(new CabInfoAddress(0x08), "Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle"),
       };
-      var expectedDescriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(expectedDescriptorList);
+      var expectedDescriptors = new AddressBasedDescriptorCollection(expectedDescriptorList);
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When
       var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
-      var descriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList);
+      var descriptors = new AddressBasedDescriptorCollection(descriptorList);
 
       // Then
       Assert.AreEqual(expectedDescriptors, descriptors);
@@ -85,13 +85,13 @@ namespace ZusiTcpInterfaceTests.Zusi3
         new AddressBasedAttributeDescriptor(new CabInfoAddress(0x153, 0x08), "Test2:Lüfter an", "Lüfter an", "aus/an", "BoolAsSingle")
       };
 
-      var expectedDescriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(expectedDescriptorList);
+      var expectedDescriptors = new AddressBasedDescriptorCollection(expectedDescriptorList);
 
       var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(commandsetXml.ToCharArray()));
 
       // When
       var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
-      var descriptors = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList);
+      var descriptors = new AddressBasedDescriptorCollection(descriptorList);
 
       // Then
       Assert.AreEqual(expectedDescriptors, descriptors);
@@ -111,7 +111,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
 
       // When - Throws
-      Assert.Throws<InvalidDescriptorException>(() => new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList));
+      Assert.Throws<InvalidDescriptorException>(() => new AddressBasedDescriptorCollection(descriptorList));
     }
 
     [TestMethod]
@@ -128,7 +128,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var descriptorList = AddressBasedDescriptorReader.ReadCommandsetFrom(inputStream);
 
       // When - Throws
-      Assert.Throws<InvalidDescriptorException>(() => new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList));
+      Assert.Throws<InvalidDescriptorException>(() => new AddressBasedDescriptorCollection(descriptorList));
     }
 
     [TestMethod]
@@ -150,7 +150,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var innerDescriptor = new AddressBasedAttributeDescriptor(new CabInfoAddress(0x123, 0x01), "Test:Geschwindigkeit", "Geschwindigkeit", "m/s", "Single");
 
       // When
-      var descriptorCollection = new AddressBasedDescriptorCollection<AddressBasedAttributeDescriptor>(descriptorList);
+      var descriptorCollection = new AddressBasedDescriptorCollection(descriptorList);
 
       // Then
       Assert.AreEqual(outerDescriptor, descriptorCollection["Geschwindigkeit"]);

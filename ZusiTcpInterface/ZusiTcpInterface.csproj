@@ -77,7 +77,6 @@
     <Compile Include="Zusi3\Enums\SwitchState.cs" />
     <Compile Include="Zusi3\TypeDescriptors\AddressBasedAttributeDescriptor.cs" />
     <Compile Include="Zusi3\TypeDescriptors\AttributeDescriptor.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\AddressBasedDescriptorBase.cs" />
     <Compile Include="Zusi3\TypeDescriptors\DescriptorBase.cs" />
     <Compile Include="Zusi3\TypeDescriptors\AddressBasedDescriptorCollection.cs" />
     <Compile Include="Zusi3\TypeDescriptors\AddressBasedDescriptorReader.cs" />
