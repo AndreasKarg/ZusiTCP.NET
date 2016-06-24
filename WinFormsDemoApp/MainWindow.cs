@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ZusiTcpInterface.Zusi3;
@@ -50,12 +49,9 @@ namespace WinFormsDemoApp
     {
       lblConnecting.Text = "Connecting!";
 
-      var velocityDescriptor = _connectionContainer.Descriptors["Geschwindigkeit"];
-      var gearboxPilotLightDescriptor = _connectionContainer.Descriptors["LM Getriebe"];
-      var sifaStatusDescriptor = _connectionContainer.Descriptors["Status Sifa-Leuchtmelder"];
-      var neededData = new List<CabInfoAddress> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaStatusDescriptor.Address };
-
+      var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
       _connectionContainer.Connect("Win-Forms demo app", "1.0.0.0", neededData);
+
       lblConnecting.Text = "Connected!";
     }
 

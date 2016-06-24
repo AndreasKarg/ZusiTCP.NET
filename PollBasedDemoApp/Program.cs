@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Enums;
@@ -14,12 +13,7 @@ namespace PollBasedDemoApp
 
       using (var connectionContainer = new ConnectionContainer())
       {
-        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaPilotLightDescriptor = connectionContainer.Descriptors["Status Sifa:Status Sifa-Leuchtmelder"];
-        var sifaHornDescriptor = connectionContainer.Descriptors["Status Sifa-Hupe"];
-
-        var neededData = new List<CabInfoAddress> { velocityDescriptor.Address, gearboxPilotLightDescriptor.Address, sifaPilotLightDescriptor.Address };
+        var neededData = new [] { "Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
         connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
 
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);

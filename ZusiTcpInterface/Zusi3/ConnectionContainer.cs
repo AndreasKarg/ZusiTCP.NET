@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -219,6 +220,12 @@ namespace ZusiTcpInterface.Zusi3
           _receivedDataChunks.Add((DataChunkBase)protocolChunk);
         }
       });
+    }
+
+    public void Connect(string clientName, string clientVersion, IEnumerable<string> neededData, string hostname = "localhost", int port = 1436)
+    {
+      var addresses = neededData.Select(name => _descriptors[name].Address);
+      Connect(clientName, clientVersion, addresses, hostname, port);
     }
   }
 }
