@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -9,15 +10,25 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
   {
     private static readonly string _namespace = "ZusiTcpInterface/CabInfoTypes";
 
-    public static NodeDescriptor ReadCommandsetFrom(Stream inputStream)
+    public static IEnumerable<AttributeDescriptor> ReadCommandsetFrom(Stream inputStream)
     {
       var root = XElement.Load(inputStream);
 
-      return new NodeDescriptor(0x0A, "Root", root.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
-                                                  root.Elements(XName.Get("Node", _namespace)).Select(ConvertNode));
+      var descriptors = ConvertRootNode(root);
+
+      return descriptors;
     }
 
-    private static NodeDescriptor ConvertNode(XElement arg)
+    private static IEnumerable<AttributeDescriptor> ConvertRootNode(XElement arg)
+    {
+      var baseAddress = new CabInfoAddress();
+      var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, baseAddress, null));
+      var attributesFromChildNodes = arg.Elements(XName.Get("Node", _namespace)).SelectMany(xmlNode => ConvertNode(xmlNode, baseAddress, null));
+
+      return attributes.Concat(attributesFromChildNodes);
+    }
+
+    private static IEnumerable<AttributeDescriptor> ConvertNode(XElement arg, CabInfoAddress baseAddress, string baseName)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -27,11 +38,15 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       // Optional attribute
       string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
-      return new NodeDescriptor(id, name, arg.Elements(XName.Get("Attribute", _namespace)).Select(ConvertAttribute),
-                                                 arg.Elements(XName.Get("Node", _namespace)).Select(ConvertNode), comment);
+      var localAddress = baseAddress.Concat(id);
+
+      var attributes = arg.Elements(XName.Get("Attribute", _namespace)).Select(xmlAttribute => ConvertAttribute(xmlAttribute, localAddress, ConcatenateNames(baseName, name)));
+      var attributesFromChildNodes = arg.Elements(XName.Get("Node", _namespace)).SelectMany(xmlNode => ConvertNode(xmlNode, localAddress, ConcatenateNames(baseName, name)));
+
+      return attributes.Concat(attributesFromChildNodes);
     }
 
-    private static AttributeDescriptor ConvertAttribute(XElement arg)
+    private static AttributeDescriptor ConvertAttribute(XElement arg, CabInfoAddress baseAddress, string baseName)
     {
       var xmlAttributes = arg.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value, StringComparer.InvariantCultureIgnoreCase);
 
@@ -44,7 +59,13 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       string unit = xmlAttributes.ContainsKey("unit") ? xmlAttributes["unit"] : String.Empty;
       string comment = xmlAttributes.ContainsKey("comment") ? xmlAttributes["comment"] : String.Empty;
 
-      return new AttributeDescriptor(id, name, unit, converter, comment);
+      var localAddress = baseAddress.Concat(id);
+      return new AttributeDescriptor(localAddress, ConcatenateNames(baseName, name), name, unit, converter, comment);
+    }
+
+    private static string ConcatenateNames(string baseName, string name)
+    {
+      return (baseName != null) ? String.Join(":", baseName, name) : name;
     }
   }
 }

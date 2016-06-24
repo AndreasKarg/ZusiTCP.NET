@@ -15,7 +15,7 @@ namespace ZusiTcpInterface.Zusi3
 {
   public class ConnectionContainer : IDisposable
   {
-    private NodeDescriptor _descriptors;
+    private DescriptorCollection _descriptors;
     private RootNodeConverter _rootNodeConverter;
     private readonly IBlockingCollection<DataChunkBase> _receivedDataChunks = new BlockingCollectionWrapper<DataChunkBase>();
     private readonly BlockingCollectionWrapper<IProtocolChunk> _receivedChunks = new BlockingCollectionWrapper<IProtocolChunk>();
@@ -58,7 +58,7 @@ namespace ZusiTcpInterface.Zusi3
 
     #endregion Fields involved in object disposal
 
-    public NodeDescriptor Descriptors
+    public DescriptorCollection Descriptors
     {
       get { return _descriptors; }
     }
@@ -81,18 +81,24 @@ namespace ZusiTcpInterface.Zusi3
       InitialiseFrom(commandsetFileStream);
     }
 
-    public ConnectionContainer(NodeDescriptor rootDescriptor)
+    public ConnectionContainer(IEnumerable<AttributeDescriptor> descriptors)
     {
-      InitialiseFrom(rootDescriptor);
+      InitialiseFrom(descriptors);
     }
 
     private void InitialiseFrom(Stream fileStream)
     {
-      var cabInfoDescriptors = DescriptorReader.ReadCommandsetFrom(fileStream);
-      InitialiseFrom(cabInfoDescriptors);
+      var descriptors = DescriptorReader.ReadCommandsetFrom(fileStream);
+      InitialiseFrom(descriptors);
     }
 
-    private void InitialiseFrom(NodeDescriptor rootDescriptor)
+    private void InitialiseFrom(IEnumerable<AttributeDescriptor> descriptors)
+    {
+      var descriptorCollection = new DescriptorCollection(descriptors);
+      InitialiseFrom(descriptorCollection);
+    }
+
+    private void InitialiseFrom(DescriptorCollection rootDescriptor)
     {
       _descriptors = rootDescriptor;
 
@@ -116,34 +122,26 @@ namespace ZusiTcpInterface.Zusi3
       _rootNodeConverter[0x02] = userDataConverter;
     }
 
-    private INodeConverter GenerateNodeConverter(NodeDescriptor nodeDescriptor)
+    private INodeConverter GenerateNodeConverter(DescriptorCollection descriptors)
     {
-      try
-      {
-        var attributeConverters = MapAttributeConverters(nodeDescriptor.AttributeDescriptors);
-        Dictionary<short, INodeConverter> nodeConverters = nodeDescriptor.NodeDescriptors.ToDictionary(descriptor => descriptor.Id, GenerateNodeConverter);
-        return new NodeConverter() { ConversionFunctions = attributeConverters, SubNodeConverters = nodeConverters };
-      }
-      catch (Exception e)
-      {
-        throw new InvalidOperationException(String.Format("Error while processing node 0x{0:x4} - {1}", nodeDescriptor.Id, nodeDescriptor.Name), e);
-      }
+        var attributeConverters = MapAttributeConverters(descriptors);
+        return new FlatteningNodeConverter { ConversionFunctions = attributeConverters };
     }
 
-    private Dictionary<short, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AttributeDescriptor> cabInfoDescriptors)
+    private Dictionary<Address, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AttributeDescriptor> cabInfoDescriptors)
     {
-      Dictionary<short, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<short, Func<Address, byte[], IProtocolChunk>>();
+      Dictionary<Address, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<Address, Func<Address, byte[], IProtocolChunk>>();
 
       foreach (var descriptor in cabInfoDescriptors)
       {
         try
         {
-          dictionary.Add(descriptor.Id, _converterMap[descriptor.Type]);
+          dictionary.Add(descriptor.Address, _converterMap[descriptor.Type]);
         }
         catch (KeyNotFoundException e)
         {
           throw new InvalidDescriptorException(
-            String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Id, descriptor.Name), e);
+            String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Address, descriptor.Name), e);
         }
       }
 
@@ -174,7 +172,7 @@ namespace ZusiTcpInterface.Zusi3
       _hasBeenDisposed = true;
     }
 
-    public void Connect(string clientName, string clientVersion, IEnumerable<short> neededData, string hostname = "localhost", int port = 1436)
+    public void Connect(string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData, string hostname = "localhost", int port = 1436)
     {
       _tcpClient = new TcpClient(hostname, port);
 
@@ -211,7 +209,8 @@ namespace ZusiTcpInterface.Zusi3
           IProtocolChunk protocolChunk;
           try
           {
-            _receivedChunks.TryTake(out protocolChunk, -1, _cancellationTokenSource.Token);
+            const int noTimeout = -1;
+            _receivedChunks.TryTake(out protocolChunk, noTimeout, _cancellationTokenSource.Token);
           }
           catch (OperationCanceledException)
           {
@@ -221,6 +220,12 @@ namespace ZusiTcpInterface.Zusi3
           _receivedDataChunks.Add((DataChunkBase)protocolChunk);
         }
       });
+    }
+
+    public void Connect(string clientName, string clientVersion, IEnumerable<string> neededData, string hostname = "localhost", int port = 1436)
+    {
+      var addresses = neededData.Select(name => _descriptors[name].Address);
+      Connect(clientName, clientVersion, addresses, hostname, port);
     }
   }
 }

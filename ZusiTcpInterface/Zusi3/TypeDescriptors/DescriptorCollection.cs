@@ -5,19 +5,19 @@ using System.Linq;
 
 namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 {
-  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-  public class DescriptorCollection<T> : IEnumerable<T>, IEquatable<DescriptorCollection<T>> where T: DescriptorBase
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
+  public class DescriptorCollection : IEnumerable<AttributeDescriptor>, IEquatable<DescriptorCollection>
   {
-    private readonly Dictionary<short, T> _byId = new Dictionary<short, T>();
-    private readonly Dictionary<string, T> _byName = new Dictionary<string, T>();
+    private readonly Dictionary<Address, AttributeDescriptor> _byId = new Dictionary<Address, AttributeDescriptor>();
+    private readonly Dictionary<string, AttributeDescriptor> _byName = new Dictionary<string, AttributeDescriptor>();
 
-    public DescriptorCollection(IEnumerable<T> descriptors)
+    public DescriptorCollection(IEnumerable<AttributeDescriptor> descriptors)
     {
-      var descriptorList = descriptors as IList<T> ?? descriptors.ToArray();
+      var descriptorList = descriptors as IList<AttributeDescriptor> ?? descriptors.ToArray();
       foreach (var descriptor in descriptorList)
       {
-        var name = descriptor.Name;
-        var id = descriptor.Id;
+        var name = descriptor.QualifiedName;
+        var id = descriptor.Address;
 
         try
         {
@@ -25,10 +25,10 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
         }
         catch (ArgumentException e)
         {
-          var collidingNames = descriptorList.Where(d => d.Id == id)
+          var collidingNames = descriptorList.Where(d => d.Address == id)
                                              .Select(d => d.Name);
           var formattedArray = String.Join(", ", collidingNames);
-          throw new InvalidDescriptorException(String.Format("Duplicate {0} with id 0x{1:x4} in source collection. Colliding names: {2}", typeof(T).Name, id, formattedArray), e);
+          throw new InvalidDescriptorException(String.Format("Duplicate attribute descriptor with id 0x{0:x4} in source collection. Colliding names: {1}", id, formattedArray), e);
         }
 
         try
@@ -38,34 +38,38 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
         catch (ArgumentException e)
         {
           var collidingIDs = descriptorList.Where(d => d.Name == name);
-          var stringifiedIDs = collidingIDs.Select(d => String.Format("0x{0:x4}", d.Id));
+          var stringifiedIDs = collidingIDs.Select(d => String.Format("0x{0:x4}", d.Address));
           var formattedArray = String.Join(", ", stringifiedIDs);
-          throw new InvalidDescriptorException(String.Format("Duplicate {0} with name '{1}' in source collection. Colliding IDs: {2}", typeof(T).Name, name, formattedArray), e);
+          throw new InvalidDescriptorException(String.Format("Duplicate attribute descriptor with name '{0}' in source collection. Colliding IDs: {1}", name, formattedArray), e);
         }
       }
     }
 
-    public T GetBy(string name)
+    public AttributeDescriptor GetBy(string name)
     {
-      return _byName[name];
+      AttributeDescriptor foundDescriptor;
+      if(_byName.TryGetValue(name, out foundDescriptor))
+        return foundDescriptor;
+
+      return _byName.Values.Single(descriptor => descriptor.Name == name);
     }
 
-    public T GetBy(short id)
+    public AttributeDescriptor GetBy(Address id)
     {
       return _byId[id];
     }
 
-    public T this[string name]
+    public AttributeDescriptor this[string name]
     {
       get { return GetBy(name); }
     }
 
-    public T this[short id]
+    public AttributeDescriptor this[Address id]
     {
       get { return GetBy(id); }
     }
 
-    IEnumerator<T> IEnumerable<T>.GetEnumerator()
+    IEnumerator<AttributeDescriptor> IEnumerable<AttributeDescriptor>.GetEnumerator()
     {
       return _byId.Values.GetEnumerator();
     }
@@ -77,7 +81,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
 
     #region Equality operations
 
-    public bool Equals(DescriptorCollection<T> other)
+    public bool Equals(DescriptorCollection other)
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
@@ -99,7 +103,7 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((DescriptorCollection<T>) obj);
+      return Equals((DescriptorCollection) obj);
     }
 
     public override int GetHashCode()
@@ -107,18 +111,18 @@ namespace ZusiTcpInterface.Zusi3.TypeDescriptors
       return _byId.Aggregate(0, ComputeHashCode);
     }
 
-    private int ComputeHashCode(int aggregateHashCode, KeyValuePair<short, T> descriptor)
+    private int ComputeHashCode(int aggregateHashCode, KeyValuePair<Address, AttributeDescriptor> descriptor)
     {
-      var hashCode = (aggregateHashCode*397) ^ descriptor.Key;
+      var hashCode = (aggregateHashCode*397) ^ descriptor.Key.GetHashCode();
       return (hashCode * 397) ^ descriptor.Value.GetHashCode();
     }
 
-    public static bool operator ==(DescriptorCollection<T> left, DescriptorCollection<T> right)
+    public static bool operator ==(DescriptorCollection left, DescriptorCollection right)
     {
       return Equals(left, right);
     }
 
-    public static bool operator !=(DescriptorCollection<T> left, DescriptorCollection<T> right)
+    public static bool operator !=(DescriptorCollection left, DescriptorCollection right)
     {
       return !Equals(left, right);
     }

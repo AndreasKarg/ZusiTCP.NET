@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MSTestExtensions;
+using System.Collections.Generic;
+using System.IO;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.DOM;
 using ZusiTcpInterface.Zusi3.Packets;
@@ -15,10 +15,10 @@ namespace ZusiTcpInterfaceTests.Zusi3
     private readonly AckHelloPacket _positiveAckHello = new AckHelloPacket("3.1.0.0.", "0", true);
     private readonly AckNeededDataPacket _positiveAckNeededDataPacket = new AckNeededDataPacket(true);
 
-    private readonly List<short> _neededData = new List<short>
+    private readonly List<CabInfoAddress> _neededData = new List<CabInfoAddress>
       {
-        0x01,
-        0x1B
+        new CabInfoAddress(0x01),
+        new CabInfoAddress(0x1B, 0x1C)
       };
 
     private readonly Handshaker _handshaker;
@@ -153,11 +153,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
               0xFF, 0xFF, 0xFF, 0xFF,
             0xFF, 0xFF, 0xFF, 0xFF};
 
-      List<short> neededData = new List<short>
+      List<CabInfoAddress> neededData = new List<CabInfoAddress>
       {
-        0x01,
-        0x1B,
-        0x01
+        new CabInfoAddress(0x01),
+        new CabInfoAddress(0x1B, 0x01),
+        new CabInfoAddress(0x1B, 0x02),
+        new CabInfoAddress(0x01)
       };
 
       var handshaker = new Handshaker(_rxQueue.Object, _binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0", neededData);

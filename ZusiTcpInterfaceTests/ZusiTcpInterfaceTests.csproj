@@ -70,9 +70,10 @@
     <Compile Include="Zusi2\HandShakerTests.cs" />
     <Compile Include="Zusi3\AckNeededDataConverterTests.cs" />
     <Compile Include="Zusi3\AddressTests.cs" />
-    <Compile Include="Zusi3\DescriptorTests.cs" />
-    <Compile Include="Zusi3\NodeConverterTests.cs" />
     <Compile Include="Zusi3\DescriptorReaderTests.cs" />
+    <Compile Include="Zusi3\DescriptorCollectionTests.cs" />
+    <Compile Include="Zusi3\FlatteningNodeConverterTests.cs" />
+    <Compile Include="Zusi3\NodeConverterTests.cs" />
     <Compile Include="Zusi3\HelloPacketTests.cs" />
     <Compile Include="Zusi3\MessageReceiverTests.cs" />
     <Compile Include="Zusi3\NeededDataPacketTests.cs" />

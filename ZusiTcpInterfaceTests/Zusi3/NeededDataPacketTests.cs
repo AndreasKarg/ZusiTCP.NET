@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Packets;
 
 namespace ZusiTcpInterfaceTests.Zusi3
@@ -28,7 +29,11 @@ namespace ZusiTcpInterfaceTests.Zusi3
                             0xFF, 0xFF, 0xFF, 0xFF,
                           0xFF, 0xFF, 0xFF, 0xFF};
 
-      var neededData = new List<short> {0x01, 0x1B};
+      var neededData = new List<CabInfoAddress>
+      {
+        new CabInfoAddress(0x01),
+        new CabInfoAddress(0x1B)
+      };
 
       // When
       var serialised = new MemoryStream();

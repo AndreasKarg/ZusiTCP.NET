@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Enums;
 
@@ -13,10 +12,11 @@ namespace DemoApp
 
       using (var connectionContainer = new ConnectionContainer())
       {
-        var velocityDescriptor = connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
-        var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
+        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
+        var sifaPilotLightDescriptor = connectionContainer.Descriptors["Status Sifa-Leuchtmelder"];
+        var sifaHornDescriptor = connectionContainer.Descriptors["Status Sifa-Hupe"];
+        var neededData = new[] {"Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe"};
         connectionContainer.Connect("Raw queue demo app", "1.0.0.0", neededData);
 
         Console.WriteLine("Connected!");
@@ -28,10 +28,10 @@ namespace DemoApp
           if(!chunkTaken)
             continue;
 
-          var velocityAddress = new CabInfoAddress(0x01);
-          var gearboxPilotLightAddress = new CabInfoAddress(0x1A);
-          var sifaPilotLightAddress = new CabInfoAddress(0x64, 0x02);
-          var sifaHornAddress = new CabInfoAddress(0x64, 0x03);
+          var velocityAddress = velocityDescriptor.Address;
+          var gearboxPilotLightAddress = gearboxPilotLightDescriptor.Address;
+          var sifaPilotLightAddress = sifaPilotLightDescriptor.Address;
+          var sifaHornAddress = sifaHornDescriptor.Address;
 
           if (chunk.Address == velocityAddress)
           {

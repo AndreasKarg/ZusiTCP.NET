@@ -51,6 +51,7 @@
     <Compile Include="Zusi3\CabInfoAddress.cs" />
     <Compile Include="Zusi3\CallbackWrapper.cs" />
     <Compile Include="Zusi3\Converters\AckHelloConverter.cs" />
+    <Compile Include="Zusi3\Converters\FlatteningNodeConverter.cs" />
     <Compile Include="Zusi3\Enums\IndusiHupe.cs" />
     <Compile Include="Zusi3\Enums\Lzb\StatusAuftrag.cs" />
     <Compile Include="Zusi3\Enums\Lzb\StatusElAuftrag.cs" />
@@ -75,12 +76,10 @@
     <Compile Include="Zusi3\Enums\PilotLightState.cs" />
     <Compile Include="Zusi3\Enums\SwitchState.cs" />
     <Compile Include="Zusi3\TypeDescriptors\AttributeDescriptor.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\DescriptorBase.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\NodeDescriptor.cs" />
+    <Compile Include="Zusi3\TypeDescriptors\DescriptorCollection.cs" />
     <Compile Include="Zusi3\TypeDescriptors\DescriptorReader.cs" />
     <Compile Include="Zusi3\ConnectionContainer.cs" />
     <Compile Include="Zusi3\ConnectionRefusedException.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\DescriptorCollection.cs" />
     <Compile Include="Zusi3\CallbackBasedZusiDataReceiverBase.cs" />
     <Compile Include="Zusi3\Handshaker.cs" />
     <Compile Include="Zusi3\Packets\HelloPacket.cs" />

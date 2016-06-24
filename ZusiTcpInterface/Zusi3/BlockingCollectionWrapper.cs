@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace ZusiTcpInterface.Zusi3
 {
-  [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+  [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Advanced)]
   public class BlockingCollectionWrapper<T> : IBlockingCollection<T>
   {
     private readonly BlockingCollection<T> _blockingCollection = new BlockingCollection<T>();

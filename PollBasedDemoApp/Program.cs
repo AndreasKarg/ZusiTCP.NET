@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Enums;
@@ -14,19 +13,15 @@ namespace PollBasedDemoApp
 
       using (var connectionContainer = new ConnectionContainer())
       {
-        var velocityDescriptor = connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
-        var sifaStatusDescriptor = connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
-
-        var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
+        var neededData = new [] { "Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
         connectionContainer.Connect("Poll-based demo app", "1.0.0.0", neededData);
 
         var polledDataReceiver = new PolledZusiDataReceiver(connectionContainer);
 
-        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
-        polledDataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), dataChunk => OnBoolReceived("LM Sifa", dataChunk));
-        polledDataReceiver.RegisterCallbackFor<StatusSifaHupe>(new CabInfoAddress(0x64, 0x03), OnSifaHornReceived);
-        polledDataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
+        polledDataReceiver.RegisterCallbackFor<bool>("LM Getriebe", dataChunk => OnBoolReceived("LM Getriebe", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<bool>("Status Sifa-Leuchtmelder", dataChunk => OnBoolReceived("LM Sifa", dataChunk));
+        polledDataReceiver.RegisterCallbackFor<StatusSifaHupe>("Status Sifa-Hupe", OnSifaHornReceived);
+        polledDataReceiver.RegisterCallbackFor<float>("Geschwindigkeit", OnVelocityReceived);
 
         Console.WriteLine("Connected!");
 
@@ -43,7 +38,6 @@ namespace PollBasedDemoApp
     private static void OnSifaHornReceived(DataChunk<StatusSifaHupe> dataChunk)
     {
       Console.WriteLine("Sifa-Horn = {0}", dataChunk.Payload);
-
     }
 
     private static void OnVelocityReceived(DataChunk<float> dataChunk)

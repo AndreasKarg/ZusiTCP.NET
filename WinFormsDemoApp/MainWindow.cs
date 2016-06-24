@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ZusiTcpInterface.Zusi3;
@@ -18,12 +17,12 @@ namespace WinFormsDemoApp
 
       _connectionContainer = new ConnectionContainer();
 
-      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer.ReceivedDataChunks, SynchronizationContext.Current);
+      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);
 
-      _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x1A), OnGearboxPilotLightReceived);
-      _dataReceiver.RegisterCallbackFor<bool>(new CabInfoAddress(0x64, 0x02), OnSifaPilotLightReceived);
-      _dataReceiver.RegisterCallbackFor<StatusSifaHupe>(new CabInfoAddress(0x64, 0x03), OnSifaHornReceived);
-      _dataReceiver.RegisterCallbackFor<float>(new CabInfoAddress(0x01), OnVelocityReceived);
+      _dataReceiver.RegisterCallbackFor<bool>("LM Getriebe", OnGearboxPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<bool>("Status Sifa-Leuchtmelder", OnSifaPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<StatusSifaHupe>("Status Sifa-Hupe", OnSifaHornReceived);
+      _dataReceiver.RegisterCallbackFor<float>("Geschwindigkeit", OnVelocityReceived);
     }
 
     private void OnGearboxPilotLightReceived(DataChunk<bool> dataChunk)
@@ -50,12 +49,9 @@ namespace WinFormsDemoApp
     {
       lblConnecting.Text = "Connecting!";
 
-      var velocityDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["Geschwindigkeit"];
-      var gearboxPilotLightDescriptor = _connectionContainer.Descriptors.AttributeDescriptors["LM Getriebe"];
-      var sifaStatusDescriptor = _connectionContainer.Descriptors.NodeDescriptors["Status Sifa"];
-      var neededData = new List<short> { velocityDescriptor.Id, gearboxPilotLightDescriptor.Id, sifaStatusDescriptor.Id };
-
+      var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
       _connectionContainer.Connect("Win-Forms demo app", "1.0.0.0", neededData);
+
       lblConnecting.Text = "Connected!";
     }
 
