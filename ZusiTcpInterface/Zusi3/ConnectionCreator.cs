@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.Enums;
@@ -41,6 +42,11 @@ namespace ZusiTcpInterface.Zusi3
         {"short", AttributeConverters.ConvertShort},
         {"fail", (s, bytes) => { throw new NotSupportedException("Unsupported data type received"); }}
       };
+
+    private string _clientName = String.Empty;
+    private string _clientVersion = String.Empty;
+    private IEnumerable<CabInfoAddress> _neededData = Enumerable.Empty<CabInfoAddress>();
+    private IPEndPoint _endPoint = new IPEndPoint(IPAddress.Loopback, 1436);
 
     public DescriptorCollection Descriptors
     {
@@ -131,12 +137,28 @@ namespace ZusiTcpInterface.Zusi3
       return new Connection(ClientName, ClientVersion, NeededData, EndPoint, _rootNodeConverter);
     }
 
-    public IPEndPoint EndPoint { get; set; }
+    public IPEndPoint EndPoint
+    {
+      get { return _endPoint; }
+      set { _endPoint = value; }
+    }
 
-    public IEnumerable<CabInfoAddress> NeededData { get; set; }
+    public IEnumerable<CabInfoAddress> NeededData
+    {
+      get { return _neededData; }
+      set { _neededData = value; }
+    }
 
-    public string ClientVersion { get; set; }
+    public string ClientVersion
+    {
+      get { return _clientVersion; }
+      set { _clientVersion = value; }
+    }
 
-    public string ClientName { get; set; }
+    public string ClientName
+    {
+      get { return _clientName; }
+      set { _clientName = value; }
+    }
   }
 }

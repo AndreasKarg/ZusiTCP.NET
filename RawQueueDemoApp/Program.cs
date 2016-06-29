@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 using ZusiTcpInterface.Zusi3;
-using ZusiTcpInterface.Zusi3.DOM;
 using ZusiTcpInterface.Zusi3.Enums;
 
 namespace DemoApp
@@ -15,74 +10,28 @@ namespace DemoApp
     {
       Console.WriteLine("Connecting...");
 
-      using (var connectionContainer = new ConnectionCreator())
+      var connectionCreator = new ConnectionCreator();
+      connectionCreator.ClientName = "Poll-based demo app";
+      connectionCreator.ClientVersion = "1.0.0.0";
+      connectionCreator.NeededData = new[] { new CabInfoAddress(0x01), new CabInfoAddress(0x64), new CabInfoAddress(0x1A), };
+
+      //var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
+
+      var velocityAddress = connectionCreator.Descriptors["Geschwindigkeit"].Address;
+      var gearboxPilotLightAddress = connectionCreator.Descriptors["LM Getriebe"].Address;
+      var sifaPilotLightAddress = connectionCreator.Descriptors["Status Sifa-Leuchtmelder"].Address;
+      var sifaHornAddress = connectionCreator.Descriptors["Status Sifa-Hupe"].Address;
+
+      using (var connection = connectionCreator.CreateConnection())
       {
-        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaPilotLightDescriptor = connectionContainer.Descriptors["Status Sifa-Leuchtmelder"];
-        var sifaHornDescriptor = connectionContainer.Descriptors["Status Sifa-Hupe"];
-        var neededData = new[] {"Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe"};
-        Connection tempQualifier = connectionContainer.Connection;
-        tempQualifier._tcpClient = new TcpClient("localhost", 1436);
-
-        var networkStream = new CancellableBlockingStream(tempQualifier._tcpClient.GetStream(), tempQualifier._cancellationTokenSource.Token);
-        var binaryReader = new BinaryReader(networkStream);
-        var binaryWriter = new BinaryWriter(networkStream);
-
-        var messageReader = new MessageReceiver(binaryReader, tempQualifier._rootNodeConverter, tempQualifier._receivedChunks);
-        tempQualifier._messageReceptionTask = Task.Run(() =>
-        {
-          while (true)
-          {
-            try
-            {
-              messageReader.ProcessNextPacket();
-            }
-            catch (OperationCanceledException)
-            {
-              // Teardown requested
-              return;
-            }
-          }
-        });
-
-        var handshaker = new Handshaker(tempQualifier._receivedChunks, binaryWriter, ClientType.ControlDesk, "Raw queue demo app", "1.0.0.0",
-          (IEnumerable<CabInfoAddress>) neededData);
-
-        handshaker.ShakeHands();
-
-        tempQualifier._dataForwardingTask = Task.Run(() =>
-        {
-          while (true)
-          {
-            IProtocolChunk protocolChunk;
-            try
-            {
-              const int noTimeout = -1;
-              tempQualifier._receivedChunks.TryTake(out protocolChunk, noTimeout, tempQualifier._cancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-              // Teardown requested
-              return;
-            }
-            tempQualifier._receivedDataChunks.Add((DataChunkBase)protocolChunk);
-          }
-        });
-
         Console.WriteLine("Connected!");
 
         while (!Console.KeyAvailable)
         {
           DataChunkBase chunk;
-          bool chunkTaken = connectionContainer.Connection.ReceivedDataChunks.TryTake(out chunk, 100);
+          bool chunkTaken = connection.ReceivedDataChunks.TryTake(out chunk, 100);
           if(!chunkTaken)
             continue;
-
-          var velocityAddress = velocityDescriptor.Address;
-          var gearboxPilotLightAddress = gearboxPilotLightDescriptor.Address;
-          var sifaPilotLightAddress = sifaPilotLightDescriptor.Address;
-          var sifaHornAddress = sifaHornDescriptor.Address;
 
           if (chunk.Address == velocityAddress)
           {

@@ -22,7 +22,13 @@ namespace ZusiTcpInterface.Zusi3
 
     internal Connection(string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData, IPEndPoint endPoint, RootNodeConverter rootNodeConverter)
     {
-      _tcpClient = new TcpClient(endPoint);
+      //_tcpClient = new TcpClient(endPoint);
+      //var endPoint = new IPEndPoint(new IPAddress(), );
+
+      _tcpClient = new TcpClient(AddressFamily.InterNetworkV6);
+      var socket = _tcpClient.Client;
+      socket.DualMode = true;
+      socket.Connect(endPoint);
 
       var networkStream = new CancellableBlockingStream(_tcpClient.GetStream(), _cancellationTokenSource.Token);
       var binaryReader = new BinaryReader(networkStream);
