@@ -30,9 +30,9 @@ namespace ZusiTcpInterface.Zusi3
       socket.DualMode = true;
       socket.Connect(endPoint);
 
-      var networkStream = new CancellableBlockingStream(_tcpClient.GetStream(), _cancellationTokenSource.Token);
-      var binaryReader = new BinaryReader(networkStream);
-      var binaryWriter = new BinaryWriter(networkStream);
+      var cancellableStream = new CancellableBlockingStream(_tcpClient.GetStream(), _cancellationTokenSource.Token);
+      var binaryReader = new BinaryReader(cancellableStream);
+      var binaryWriter = new BinaryWriter(cancellableStream);
 
       var messageReader = new MessageReceiver(binaryReader, rootNodeConverter, _receivedChunks);
       _messageReceptionTask = Task.Run(() => MessageReceptionLoop(messageReader));

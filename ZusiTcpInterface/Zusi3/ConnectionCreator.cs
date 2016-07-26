@@ -80,12 +80,7 @@ namespace ZusiTcpInterface.Zusi3
     private void InitialiseFrom(IEnumerable<AttributeDescriptor> descriptors)
     {
       var descriptorCollection = new DescriptorCollection(descriptors);
-      InitialiseFrom(descriptorCollection);
-    }
-
-    private void InitialiseFrom(DescriptorCollection rootDescriptor)
-    {
-      _descriptors = rootDescriptor;
+      _descriptors = descriptorCollection;
       SetupNodeConverters();
     }
 
