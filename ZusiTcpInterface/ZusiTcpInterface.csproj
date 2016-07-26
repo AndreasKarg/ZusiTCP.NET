@@ -61,6 +61,7 @@
     <Compile Include="Zusi3\Enums\Lzb\StatusLzbUebertragungsausfall.cs" />
     <Compile Include="Zusi3\Enums\Lzb\StatusRechnerausfall.cs" />
     <Compile Include="Zusi3\Enums\Lzb\StatusVorsichtsauftrag.cs" />
+    <Compile Include="Zusi3\IMessageReceiver.cs" />
     <Compile Include="Zusi3\InvalidDescriptorException.cs" />
     <Compile Include="Zusi3\Enums\Lzb\LzbZustand.cs" />
     <Compile Include="Zusi3\Packets\AckHelloPacket.cs" />

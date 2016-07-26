@@ -1,11 +1,63 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ZusiTcpInterface.Zusi3.Enums;
+using ZusiTcpInterface.Zusi3.Enums.Lzb;
+using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterface.Zusi3.Converters
 {
   internal static class AttributeConverters
   {
+    private static readonly Dictionary<string, Func<Address, byte[], IProtocolChunk>> ConverterMap =
+      new Dictionary<string, Func<Address, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
+      {
+        {"single", ConvertSingle},
+        {"boolassingle", ConvertBoolAsSingle},
+        {"boolasbyte", ConvertBoolAsByte},
+        {"string", ConvertString},
+        {"zugart", ConvertEnumAsShort<Zugart>},
+        {"switchstate", ConvertEnumAsByte<SwitchState>},
+        {"aktivezugdaten", ConvertEnumAsShort<AktiveZugdaten>},
+        {"statussifahupe", ConvertEnumAsByte<StatusSifaHupe>},
+        {"zustandzugsicherung", ConvertEnumAsShort<ZustandZugsicherung>},
+        {"grundzwangsbremsung", ConvertEnumAsShort<GrundZwangsbremsung>},
+        {"lzbzustand", ConvertEnumAsShort<LzbZustand>},
+        {"statuslzbuebertragungsausfall", ConvertEnumAsShort<StatusLzbUebertragungsausfall>},
+        {"indusihupe", ConvertEnumAsByte<IndusiHupe>},
+        {"zusatzinfomelderbild", ConvertEnumAsByte<ZusatzinfoMelderbild>},
+        {"pilotlightstate", ConvertEnumAsByte<PilotLightState>},
+        {"statusendeverfahren", ConvertEnumAsByte<StatusEndeVerfahren>},
+        {"statusauftrag", ConvertEnumAsByte<StatusAuftrag>},
+        {"statusvorsichtauftrag", ConvertEnumAsByte<StatusVorsichtauftrag>},
+        {"statusnothalt", ConvertEnumAsByte<StatusLzbNothalt>},
+        {"statusrechnerausfall", ConvertEnumAsByte<StatusRechnerausfall>},
+        {"statuselauftrag", ConvertEnumAsByte<StatusElAuftrag>},
+        {"short", ConvertShort},
+        {"fail", (s, bytes) => { throw new NotSupportedException("Unsupported data type received"); }}
+      };
+
+    public static Dictionary<Address, Func<Address, byte[], IProtocolChunk>> MapToDescriptors(IEnumerable<AttributeDescriptor> attributeDescriptors)
+    {
+      var mappedConverters = new Dictionary<Address, Func<Address, byte[], IProtocolChunk>>();
+
+      foreach (var descriptor in attributeDescriptors)
+      {
+        try
+        {
+          mappedConverters.Add(descriptor.Address, ConverterMap[descriptor.Type]);
+        }
+        catch (KeyNotFoundException e)
+        {
+          throw new InvalidDescriptorException(
+            String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Address, descriptor.Name), e);
+        }
+      }
+
+      return mappedConverters;
+    }
+
     public static IProtocolChunk ConvertSingle(Address id, byte[] payload)
     {
       return new DataChunk<float>(id, BitConverter.ToSingle(payload, 0));

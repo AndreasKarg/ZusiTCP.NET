@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using ZusiTcpInterface.Zusi3.Converters;
-using ZusiTcpInterface.Zusi3.Enums;
-using ZusiTcpInterface.Zusi3.Enums.Lzb;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
 namespace ZusiTcpInterface.Zusi3
@@ -14,34 +12,6 @@ namespace ZusiTcpInterface.Zusi3
   {
     private DescriptorCollection _descriptors;
     private RootNodeConverter _rootNodeConverter;
-
-    private readonly Dictionary<string, Func<Address, byte[], IProtocolChunk>> _converterMap =
-      new Dictionary<string, Func<Address, byte[], IProtocolChunk>>(StringComparer.InvariantCultureIgnoreCase)
-      {
-        {"single", AttributeConverters.ConvertSingle},
-        {"boolassingle", AttributeConverters.ConvertBoolAsSingle},
-        {"boolasbyte", AttributeConverters.ConvertBoolAsByte},
-        {"string", AttributeConverters.ConvertString},
-        {"zugart", AttributeConverters.ConvertEnumAsShort<Zugart>},
-        {"switchstate", AttributeConverters.ConvertEnumAsByte<SwitchState>},
-        {"aktivezugdaten", AttributeConverters.ConvertEnumAsShort<AktiveZugdaten>},
-        {"statussifahupe", AttributeConverters.ConvertEnumAsByte<StatusSifaHupe>},
-        {"zustandzugsicherung", AttributeConverters.ConvertEnumAsShort<ZustandZugsicherung>},
-        {"grundzwangsbremsung", AttributeConverters.ConvertEnumAsShort<GrundZwangsbremsung>},
-        {"lzbzustand", AttributeConverters.ConvertEnumAsShort<LzbZustand>},
-        {"statuslzbuebertragungsausfall", AttributeConverters.ConvertEnumAsShort<StatusLzbUebertragungsausfall>},
-        {"indusihupe", AttributeConverters.ConvertEnumAsByte<IndusiHupe>},
-        {"zusatzinfomelderbild", AttributeConverters.ConvertEnumAsByte<ZusatzinfoMelderbild>},
-        {"pilotlightstate", AttributeConverters.ConvertEnumAsByte<PilotLightState>},
-        {"statusendeverfahren", AttributeConverters.ConvertEnumAsByte<StatusEndeVerfahren>},
-        {"statusauftrag", AttributeConverters.ConvertEnumAsByte<StatusAuftrag>},
-        {"statusvorsichtauftrag", AttributeConverters.ConvertEnumAsByte<StatusVorsichtauftrag>},
-        {"statusnothalt", AttributeConverters.ConvertEnumAsByte<StatusLzbNothalt>},
-        {"statusrechnerausfall", AttributeConverters.ConvertEnumAsByte<StatusRechnerausfall>},
-        {"statuselauftrag", AttributeConverters.ConvertEnumAsByte<StatusElAuftrag>},
-        {"short", AttributeConverters.ConvertShort},
-        {"fail", (s, bytes) => { throw new NotSupportedException("Unsupported data type received"); }}
-      };
 
     private string _clientName = String.Empty;
     private string _clientVersion = String.Empty;
@@ -103,28 +73,8 @@ namespace ZusiTcpInterface.Zusi3
 
     private INodeConverter GenerateNodeConverter(DescriptorCollection descriptors)
     {
-        var attributeConverters = MapAttributeConverters(descriptors);
+        var attributeConverters = AttributeConverters.MapToDescriptors(descriptors);
         return new FlatteningNodeConverter { ConversionFunctions = attributeConverters };
-    }
-
-    private Dictionary<Address, Func<Address, byte[], IProtocolChunk>> MapAttributeConverters(IEnumerable<AttributeDescriptor> cabInfoDescriptors)
-    {
-      Dictionary<Address, Func<Address, byte[], IProtocolChunk>> dictionary = new Dictionary<Address, Func<Address, byte[], IProtocolChunk>>();
-
-      foreach (var descriptor in cabInfoDescriptors)
-      {
-        try
-        {
-          dictionary.Add(descriptor.Address, _converterMap[descriptor.Type]);
-        }
-        catch (KeyNotFoundException e)
-        {
-          throw new InvalidDescriptorException(
-            String.Format("Could not found converter for type '{0}', used in descriptor 0x{1:x4} - {2}.", descriptor.Type, descriptor.Address, descriptor.Name), e);
-        }
-      }
-
-      return dictionary;
     }
 
     public Connection CreateConnection()

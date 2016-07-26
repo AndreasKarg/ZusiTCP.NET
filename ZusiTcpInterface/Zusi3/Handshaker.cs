@@ -14,16 +14,16 @@ namespace ZusiTcpInterface.Zusi3
     private readonly string _clientName;
     private readonly string _clientVersion;
     private readonly IEnumerable<CabInfoAddress> _neededData;
-    private readonly IBlockingCollection<IProtocolChunk> _rxQueue;
+    private readonly IMessageReceiver _messageReceiver;
 
-    public Handshaker(IBlockingCollection<IProtocolChunk> rxQueue, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData)
+    public Handshaker(IMessageReceiver messageReceiver, BinaryWriter binaryWriter, ClientType clientType, string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData)
     {
       _binaryWriter = binaryWriter;
       _clientType = clientType;
       _clientName = clientName;
       _clientVersion = clientVersion;
       _neededData = neededData;
-      _rxQueue = rxQueue;
+      _messageReceiver = messageReceiver;
     }
 
     public void ShakeHands()
@@ -36,14 +36,14 @@ namespace ZusiTcpInterface.Zusi3
       var rootNodeConverter = new RootNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;
 
-      var ackHello = (AckHelloPacket)_rxQueue.Take();
+      var ackHello = (AckHelloPacket)_messageReceiver.GetNextChunk();
 
       if(!ackHello.ConnectionAccepted)
         throw new ConnectionRefusedException("Connection refused by Zusi.");
 
       NeededDataPacket.Serialise(_binaryWriter, _neededData);
 
-      var ackNeededData = (AckNeededDataPacket) _rxQueue.Take();
+      var ackNeededData = (AckNeededDataPacket) _messageReceiver.GetNextChunk();
 
       if(!ackNeededData.RequestAccepted)
         throw new ConnectionRefusedException("Needed data rejected by Zusi.");
