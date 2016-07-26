@@ -15,8 +15,6 @@ namespace DemoApp
       connectionCreator.ClientVersion = "1.0.0.0";
       connectionCreator.NeededData = new[] { new CabInfoAddress(0x01), new CabInfoAddress(0x64), new CabInfoAddress(0x1A), };
 
-      //var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
-
       var velocityAddress = connectionCreator.Descriptors["Geschwindigkeit"].Address;
       var gearboxPilotLightAddress = connectionCreator.Descriptors["LM Getriebe"].Address;
       var sifaPilotLightAddress = connectionCreator.Descriptors["Status Sifa-Leuchtmelder"].Address;
