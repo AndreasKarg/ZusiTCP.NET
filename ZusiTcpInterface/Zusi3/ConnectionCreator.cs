@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.TypeDescriptors;
 
@@ -53,6 +54,11 @@ namespace ZusiTcpInterface.Zusi3
       _descriptors = descriptorCollection;
       SetupNodeConverters();
       _neededData = new NeededDataCollection(_descriptors);
+
+      var entryAssembly = Assembly.GetEntryAssembly();
+      var assemblyName = entryAssembly.GetName();
+      ClientName = assemblyName.Name;
+      ClientVersion = assemblyName.Version.ToString();
     }
 
     private void SetupNodeConverters()

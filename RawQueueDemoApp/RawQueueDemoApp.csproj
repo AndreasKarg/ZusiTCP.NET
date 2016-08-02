@@ -7,8 +7,8 @@
     <ProjectGuid>{B4E5220D-6A97-4172-89DC-C49B16E166B6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DemoApp</RootNamespace>
-    <AssemblyName>DemoApp</AssemblyName>
+    <RootNamespace>RawQueueDemoApp</RootNamespace>
+    <AssemblyName>RawQueueDemoApp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

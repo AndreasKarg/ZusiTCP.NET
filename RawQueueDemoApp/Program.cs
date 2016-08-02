@@ -2,7 +2,7 @@
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Enums;
 
-namespace DemoApp
+namespace RawQueueDemoApp
 {
   internal static class Program
   {
@@ -11,8 +11,6 @@ namespace DemoApp
       Console.WriteLine("Connecting...");
 
       var connectionCreator = new ConnectionCreator();
-      connectionCreator.ClientName = "Poll-based demo app";
-      connectionCreator.ClientVersion = "1.0.0.0";
 
       var velocityAddress = connectionCreator.Descriptors["Geschwindigkeit"].Address;
       var gearboxPilotLightAddress = connectionCreator.Descriptors["LM Getriebe"].Address;

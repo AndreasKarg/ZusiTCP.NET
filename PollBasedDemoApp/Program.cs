@@ -12,8 +12,6 @@ namespace PollBasedDemoApp
       Console.WriteLine("Connecting...");
 
       var connectionCreator = new ConnectionCreator();
-      connectionCreator.ClientName = "Poll-based demo app";
-      connectionCreator.ClientVersion = "1.0.0.0";
       connectionCreator.NeededData.Request("Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe");
 
       using (var connection = connectionCreator.CreateConnection())
