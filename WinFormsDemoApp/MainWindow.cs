@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
-using ZusiTcpInterface.Zusi3;
-using ZusiTcpInterface.Zusi3.Enums;
+using ZusiTcpInterface;
+using ZusiTcpInterface.Enums;
 
 namespace WinFormsDemoApp
 {

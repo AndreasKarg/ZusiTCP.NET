@@ -42,76 +42,72 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Zusi2\AckHelloPacket.cs" />
-    <Compile Include="Zusi2\ClientType.cs" />
-    <Compile Include="Zusi2\HandShaker.cs" />
-    <Compile Include="Zusi2\HelloPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Zusi3\Address.cs" />
-    <Compile Include="Zusi3\CabInfoAddress.cs" />
-    <Compile Include="Zusi3\CallbackWrapper.cs" />
-    <Compile Include="Zusi3\Connection.cs" />
-    <Compile Include="Zusi3\Converters\AckHelloConverter.cs" />
-    <Compile Include="Zusi3\Converters\FlatteningNodeConverter.cs" />
-    <Compile Include="Zusi3\Enums\IndusiHupe.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\StatusAuftrag.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\StatusElAuftrag.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\StatusEndeVerfahren.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\StatusLzbNothalt.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\StatusLzbUebertragungsausfall.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\StatusRechnerausfall.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\StatusVorsichtsauftrag.cs" />
-    <Compile Include="Zusi3\IMessageReceiver.cs" />
-    <Compile Include="Zusi3\InvalidDescriptorException.cs" />
-    <Compile Include="Zusi3\Enums\Lzb\LzbZustand.cs" />
-    <Compile Include="Zusi3\Packets\AckHelloPacket.cs" />
-    <Compile Include="Zusi3\Converters\AckNeededDataConverter.cs" />
-    <Compile Include="Zusi3\Packets\AckNeededDataPacket.cs" />
-    <Compile Include="Zusi3\DOM\Attribute.cs" />
-    <Compile Include="Zusi3\BlockingCollectionWrapper.cs" />
-    <Compile Include="Zusi3\Converters\AttributeConverters.cs" />
-    <Compile Include="Zusi3\DataChunk.cs" />
-    <Compile Include="Zusi3\DataChunkBase.cs" />
-    <Compile Include="Zusi3\Converters\NodeConverter.cs" />
-    <Compile Include="Zusi3\CancellableBlockingStream.cs" />
-    <Compile Include="Zusi3\DOM\ClientType.cs" />
-    <Compile Include="Zusi3\Enums\PilotLightState.cs" />
-    <Compile Include="Zusi3\Enums\SwitchState.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\AttributeDescriptor.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\DescriptorCollection.cs" />
-    <Compile Include="Zusi3\TypeDescriptors\DescriptorReader.cs" />
-    <Compile Include="Zusi3\ConnectionCreator.cs" />
-    <Compile Include="Zusi3\ConnectionRefusedException.cs" />
-    <Compile Include="Zusi3\CallbackBasedZusiDataReceiverBase.cs" />
-    <Compile Include="Zusi3\Handshaker.cs" />
-    <Compile Include="Zusi3\Packets\HelloPacket.cs" />
-    <Compile Include="Zusi3\Enums\StatusSifaHupe.cs" />
-    <Compile Include="Zusi3\IBlockingCollection.cs" />
-    <Compile Include="Zusi3\Converters\INodeConverter.cs" />
-    <Compile Include="Zusi3\MessageReceiver.cs" />
-    <Compile Include="Zusi3\Packets\NeededDataPacket.cs" />
-    <Compile Include="Zusi3\DOM\Node.cs" />
-    <Compile Include="Zusi3\DOM\NodeCategory.cs" />
-    <Compile Include="Zusi3\IProtocolChunk.cs" />
-    <Compile Include="Zusi3\PolledZusiDataReceiver.cs" />
-    <Compile Include="Zusi3\Converters\StringDumpNodeConverter.cs" />
-    <Compile Include="Zusi3\ThreadMarshallingZusiDataReceiver.cs" />
-    <Compile Include="Zusi3\Converters\RootNodeConverter.cs" />
-    <Compile Include="Zusi3\Enums\ZugdatenModus.cs" />
-    <Compile Include="Zusi3\Enums\ZusatzinfoMelderbild.cs" />
-    <Compile Include="Zusi3\Enums\ZustandZugsicherung.cs" />
-    <Compile Include="Zusi3\Enums\GrundZwangsbremsung.cs" />
-    <Compile Include="Zusi3\Enums\Zugart.cs" />
-    <Compile Include="Zusi3\NeededDataCollection.cs" />
+    <Compile Include="Address.cs" />
+    <Compile Include="CabInfoAddress.cs" />
+    <Compile Include="CallbackWrapper.cs" />
+    <Compile Include="Connection.cs" />
+    <Compile Include="Converters\AckHelloConverter.cs" />
+    <Compile Include="Converters\FlatteningNodeConverter.cs" />
+    <Compile Include="Enums\IndusiHupe.cs" />
+    <Compile Include="Enums\Lzb\StatusAuftrag.cs" />
+    <Compile Include="Enums\Lzb\StatusElAuftrag.cs" />
+    <Compile Include="Enums\Lzb\StatusEndeVerfahren.cs" />
+    <Compile Include="Enums\Lzb\StatusLzbNothalt.cs" />
+    <Compile Include="Enums\Lzb\StatusLzbUebertragungsausfall.cs" />
+    <Compile Include="Enums\Lzb\StatusRechnerausfall.cs" />
+    <Compile Include="Enums\Lzb\StatusVorsichtsauftrag.cs" />
+    <Compile Include="IMessageReceiver.cs" />
+    <Compile Include="InvalidDescriptorException.cs" />
+    <Compile Include="Enums\Lzb\LzbZustand.cs" />
+    <Compile Include="Packets\AckHelloPacket.cs" />
+    <Compile Include="Converters\AckNeededDataConverter.cs" />
+    <Compile Include="Packets\AckNeededDataPacket.cs" />
+    <Compile Include="DOM\Attribute.cs" />
+    <Compile Include="BlockingCollectionWrapper.cs" />
+    <Compile Include="Converters\AttributeConverters.cs" />
+    <Compile Include="DataChunk.cs" />
+    <Compile Include="DataChunkBase.cs" />
+    <Compile Include="Converters\NodeConverter.cs" />
+    <Compile Include="CancellableBlockingStream.cs" />
+    <Compile Include="DOM\ClientType.cs" />
+    <Compile Include="Enums\PilotLightState.cs" />
+    <Compile Include="Enums\SwitchState.cs" />
+    <Compile Include="TypeDescriptors\AttributeDescriptor.cs" />
+    <Compile Include="TypeDescriptors\DescriptorCollection.cs" />
+    <Compile Include="TypeDescriptors\DescriptorReader.cs" />
+    <Compile Include="ConnectionCreator.cs" />
+    <Compile Include="ConnectionRefusedException.cs" />
+    <Compile Include="CallbackBasedZusiDataReceiverBase.cs" />
+    <Compile Include="Handshaker.cs" />
+    <Compile Include="Packets\HelloPacket.cs" />
+    <Compile Include="Enums\StatusSifaHupe.cs" />
+    <Compile Include="IBlockingCollection.cs" />
+    <Compile Include="Converters\INodeConverter.cs" />
+    <Compile Include="MessageReceiver.cs" />
+    <Compile Include="Packets\NeededDataPacket.cs" />
+    <Compile Include="DOM\Node.cs" />
+    <Compile Include="DOM\NodeCategory.cs" />
+    <Compile Include="IProtocolChunk.cs" />
+    <Compile Include="PolledZusiDataReceiver.cs" />
+    <Compile Include="Converters\StringDumpNodeConverter.cs" />
+    <Compile Include="ThreadMarshallingZusiDataReceiver.cs" />
+    <Compile Include="Converters\RootNodeConverter.cs" />
+    <Compile Include="Enums\ZugdatenModus.cs" />
+    <Compile Include="Enums\ZusatzinfoMelderbild.cs" />
+    <Compile Include="Enums\ZustandZugsicherung.cs" />
+    <Compile Include="Enums\GrundZwangsbremsung.cs" />
+    <Compile Include="Enums\Zugart.cs" />
+    <Compile Include="NeededDataCollection.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Zusi3\CabInfoTypes.xml">
+    <Content Include="CabInfoTypes.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Zusi3\CabInfoTypes.xsd">
+    <None Include="CabInfoTypes.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

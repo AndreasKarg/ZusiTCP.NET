@@ -1,6 +1,6 @@
 ﻿using System;
-using ZusiTcpInterface.Zusi3;
-using ZusiTcpInterface.Zusi3.Enums;
+using ZusiTcpInterface;
+using ZusiTcpInterface.Enums;
 
 namespace RawQueueDemoApp
 {

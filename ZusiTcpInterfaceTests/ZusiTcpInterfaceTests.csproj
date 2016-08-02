@@ -64,24 +64,21 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helpers\MemoryStreamHelper.cs" />
-    <Compile Include="Zusi2\AckHelloPacketTests.cs" />
-    <Compile Include="Zusi2\HelloPacketTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Zusi2\HandShakerTests.cs" />
-    <Compile Include="Zusi3\AckNeededDataConverterTests.cs" />
-    <Compile Include="Zusi3\AddressTests.cs" />
-    <Compile Include="Zusi3\DescriptorReaderTests.cs" />
-    <Compile Include="Zusi3\DescriptorCollectionTests.cs" />
-    <Compile Include="Zusi3\FlatteningNodeConverterTests.cs" />
-    <Compile Include="Zusi3\NeededDataCollectionTests.cs" />
-    <Compile Include="Zusi3\NodeConverterTests.cs" />
-    <Compile Include="Zusi3\HelloPacketTests.cs" />
-    <Compile Include="Zusi3\MessageReceiverTests.cs" />
-    <Compile Include="Zusi3\NeededDataPacketTests.cs" />
-    <Compile Include="Zusi3\AckHelloConverterTests.cs" />
-    <Compile Include="Zusi3\HandshakerTests.cs" />
-    <Compile Include="Zusi3\PolledZusiDataReceiverTests.cs" />
-    <Compile Include="Zusi3\StringDumpNodeConverterTests.cs" />
+    <Compile Include="AckNeededDataConverterTests.cs" />
+    <Compile Include="AddressTests.cs" />
+    <Compile Include="DescriptorReaderTests.cs" />
+    <Compile Include="DescriptorCollectionTests.cs" />
+    <Compile Include="FlatteningNodeConverterTests.cs" />
+    <Compile Include="NeededDataCollectionTests.cs" />
+    <Compile Include="NodeConverterTests.cs" />
+    <Compile Include="HelloPacketTests.cs" />
+    <Compile Include="MessageReceiverTests.cs" />
+    <Compile Include="NeededDataPacketTests.cs" />
+    <Compile Include="AckHelloConverterTests.cs" />
+    <Compile Include="HandshakerTests.cs" />
+    <Compile Include="PolledZusiDataReceiverTests.cs" />
+    <Compile Include="StringDumpNodeConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZusiTcpInterface\ZusiTcpInterface.csproj">
