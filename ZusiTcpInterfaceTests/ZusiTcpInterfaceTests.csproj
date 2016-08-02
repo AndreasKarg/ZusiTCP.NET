@@ -73,11 +73,11 @@
     <Compile Include="Zusi3\DescriptorReaderTests.cs" />
     <Compile Include="Zusi3\DescriptorCollectionTests.cs" />
     <Compile Include="Zusi3\FlatteningNodeConverterTests.cs" />
+    <Compile Include="Zusi3\NeededDataCollectionTests.cs" />
     <Compile Include="Zusi3\NodeConverterTests.cs" />
     <Compile Include="Zusi3\HelloPacketTests.cs" />
     <Compile Include="Zusi3\MessageReceiverTests.cs" />
     <Compile Include="Zusi3\NeededDataPacketTests.cs" />
-    <Compile Include="Zusi3\NodeTests.cs" />
     <Compile Include="Zusi3\AckHelloConverterTests.cs" />
     <Compile Include="Zusi3\HandshakerTests.cs" />
     <Compile Include="Zusi3\PolledZusiDataReceiverTests.cs" />

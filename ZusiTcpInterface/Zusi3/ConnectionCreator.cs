@@ -15,7 +15,7 @@ namespace ZusiTcpInterface.Zusi3
 
     private string _clientName = String.Empty;
     private string _clientVersion = String.Empty;
-    private IEnumerable<CabInfoAddress> _neededData = Enumerable.Empty<CabInfoAddress>();
+    private NeededDataCollection _neededData;
     private IPEndPoint _endPoint = new IPEndPoint(IPAddress.Loopback, 1436);
 
     public DescriptorCollection Descriptors
@@ -52,6 +52,7 @@ namespace ZusiTcpInterface.Zusi3
       var descriptorCollection = new DescriptorCollection(descriptors);
       _descriptors = descriptorCollection;
       SetupNodeConverters();
+      _neededData = new NeededDataCollection(_descriptors);
     }
 
     private void SetupNodeConverters()
@@ -79,7 +80,7 @@ namespace ZusiTcpInterface.Zusi3
 
     public Connection CreateConnection()
     {
-      return new Connection(ClientName, ClientVersion, NeededData, EndPoint, _rootNodeConverter);
+      return new Connection(ClientName, ClientVersion, NeededData.GetRequestedAddresses(), EndPoint, _rootNodeConverter);
     }
 
     public IPEndPoint EndPoint
@@ -88,10 +89,9 @@ namespace ZusiTcpInterface.Zusi3
       set { _endPoint = value; }
     }
 
-    public IEnumerable<CabInfoAddress> NeededData
+    public NeededDataCollection NeededData
     {
       get { return _neededData; }
-      set { _neededData = value; }
     }
 
     public string ClientVersion

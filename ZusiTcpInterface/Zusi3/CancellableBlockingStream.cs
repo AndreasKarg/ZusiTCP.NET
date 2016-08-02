@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.Remoting;
 using System.Threading;
 using System.Threading.Tasks;
@@ -219,10 +220,12 @@ namespace ZusiTcpInterface.Zusi3
       }
       catch (AggregateException aggregate)
       {
-        foreach (var innerException in aggregate.InnerExceptions)
+        if (aggregate.InnerExceptions.Count == 1)
         {
-          throw innerException;
+          throw aggregate.InnerExceptions.Single();
         }
+
+        throw;
       }
     }
   }

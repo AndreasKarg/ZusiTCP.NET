@@ -1,8 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using ZusiTcpInterface.Zusi3;
 using ZusiTcpInterface.Zusi3.Converters;
 using ZusiTcpInterface.Zusi3.Packets;
@@ -31,8 +28,6 @@ namespace ZusiTcpInterfaceTests.Zusi3
              0xFF, 0xFF, 0xFF, 0xFF,
            0xFF, 0xFF, 0xFF, 0xFF
          };
-
-    private readonly List<IProtocolChunk> _protocolChunks = new List<IProtocolChunk>();
 
     public MessageReceiverTests()
     {

@@ -17,6 +17,7 @@ namespace WinFormsDemoApp
       InitializeComponent();
 
       _connectionCreator = new ConnectionCreator();
+      _connectionCreator.NeededData.Request("Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe");
     }
 
     private void OnGearboxPilotLightReceived(DataChunk<bool> dataChunk)
@@ -42,9 +43,6 @@ namespace WinFormsDemoApp
     private void MainWindow_Load(object sender, EventArgs e)
     {
       lblConnecting.Text = "Connecting!";
-
-      //var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
-      _connectionCreator.NeededData = new[] { new CabInfoAddress(0x01), new CabInfoAddress(0x64), new CabInfoAddress(0x1A), };
 
       _connection = _connectionCreator.CreateConnection();
 

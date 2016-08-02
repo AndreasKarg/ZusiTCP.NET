@@ -14,9 +14,7 @@ namespace PollBasedDemoApp
       var connectionCreator = new ConnectionCreator();
       connectionCreator.ClientName = "Poll-based demo app";
       connectionCreator.ClientVersion = "1.0.0.0";
-      connectionCreator.NeededData = new[] {new CabInfoAddress(0x01), new CabInfoAddress(0x64), new CabInfoAddress(0x1A),};
-
-      //var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
+      connectionCreator.NeededData.Request("Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe");
 
       using (var connection = connectionCreator.CreateConnection())
       {

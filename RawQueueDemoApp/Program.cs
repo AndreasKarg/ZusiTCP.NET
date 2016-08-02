@@ -13,12 +13,13 @@ namespace DemoApp
       var connectionCreator = new ConnectionCreator();
       connectionCreator.ClientName = "Poll-based demo app";
       connectionCreator.ClientVersion = "1.0.0.0";
-      connectionCreator.NeededData = new[] { new CabInfoAddress(0x01), new CabInfoAddress(0x64), new CabInfoAddress(0x1A), };
 
       var velocityAddress = connectionCreator.Descriptors["Geschwindigkeit"].Address;
       var gearboxPilotLightAddress = connectionCreator.Descriptors["LM Getriebe"].Address;
       var sifaPilotLightAddress = connectionCreator.Descriptors["Status Sifa-Leuchtmelder"].Address;
       var sifaHornAddress = connectionCreator.Descriptors["Status Sifa-Hupe"].Address;
+
+      connectionCreator.NeededData.Request(velocityAddress, gearboxPilotLightAddress, sifaHornAddress, sifaHornAddress);
 
       using (var connection = connectionCreator.CreateConnection())
       {

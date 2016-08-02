@@ -102,6 +102,7 @@
     <Compile Include="Zusi3\Enums\ZustandZugsicherung.cs" />
     <Compile Include="Zusi3\Enums\GrundZwangsbremsung.cs" />
     <Compile Include="Zusi3\Enums\Zugart.cs" />
+    <Compile Include="Zusi3\NeededDataCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zusi3\CabInfoTypes.xml">
