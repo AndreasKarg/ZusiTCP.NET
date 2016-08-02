@@ -45,25 +45,19 @@ namespace ZusiTcpInterfaceTests.Zusi3
       var rootNodeConverter = new RootNodeConverter();
       rootNodeConverter[0x01] = handshakeConverter;
 
-      var mockQueue = new Mock<IBlockingCollection<IProtocolChunk>>();
-      mockQueue.Setup(queue => queue.Add(It.IsNotNull<IProtocolChunk>()))
-        .Callback<IProtocolChunk>(chunk => _protocolChunks.Add(chunk));
-
-      _messageReceiver = new MessageReceiver(binaryReader, rootNodeConverter, mockQueue.Object);
+      _messageReceiver = new MessageReceiver(binaryReader, rootNodeConverter);
     }
 
     [TestMethod]
-    public void Puts_deserialised_message_onto_queue()
+    public void Returns_correct_next_chunk()
     {
       // Given
       // Message receiver as above
 
       // When
-      _messageReceiver.ProcessNextPacket();
+      var ackHello = (AckHelloPacket)_messageReceiver.GetNextChunk();
 
       // Then
-      var ackHello = (AckHelloPacket)_protocolChunks.Single();
-
       Assert.AreEqual("3.0.1.0", ackHello.ZusiVersion);
       Assert.AreEqual("0", ackHello.ConnectionInfo);
       Assert.IsTrue(ackHello.ConnectionAccepted);

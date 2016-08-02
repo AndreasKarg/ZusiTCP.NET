@@ -22,7 +22,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       };
 
     private readonly Handshaker _handshaker;
-    private readonly Mock<IBlockingCollection<IProtocolChunk>> _rxQueue = new Mock<IBlockingCollection<IProtocolChunk>>();
+    private readonly Mock<IMessageReceiver> _messageReceiver;
     private readonly MemoryStream _txStream = new MemoryStream();
     private readonly BinaryWriter _binaryWriter;
 
@@ -34,11 +34,12 @@ namespace ZusiTcpInterfaceTests.Zusi3
       rxPackets.Enqueue(_positiveAckHello);
       rxPackets.Enqueue(_positiveAckNeededDataPacket);
 
-      _rxQueue.Setup(queue => queue.Take())
+      _messageReceiver = new Mock<IMessageReceiver>();
+      _messageReceiver.Setup(receiver => receiver.GetNextChunk())
         .Returns(rxPackets.Dequeue);
 
       _binaryWriter = binaryWriter;
-      _handshaker = new Handshaker(_rxQueue.Object, _binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0", _neededData);
+      _handshaker = new Handshaker(_messageReceiver.Object, _binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0", _neededData);
     }
 
     [TestMethod]
@@ -92,7 +93,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
     {
       // Given
       var negativeAckHello = new AckHelloPacket("3.1.0.0.", "0", false);
-      _rxQueue.Setup(queue => queue.Take())
+      _messageReceiver.Setup(receiver => receiver.GetNextChunk())
         .Returns(negativeAckHello);
 
       // When - Throws
@@ -107,7 +108,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
       receivedPackets.Enqueue(_positiveAckHello);
       receivedPackets.Enqueue(new AckNeededDataPacket(false));
 
-      _rxQueue.Setup(queue => queue.Take())
+      _messageReceiver.Setup(receiver => receiver.GetNextChunk())
         .Returns(receivedPackets.Dequeue);
 
       // When - Throws
@@ -161,7 +162,7 @@ namespace ZusiTcpInterfaceTests.Zusi3
         new CabInfoAddress(0x01)
       };
 
-      var handshaker = new Handshaker(_rxQueue.Object, _binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0", neededData);
+      var handshaker = new Handshaker(_messageReceiver.Object, _binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0", neededData);
 
       // When
       handshaker.ShakeHands();

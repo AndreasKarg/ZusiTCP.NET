@@ -11,10 +11,6 @@ namespace ZusiTcpInterface.Zusi3
       _blockingCollection = blockingCollection;
     }
 
-    public PolledZusiDataReceiver(ConnectionContainer connectionContainer) : this(connectionContainer.Descriptors, connectionContainer.ReceivedDataChunks)
-    {
-    }
-
     public void Service()
     {
       while (_blockingCollection.Count != 0)

@@ -10,28 +10,26 @@ namespace DemoApp
     {
       Console.WriteLine("Connecting...");
 
-      using (var connectionContainer = new ConnectionContainer())
-      {
-        var velocityDescriptor = connectionContainer.Descriptors["Geschwindigkeit"];
-        var gearboxPilotLightDescriptor = connectionContainer.Descriptors["LM Getriebe"];
-        var sifaPilotLightDescriptor = connectionContainer.Descriptors["Status Sifa-Leuchtmelder"];
-        var sifaHornDescriptor = connectionContainer.Descriptors["Status Sifa-Hupe"];
-        var neededData = new[] {"Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe"};
-        connectionContainer.Connect("Raw queue demo app", "1.0.0.0", neededData);
+      var connectionCreator = new ConnectionCreator();
+      connectionCreator.ClientName = "Poll-based demo app";
+      connectionCreator.ClientVersion = "1.0.0.0";
+      connectionCreator.NeededData = new[] { new CabInfoAddress(0x01), new CabInfoAddress(0x64), new CabInfoAddress(0x1A), };
 
+      var velocityAddress = connectionCreator.Descriptors["Geschwindigkeit"].Address;
+      var gearboxPilotLightAddress = connectionCreator.Descriptors["LM Getriebe"].Address;
+      var sifaPilotLightAddress = connectionCreator.Descriptors["Status Sifa-Leuchtmelder"].Address;
+      var sifaHornAddress = connectionCreator.Descriptors["Status Sifa-Hupe"].Address;
+
+      using (var connection = connectionCreator.CreateConnection())
+      {
         Console.WriteLine("Connected!");
 
         while (!Console.KeyAvailable)
         {
           DataChunkBase chunk;
-          bool chunkTaken = connectionContainer.ReceivedDataChunks.TryTake(out chunk, 100);
+          bool chunkTaken = connection.ReceivedDataChunks.TryTake(out chunk, 100);
           if(!chunkTaken)
             continue;
-
-          var velocityAddress = velocityDescriptor.Address;
-          var gearboxPilotLightAddress = gearboxPilotLightDescriptor.Address;
-          var sifaPilotLightAddress = sifaPilotLightDescriptor.Address;
-          var sifaHornAddress = sifaHornDescriptor.Address;
 
           if (chunk.Address == velocityAddress)
           {

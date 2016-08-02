@@ -22,10 +22,6 @@ namespace ZusiTcpInterface.Zusi3
       _marshallingTask = Task.Run((Action) MainMarshallingLoop);
     }
 
-    public ThreadMarshallingZusiDataReceiver(ConnectionContainer connectionContainer, SynchronizationContext synchronizationContext = null)
-      : this(connectionContainer.Descriptors, connectionContainer.ReceivedDataChunks, synchronizationContext)
-    { }
-
     private void MainMarshallingLoop()
     {
       var cancellationToken = _cancellationTokenSource.Token;

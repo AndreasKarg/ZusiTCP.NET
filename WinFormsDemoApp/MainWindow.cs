@@ -8,21 +8,15 @@ namespace WinFormsDemoApp
 {
   public partial class MainWindow : Form
   {
-    private readonly ConnectionContainer _connectionContainer;
-    private readonly ThreadMarshallingZusiDataReceiver _dataReceiver;
+    private readonly ConnectionCreator _connectionCreator;
+    private ThreadMarshallingZusiDataReceiver _dataReceiver;
+    private Connection _connection;
 
     public MainWindow()
     {
       InitializeComponent();
 
-      _connectionContainer = new ConnectionContainer();
-
-      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionContainer, SynchronizationContext.Current);
-
-      _dataReceiver.RegisterCallbackFor<bool>("LM Getriebe", OnGearboxPilotLightReceived);
-      _dataReceiver.RegisterCallbackFor<bool>("Status Sifa-Leuchtmelder", OnSifaPilotLightReceived);
-      _dataReceiver.RegisterCallbackFor<StatusSifaHupe>("Status Sifa-Hupe", OnSifaHornReceived);
-      _dataReceiver.RegisterCallbackFor<float>("Geschwindigkeit", OnVelocityReceived);
+      _connectionCreator = new ConnectionCreator();
     }
 
     private void OnGearboxPilotLightReceived(DataChunk<bool> dataChunk)
@@ -49,8 +43,16 @@ namespace WinFormsDemoApp
     {
       lblConnecting.Text = "Connecting!";
 
-      var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
-      _connectionContainer.Connect("Win-Forms demo app", "1.0.0.0", neededData);
+      //var neededData = new[] { "Geschwindigkeit", "LM Getriebe", "Status Sifa-Leuchtmelder", "Status Sifa-Hupe" };
+      _connectionCreator.NeededData = new[] { new CabInfoAddress(0x01), new CabInfoAddress(0x64), new CabInfoAddress(0x1A), };
+
+      _connection = _connectionCreator.CreateConnection();
+
+      _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionCreator.Descriptors, _connection.ReceivedDataChunks, SynchronizationContext.Current);
+      _dataReceiver.RegisterCallbackFor<bool>("LM Getriebe", OnGearboxPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<bool>("Status Sifa-Leuchtmelder", OnSifaPilotLightReceived);
+      _dataReceiver.RegisterCallbackFor<StatusSifaHupe>("Status Sifa-Hupe", OnSifaHornReceived);
+      _dataReceiver.RegisterCallbackFor<float>("Geschwindigkeit", OnVelocityReceived);
 
       lblConnecting.Text = "Connected!";
     }
@@ -58,7 +60,7 @@ namespace WinFormsDemoApp
     private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
     {
       _dataReceiver.Dispose();
-      _connectionContainer.Dispose();
+      _connection.Dispose();
     }
   }
 }

@@ -1,5 +1,5 @@
-﻿using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 using ZusiTcpInterface.Zusi3.DOM;
 using ZusiTcpInterface.Zusi3.Packets;
 
@@ -28,13 +28,13 @@ namespace ZusiTcpInterfaceTests.Zusi3
                               0x05, 0x00, 0x00, 0x00,
                                 0x04, 0x00,
                                 0x32, 0x2E, 0x30,
-                            0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-                          0xFF, 0xFF, 0xFF};
+                            0xFF, 0xFF, 0xFF, 0xFF,
+                          0xFF, 0xFF, 0xFF, 0xFF};
 
       // When
       var serialised = new MemoryStream();
       var binaryWriter = new BinaryWriter(serialised);
-        
+
       HelloPacket.Serialise(binaryWriter, ClientType.ControlDesk, "Fahrpult", "2.0");
 
       // Then
