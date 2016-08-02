@@ -19,13 +19,17 @@ namespace ZusiTcpInterface
     private bool _hasBeenDisposed;
     private readonly MessageReceiver _messageReceiver;
 
-    internal Connection(string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData, IPEndPoint endPoint, RootNodeConverter rootNodeConverter)
+    internal Connection(string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData, RootNodeConverter rootNodeConverter,
+      IPEndPoint endPoint)
     {
       _tcpClient = new TcpClient(AddressFamily.InterNetworkV6);
       var socket = _tcpClient.Client;
       socket.DualMode = true;
       socket.Connect(endPoint);
+    }
 
+    internal Connection(string clientName, string clientVersion, IEnumerable<CabInfoAddress> neededData, RootNodeConverter rootNodeConverter)
+    {
       var cancellableStream = new CancellableBlockingStream(_tcpClient.GetStream(), _cancellationTokenSource.Token);
       var binaryReader = new BinaryReader(cancellableStream);
       var binaryWriter = new BinaryWriter(cancellableStream);

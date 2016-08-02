@@ -10,13 +10,13 @@ namespace ZusiTcpInterface
 {
   public class ConnectionCreator
   {
+    private const int Zusi3Port = 1436;
     private DescriptorCollection _descriptors;
     private RootNodeConverter _rootNodeConverter;
 
     private string _clientName = String.Empty;
     private string _clientVersion = String.Empty;
     private NeededDataCollection _neededData;
-    private IPEndPoint _endPoint = new IPEndPoint(IPAddress.Loopback, 1436);
 
     public DescriptorCollection Descriptors
     {
@@ -85,13 +85,12 @@ namespace ZusiTcpInterface
 
     public Connection CreateConnection()
     {
-      return new Connection(ClientName, ClientVersion, NeededData.GetRequestedAddresses(), EndPoint, _rootNodeConverter);
+      return CreateConnection(new IPEndPoint(IPAddress.Loopback, Zusi3Port));
     }
 
-    public IPEndPoint EndPoint
+    public Connection CreateConnection(IPEndPoint endPoint)
     {
-      get { return _endPoint; }
-      set { _endPoint = value; }
+      return new Connection(ClientName, ClientVersion, NeededData.GetRequestedAddresses(), _rootNodeConverter, endPoint);
     }
 
     public NeededDataCollection NeededData

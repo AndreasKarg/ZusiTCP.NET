@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using ZusiTcpInterface;
 using ZusiTcpInterface.Enums;
@@ -14,7 +15,7 @@ namespace PollBasedDemoApp
       var connectionCreator = new ConnectionCreator();
       connectionCreator.NeededData.Request("Geschwindigkeit", "LM Getriebe", "Status Sifa:Status Sifa-Leuchtmelder", "Status Sifa-Hupe");
 
-      using (var connection = connectionCreator.CreateConnection())
+      using (var connection = connectionCreator.CreateConnection(connectionCreator._endPoint))
       {
         var polledDataReceiver = new PolledZusiDataReceiver(connectionCreator.Descriptors, connection.ReceivedDataChunks);
 

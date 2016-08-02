@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using ZusiTcpInterface;
 using ZusiTcpInterface.Enums;
 
@@ -19,7 +20,7 @@ namespace RawQueueDemoApp
 
       connectionCreator.NeededData.Request(velocityAddress, gearboxPilotLightAddress, sifaHornAddress, sifaHornAddress);
 
-      using (var connection = connectionCreator.CreateConnection())
+      using (var connection = connectionCreator.CreateConnection(connectionCreator._endPoint))
       {
         Console.WriteLine("Connected!");
 

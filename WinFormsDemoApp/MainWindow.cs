@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 using ZusiTcpInterface;
@@ -44,7 +45,7 @@ namespace WinFormsDemoApp
     {
       lblConnecting.Text = "Connecting!";
 
-      _connection = _connectionCreator.CreateConnection();
+      _connection = _connectionCreator.CreateConnection(_connectionCreator._endPoint);
 
       _dataReceiver = new ThreadMarshallingZusiDataReceiver(_connectionCreator.Descriptors, _connection.ReceivedDataChunks, SynchronizationContext.Current);
       _dataReceiver.RegisterCallbackFor<bool>("LM Getriebe", OnGearboxPilotLightReceived);
